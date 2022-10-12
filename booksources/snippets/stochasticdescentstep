@@ -1,0 +1,16 @@
+valuevector stochastic_descent_step
+    ( const function& objective,const valuevector& point, int idim,
+      double damp) {
+  int dim = objective.dimension();
+  auto grad = objective.grad(point);
+  auto delta = objective.delta(point);
+
+  auto search_direction( unit_valuevector(dim,idim) );
+  auto gradfi = grad.at(idim);
+  auto hf = gradfi;
+  auto hfh = delta->d2fdxi2(idim);
+  auto tau = - hf / hfh;
+  auto new_point = point + ( search_direction * (tau * damp) );
+
+  return new_point;
+};

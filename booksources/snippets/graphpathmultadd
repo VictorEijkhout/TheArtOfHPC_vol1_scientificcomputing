@@ -1,0 +1,13 @@
+    auto mult =
+      [] ( vectorvalue v,matrixvalue m ) -> vectorvalue {
+	if (m==empty) return undefined;
+	else if (v==undefined) return v;
+	else return v+1;
+      };
+    auto add = 
+      [] ( vectorvalue x,vectorvalue y ) -> vectorvalue {
+	if (x==undefined) return y;
+	else if (y==undefined) return x;
+	else // return minimum
+	  return ( x<y ? x : y );
+      };

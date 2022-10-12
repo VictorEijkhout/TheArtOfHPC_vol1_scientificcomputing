@@ -1,0 +1,14 @@
+// example3c.cxx
+  for (int j=0; j<n; j++) {
+    xarray[j] = 1.;
+    for (int i=0; i<m; i++)
+      matrix[ i+j*m ] = 1.;
+  }
+
+  alpha = 1.; beta = 0.;
+  cblas_dgemv(CblasColMajor,
+	      CblasNoTrans,m,n, alpha,matrix,m, xarray,1, beta,yarray,1);
+
+  for (int i=0; i<m; i++)
+    if (!assert_equal( yarray[i],(double)n ))
+      printf("Error in index %d",i);

@@ -1,0 +1,212 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% THEOREMS -------------------------------------------------------
+
+%\setlength{\topsep}{0pt}
+
+%% \newtheorem{lemma}{Lemma} % already in SIAM macros
+%% \newtheorem{corollary}{Corollary} % already in SIAM macros
+%% \newtheorem{ourexample}{Example} % already in SIAM macros
+%% \newtheorem{theorem}{Theorem} % already in SIAM macros
+%% \newtheorem{definition}{Definition} % already in SIAM macros
+%% \newtheorem{mydefinition}{Definition} % already in SIAM macros
+%% \newtheorem{remark}{Remark}
+%% \newtheorem{exercise}{Exercise}
+%% \renewenvironment{proof}{\noindent
+%% {\bf Proof:}}
+%% {\hfill {\bf endofproof}}
+
+\newenvironment{boxedexample}{
+\noindent
+\newline
+\begin{boxedminipage}[t]{\textwidth}
+\addtocounter{ourexample}{1}%
+{\bf Example \theourexample.}
+\em
+}
+{
+\end{boxedminipage}
+}
+
+\newenvironment{boxedexercise}{
+\noindent
+\newline
+\begin{boxedminipage}[t]{\textwidth}
+\addtocounter{exercise}{1}%
+{\bf Exercise \theexercise.}
+\em
+}
+{
+\end{boxedminipage}
+}
+
+\newenvironment{boxit}{
+\noindent
+\newline
+\begin{boxedminipage}[t]{\textwidth}
+}
+{
+\end{boxedminipage}
+}
+
+% \newenvironment{boxedremark}{%
+% \noindent
+% \newline
+% \begin{boxedminipage}[t]{\textwidth}
+% \begin{remark}
+% }
+% {
+% \end{remark}
+% \end{boxedminipage}
+% }
+
+\newenvironment{boxedremark}{%
+\noindent
+\newline
+\begin{boxedminipage}[t]{\textwidth}
+\addtocounter{remark}{1}%
+{\bf Remark \theremark.}
+\em
+}
+{
+\end{boxedminipage}
+}
+
+
+\newenvironment{notetoexpert}{%
+\noindent
+\newline
+\begin{boxedminipage}[t]{\textwidth}
+\addtocounter{remark}{1}%
+{\bf Note to the skeptical expert.}
+\em
+}
+{
+\end{boxedminipage}
+}
+
+
+\newenvironment{boxeddefinition}{%
+\noindent
+\newline
+\begin{boxedminipage}[t]{\textwidth}
+\addtocounter{mydefinition}{1}%
+{\bf Definition \themydefinition.}
+\em
+}
+{
+\end{boxedminipage}
+}
+
+\newcommand{\eop}{
+{\bf endofproof}
+}
+
+% elsewhere \newcommand{\bbR}{\mathbb{R}}
+% not used \newcommand{\bbC}{\mathbb{C}}
+\renewcommand{\S}{\mathbb{S}}
+\newcommand{\N}{\mathbb{N}}
+
+\newcommand{\Rm}{\bbR^{m}}
+\newcommand{\Rn}{\bbR^{n}}
+\newcommand{\Rk}{\bbR^{k}}
+
+\newcommand{\Rmxm}{\bbR^{m \times m}}
+\newcommand{\Rnxn}{\bbR^{n \times n}}
+\newcommand{\Rmxn}{\bbR^{m \times n}}
+\newcommand{\Rnxm}{\bbR^{n \times m}}
+
+\newcommand{\Rmxk}{\bbR^{m \times k}}
+\newcommand{\Rkxn}{\bbR^{k \times n}}
+\newcommand{\Rnxk}{\bbR^{n \times k}}
+\newcommand{\Rkxk}{\bbR^{k \times k}}
+
+\newcommand{\Sm}{\S^{m}}
+\newcommand{\Sn}{\S^{n}}
+\newcommand{\Sk}{\S^{k}}
+\newcommand{\Sonexm}{\S^{1 \times m}}
+
+\newcommand{\Smxm}{\S^{m \times m}}
+\newcommand{\Snxn}{\S^{n \times n}}
+\newcommand{\Smxn}{\S^{m \times n}}
+\newcommand{\Snxm}{\S^{n \times m}}
+
+\newcommand{\Smxk}{\S^{m \times k}}
+\newcommand{\Skxn}{\S^{k \times n}}
+\newcommand{\Snxk}{\S^{n \times k}}
+
+\newcommand{\alert}{!!!}
+\newcommand{\row}[1]{\check{#1}}
+\newcommand{\tr}[1]{{#1}^{\mathrm{T}}}
+\newcommand{\tc}[1]{{#1}^{\mathrm{H}}}
+
+\newcommand{\TrLw}[1]{\mathrm{TrLw}(#1)}
+\newcommand{\TrUp}[1]{\mathrm{TrUp}(#1)}
+\newcommand{\SyLw}[1]{\mathrm{SyLw}(#1)}
+\newcommand{\SyUp}[1]{\mathrm{SyUp}(#1)}
+\newcommand{\HeLw}[1]{\mathrm{HeLw}(#1)}
+\newcommand{\HeUp}[1]{\mathrm{HeUp}(#1)}
+
+\newcommand{\defcolvector}[2]{
+\left( 
+\begin{array}{c}
+#1_0 \\ 
+#1_1 \\ 
+\vdots \\ 
+#1_{#2-1}
+\end{array} 
+\right)
+}
+
+\newcommand{\defrowvector}[2]{
+\left(#1_0, #1_1, \ldots, #1_{#2-1}\right)
+}
+%\left( 
+%\begin{array}{c c c c}
+%#1_0, & #1_1, & \ldots, & #1_{#2-1}
+%\end{array} 
+%\right)
+%}
+
+\newcommand{\defmatrix}[3]{
+\left( 
+\begin{array}{c c c c}
+#1_{00}     & #1_{01}      & \ldots & #1_{0,#3-1} \\ 
+#1_{10}     & #1_{11}      & \ldots & #1_{1,#3-1} \\ 
+\vdots      & \vdots       & \ddots & \vdots    \\ 
+#1_{#2-1,0} & #1_{#2-1,0}  & \ldots & #1_{#2-1,#3-1} \\ 
+\end{array} 
+\right)
+}
+
+\newcommand{\deflowtrmatrix}[3]{
+\left( 
+\begin{array}{c c c c}
+#1_{00}     & 0            & \ldots & 0           \\ 
+#1_{10}     & #1_{11}      & \ldots & 0           \\ 
+\vdots      & \vdots       & \ddots & \vdots    \\ 
+#1_{#2-1,0} & #1_{#2-1,0}  & \ldots & #1_{#2-1,#3-1} \\ 
+\end{array} 
+\right)
+}
+
+\newcommand{\Chol}[1]{\mbox{\sc Chol}(#1)}
+\newcommand{\tril}[1]{\mbox{\sc tril}(#1)}
+\newcommand{\trilu}[1]{\mbox{\sc trilu}(#1)}
+\newcommand{\triu}[1]{\mbox{\sc triu}(#1)}
+
+\let\becomes\leftarrow
+\let\whline\hline

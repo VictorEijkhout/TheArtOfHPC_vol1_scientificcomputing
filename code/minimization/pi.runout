@@ -1,0 +1,568 @@
+cc   pi.o   -o pi
+Undefined symbols for architecture x86_64:
+  "std::runtime_error::what() const", referenced from:
+      vtable for CLI::ArgumentMismatch in pi.o
+      vtable for CLI::ParseError in pi.o
+      vtable for CLI::Error in pi.o
+      vtable for CLI::ValidationError in pi.o
+      vtable for CLI::OptionNotFound in pi.o
+      vtable for CLI::BadNameString in pi.o
+      vtable for CLI::ConstructionError in pi.o
+      ...
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::find(char, unsigned long) const", referenced from:
+      CLI::detail::convert_arg_for_ini(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::detail::fix_newlines(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::detail::get_default_flag_values(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::detail::remove_default_flag_values(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >*> std::__1::remove_if<std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >*>, CLI::detail::get_default_flag_values(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)>(std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >*>, std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >*>, CLI::detail::get_default_flag_values(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)) in pi.o
+      CLI::detail::split_long(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      ...
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::compare(unsigned long, unsigned long, char const*) const", referenced from:
+      CLI::detail::convert_arg_for_ini(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::App::_process_requirements() in pi.o
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::compare(unsigned long, unsigned long, char const*, unsigned long) const", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::convert_arg_for_ini(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::Formatter::make_help(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, CLI::AppFormatMode) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::detail::get_names(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&) in pi.o
+      CLI::App::_recognize(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, bool) const in pi.o
+      ...
+  "std::__1::__vector_base_common<true>::__throw_length_error() const", referenced from:
+      std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >::insert(std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const*>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&&) in pi.o
+      CLI::App::get_options(std::__1::function<bool (CLI::Option const*)>) const in pi.o
+      CLI::App::get_subcommands(std::__1::function<bool (CLI::App const*)> const&) const in pi.o
+      _main in pi.o
+      CLI::App::parse(int, char const* const*) in pi.o
+      CLI::Formatter::make_positionals(CLI::App const*) const in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >& std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >::emplace_back<>() in pi.o
+      ...
+  "std::__1::__basic_string_common<true>::__throw_length_error() const", referenced from:
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > std::__1::operator+<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > std::__1::operator+<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, char const*) in pi.o
+      CLI::App::parse(int, char const* const*) in pi.o
+      CLI::Formatter::make_usage(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >& std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::__append_forward_unsafe<char const*>(char const*, char const*) in pi.o
+      std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> >::str() const in pi.o
+      CLI::FailureMessage::simple(CLI::App const*, CLI::Error const&) in pi.o
+      ...
+  "std::__1::locale::has_facet(std::__1::locale::id&) const", referenced from:
+      std::__1::basic_filebuf<char, std::__1::char_traits<char> >::basic_filebuf() in pi.o
+  "std::__1::locale::use_facet(std::__1::locale::id&) const", referenced from:
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::Formatter::make_usage(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool) in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool)::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool)::'lambda0'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::detail::ltrim(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      ...
+  "std::__1::ios_base::getloc() const", referenced from:
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::Formatter::make_usage(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      std::__1::basic_ostream<char, std::__1::char_traits<char> >& std::__1::__put_character_sequence<char, std::__1::char_traits<char> >(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, char const*, unsigned long) in pi.o
+  "std::exception::what() const", referenced from:
+      vtable for std::__1::bad_function_call in pi.o
+  "std::logic_error::logic_error(char const*)", referenced from:
+      std::length_error::length_error(char const*) in pi.o
+      std::invalid_argument::invalid_argument(char const*) in pi.o
+      std::out_of_range::out_of_range(char const*) in pi.o
+  "std::length_error::~length_error()", referenced from:
+      std::__1::__throw_length_error(char const*) in pi.o
+  "std::out_of_range::~out_of_range()", referenced from:
+      std::__1::__throw_out_of_range(char const*) in pi.o
+  "std::runtime_error::runtime_error(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)", referenced from:
+      CLI::Error::Error(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, CLI::ExitCodes) in pi.o
+  "std::runtime_error::~runtime_error()", referenced from:
+      CLI::ValidationError::~ValidationError() in pi.o
+      CLI::ArgumentMismatch::~ArgumentMismatch() in pi.o
+      CLI::ArgumentMismatch::~ArgumentMismatch() in pi.o
+      CLI::ParseError::~ParseError() in pi.o
+      CLI::ParseError::~ParseError() in pi.o
+      CLI::Error::~Error() in pi.o
+      CLI::Error::~Error() in pi.o
+      ...
+  "std::invalid_argument::~invalid_argument()", referenced from:
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::erase(unsigned long, unsigned long)", referenced from:
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool) in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool)::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool)::'lambda1'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::get_default_flag_values(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::detail::remove_default_flag_values(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      CLI::detail::ltrim(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      ...
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::append(char const*)", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::Formatter::make_expanded(CLI::App const*) const in pi.o
+      CLI::Formatter::make_description(CLI::App const*) const in pi.o
+      CLI::Formatter::make_option_usage(CLI::Option const*) const in pi.o
+      CLI::Option::get_name(bool, bool) const in pi.o
+      CLI::ArgumentMismatch::AtLeast(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int, unsigned long) in pi.o
+      CLI::ArgumentMismatch::AtMost(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int, unsigned long) in pi.o
+      ...
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::append(char const*, unsigned long)", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > std::__1::operator+<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::detail::ini_join(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&, char, char, char) in pi.o
+      CLI::detail::convert_arg_for_ini(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::detail::fix_newlines(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > std::__1::operator+<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, char const*) in pi.o
+      CLI::Formatter::make_description(CLI::App const*) const in pi.o
+      ...
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::assign(char const*)", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::App::parse(int, char const* const*) in pi.o
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::Option::_validate(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, int) const in pi.o
+      CLI::App::_parse_arg(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >&, CLI::detail::Classifier) in pi.o
+      CLI::detail::split_long(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      CLI::detail::split_windows_style(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      ...
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::insert(unsigned long, char const*)", referenced from:
+      CLI::Formatter::make_description(CLI::App const*) const in pi.o
+      CLI::Formatter::make_option_usage(CLI::Option const*) const in pi.o
+      CLI::Option::get_name(bool, bool) const in pi.o
+      CLI::FailureMessage::simple(CLI::App const*, CLI::Error const&) in pi.o
+      CLI::App::_process_requirements() in pi.o
+      CLI::ExtrasError::ExtrasError(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >) in pi.o
+      CLI::RequiredError::Subcommand(unsigned long) in pi.o
+      ...
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::resize(unsigned long, char)", referenced from:
+      std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> >::str(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> >::overflow(int) in pi.o
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::replace(unsigned long, unsigned long, char const*, unsigned long)", referenced from:
+      CLI::detail::find_and_replace(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::__grow_by(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long)", referenced from:
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >& std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::__append_forward_unsafe<char const*>(char const*, char const*) in pi.o
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::push_back(char)", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::ini_join(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&, char, char, char) in pi.o
+      CLI::detail::convert_arg_for_ini(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::detail::IPV4Validator::IPV4Validator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) const in pi.o
+      std::__1::basic_istream<char, std::__1::char_traits<char> >& std::__1::getline<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_istream<char, std::__1::char_traits<char> >&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, char) in pi.o
+      CLI::detail::PositiveNumber::PositiveNumber()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) const in pi.o
+      CLI::detail::NonNegativeNumber::NonNegativeNumber()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) const in pi.o
+      ...
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::convert_arg_for_ini(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::App::App(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::Option* CLI::App::add_option<int, int, (CLI::detail::enabler)0>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, bool) in pi.o
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::Config::to_flag(CLI::ConfigItem const&) const in pi.o
+      CLI::Formatter::make_help(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, CLI::AppFormatMode) const in pi.o
+      ...
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, unsigned long, unsigned long, std::__1::allocator<char> const&)", referenced from:
+      CLI::detail::fix_newlines(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::Formatter::make_expanded(CLI::App const*) const in pi.o
+      CLI::detail::get_default_flag_values(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::detail::split_names(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::detail::get_names(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&) in pi.o
+      CLI::detail::valid_name_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      ...
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::~basic_string()", referenced from:
+      CLI::Option::get_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::Option::matching_name(CLI::Option const&) const in pi.o
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >::operator=(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)", referenced from:
+      std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> >::str(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      std::__1::enable_if<(__is_cpp17_forward_iterator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >*>::value) && (is_constructible<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::iterator_traits<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >*>::reference>::value), void>::type std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >::assign<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >*>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >*) in pi.o
+      std::__1::enable_if<(__is_cpp17_forward_iterator<std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const*> >::value) && (is_constructible<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::iterator_traits<std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const*> >::reference>::value), void>::type std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >::assign<std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const*> >(std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const*>, std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const*>) in pi.o
+      CLI::App::App(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, CLI::App*) in pi.o
+      void CLI::OptionBase<CLI::OptionDefaults>::copy_to<CLI::Option>(CLI::Option*) const in pi.o
+      CLI::detail::get_names(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&) in pi.o
+      void CLI::Option::results<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, (CLI::detail::enabler)0>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) const in pi.o
+      ...
+  "std::__1::basic_istream<char, std::__1::char_traits<char> >::sentry::sentry(std::__1::basic_istream<char, std::__1::char_traits<char> >&, bool)", referenced from:
+      std::__1::basic_istream<char, std::__1::char_traits<char> >& std::__1::getline<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_istream<char, std::__1::char_traits<char> >&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, char) in pi.o
+  "std::__1::basic_istream<char, std::__1::char_traits<char> >::~basic_istream()", referenced from:
+      construction vtable for std::__1::basic_istream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      construction vtable for std::__1::basic_istream<char, std::__1::char_traits<char> >-in-std::__1::basic_ifstream<char, std::__1::char_traits<char> > in pi.o
+  "std::__1::basic_istream<char, std::__1::char_traits<char> >::~basic_istream()", referenced from:
+      construction vtable for std::__1::basic_istream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      construction vtable for std::__1::basic_istream<char, std::__1::char_traits<char> >-in-std::__1::basic_ifstream<char, std::__1::char_traits<char> > in pi.o
+  "std::__1::basic_istream<char, std::__1::char_traits<char> >::~basic_istream()", referenced from:
+      CLI::Config::from_file(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      std::__1::basic_ifstream<char, std::__1::char_traits<char> >::~basic_ifstream() in pi.o
+      std::__1::basic_ifstream<char, std::__1::char_traits<char> >::~basic_ifstream() in pi.o
+      virtual thunk to std::__1::basic_ifstream<char, std::__1::char_traits<char> >::~basic_ifstream() in pi.o
+      virtual thunk to std::__1::basic_ifstream<char, std::__1::char_traits<char> >::~basic_ifstream() in pi.o
+  "std::__1::basic_ostream<char, std::__1::char_traits<char> >::put(char)", referenced from:
+      CLI::Formatter::make_usage(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::format_help(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, unsigned long) in pi.o
+  "std::__1::basic_ostream<char, std::__1::char_traits<char> >::flush()", referenced from:
+      CLI::App::exit(CLI::Error const&, std::__1::basic_ostream<char, std::__1::char_traits<char> >&, std::__1::basic_ostream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::Formatter::make_usage(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+  "std::__1::basic_ostream<char, std::__1::char_traits<char> >::sentry::sentry(std::__1::basic_ostream<char, std::__1::char_traits<char> >&)", referenced from:
+      std::__1::basic_ostream<char, std::__1::char_traits<char> >& std::__1::__put_character_sequence<char, std::__1::char_traits<char> >(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, char const*, unsigned long) in pi.o
+  "std::__1::basic_ostream<char, std::__1::char_traits<char> >::sentry::~sentry()", referenced from:
+      std::__1::basic_ostream<char, std::__1::char_traits<char> >& std::__1::__put_character_sequence<char, std::__1::char_traits<char> >(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, char const*, unsigned long) in pi.o
+  "std::__1::basic_ostream<char, std::__1::char_traits<char> >::~basic_ostream()", referenced from:
+      construction vtable for std::__1::basic_ostream<char, std::__1::char_traits<char> >-in-std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      construction vtable for std::__1::basic_ostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "std::__1::basic_ostream<char, std::__1::char_traits<char> >::~basic_ostream()", referenced from:
+      construction vtable for std::__1::basic_ostream<char, std::__1::char_traits<char> >-in-std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      construction vtable for std::__1::basic_ostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "std::__1::basic_ostream<char, std::__1::char_traits<char> >::~basic_ostream()", referenced from:
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > CLI::detail::join<std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > >(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> >::~basic_ostringstream() in pi.o
+      std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> >::~basic_ostringstream() in pi.o
+      virtual thunk to std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> >::~basic_ostringstream() in pi.o
+      virtual thunk to std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> >::~basic_ostringstream() in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > CLI::detail::rjoin<std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > >(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > CLI::detail::join<std::__1::vector<std::__1::unique_ptr<CLI::Option, std::__1::default_delete<CLI::Option> >, std::__1::allocator<std::__1::unique_ptr<CLI::Option, std::__1::default_delete<CLI::Option> > > >, CLI::App::_process_requirements()::'lambda'(std::__1::unique_ptr<CLI::Option, std::__1::default_delete<CLI::Option> > const&), void>(std::__1::vector<std::__1::unique_ptr<CLI::Option, std::__1::default_delete<CLI::Option> >, std::__1::allocator<std::__1::unique_ptr<CLI::Option, std::__1::default_delete<CLI::Option> > > > const&, CLI::App::_process_requirements()::'lambda'(std::__1::unique_ptr<CLI::Option, std::__1::default_delete<CLI::Option> > const&), std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      ...
+  "std::__1::basic_ostream<char, std::__1::char_traits<char> >::operator<<(float)", referenced from:
+      _main in pi.o
+  "std::__1::basic_ostream<char, std::__1::char_traits<char> >::operator<<(int)", referenced from:
+      CLI::Formatter::make_option_opts(CLI::Option const*) const in pi.o
+      CLI::Formatter::make_option_usage(CLI::Option const*) const in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > CLI::detail::to_string<int&, (CLI::detail::enabler)0>(int&) in pi.o
+  "std::__1::basic_iostream<char, std::__1::char_traits<char> >::~basic_iostream()", referenced from:
+      construction vtable for std::__1::basic_iostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "std::__1::basic_iostream<char, std::__1::char_traits<char> >::~basic_iostream()", referenced from:
+      construction vtable for std::__1::basic_iostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "std::__1::basic_iostream<char, std::__1::char_traits<char> >::~basic_iostream()", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> >::~basic_stringstream() in pi.o
+      CLI::Formatter::make_group(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, bool, std::__1::vector<CLI::Option const*, std::__1::allocator<CLI::Option const*> >) const in pi.o
+      CLI::Formatter::make_help(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, CLI::AppFormatMode) const in pi.o
+      CLI::Formatter::make_subcommands(CLI::App const*, CLI::AppFormatMode) const in pi.o
+      CLI::Formatter::make_subcommand(CLI::App const*) const in pi.o
+      CLI::Formatter::make_expanded(CLI::App const*) const in pi.o
+      ...
+  "std::__1::basic_streambuf<char, std::__1::char_traits<char> >::sync()", referenced from:
+      vtable for std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "std::__1::basic_streambuf<char, std::__1::char_traits<char> >::imbue(std::__1::locale const&)", referenced from:
+      vtable for std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "std::__1::basic_streambuf<char, std::__1::char_traits<char> >::uflow()", referenced from:
+      vtable for std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      vtable for std::__1::basic_filebuf<char, std::__1::char_traits<char> > in pi.o
+  "std::__1::basic_streambuf<char, std::__1::char_traits<char> >::setbuf(char*, long)", referenced from:
+      vtable for std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "std::__1::basic_streambuf<char, std::__1::char_traits<char> >::xsgetn(char*, long)", referenced from:
+      vtable for std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      vtable for std::__1::basic_filebuf<char, std::__1::char_traits<char> > in pi.o
+  "std::__1::basic_streambuf<char, std::__1::char_traits<char> >::xsputn(char const*, long)", referenced from:
+      vtable for std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      vtable for std::__1::basic_filebuf<char, std::__1::char_traits<char> > in pi.o
+  "std::__1::basic_streambuf<char, std::__1::char_traits<char> >::showmanyc()", referenced from:
+      vtable for std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      vtable for std::__1::basic_filebuf<char, std::__1::char_traits<char> > in pi.o
+  "std::__1::basic_streambuf<char, std::__1::char_traits<char> >::basic_streambuf()", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::Formatter::make_group(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, bool, std::__1::vector<CLI::Option const*, std::__1::allocator<CLI::Option const*> >) const in pi.o
+      CLI::Formatter::make_help(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, CLI::AppFormatMode) const in pi.o
+      CLI::Formatter::make_subcommands(CLI::App const*, CLI::AppFormatMode) const in pi.o
+      CLI::Formatter::make_subcommand(CLI::App const*) const in pi.o
+      CLI::Formatter::make_expanded(CLI::App const*) const in pi.o
+      CLI::Formatter::make_usage(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      ...
+  "std::__1::basic_streambuf<char, std::__1::char_traits<char> >::~basic_streambuf()", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> >::~basic_stringstream() in pi.o
+      CLI::Formatter::make_group(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, bool, std::__1::vector<CLI::Option const*, std::__1::allocator<CLI::Option const*> >) const in pi.o
+      CLI::Formatter::make_help(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, CLI::AppFormatMode) const in pi.o
+      CLI::Formatter::make_subcommands(CLI::App const*, CLI::AppFormatMode) const in pi.o
+      CLI::Formatter::make_subcommand(CLI::App const*) const in pi.o
+      CLI::Formatter::make_expanded(CLI::App const*) const in pi.o
+      ...
+  "std::__1::system_category()", referenced from:
+      CLI::detail::check_path(char const*) in pi.o
+  "std::__1::__shared_weak_count::__release_weak()", referenced from:
+      CLI::App::App(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, CLI::App*) in pi.o
+      CLI::App::~App() in pi.o
+  "std::__1::__shared_weak_count::~__shared_weak_count()", referenced from:
+      std::__1::__shared_ptr_pointer<CLI::Formatter*, std::__1::shared_ptr<CLI::FormatterBase>::__shared_ptr_default_delete<CLI::FormatterBase, CLI::Formatter>, std::__1::allocator<CLI::Formatter> >::~__shared_ptr_pointer() in pi.o
+      std::__1::__shared_ptr_pointer<CLI::Formatter*, std::__1::shared_ptr<CLI::FormatterBase>::__shared_ptr_default_delete<CLI::FormatterBase, CLI::Formatter>, std::__1::allocator<CLI::Formatter> >::~__shared_ptr_pointer() in pi.o
+      std::__1::__shared_ptr_pointer<CLI::ConfigBase*, std::__1::shared_ptr<CLI::Config>::__shared_ptr_default_delete<CLI::Config, CLI::ConfigBase>, std::__1::allocator<CLI::ConfigBase> >::~__shared_ptr_pointer() in pi.o
+      std::__1::__shared_ptr_pointer<CLI::ConfigBase*, std::__1::shared_ptr<CLI::Config>::__shared_ptr_default_delete<CLI::Config, CLI::ConfigBase>, std::__1::allocator<CLI::ConfigBase> >::~__shared_ptr_pointer() in pi.o
+  "std::__1::__fs::filesystem::__status(std::__1::__fs::filesystem::path const&, std::__1::error_code*)", referenced from:
+      CLI::detail::check_path(char const*) in pi.o
+  "std::__1::cerr", referenced from:
+      _main in pi.o
+  "std::__1::cout", referenced from:
+      _main in pi.o
+  "std::__1::ctype<char>::id", referenced from:
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::Formatter::make_usage(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool) in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool)::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool)::'lambda0'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::detail::ltrim(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      ...
+  "std::__1::stold(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, unsigned long*)", referenced from:
+      bool CLI::detail::lexical_cast<double, (CLI::detail::enabler)0>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, double&) in pi.o
+  "std::__1::stoll(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, unsigned long*, int)", referenced from:
+      bool CLI::detail::lexical_cast<int, (CLI::detail::enabler)0>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, int&) in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+  "std::__1::locale::locale(std::__1::locale const&)", referenced from:
+      std::__1::basic_filebuf<char, std::__1::char_traits<char> >::basic_filebuf() in pi.o
+  "std::__1::locale::locale()", referenced from:
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool) in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool)::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool)::'lambda0'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::detail::ltrim(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      CLI::detail::rtrim(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      ...
+  "std::__1::locale::~locale()", referenced from:
+      CLI::ConfigBase::from_config(std::__1::basic_istream<char, std::__1::char_traits<char> >&) const in pi.o
+      CLI::Formatter::make_usage(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool) in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool)::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::find_member(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >, bool, bool)::'lambda0'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::detail::ltrim(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      ...
+  "std::__1::codecvt<char, char, __mbstate_t>::id", referenced from:
+      std::__1::basic_filebuf<char, std::__1::char_traits<char> >::basic_filebuf() in pi.o
+      std::__1::basic_filebuf<char, std::__1::char_traits<char> >::imbue(std::__1::locale const&) in pi.o
+  "std::__1::ios_base::__set_badbit_and_consider_rethrow()", referenced from:
+      std::__1::basic_ostream<char, std::__1::char_traits<char> >& std::__1::__put_character_sequence<char, std::__1::char_traits<char> >(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, char const*, unsigned long) in pi.o
+  "std::__1::ios_base::init(void*)", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::Formatter::make_group(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, bool, std::__1::vector<CLI::Option const*, std::__1::allocator<CLI::Option const*> >) const in pi.o
+      CLI::Formatter::make_help(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, CLI::AppFormatMode) const in pi.o
+      CLI::Formatter::make_subcommands(CLI::App const*, CLI::AppFormatMode) const in pi.o
+      CLI::Formatter::make_subcommand(CLI::App const*) const in pi.o
+      CLI::Formatter::make_expanded(CLI::App const*) const in pi.o
+      CLI::Formatter::make_usage(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      ...
+  "std::__1::ios_base::clear(unsigned int)", referenced from:
+      std::__1::basic_istream<char, std::__1::char_traits<char> >& std::__1::getline<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_istream<char, std::__1::char_traits<char> >&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, char) in pi.o
+      CLI::Config::from_file(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      std::__1::basic_ostream<char, std::__1::char_traits<char> >& std::__1::__put_character_sequence<char, std::__1::char_traits<char> >(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, char const*, unsigned long) in pi.o
+  "std::__1::basic_ios<char, std::__1::char_traits<char> >::~basic_ios()", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> >::~basic_stringstream() in pi.o
+      CLI::Formatter::make_group(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, bool, std::__1::vector<CLI::Option const*, std::__1::allocator<CLI::Option const*> >) const in pi.o
+      CLI::Formatter::make_help(CLI::App const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, CLI::AppFormatMode) const in pi.o
+      CLI::Formatter::make_subcommands(CLI::App const*, CLI::AppFormatMode) const in pi.o
+      CLI::Formatter::make_subcommand(CLI::App const*) const in pi.o
+      CLI::Formatter::make_expanded(CLI::App const*) const in pi.o
+      ...
+  "std::__1::to_string(int)", referenced from:
+      CLI::ArgumentMismatch::AtLeast(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int, unsigned long) in pi.o
+      CLI::ArgumentMismatch::AtMost(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int, unsigned long) in pi.o
+      CLI::ArgumentMismatch::TypedAtLeast(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+  "std::__1::to_string(unsigned long)", referenced from:
+      CLI::Formatter::make_description(CLI::App const*) const in pi.o
+      CLI::ArgumentMismatch::AtLeast(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int, unsigned long) in pi.o
+      CLI::ArgumentMismatch::AtMost(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int, unsigned long) in pi.o
+      CLI::RequiredError::Subcommand(unsigned long) in pi.o
+      CLI::RequiredError::Option(unsigned long, unsigned long, unsigned long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+  "std::__1::to_string(long long)", referenced from:
+      CLI::Option::get_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+  "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > std::__1::operator+<char, std::__1::char_traits<char>, std::__1::allocator<char> >(char const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)", referenced from:
+      std::__1::__function::__func<CLI::detail::ExistingFileValidator::ExistingFileValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&), std::__1::allocator<CLI::detail::ExistingFileValidator::ExistingFileValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)>::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      std::__1::__function::__func<CLI::detail::ExistingDirectoryValidator::ExistingDirectoryValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&), std::__1::allocator<CLI::detail::ExistingDirectoryValidator::ExistingDirectoryValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)>::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      std::__1::__function::__func<CLI::detail::ExistingPathValidator::ExistingPathValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&), std::__1::allocator<CLI::detail::ExistingPathValidator::ExistingPathValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)>::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      std::__1::__function::__func<CLI::detail::NonexistentPathValidator::NonexistentPathValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&), std::__1::allocator<CLI::detail::NonexistentPathValidator::NonexistentPathValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)>::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      CLI::Option::get_name(bool, bool) const in pi.o
+      CLI::App::add_option(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::function<bool (std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&)>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, bool, std::__1::function<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > ()>) in pi.o
+      CLI::detail::get_names(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&) in pi.o
+      ...
+  "std::bad_cast::bad_cast()", referenced from:
+      std::__1::__throw_bad_cast() in pi.o
+  "std::bad_cast::~bad_cast()", referenced from:
+      std::__1::__throw_bad_cast() in pi.o
+  "std::exception::~exception()", referenced from:
+      std::__1::bad_function_call::~bad_function_call() in pi.o
+      std::__1::bad_function_call::~bad_function_call() in pi.o
+  "std::terminate()", referenced from:
+      ___clang_call_terminate in pi.o
+  "typeinfo for std::__1::basic_istream<char, std::__1::char_traits<char> >", referenced from:
+      construction vtable for std::__1::basic_istream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      construction vtable for std::__1::basic_istream<char, std::__1::char_traits<char> >-in-std::__1::basic_ifstream<char, std::__1::char_traits<char> > in pi.o
+      typeinfo for std::__1::basic_ifstream<char, std::__1::char_traits<char> > in pi.o
+  "typeinfo for std::__1::basic_ostream<char, std::__1::char_traits<char> >", referenced from:
+      construction vtable for std::__1::basic_ostream<char, std::__1::char_traits<char> >-in-std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      typeinfo for std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      construction vtable for std::__1::basic_ostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "typeinfo for std::__1::basic_iostream<char, std::__1::char_traits<char> >", referenced from:
+      construction vtable for std::__1::basic_iostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      typeinfo for std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "typeinfo for std::__1::basic_streambuf<char, std::__1::char_traits<char> >", referenced from:
+      typeinfo for std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      typeinfo for std::__1::basic_filebuf<char, std::__1::char_traits<char> > in pi.o
+  "typeinfo for std::__1::__shared_weak_count", referenced from:
+      typeinfo for std::__1::__shared_ptr_pointer<CLI::Formatter*, std::__1::shared_ptr<CLI::FormatterBase>::__shared_ptr_default_delete<CLI::FormatterBase, CLI::Formatter>, std::__1::allocator<CLI::Formatter> > in pi.o
+      typeinfo for std::__1::__shared_ptr_pointer<CLI::ConfigBase*, std::__1::shared_ptr<CLI::Config>::__shared_ptr_default_delete<CLI::Config, CLI::ConfigBase>, std::__1::allocator<CLI::ConfigBase> > in pi.o
+  "typeinfo for std::length_error", referenced from:
+      std::__1::__throw_length_error(char const*) in pi.o
+  "typeinfo for std::out_of_range", referenced from:
+      std::__1::__throw_out_of_range(char const*) in pi.o
+      GCC_except_table123 in pi.o
+      GCC_except_table139 in pi.o
+  "typeinfo for std::runtime_error", referenced from:
+      typeinfo for CLI::Error in pi.o
+  "typeinfo for std::invalid_argument", referenced from:
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      GCC_except_table123 in pi.o
+      GCC_except_table139 in pi.o
+      GCC_except_table176 in pi.o
+  "typeinfo for std::bad_cast", referenced from:
+      std::__1::__throw_bad_cast() in pi.o
+  "typeinfo for std::exception", referenced from:
+      typeinfo for std::__1::bad_function_call in pi.o
+  "vtable for __cxxabiv1::__class_type_info", referenced from:
+      typeinfo for CLI::Config in pi.o
+      typeinfo for CLI::FormatterBase in pi.o
+      typeinfo for std::__1::__function::__base<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > ()> in pi.o
+      typeinfo for CLI::Validator::Validator(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::'lambda'() in pi.o
+      typeinfo for std::__1::__function::__base<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)> in pi.o
+      typeinfo for CLI::Validator::func_::'lambda'(std::__1::basic_string<char, CLI::Validator::func_::char_traits<char>, CLI::Validator::func_::allocator<char> >&) in pi.o
+      typeinfo for CLI::detail::ExistingFileValidator::ExistingFileValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&) in pi.o
+      ...
+  NOTE: a missing vtable usually means the first non-inline virtual member function has no definition.
+  "vtable for __cxxabiv1::__pointer_type_info", referenced from:
+      typeinfo for std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > (*)(CLI::App const*, CLI::Error const&) in pi.o
+  NOTE: a missing vtable usually means the first non-inline virtual member function has no definition.
+  "vtable for __cxxabiv1::__function_type_info", referenced from:
+      typeinfo for std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > (CLI::App const*, CLI::Error const&) in pi.o
+  NOTE: a missing vtable usually means the first non-inline virtual member function has no definition.
+  "vtable for __cxxabiv1::__si_class_type_info", referenced from:
+      typeinfo for CLI::Error in pi.o
+      typeinfo for CLI::ParseError in pi.o
+      typeinfo for CLI::ConfigBase in pi.o
+      typeinfo for CLI::Formatter in pi.o
+      typeinfo for std::__1::__function::__func<CLI::Validator::Validator(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::'lambda'(), std::__1::allocator<CLI::Validator::Validator(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)::'lambda'()>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > ()> in pi.o
+      typeinfo for std::__1::__function::__func<CLI::Validator::func_::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&), std::__1::char_traits<char><std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&>, std::__1::allocator<char> (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)> in pi.o
+      typeinfo for std::__1::__function::__func<CLI::detail::ExistingFileValidator::ExistingFileValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&), std::__1::allocator<CLI::detail::ExistingFileValidator::ExistingFileValidator()::'lambda'(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&)> in pi.o
+      ...
+  NOTE: a missing vtable usually means the first non-inline virtual member function has no definition.
+  "vtable for std::length_error", referenced from:
+      std::length_error::length_error(char const*) in pi.o
+  NOTE: a missing vtable usually means the first non-inline virtual member function has no definition.
+  "vtable for std::out_of_range", referenced from:
+      std::out_of_range::out_of_range(char const*) in pi.o
+  NOTE: a missing vtable usually means the first non-inline virtual member function has no definition.
+  "vtable for std::invalid_argument", referenced from:
+      std::invalid_argument::invalid_argument(char const*) in pi.o
+  NOTE: a missing vtable usually means the first non-inline virtual member function has no definition.
+  "non-virtual thunk to std::__1::basic_iostream<char, std::__1::char_traits<char> >::~basic_iostream()", referenced from:
+      construction vtable for std::__1::basic_iostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "non-virtual thunk to std::__1::basic_iostream<char, std::__1::char_traits<char> >::~basic_iostream()", referenced from:
+      construction vtable for std::__1::basic_iostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "virtual thunk to std::__1::basic_istream<char, std::__1::char_traits<char> >::~basic_istream()", referenced from:
+      construction vtable for std::__1::basic_istream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      construction vtable for std::__1::basic_istream<char, std::__1::char_traits<char> >-in-std::__1::basic_ifstream<char, std::__1::char_traits<char> > in pi.o
+  "virtual thunk to std::__1::basic_istream<char, std::__1::char_traits<char> >::~basic_istream()", referenced from:
+      construction vtable for std::__1::basic_istream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      construction vtable for std::__1::basic_istream<char, std::__1::char_traits<char> >-in-std::__1::basic_ifstream<char, std::__1::char_traits<char> > in pi.o
+  "virtual thunk to std::__1::basic_ostream<char, std::__1::char_traits<char> >::~basic_ostream()", referenced from:
+      construction vtable for std::__1::basic_ostream<char, std::__1::char_traits<char> >-in-std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      construction vtable for std::__1::basic_ostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "virtual thunk to std::__1::basic_ostream<char, std::__1::char_traits<char> >::~basic_ostream()", referenced from:
+      construction vtable for std::__1::basic_ostream<char, std::__1::char_traits<char> >-in-std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+      construction vtable for std::__1::basic_ostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "virtual thunk to std::__1::basic_iostream<char, std::__1::char_traits<char> >::~basic_iostream()", referenced from:
+      construction vtable for std::__1::basic_iostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "virtual thunk to std::__1::basic_iostream<char, std::__1::char_traits<char> >::~basic_iostream()", referenced from:
+      construction vtable for std::__1::basic_iostream<char, std::__1::char_traits<char> >-in-std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > in pi.o
+  "operator delete[](void*)", referenced from:
+      std::__1::basic_filebuf<char, std::__1::char_traits<char> >::imbue(std::__1::locale const&) in pi.o
+      std::__1::basic_filebuf<char, std::__1::char_traits<char> >::setbuf(char*, long) in pi.o
+      std::__1::basic_filebuf<char, std::__1::char_traits<char> >::~basic_filebuf() in pi.o
+  "operator delete(void*)", referenced from:
+      CLI::detail::ExistingFileValidator::~ExistingFileValidator() in pi.o
+      CLI::detail::ExistingDirectoryValidator::~ExistingDirectoryValidator() in pi.o
+      CLI::detail::ExistingPathValidator::~ExistingPathValidator() in pi.o
+      CLI::detail::NonexistentPathValidator::~NonexistentPathValidator() in pi.o
+      CLI::detail::IPV4Validator::~IPV4Validator() in pi.o
+      CLI::detail::PositiveNumber::~PositiveNumber() in pi.o
+      CLI::detail::NonNegativeNumber::~NonNegativeNumber() in pi.o
+      ...
+  "operator new[](unsigned long)", referenced from:
+      std::__1::basic_filebuf<char, std::__1::char_traits<char> >::imbue(std::__1::locale const&) in pi.o
+      std::__1::basic_filebuf<char, std::__1::char_traits<char> >::setbuf(char*, long) in pi.o
+  "operator new(unsigned long)", referenced from:
+      std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >::insert(std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const*>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&&) in pi.o
+      CLI::App::get_options(std::__1::function<bool (CLI::Option const*)>) const in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > std::__1::operator+<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::App::get_subcommands(std::__1::function<bool (CLI::App const*)> const&) const in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > std::__1::operator+<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, char const*) in pi.o
+      _main in pi.o
+      CLI::App::App(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      ...
+  "___cxa_allocate_exception", referenced from:
+      CLI::Config::to_flag(CLI::ConfigItem const&) const in pi.o
+      std::__1::__throw_length_error(char const*) in pi.o
+      std::__1::__throw_bad_function_call() in pi.o
+      CLI::Option::_validate_results(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >&) const in pi.o
+      CLI::Option::_reduce_results(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >&, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&) const in pi.o
+      CLI::Option::get_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      ...
+  "___cxa_begin_catch", referenced from:
+      _main in pi.o
+      ___clang_call_terminate in pi.o
+      bool CLI::detail::lexical_cast<int, (CLI::detail::enabler)0>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, int&) in pi.o
+      std::__1::basic_istream<char, std::__1::char_traits<char> >& std::__1::getline<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_istream<char, std::__1::char_traits<char> >&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, char) in pi.o
+      bool CLI::detail::lexical_cast<double, (CLI::detail::enabler)0>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, double&) in pi.o
+      CLI::Option::_validate(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, int) const in pi.o
+      CLI::Option::get_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      ...
+  "___cxa_end_catch", referenced from:
+      _main in pi.o
+      bool CLI::detail::lexical_cast<int, (CLI::detail::enabler)0>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, int&) in pi.o
+      std::__1::basic_istream<char, std::__1::char_traits<char> >& std::__1::getline<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_istream<char, std::__1::char_traits<char> >&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, char) in pi.o
+      bool CLI::detail::lexical_cast<double, (CLI::detail::enabler)0>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, double&) in pi.o
+      CLI::Option::_validate(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, int) const in pi.o
+      CLI::Option::get_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      std::__1::basic_stringbuf<char, std::__1::char_traits<char>, std::__1::allocator<char> >::overflow(int) in pi.o
+      ...
+  "___cxa_free_exception", referenced from:
+      CLI::Config::to_flag(CLI::ConfigItem const&) const in pi.o
+      std::__1::__throw_length_error(char const*) in pi.o
+      CLI::Option::_validate_results(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >&) const in pi.o
+      CLI::Option::_reduce_results(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >&, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&) const in pi.o
+      CLI::Option::get_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::App::get_subcommand(CLI::App const*) const in pi.o
+      ...
+  "___cxa_guard_acquire", referenced from:
+      CLI::Option::get_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::Option::matching_name(CLI::Option const&) const in pi.o
+  "___cxa_guard_release", referenced from:
+      CLI::Option::get_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      CLI::Option::matching_name(CLI::Option const&) const in pi.o
+  "___cxa_pure_virtual", referenced from:
+      vtable for CLI::FormatterBase in pi.o
+      vtable for CLI::Config in pi.o
+  "___cxa_rethrow", referenced from:
+      std::__1::basic_istream<char, std::__1::char_traits<char> >& std::__1::getline<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_istream<char, std::__1::char_traits<char> >&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&, char) in pi.o
+      CLI::App::_process_config_file() in pi.o
+  "___cxa_throw", referenced from:
+      CLI::Config::to_flag(CLI::ConfigItem const&) const in pi.o
+      std::__1::__throw_length_error(char const*) in pi.o
+      std::__1::__throw_bad_function_call() in pi.o
+      CLI::Option::_validate_results(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >&) const in pi.o
+      CLI::Option::_reduce_results(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >&, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&) const in pi.o
+      CLI::Option::get_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::detail::to_flag_value(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) in pi.o
+      ...
+  "___dynamic_cast", referenced from:
+      CLI::App::exit(CLI::Error const&, std::__1::basic_ostream<char, std::__1::char_traits<char> >&, std::__1::basic_ostream<char, std::__1::char_traits<char> >&) const in pi.o
+  "___gxx_personality_v0", referenced from:
+      CLI::ConfigBase::to_config(CLI::App const*, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >) const in pi.o
+      CLI::App::get_groups() const in pi.o
+      std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > >::insert(std::__1::__wrap_iter<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const*>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >&&) in pi.o
+      CLI::App::get_options(std::__1::function<bool (CLI::Option const*)>) const in pi.o
+      std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > std::__1::operator+<char, std::__1::char_traits<char>, std::__1::allocator<char> >(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&) in pi.o
+      CLI::detail::ini_join(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&, char, char, char) in pi.o
+      CLI::Option::reduced_results() const in pi.o
+      ...
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+make[1]: *** [pi] Error 1

@@ -1,0 +1,32 @@
+%% obsolete file. See graphalgorithms.tex
+In the preceding sections you have seen that many graph algorithms
+have a computational structure that makes the matrix-vector product
+their most important kernel. Since most graphs are of low degree 
+relative to the number of nodes, the product is a \emph{sparse}
+matrix-vector product.
+
+You might think then, that as in section~\ref{sec:pspmvp} we could
+make a one-dimensional distribution of the matrix, perhaps
+corresponding to a clustered distribution of the vertices in the
+graph. In this case that does not make sense.
+
+Let's assume that we're dealing with a graph that has a structure that
+is more or less random, for instance in the sense that the chance of
+there being an edge is the same for any pair of vertices. Also
+assuming that we have a large number of vertices and edges, every
+processor will then store a certain number of vertices. The conclusion
+is then that the chance that any pair of processors needs to exchange
+a message is the same, so the number of messages is~$O(P)$. (Another
+way of visualizing this is to see that nonzeros are randomly
+distributed through the matrix.) This does not give a scalable
+algorithm.
+
+The way out is to treat this sparse matrix as a dense one, and invoke
+the arguments from section~\ref{sec:densescaling} to decide on a
+two-dimensional distribution of the matrix.
+(See~\cite{Yoo:2005:scalable-bfs} for an application to the \ac{BFS}
+problem; they formulate their algorithm in graph terms, but the
+structure of the 2D matrix-vector product is clearly recognizable.)
+The two-dimensional product algorithm only needs collectives in
+processor rows and columns, so the number of processors involved
+is~$O(\sqrt P)$.

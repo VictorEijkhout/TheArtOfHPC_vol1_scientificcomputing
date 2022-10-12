@@ -1,0 +1,44 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[tp]
+  \begin{center}
+    \leavevmode
+    \framebox[4.5in]{\vbox{
+        \begin{tabbing}
+          Compute $r^{(0)} = Ax^{(0)} - b$ for some initial guess $x^{(0)}$ \\
+          {\bf for } \= $ i = 1, 2, \ldots$ \\
+          \> {\bf solve} $Kz^{(i-1)}=r^{(i-1)}$\\
+          \> $\rho_{i-1}=r^{(i-1)^T}z^{(i-1)}$\\
+          \> {\bf if} \= $i = 1$ \\
+          \> \> $p^{(1)} = z^{(0)}$ \\
+          \> {\bf else} \\
+          \> \>$\beta_{i-1} = \rho_{i-1} / \rho_{i-2} $ \\
+          \> \>$p^{(i)} = z^{(i-1)} + \beta_{i-1}p^{(i-1)} $ \\
+          \>{\bf endif} \\
+          \> $q^{(i)}=Ap^{(i)}$ \\
+          \>$\delta_i = \rho_{i-1}/p^{(i)^T}q^{(i)}$ \\
+          \>$x^{(i)} = x^{(i-1)} - \delta_ip^{(i)} $ \\
+          \>$r^{(i)} = r^{(i-1)} - \delta_iq^{(i)} $ \\
+          \>check convergence; continue if necessary \\
+          {\bf end}
+        \end{tabbing}
+        }}
+    \caption{The Preconditioned Conjugate Gradient Method.}
+    \label{fig:pcg}
+  \end{center}
+\end{figure}
+
+% LocalWords:  Eijkhout endif

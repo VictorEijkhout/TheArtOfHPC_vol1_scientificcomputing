@@ -1,0 +1,64 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[tp]
+  \begin{center}
+    \leavevmode
+    \framebox[4.5in]{\vbox{
+        \begin{tabbing}
+          $x^{(0)} $ is an initial guess  \\
+          {\bf for} \= $j=1,2,....$  \\
+          \> Solve $r$ from $Mr=b-Ax^{(0)}$  \\
+          \> $v^{(1)}=r/\|r\|_2$  \\
+          \> $s:=\|r\|_2e_1$  \\
+          \> {\bf for} \= $i=1,2,...,m$  \\
+          \>\> Solve $w$ from $Mw=Av^{(i)}$  \\
+          \>\> {\bf for} \= $k=1,...,i$  \\
+          \>\>\> $h_{k,i}=(w,v^{(k)})$  \\
+          \>\>\> $w=w-h_{k,i}v^{(k)}$ \\
+          \>\> {\bf end}  \\
+          \>\> $h_{i+1,i}=\|w\|_2$ \\
+          \>\> $v^{(i+1)}=w/h_{i+1,i}$  \\
+          \>\> apply $J_1 ,..., J_{i-1}$ on $(h_{1,i},...,h_{i+1,i})$  \\
+          \>\> construct $J_i$, acting on $i$th and $(i+1)$st component\\
+          \>\> of $h_{.,i}$, such that $(i+1)$st component of $J_ih_{.,i}$ is 0 \\
+          \>\> $s:=J_is$  \\
+          \>\> if $s(i+1)$ is small enough then (UPDATE($\tilde{x},i$) and quit)  \\
+          \> {\bf end}  \\
+          \> UPDATE($\tilde{x},m$)  \\
+          {\bf end} \\
+          \mbox{~}\\
+          \mbox{In this scheme UPDATE($\tilde{x},i$)} \\
+          \mbox{replaces the following computations:} \\
+          \mbox{~} \\
+          Compute $y$ as the solution of $Hy=\tilde{s}$, in which  \\
+          the upper $i \times i$ triangular part of $H$ has $h_{i,j}$ as \\
+          its elements (in least squares sense if $H$ is singular), \\
+          $\tilde{s}$ represents the first $i$ components of $s$  \\
+          $\tilde{x}=x^{(0)}+y_1 v^{(1)}+y_2 v^{(2)}+ . . . +y_i v^{(i)}$ \\
+          $s^{(i+1)} = \|b-A\tilde{x}\|_2$ \\
+          if $\tilde{x}$ is an accurate enough approximation then quit  \\
+          else $x^{(0)}=\tilde{x}$
+        \end{tabbing}
+        }}
+    \caption{The Preconditioned GMRES$(m)$ Method}
+    \label{fig:pgmres}
+  \end{center}
+\end{figure}
+
+% Local Variables: 
+% mode: latex
+% TeX-master: "report"
+% End: 

@@ -1,0 +1,100 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this tutorial we will discuss some of the techniques that lift you
+from being a C~beginner to a `power user'.
+
+\Level 0 {C standards}
+
+The commonly accepted standard for the C~language is
+\emph{C99}\index{C!C99}. However, that doesn't mean compilers
+automatically accept source using this standard.
+
+Use compiler option:
+\begin{verbatim}
+cc -std=c99 yourprogram.c
+\end{verbatim}
+There are some \indextermbus{gcc}{extensions} that require the
+\indextermbus{Intel}{compiler} to specify
+\begin{verbatim}
+icc -std=gnu99 yourprogram.c
+\end{verbatim}
+instead.
+
+\Level 0 {Allocation}
+
+The easiest way to define an array is to use
+\indextermsub{static}{allocation}:
+\begin{verbatim}
+double array[50];
+\end{verbatim}
+This has some advantages, such as giving you
+\indextermbus{cacheline}{boundary alignment}.
+
+However, since statically allocated arrays are created on the
+\indexterm{stack}, they are subject to stacksize limits. Making the
+array too large will give a runtime error.
+
+Use the Unix
+call
+\begin{verbatim}
+ulimit -s 123456
+\end{verbatim}
+to increase the stacksize if needed. 
+
+The alternative is \indextermsub{dynamic}{allocation}, or allocation
+on the \indexterm{heap}. This can use all available memory. The
+simplest way is by using \indextermtt{malloc}:
+\begin{verbatim}
+double *array = (double*) malloc( 50*sizeof(double) );
+\end{verbatim}
+The \indextermtt{sizeof} function is necessary since \n{malloc} takes
+an argument in bytes.
+
+The problem with this call is that you lose cacheline alignment, which
+can negatively influence performance. A~better option is
+\indextermtt{posix_memalign}.
+
+\Level 0 {Compiler defines}
+
+There are various ways of altering program parameters without
+recompiling the code. One is to use \indextermbus{compiler}{macros}:
+\begin{verbatim}
+cc -c -DVALUE=50 myprogram.c
+\end{verbatim}
+With the \n{-D} option your source acts as if there was a statement
+\begin{verbatim}
+#define VALUE 50
+\end{verbatim}
+in it.
+
+To use a default value for the case where you don't specify the
+compiler macros, have
+\begin{verbatim}
+#ifndef VALUE
+#define VALUE 23
+#endif
+\end{verbatim}
+in your source.
+
+\Level 0 {Commandline arguments}
+
+\Level 0 {Timers}
+
+See section~\ref{sec:perf-timers}.
+
+% LocalWords:  Eijkhout gcc cacheline stacksize malloc sizeof posix
+% LocalWords:  memalign Commandline

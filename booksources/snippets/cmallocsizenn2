@@ -1,0 +1,1 @@
+  printf("Check: [r-1][c-1]: %d\n",numbers[rows-1][cols-1]);

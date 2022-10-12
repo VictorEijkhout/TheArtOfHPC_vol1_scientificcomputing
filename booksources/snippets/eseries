@@ -1,0 +1,12 @@
+// exp1.c
+  int n=10;
+  int p,i;
+  float res;
+  for (p=1; p<10; p++) {
+    float t = (1+1./n);
+    res = 1.;
+    for (i; i<n; i++)
+      res *= t;
+    printf("With 10^%d terms: %e\n",p,res);
+    n *= 10;
+  }

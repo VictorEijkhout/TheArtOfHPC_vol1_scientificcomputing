@@ -1,0 +1,1168 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In chapter~\ref{ch:odepde} you saw how the numerical solution of
+partial differential equations can lead to linear algebra
+problems. Sometimes this is a simple problem --~a matrix-vector
+multiplication in the case of the Euler forward method~-- but
+sometimes it is more complicated, such as the solution of a system of
+linear equations in the case of Euler backward methods. Solving linear
+systems will be the focus of this chapter; in other applications,
+which we will not discuss here, eigenvalue problems need to be solved.
+
+You may have learned a simple
+algorithm for solving system of linear equations: elimination of
+unknowns, also called Gaussian elimination. This method can still be
+used, but we need some careful discussion of its efficiency. There are
+also other algorithms, the so-called iterative solution methods, which
+proceed by gradually approximating the solution of the linear
+system. They warrant some discussion of their own.
+
+Because of the PDE background, we only consider linear systems that
+are square and nonsingular. Rectangular, in particular overdetermined,
+systems have important applications too in a corner of numerical
+analysis known as optimization theory. However, we will not cover
+that in this book.
+
+The standard work on numerical linear algebra is Golub and Van Loan's
+{\it Matrix Computations}~\cite{GoVL:matcomp}.  It covers algorithms,
+error analysis, and computational details.
+Heath's {\it Scientific Computing}~\cite{Heath:scicomp}
+covers the most common types of computations that arise
+in scientific computing; this book has many excellent exercises and
+practical projects.
+
+\Level 0 {Elimination of unknowns}
+\label{sec:gauss-example}
+
+In this section we are going to take a closer look at
+\indexterm{Gaussian elimination},
+or elimination of unknowns,
+one of the techniques used to solve a linear system
+\[ Ax=b \]
+for $x$, given a \indextermsub{coefficient}{matrix}~$A$
+and a known right hand side~$b$.
+You may have seen this method
+before (and if not, it will be explained below), but we will be a bit
+more systematic here so that we can analyze various aspects of it.
+
+\begin{remark}
+  It is also possible to solve the equation $Ax=y$ for $x$ by
+  computing the \indextermbus{inverse}{matrix} $A\inv$, for instance
+  by executing the \indextermbus{Gauss}{Jordan} algorithm, and multiplying
+  $x\leftarrow A\inv x$. The reasons for not doing this are primarily
+  of numerical precision, and fall outside the scope of this book.
+\end{remark}
+
+One general thread of this chapter will be the discussion of the
+efficiency of the various algorithms.
+If you have already learned
+in a basic linear algebra course how to solve a
+system of unknowns by gradually eliminating unknowns, you most likely
+never applied that method to a matrix larger than~$4\times4$. The
+linear systems that occur in PDE solving can be thousands of times
+larger, and counting how many operations they require, as well as how much memory,
+becomes important.
+
+Let us consider an example of the importance of efficiency in choosing
+the right algorithm.
+The solution of a linear system can be written with a fairly simple
+explicit formula, using determinants. This is called
+`\indexterm{Cramer's rule}'. It is mathematically elegant, but
+completely impractical for our purposes.
+
+If a matrix $A$ and a vector $b$ are given, and a vector~$x$
+satisfying $Ax=b$ is wanted, then,
+writing $|A|$ for the determinant,
+  \[ x_i=\left|
+    \begin{matrix}
+      a_{11}&a_{12}&\ldots&a_{1i-1}&b_1&a_{1i+1}&\ldots&a_{1n}\\
+      a_{21}&      &\ldots&        &b_2&        &\ldots&a_{2n}\\
+      \vdots&      &      &        &\vdots&     &      &\vdots\\
+      a_{n1}&      &\ldots&        &b_n&        &\ldots&a_{nn}
+    \end{matrix}\right|
+    / |A|
+    \]
+For any matrix $M$ the determinant is defined recursively as
+\[ |M| = \sum_i (-1)^im_{1i}|M^{[1,i]}| \]
+where $M^{[1,i]}$ denotes the matrix obtained by deleting row~1 and
+column~$i$ from~$M$. This means that computing the determinant of a
+matrix of dimension~$n$ means $n$~times computing a size~$n-1$
+determinant. Each of these requires $n-1$ determinants of size~$n-2$, so
+you see that the number of operations
+required to compute the determinant is factorial in the matrix
+size. This quickly becomes prohibitive, even ignoring any issues of
+numerical stability.
+Later in this chapter you will see complexity estimates for other
+methods of solving systems of linear equations that are considerably
+more reasonable.
+
+Let us now look at a simple example of solving linear equations
+with elimination of unknowns. Consider the system
+\begin{equation}
+  \begin{array}{rrr@{{}={}}r}
+    6x_1&-2x_2&+2x_3&16 \\ 12x_1&-8x_2&+6x_3&26 \\ 3x_1&-13x_2&+3x_3&-19
+  \end{array}
+  \label{eq:elimination-example}
+\end{equation}
+We eliminate $x_1$ from the second and third equation by
+\begin{itemize}
+\item multiplying the first equation $\times 2$ and subtracting the
+  result from the second equation, and
+\item multiplying the first equation $\times 1/2$ and subtracting the
+  result from the third equation.
+\end{itemize}
+The linear system then becomes
+\[
+  \begin{array}{rrr@{{}={}}r}
+      6x_1&-2x_2&+2x_3&16\\ 0x_1&-4x_2&+2x_3&-6\\ 0x_1&-12x_2&+2x_3&-27
+  \end{array}
+\]
+Finally, we eliminate $x_2$ from the third equation by multiplying
+the second equation by~3, and subtracting the result from the third equation:
+\[
+  \begin{array}{rrr@{{}={}}r}
+  6x_1&-2x_2&+2x_3&16\\ 0x_1&-4x_2&+2x_3&-6\\ 0x_1&+0x_2&-4x_3&-9
+\end{array}
+\]
+We can now solve $x_3=9/4$ from the last equation. Substituting that
+in the second equation, we get $-4x_2=-6-2x_2=-21/2$ so
+$x_2=21/8$. Finally, from the first equation $6x_1=16+2x_2-2x_3=
+16+21/4-9/2=76/4$ so $x_1=19/6$.
+
+We can write this more compactly by omitting the $x_i$ coefficients. Write
+\[ 
+\begin{pmatrix}
+  6&-2&2\\ 12&-8&6\\ 3&-13&3
+\end{pmatrix}
+\begin{pmatrix} x_1\\ x_2\\ x_3 \end{pmatrix}
+=
+\begin{pmatrix}
+  16\\ 26\\ -19
+\end{pmatrix}
+\]
+as
+\begin{equation}
+\left[
+  \begin{matrix}
+    6&-2&2&|&16\\ 12&-8&6&|&26\\ 3&-13&3&|&-19      
+  \end{matrix}\right]
+\label{eq:systemabbrev}
+\end{equation}
+then the elimination process is
+\[
+\left[
+  \begin{matrix}
+    6&-2&2&|&16\\ 12&-8&6&|&26\\ 3&-13&3&|&-19      
+  \end{matrix}\right] \longrightarrow
+\left[
+    \begin{matrix}
+      6&-2&2&|&16\\ 0&-4&2&|&-6\\ 0&-12&2&|&-27
+    \end{matrix}\right] \longrightarrow
+  \left[
+    \begin{matrix}
+      6&-2&2&|&16\\ 0&-4&2&|&-6\\ 0&0&-4&|&-9
+    \end{matrix}\right].
+\]
+
+In the above example, the matrix coefficients could have been any real
+(or, for that matter, complex) coefficients, and you could follow the
+elimination procedure mechanically.
+There is  the following exception.
+At some point in the computation, we divided by the numbers
+$6,-4,-4$ which are found on the diagonal of the matrix in the last
+elimination step. These quantities are called the \indexterm{pivots},
+and clearly they are required to be nonzero. 
+
+\begin{exercise}
+  \label{ex:zero-pivot}
+  The system 
+  \[
+  \begin{array}{rrrr}
+    6x_1&-2x_2&+2x_3=&16 \\ 12x_1&-4x_2&+6x_3=&26 \\ 3x_1&-13x_2&+3x_3=&-19
+  \end{array}
+  \]
+  is the same as the one we just investigated in
+  equation~\eqref{eq:elimination-example}, except for the $(2,2)$
+  element. Confirm that you get a zero pivot in the second step.
+\end{exercise}
+
+
+The first pivot is an element of the original matrix.
+As you saw in
+the preceding exercise, the other pivots can not be found
+without doing the actual elimination. In particular, there is no easy
+way of predicting zero pivots from looking at the system of equations.
+
+If a pivot turns out to be zero, all is not lost for the computation:
+we can always exchange two matrix rows; this is known as
+\indexterm{pivoting}.  It is not hard to show
+(and you can
+    find this in any elementary linear algebra textbook)
+that with a
+nonsingular matrix there is always a row exchange possible that puts a
+nonzero element in the pivot location.
+
+\begin{exercise}
+  Suppose you want to exchange matrix rows 2 and 3 of the system of
+  equations in equation~\eqref{eq:systemabbrev}. What other
+  adjustments would you have to make to make sure you still compute the
+  correct solution? 
+  Continue the system solution of the previous exercise
+  by exchanging rows 2 and~3, and check that you get the correct answer.
+\end{exercise}
+
+\begin{exercise}
+  Take another look at exercise~\ref{ex:zero-pivot}.  Instead of
+  exchanging rows 2 and~3, exchange columns 2 and~3. What does this
+  mean in terms of the linear system? Continue the
+  process of solving the system; check that you get the same solution
+  as before.
+\end{exercise}
+
+In general, with floating point numbers and round-off, it is very
+unlikely that a matrix element will become exactly zero during a
+computation. Also, in a \ac{PDE} context, the diagonal is usually nonzero.
+Does that mean that pivoting is in practice almost never
+necessary? The answer is no: pivoting is desirable from a point
+of view of numerical stability. In the next section you will see an
+example that illustrates this fact.
+
+\Level 0 {Linear algebra in computer arithmetic}
+\label{sec:linear-arith}
+
+In most of this chapter, we will act as if all operations
+can be done in exact arithmetic. However, it is good to become aware
+of some of the potential problems due to our finite precision computer
+arithmetic. This allows us to design algorithms that minimize the effect
+of roundoff. A~more rigorous approach to the topic of numerical linear
+algebra includes a full-fledged error analysis of the algorithms we
+discuss; however, that is beyond the scope of this course.
+%
+Error analysis of computations in computer arithmetic is the focus of
+Wilkinson's classic {\it Rounding errors in Algebraic
+  Processes}~\cite{Wilkinson:roundoff} and Higham's more recent {\it
+  Accuracy and Stability of Numerical
+  Algorithms}~\cite{Higham:2002:ASN}. 
+
+Here, we will only note a few paradigmatic examples of the sort of
+problems that can come up in computer arithmetic: we will show why
+pivoting during LU factorization is more than a theoretical device,
+and we will give two examples of problems in eigenvalue calculations
+due to the finite precision of computer arithmetic.
+
+\Level 1 {Roundoff control during elimination}
+\index{pivoting|(}
+
+Above, you saw that row interchanging (`pivoting') is necessary if a
+zero element appears on the diagonal during elimination of that row
+and column. Let us now look at what happens if the pivot element is
+not zero, but close to zero.
+
+Consider the linear system
+\[ \left(
+  \begin{matrix}
+    \epsilon&1\\ 1&1
+  \end{matrix}\right) x = \left(
+  \begin{matrix}
+    1+\epsilon\\2
+  \end{matrix}\right)
+\] 
+which has the solution solution $x=(1,1)^t$.
+Using the $(1,1)$ element to clear the remainder of the first column gives:
+\[ \left(
+  \begin{matrix}
+    \epsilon&1\\ 0&1-\frac1\epsilon
+  \end{matrix}\right) x =
+  \left(
+  \begin{matrix}
+    1+\epsilon\\ 2-\frac{1+\epsilon}\epsilon
+  \end{matrix}\right)
+  =
+  \begin{pmatrix}
+    1+\epsilon\\ 1-\frac1\epsilon
+  \end{pmatrix}
+  .
+\]
+We can now solve $x_2$ and from it~$x_1$:
+\[ 
+\left\{
+\begin{array}{rl}
+  x_2&=(1-\epsilon\inv)/(1-\epsilon\inv)=1\\
+  x_1&=\epsilon\inv(1+\epsilon - x_2)=1.
+\end{array}
+\right.
+\]
+
+If $\epsilon$ is small, say $\epsilon<\epsilon_{\mathrm{mach}}$,
+the $1+\epsilon$ term in the right hand side will be~$1$: our
+linear system will be
+\[ \left(
+  \begin{matrix}
+    \epsilon&1\\ 1&1
+  \end{matrix}\right) x = \left(
+  \begin{matrix}
+    1\\2
+  \end{matrix}\right)
+\] 
+but the solution $(1,1)^t$ will still satisfy the system in machine
+arithmetic.
+
+In the first elimination step,
+$1/\epsilon$ will be very large, so the second component of the
+right hand side after elimination will be
+$2-\frac1\epsilon=-1/\epsilon$,
+and the $(2,2)$ element of the matrix is then $-1/\epsilon$ instead of
+$1-1/\epsilon$:
+%
+\[ \begin{pmatrix}
+    \epsilon&1\\ 0&1-\epsilon\inv
+  \end{pmatrix} x = 
+  \begin{pmatrix}
+    1\\2-\epsilon\inv
+  \end{pmatrix}
+  \quad\Rightarrow\quad
+  \begin{pmatrix}
+    \epsilon&1\\ 0&-\epsilon\inv
+  \end{pmatrix} x = 
+  \begin{pmatrix}
+    1\\-\epsilon\inv
+  \end{pmatrix}
+\] 
+
+Solving first $x_2$, then~$x_1$, we get:
+\[ \left\{
+\begin{array}{rl}
+  x_2&=\epsilon\inv / \epsilon\inv = 1\\
+  x_1&=\epsilon\inv (1-1\cdot x_2) = \epsilon \inv \cdot 0 = 0,
+\end{array}
+\right.
+\]
+so $x_2$ is correct, but $x_1$ is completely wrong.
+
+\begin{remark}
+  In this example, the numbers of the stated problem are,
+  in computer arithmetic,
+  little off from what they would be in exact arithmetic.
+  Yet the results of the computation can be very much wrong.
+  An analysis of this phenomenon belongs in any
+  good course in numerical analysis. See for instance chapter~1
+  of~\cite{Heath:scicomp}.
+\end{remark}
+
+What would have happened if we had pivoted as described above?
+We exchange the matrix rows, giving
+\[ 
+  \begin{pmatrix}
+    1&1\\ \epsilon&1
+  \end{pmatrix} x =
+  \begin{pmatrix}
+    2\\1+\epsilon
+  \end{pmatrix}
+\Rightarrow
+  \begin{pmatrix}
+    1&1\\ 0&1-\epsilon
+  \end{pmatrix} x=
+    \begin{pmatrix}
+      2\\ 1-\epsilon
+    \end{pmatrix}
+\]
+Now we get, regardless the size of epsilon:
+\[ x_2=\frac{1-\epsilon}{1-\epsilon}=1,\qquad
+x_1=2-x_2=1
+\]
+In this example we used a very small value of~$\epsilon$; a much more
+refined analysis shows that even with $\epsilon$ greater than the
+machine precision pivoting still makes sense. The general rule of
+thumb is: \emph{Always do row exchanges to get the largest remaining
+  element in the current column into the pivot position.} In
+chapter~\ref{ch:odepde} you saw matrices that arise in certain
+practical applications; it can be shown that for them pivoting is
+never necessary; see exercise~\ref{ex:no-pivot}.
+
+The pivoting that was discussed above is also known as
+\indexterm{partial pivoting}\index{pivoting!partial}, since it is
+based on row exchanges only.  Another option would be
+\indextermsub{full}{pivoting}, where row and column exchanges are
+combined to find the largest element in the remaining subblock, to be
+used as pivot. Finally, \indextermsub{diagonal}{pivoting} applies the
+same exchange to rows and columns. (This is equivalent to renumbering
+the unknowns of the problem, a~strategy which we will consider in
+section~\ref{sec:ordering} for increasing the parallelism of the problem.)
+This means that pivots are only
+searched on the diagonal.
+From now on we will only consider partial pivoting.
+
+\index{pivoting|)}
+
+\Level 1 {Influence of roundoff on eigenvalue computations}
+
+Consider the matrix 
+\[ A=
+\begin{pmatrix}
+1&\epsilon\\ \epsilon&1  
+\end{pmatrix}
+\]
+where $\epsilon_{\mathrm{mach}}<|\epsilon|<\sqrt{\epsilon_{\mathrm{mach}}}$,
+which has eigenvalues $1+\epsilon$ and $1-\epsilon$.
+If we calculate its characteristic polynomial in computer arithmetic
+\[ \left|
+  \begin{matrix}
+    1-\lambda&\epsilon\\ \epsilon&1-\lambda
+  \end{matrix}\right|
+  = \lambda^2-2\lambda+(1-\epsilon^2)
+  \rightarrow \lambda^2-2\lambda+1.
+\]
+we find a
+double eigenvalue~1. Note that the exact eigenvalues are
+expressible in working precision; it is the algorithm that causes
+the error. Clearly, using the characteristic polynomial is not the
+right way to compute eigenvalues, even in well-behaved, symmetric
+positive definite, matrices.
+
+An unsymmetric example: let $A$ be the matrix of size~20
+\[ A=
+\begin{pmatrix}
+  20&20&      &      &\emptyset\\
+    &19&20\\
+    &  &\ddots&\ddots\\
+    &  &      &2     &20\\
+  \emptyset&  &      &      &1
+\end{pmatrix}.
+\]
+Since this is a triangular matrix, its eigenvalues are the diagonal
+elements. If we perturb this matrix by setting $A_{20,1}=10^{-6}$ we
+find a perturbation in the eigenvalues that is much larger than in the
+elements:
+\[ \lambda=20.6\pm 1.9i, 20.0\pm 3.8i, 21.2,16.6\pm 5.4i,\ldots \]
+Also, several of the computed eigenvalues have an imaginary component,
+which the exact eigenvalues do not have.
+
+\Level 0 {LU factorization}
+\index{factorization|see{LU factorization}}
+%\index{LU factorization|seealso{ILU factorization}}
+\index{LU factorization|(textbf}
+\label{sec:lu-fact}
+
+So far, we have looked at eliminating unknowns in the context of
+solving a single system of linear equations,
+where we updated the right hand side while reducing the matrix
+to upper triangular form.
+Suppose you need to
+solve more than one system with the same matrix, but with different
+right hand sides. This happens for instance if you take multiple time
+steps in an implicit Euler method (section~\ref{sec:implicit-euler}).
+Can you use any of the work you did in
+the first system to make solving subsequent ones easier?
+
+The answer is yes. You can split the solution process in a part that
+only concerns the matrix, and a part that is specific to the right hand
+side. If you have a series of systems to solve, you have to do the
+first part only once, and, luckily, that even turns out to be the
+larger part of the work.
+
+Let us take a look at the same example of section~\ref{sec:gauss-example} again.
+  \[ A=
+  \left(
+    \begin{matrix}
+      6&-2&2\\ 12&-8&6\\ 3&-13&3
+    \end{matrix}\right)
+  \]
+In the elimination process, we took
+the 2nd row minus $2\times$ the first
+and the 3rd row minus $1/2\times$ the first. 
+Convince yourself that this combining of rows can be done by
+multiplying~$A$ from the left by
+  \[ 
+  L_1=\left(
+    \begin{matrix}
+      1&0&0\\ -2&1&0\\ -1/2&0&1
+    \end{matrix}\right),
+  \]
+which is the identity with the elimination coefficients in the first column,
+below the diagonal.
+The first step in elimination of variables is equivalent
+to transforming the system $Ax=b$ to $L_1Ax=L_1b$.
+
+\begin{exercise}
+  Can you find a different $L_1$ that also has the effect of
+  sweeping the first column?
+  Questions of uniqueness are addressed below in section~\ref{sec:LUunique}.
+\end{exercise}
+
+In the next step, you subtracted $3\times$ the second row from the
+third. Convince yourself that this corresponds to left-multiplying the
+current matrix $L_1A$ by
+  \[ L_2=\left(
+    \begin{matrix}
+      1&0&0\\ 0&1&0\\ 0&-3&1
+    \end{matrix}\right)
+  \]
+We have now transformed our system $Ax=b$ into 
+$L_2L_1Ax=L_2L_1b$, and $L_2L_1A$ is of `upper triangular' form.
+If we define $U=L_2L_1A$, then $A=L_1\inv L_2\inv U$. How hard is it
+to compute matrices such as $L_2\inv$? Remarkably easy, it turns out
+to be.
+
+We make the following observations:
+  \[ 
+  L_1=\left(
+    \begin{matrix}
+      1&0&0\\ -2&1&0\\ -1/2&0&1
+    \end{matrix}\right)\qquad
+  L_1\inv=\left(
+    \begin{matrix}
+      1&0&0\\ 2&1&0\\ 1/2&0&1
+    \end{matrix}\right)
+  \]
+and likewise
+  \[ L_2=\left(
+    \begin{matrix}
+      1&0&0\\ 0&1&0\\ 0&-3&1
+    \end{matrix}\right)\qquad
+  L_2\inv=\left(
+    \begin{matrix}
+      1&0&0\\ 0&1&0\\ 0&3&1
+    \end{matrix}\right)
+  \]
+and even more remarkable:
+\[ L_1^{-1}L_2^{-1} = \left(
+    \begin{matrix}
+      1&0&0\\ 2&1&0\\ 1/2&3&1
+    \end{matrix}\right),
+\]
+that is, $L_1^{-1}L_2^{-1}$~contains the off-diagonal elements of
+$L_1^{-1},L_2^{-1}$ unchanged, and they in turn contain the
+elimination coefficients, with only the sign flipped.
+(This is a special case of
+\emph{Householder reflectors}\index{Householder reflectors!in LU factorization};
+see~\ref{app:reflector}.)
+
+\begin{exercise}
+  Show that a similar statement holds, even if there are elements
+  above the diagonal.
+\end{exercise}
+
+If we define $L=L_1\inv L_2\inv$, we now have $A=LU$; this is called
+an \emph{LU factorization}.
+We see that the
+coefficients of~$L$ below the diagonal
+are the negative of the coefficients used during
+elimination. Even better, the first column of~$L$ can be written while
+the first column of~$A$ is being eliminated, so the computation of $L$
+and~$U$ can be done without extra storage, at least if we can afford
+to lose~$A$.
+
+\Level 1 {The LU factorization algorithm}
+\label{sec:lu-algorithm}
+
+Let us write out the $LU$ factorization algorithm in more or less
+formal code.
+
+\newcommand\macro[1]{$\langle$#1$\rangle$} %pyskip
+
+\begin{tabbing}
+  \kern20pt\=\kern10pt\=\kill
+  \macro{$LU$ factorization}:\\
+  \>for\={} $k=1,n-1$:\\
+  \>\>\macro{eliminate values in column $k$}\\
+  \macro{eliminate values in column $k$}:\\
+  \>for $i=k+1$ to $n$:\\
+  \>\>\macro{compute multiplier for row $i$}\\
+  \>\>\macro{update row $i$}\\
+  \macro{compute multiplier for row $i$}\\
+  \> $a_{ik}\leftarrow a_{ik}/a_{kk}$\\
+  \macro{update row $i$}:\\
+  \>for $j=k+1$ to $n$:\\
+  \>\>$a_{ij}\leftarrow a_{ij}-a_{ik}*a_{kj}$
+\end{tabbing}
+
+Or, putting everything together:
+
+\begin{equation}\vcenter{% %pyskip
+\begin{tabbing}
+  \kern20pt\=\kern10pt\=\kern10pt\=\kern10pt\=\kill
+  \macro{$LU$ factorization}:\\
+  \>for\={} $k=1,n-1$:\\
+  \>\>for\={} $i=k+1$ to $n$:\\
+  \>\>\> $a_{ik}\leftarrow a_{ik}/a_{kk}$\\
+  \>\>\>for\={} $j=k+1$ to $n$:\\
+  \>\>\>\>$a_{ij}\leftarrow a_{ij}-a_{ik}*a_{kj}$
+\end{tabbing}
+}\label{eq:LU-algorithm}\end{equation} %pyskip
+
+This is the most common way of presenting the LU
+factorization. However, other ways of computing the same result
+exist. Algorithms such as the LU factorization can be coded in several ways
+that are mathematically equivalent, but that have different
+computational behavior. This issue, in the context of dense matrices,
+is the focus of van de Geijn and Quintana's {\it The Science of
+  Programming Matrix Computations}~\cite{TSoPMC}.
+
+\Level 1 {The Cholesky factorization}
+\index{Cholesky factorization|(}
+\label{sec:cholesky}
+
+The $LU$ factorization of a symmetric matrix does not give an $L$ and
+$U$ that are each other's transpose: $L$~has ones on the diagonal  and
+$U$~has the pivots. However it is possible to make a factorization of
+a symmetric matrix $A$ of the form $A=LL^t$. This has the advantage
+that the factorization takes the same amount of space as the original
+matrix, namely $n(n+1)/2$ elements. We a little luck we can, just as
+in the $LU$ case, overwrite the matrix with the factorization.
+
+We derive this algorithm by reasoning inductively. Let us write $A=LL^t$
+on block form:
+\[ A=
+\begin{pmatrix}
+  A_{11}&A_{21}^t\\ A_{21}&A_{22}
+\end{pmatrix} = LL^t = 
+\begin{pmatrix}  \ell_{11}&0\\ \ell_{21} &L_{22} \end{pmatrix}
+\begin{pmatrix}  \ell_{11}& \ell^t_{21} \\ 0&L^t_{22} \end{pmatrix}
+\]
+then $\ell_{11}^2=a_{11}$, from which we get~$\ell_{11}$. We also find
+$\ell_{11}(L^t)_{1j}=\ell_{j1}=a_{1j}$, so we can compute the
+whole first column of~$L$. Finally, $A_{22}=L_{22}L_{22}^t +
+\ell_{12}\ell_{12}^t$, so 
+\[ L_{22}L_{22}^t = A_{22} - \ell_{12}\ell_{12}^t, \]
+which shows that $L_{22}$ is the Cholesky factor of the updated
+$A_{22}$ block. Recursively, the algorithm is now defined.
+
+\index{Cholesky factorization|)}
+
+\Level 1 {Uniqueness}
+\label{sec:LUunique}
+
+It is always a good idea, when discussing numerical algorithms, to
+wonder if different ways of computing lead to the same result. This is
+referred to as the `uniqueness' of the result, and it is of practical
+use: if the computed result is unique, swapping one software library
+for another will not change anything in the computation.
+
+Let us consider the uniqueness of $LU$ factorization. The definition
+of an $LU$ factorization algorithm (without pivoting) is that, given a
+nonsingular matrix~$A$, it will give a lower triangular matrix~$L$ and
+upper triangular matrix~$U$ such that $A=LU$.  The above algorithm for
+computing an $LU$ factorization is deterministic (it does not contain
+instructions `take any row that satisfies\dots'), so given the same
+input, it will always compute the same output. However, other
+algorithms are possible, so we need to worry whether they give the same result.
+
+Let us then assume that $A=L_1U_1=L_2U_2$ where $L_1,L_2$ are lower
+triangular and $U_1,U_2$ are upper triangular.
+Then, $L_2\inv L_1=U_2U_1\inv$.
+In that equation, the left hand side is the product
+of lower triangular matrices, while the right hand side contains only
+upper triangular matrices.
+
+\begin{exercise}
+  Prove that the product of lower triangular matrices is lower
+  triangular, and the product of upper triangular matrices upper
+  triangular. Is a similar statement true for
+  \emph{inverses}\index{inverse!of triangular matrix}
+  of nonsingular  triangular matrices?
+\end{exercise}
+
+The product $L_2\inv L_1$ is apparently both lower triangular and
+upper triangular, so it must be diagonal. Let us call it~$D$, then
+$L_1=L_2D$ and $U_2=DU_1$. The conclusion is that $LU$ factorization
+is not unique, but it \emph{is} unique `up to diagonal scaling'.
+
+\begin{exercise}
+  The algorithm in section~\ref{sec:lu-algorithm} resulted in a lower
+  triangular factor~$L$ that had ones on the diagonal. Show that this
+  extra condition makes the factorization unique.
+\end{exercise}
+\begin{exercise}
+  Show that an alternative condition of having ones on the diagonal of~$U$
+  is also sufficient for the uniqueness of the factorization.
+\end{exercise}
+
+Since we can demand a unit diagonal in $L$ or in $U$, you may wonder
+if it is possible to have both. (Give a simple argument why this is
+not strictly possible.) We can do the following: suppose that $A=LU$
+where $L$ and
+$U$ are nonsingular lower and upper triangular, but not normalized in any
+way. Write \[ L=(I+L')D_L,\qquad U=D_U(I+U'),\qquad D=D_LD_U. \]
+After some renaming we now have a factorization
+\begin{equation}
+  A=(I+L)D(I+U)
+  \label{eq:A=LUnormalized}
+\end{equation}
+where $D$ is a diagonal matrix containing the pivots.
+
+\begin{exercise}
+  Show that you can also normalize the factorization on the form
+  \begin{equation}
+    A=(D+L)D\inv (D+U).
+    \label{eq:A=DLDUnormal}
+  \end{equation}
+  How does this $D$ relate to the previous?
+\end{exercise}
+
+\begin{exercise}
+  Consider the factorization of a tridiagonal matrix
+  on the form~\ref{eq:A=DLDUnormal}.
+  How do the resulting
+  $L$ and~$U$ relate to the triangular parts $L_A,U_A$ of~$A$?
+  Derive a relation
+  between $D$ and $D_A$ and show that this is the equation that generates
+  the pivots.
+\end{exercise}
+
+\Level 1 {Pivoting}
+\label{sec:pivoting}
+\index{pivoting|(}
+
+Above, you saw examples where pivoting, that is, exchanging rows, was
+necessary during the factorization process, either to guarantee the
+existence of a nonzero pivot, or for numerical stability. We will now
+integrate pivoting into the $LU$ factorization.
+
+Let us first observe that row exchanges can be described by a matrix
+multiplication. Let
+\[ P^{(i,j)}=
+\begin{array}{cc}
+% first the top row
+\begin{matrix}\hphantom{i}\end{matrix}
+\begin{matrix}&&i&&j&\end{matrix}
+\\
+% then the matrix
+\begin{matrix}
+  \\ \\ i \\ \\ j\\ \\
+\end{matrix}
+\begin{pmatrix}
+  1&0\\ 0&\ddots&\ddots\\ &\\
+  &&0&&1\\ &&&I\\ &&1&&0\\ &&&&&I\\ &&&&&&\ddots
+\end{pmatrix}
+\end{array}
+\]
+then $P^{(i,j)}A$ is the matrix $A$ with rows $i$ and~$j$
+exchanged. Since we may have to pivot in every iteration~$i$ of the
+factorization process, we introduce a sequence $p(\cdot)$ where $p(i)$
+is the $j$ values of the row that row $i$ is switched with. We write
+$P^{(i)}\equiv P^{(i,p(i))}$ for short.
+
+\begin{exercise}
+  Show that $P^{(i)}$ is its own inverse.
+\end{exercise}
+
+The process of factoring with partial pivoting can now be
+described as:
+\begin{itemize}
+\item Let $A^{(i)}$ be the matrix with columns $1\ldots i-1$
+  eliminated, and partial pivoting applied to get the desired element in
+  the $(i,i)$ location.
+\item Let $\ell^{(i)}$ be the vector of multipliers in the
+  $i$-th elimination step. (That is, the elimination matrix $L_i$ in this
+  step is the identity plus $\ell^{(i)}$ in the $i$-th column.)
+\item Let $P^{(i+1)}$ (with $j\geq i+1$) be the matrix that does the
+  partial pivoting for the next elimination step as described above.
+\item Then $A^{(i+1)}=P^{(i+1)}L_iA^{(i)}$.
+\end{itemize}
+In this way we get a factorization of the form
+\[ L_{n-1}P^{(n-2)}L_{n-2}\cdots L_1P^{(1)}A = U. \]
+Suddenly it has become impossible to write $A=LU$: instead we
+write 
+\begin{equation}
+  \label{eq:lu-pivot-interleave}
+  A=P^{(1)}L_1\inv\cdots P^{(n-2)}L_{n-1}\inv U.
+\end{equation}
+
+\begin{exercise}
+  Recall from sections \ref{sec:mvp-opt} and~\ref{sec:scalar-opt} that
+  blocked algorithms are often desirable from a performance point of
+  view. Why is the `$LU$ factorization with interleaved pivoting
+  matrices' in equation~\eqref{eq:lu-pivot-interleave} bad news for
+  performance?
+\end{exercise}
+Fortunately, equation~\eqref{eq:lu-pivot-interleave} can be
+simplified: the $P$ and~$L$ matrices `almost commute'. We show this by
+looking at an example: $P^{(2)}L_1=\tilde L_1P^{(2)}$ where $\tilde
+L_1$ is very close to~$L_1$.
+\[
+\begin{pmatrix}
+  1\\ &0&&1\\ &&I\\ &1&&0\\ &&&&I
+\end{pmatrix}
+\begin{pmatrix}
+  1&&\emptyset\\ \vdots&1\\ \ell^{(1)}&&\ddots\\ \vdots&&&1
+\end{pmatrix}
+=
+\begin{pmatrix}
+  1&&\emptyset\\ \vdots&0&&1\\ \tilde\ell^{(1)}\\ 
+  \vdots&1&&0\\ \vdots&&&&I
+\end{pmatrix}
+=
+\begin{pmatrix}
+  1&&\emptyset\\ \vdots&1\\ \tilde\ell^{(1)}&&\ddots\\ \vdots&&&1
+\end{pmatrix}
+\begin{pmatrix}
+  1\\ &0&&1\\ &&I\\ &1&&0\\ &&&&I
+\end{pmatrix}
+\]
+where $\tilde\ell^{(1)}$ is the same as $\ell^{(1)}$, except that
+elements $i$ and~$p(i)$ have been swapped.
+You can now convince
+yourself that similarly $P^{(2)}$ et cetera can be `pulled
+through'~$L_1$. 
+
+As a result we get
+\begin{equation}
+  \label{eq:lu-pivot}
+  P^{(n-2)}\cdots P^{(1)}A
+  =\tilde L_1\inv\cdots L_{n-1}\inv U=\tilde LU.
+\end{equation}
+This means that we can again form a matrix~$L$ just as before, except
+that every time we pivot, we need to update the columns of~$L$ that
+have already been computed.
+
+\begin{exercise}
+  If we write equation~\eqref{eq:lu-pivot} as $PA=LU$, we get~$A=P\inv
+  LU$. Can you come up with a simple formula for $P\inv$ in terms of
+  just~$P$? Hint: each $P^{(i)}$ is symmetric and its own inverse; see
+  the exercise above.
+\end{exercise}
+
+\begin{exercise}
+  \label{ex:no-pivot}
+  Earlier, you saw that 2D \acp{BVP} (section~\ref{sec:2dbvp}) give
+  rise to a certain kind of matrix. We stated, without proof, that for
+  these matrices pivoting is not needed. We can now formally prove
+  this, focusing on the crucial property of \indexterm{diagonal
+    dominance}:
+  \[ \forall_i a_{ii}\geq\sum_{j\not=i}|a_{ij}|. \]
+
+  Assume that a matrix $A$ satisfies
+  $\forall_{j\not=i}\colon a_{ij}\leq 0$.
+  \begin{itemize}
+  \item
+    Show that the matrix is
+    diagonally dominant iff there are vectors
+    $u,v\geq0$ (meaning that each component is nonnegative) such that
+    $Au=v$.
+  \item
+    Show that, after eliminating a variable, for the remaining
+    matrix~$\tilde A$ there are again vectors $\tilde u,\tilde v\geq0$
+    such that $\tilde A\tilde u=\tilde v$.
+  \item
+    Now finish the argument that (partial) pivoting is not necessary if
+    $A$ is symmetric and diagonally dominant. 
+  \end{itemize}
+
+  One can actually prove
+  that pivoting is not necessary for any \indexacf{SPD} matrix, and
+  diagonal dominance is a stronger condition than \ac{SPD}-ness.
+\end{exercise}
+
+\index{pivoting|)}
+
+\Level 1 {Solving the system}
+\label{sec:lu-solve}
+
+Now that we have a factorization $A=LU$, we can use this to solve the
+linear system $Ax=LUx=b$. If we introduce a temporary vector $y=Ux$,
+we see this takes two steps:
+\[ Ly=b,\qquad Ux=z. \]
+
+The first part, $Ly=b$ is called the `lower triangular solve', since
+it involves the lower triangular matrix~$L$:
+  \[ \left(
+    \begin{matrix}
+      1&&&&\emptyset\\ \ell_{21}&1\\ \ell_{31}&\ell_{32}&1\\
+      \vdots&&&\ddots\\ \ell_{n1}&\ell_{n2}&&\cdots&1
+    \end{matrix}\right) \left(
+    \begin{matrix}
+      y_1\\ y_2\\ \\ \vdots\\ y_n
+    \end{matrix}\right) = \left(
+    \begin{matrix}
+      b_1\\ b_2\\ \\ \vdots\\ b_n
+    \end{matrix}\right)
+  \]
+In the first row, you see that $y_1=b_1$. Then, in the second row
+$\ell_{21}y_1+y_2=b_2$, so $y_2=b_2-\ell_{21}y_1$. You can imagine how
+this continues: in every $i$-th row you can compute $y_i$ from the
+previous $y$-values:
+\[ y_i = b_i-\sum_{j<i} \ell_{ij}y_j. \]
+Since we compute $y_i$ in increasing order, this is also known as
+the forward substitution, forward solve, or forward sweep.
+  
+
+The second half of the solution process, the upper triangular solve,
+backward substitution, or backward sweep, computes $x$ from $Ux=y$:
+  \[ \left(
+    \begin{matrix}
+      u_{11}&u_{12}&\ldots&u_{1n}\\ &u_{22}&\ldots&u_{2n}\\
+      &&\ddots&\vdots\\ \emptyset&&&u_{nn}
+    \end{matrix}\right) \left(
+    \begin{matrix}
+      x_1\\ x_2\\ \vdots\\ x_n
+    \end{matrix}\right)=\left(
+    \begin{matrix}
+      y_1\\ y_2\\ \vdots\\ y_n
+    \end{matrix}\right)
+  \]
+Now we look at the last line, which immediately tells us that
+$x_n=u_{nn}^{-1}y_n$.
+From this, the line before the last states
+$u_{n-1n-1}x_{n-1}+u_{n-1n}x_n=y_{n-1}$, which gives
+$x_{n-1}=u_{n-1n-1}^{-1}(y_{n-1}-u_{n-1n}x_n)$.
+In general, we can compute
+\[ x_i=u_{ii}\inv (y_i-\sum_{j>i}u_{ij}y_j) \]
+for decreasing values of~$i$.
+
+\begin{exercise}
+  In the backward sweep you had to divide by the
+  numbers~$u_{ii}$. That is not possible if any of them are zero.
+  Relate this problem back to the above discussion. 
+\end{exercise}
+
+\Level 1 {Complexity}
+\index{complexity!computational|(}
+
+In the beginning of this chapter, we indicated that not every method
+for solving a linear system takes the same number of operations. Let
+us therefore take a closer look at the complexity
+(See appendix~\ref{app:complexity} for a short introduction to complexity.),
+that is, the number of operations as function of the problem size, of
+the use of an LU factorization in solving the linear system.
+
+First we look at the computation of $x$ from $LUx=b$
+(`solving the linear system'; section~\ref{sec:lu-solve}), given that
+we already have the factorization $A=LU$.
+Looking at the lower and upper
+triangular part together, you see that you perform a multiplication
+with all off-diagonal elements (that is, elements $\ell_{ij}$
+or~$u_{ij}$ with $i\not=j$). Furthermore, the upper triangular solve
+involves divisions by the $u_{ii}$ elements. Now, division operations
+are in general much more expensive than multiplications, so in this
+case you would compute the values $1/u_{ii}$, and store them instead.
+
+\begin{exercise}
+  Take a look at the factorization algorithm, and argue that storing
+  the reciprocals of the pivots does not add to the computational
+  complexity.
+\end{exercise}
+
+Summing up, you see that, on a system of size $n\times n$, you perform
+$n^2$ multiplications and roughly the same number of additions.
+This shows that, given a factorization, solving a linear system
+has the same complexity as a simple matrix-vector multiplication,
+that is, of computing $Ax$ given $A$ and~$x$.
+
+The complexity of constructing the $LU$ factorization is a bit more
+involved to compute. Refer to the algorithm in section~\ref{sec:lu-algorithm}.
+You see that in the $k$-th step two things happen: the computation of
+the multipliers, and the updating of the rows.
+%
+There are $n-k$ multipliers to be computed, each of which involve a
+division. After that, the update takes $(n-k)^2$ additions and
+multiplications. If we ignore the divisions for now, because there are
+fewer of them, we find that the $LU$ factorization takes
+$\sum_{k=1}^{n-1} 2(n-k)^2$
+operations. If we number the terms in this sum in the reverse order,
+we find \[ \#\mathrm{ops}=\sum_{k=1}^{n-1} 2k^2. \]
+Since we can approximate a sum by an integral,
+we find that this is $2/3n^3$ plus some lower
+order terms. This is of a higher order than solving the linear system:
+as the system size grows, the cost of constructing the $LU$
+factorization completely dominates.
+
+Of course there is more to algorithm analysis than operation counting.
+While solving the linear system has the same complexity
+as a matrix-vector multiplication, the two operations
+are of a very different nature.
+One big difference is that both the factorization
+and forward/backward solution involve recursion, so they are not simple
+to parallelize. We will say more about that later on.
+
+\index{complexity!computational|)}
+
+\begin{comment}
+\Level 1 {Accuracy}
+
+In section \ref{sec:linear-arith} you saw some simple examples of the
+problems that stem from the use of computer arithmetic, and how these
+motivated the use of pivoting. Even with pivoting, however, we still
+need to worry about the accumulated effect of roundoff
+errors. A~productive way of looking at the question of attainable
+accuracy is to consider that by solving a system $Ax=b$ we get
+a numerical solution $x+\Delta x$ which is the exact solution of a
+slightly different linear system: 
+\[ (A+\Delta A)(x+\Delta x)=b+\Delta b. \]
+Analyzing these statements quickly leads to bounds such as 
+\[ \frac{\|\Delta x\|}{\|x\|}\leq 
+  \frac{2\epsilon \kappa(A)}{1-\epsilon\kappa(A)} 
+\]
+where $\epsilon$ is the \indexterm{machine precision} (see
+section~\ref{sec:machine-eps}) and $\kappa(A)=\|A\|\|A\inv\|$ is
+called the \indexterm{condition number} of the matrix~$A$ (see
+appendix~\ref{app:norms}). Without going into this in any detail, we
+remark that the condition number is related to eigenvalues (strictly
+speaking: singular values) of the
+matrix.
+
+The analysis of the accuracy of algorithms is a field of study in
+itself; see for instance the book by Higham~\cite{Higham:2002:ASN}.
+\end{comment}
+
+\Level 1 {Block algorithms}
+\label{sec:block-algebra}
+
+Many linear
+algebra matrix operations can be formulated in terms of sub blocks,
+rather than basic elements.
+Such blocks sometimes arise naturally from the nature of an application,
+such as in the case of two-dimensional \ac{BVP}s; section~\ref{sec:2dbvp}.
+However, often we impose a block structure on a matrix
+purely from a point of performance.
+
+Using \indextermsub{block}{matrix}\index{block matrix|see{matrix, block}}
+algorithms
+can have several advantages over the traditional scalar view of
+matrices.
+For instance, it improves \indextermbus{cache}{blocking}
+(section~\ref{sec:loop-tiling}); it also facilitates scheduling linear
+algebra algorithms on \indexterm{multicore} architectures
+(section~\ref{sec:multicore-block}).
+
+For block algorithms
+we write a matrix as 
+\[ A=
+\begin{pmatrix}
+  A_{11}&\ldots&A_{1N}\\ \vdots&&\vdots\\ A_{M1}&\ldots&A_{MN}
+\end{pmatrix}
+\] 
+where $M,N$ are the block dimensions, that is, the dimension expressed
+in terms of the subblocks. Usually, we choose the blocks such that
+$M=N$ and the diagonal blocks are square.
+
+As a simple example, consider the
+\emph{matrix-vector product}\index{matrix!times vector product!block algorithm}
+$y=Ax$, expressed in block terms.
+\[ 
+\begin{pmatrix}
+  Y_1\\ \vdots\\ Y_M
+\end{pmatrix}=
+\begin{pmatrix}
+  A_{11}&\ldots&A_{1M}\\ \vdots&&\vdots\\ A_{M1}&\ldots&A_{MM}
+\end{pmatrix}
+\begin{pmatrix}
+  X_1\\ \vdots\\ X_M
+\end{pmatrix}
+\]
+To see that the block algorithm computes the same result as the old
+scalar algorithm, we look at a component $Y_{i_k}$, that is the $k$-th
+scalar component of the $i$-th block. First,
+\[ Y_i=\sum_j A_{ij}X_j \]
+so 
+\[
+  Y_{i_k}=\bigl(\sum_j A_{ij}X_j\bigr)_k=
+  \sum_j \left(A_{ij}X_j\right)_k=\sum_j\sum_\ell A_{ij_{k\ell}}X_{j_\ell}
+\]
+which is the product of the $k$-th row of the $i$-th blockrow of~$A$
+with the whole of~$X$.
+
+A more interesting algorithm is the block version of the
+\emph{LU factorization}\index{LU factorization!block algorithm}.
+The algorithm \eqref{eq:LU-algorithm} then becomes
+
+\begin{equation}\vcenter{% %pyskip
+\begin{tabbing}
+  \kern20pt\=\kern10pt\=\kern10pt\=\kern10pt\=\kill
+  \macro{$LU$ factorization}:\\
+  \>for $k=1,n-1$:\\
+  \>\>for $i=k+1$ to $n$:\\
+  \>\>\> $A_{ik}\leftarrow A_{ik}A_{kk}\inv$\\
+  \>\>\>for $j=k+1$ to $n$:\\
+  \>\>\>\>$A_{ij}\leftarrow A_{ij}-A_{ik}\cdot A_{kj}$
+\end{tabbing}
+  }\label{eq:LU-block-algorithm}\end{equation} %pyskip
+
+which mostly differs from the earlier algorithm in that the division
+by $a_{kk}$ has been replaced by a multiplication
+by~$A_{kk}\inv$. Also, the $U$ factor will now have pivot blocks,
+rather than pivot elements, on the diagonal, so $U$ is only `block
+upper triangular', and not strictly upper triangular.
+
+\begin{exercise}
+  We would like to show that the block algorithm here again computes
+  the same result as the scalar one. Doing so by looking explicitly at
+  the computed elements is cumbersome, so we take another
+  approach.
+  First, recall from section~\ref{sec:LUunique} that $LU$ factorizations are unique
+  if we impose some normalization:
+  if
+  $A=L_1U_1=L_2U_2$ and $L_1,L_2$ have unit diagonal, then $L_1=L_2$,
+  $U_1=U_2$.
+
+  Next, consider the computation of $A_{kk}\inv$.
+  Show that this can
+  be done by first computing an LU factorization
+  of~$A_{kk}$. Now use this to show that the block LU factorization
+  can give $L$ and $U$ factors that are strictly triangular. The
+  uniqueness of $LU$ factorizations then proves that the block
+  algorithm computes the scalar result.
+\end{exercise}
+
+As a practical point, we note that these matrix blocks are often only conceptual:
+the matrix is still stored in a traditional row or columnwise manner.
+The three-parameter \n{M,N,LDA} description of matrices used in the \indexac{BLAS}
+(section~\CARPref{tut:blas})
+makes it possible to extract submatrices.
+
+\index{LU factorization|)}
+
+\Level 0 {Sparse matrices}
+\label{sec:sparse}
+\index{linear algebra!sparse|see{sparse!linear algebra}}
+\index{sparse!linear algebra|(}
+\input chapters/sparse
+\index{sparse!linear algebra|)}
+
+\Level 0 {Iterative methods}
+\label{sec:iterative}
+\index{Krylov method|see{iterative method}}
+
+\index{iterative method!stationary|(}
+\input chapters/stationary
+\index{iterative method!stationary|)}
+
+\index{polynomial!iterative method|see{iterative method, polynomial}}
+\index{iterative method!polynomial|(}
+\input chapters/cg
+\index{iterative method!polynomial|)}
+
+\Level 0 {Eigenvalue methods}
+\label{sec:eigen}
+\index{eigenvalue problems|(}
+\input chapters/eigenvalue
+\index{eigenvalue problems|)}
+
+\furtherreading
+
+Iterative methods is a very deep field. As a practical introduction to
+the issues involved, you can read the `Templates
+book'~\cite{Ba:templates}, online at
+\url{http://netlib.org/templates/}. For a deeper treatment of the
+theory, see the book by Saad~\cite{saad96} of which the first edition
+can be downloaded at
+\url{http://www-users.cs.umn.edu/~saad/books.html}.
+
+% LocalWords:  Eijkhout PDE overdetermined Golub Loan's Heath's LU pt
+% LocalWords:  Cramer's Wilkinson's Higham's subblock unsymmetric ILU
+% LocalWords:  seealso textbf pyskip ik kk ij kj de Geijn Quintana's
+% LocalWords:  Cholesky BVP iff SPD ness Higham multicore subblocks
+% LocalWords:  blockrow Krylov Saad

@@ -1,0 +1,60 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of the course
+#### High Performance Scientific Computing
+#### by Victor Eijkhout (eijkhout@tacc.utexas.edu)
+#### copyright 2017-2022 Victor Eijkhout
+####
+#### Make.inc : global definitions
+####
+################################################################
+
+info ::
+	@echo "make upload"
+.PHONY: upload upload_dropbox upload_publicpdf upload_studentrepo
+
+BOOKNAME = EijkhoutScientificComputing
+
+DROPBOX = ${HOME}/Dropbox/Scicomp
+upload_dropbox ::
+	@dir="${DROPBOX}/${REPOSUBDIR}" \
+	 && if [ ! -z "$$dir" ] ; then \
+	  if [ -z "${TARGETFILE}" ] ; then \
+	        targetfile=${FILE} ; else targetfile=${TARGETFILE} ; fi \
+	  && echo "Copying <<${FILE}>> to dropbox: <<$$dir>> as <<$$targetfile>>" \
+	  && cp "${FILE}" "$$dir"/"$$targetfile" \
+	  ; \
+	fi
+
+PUBLICDIR = ${HOME}/Current/istc/pdf/stc
+upload_publicpdf ::
+	@if [ ! -z "${PUBLICDIR}" ] ; then \
+	  if [ -z "${TARGETFILE}" ] ; then \
+	        targetfile=${FILE} ; else targetfile=${TARGETFILE} ; fi \
+	  && echo "Copying <<${FILE}>> to publicdir: <<${PUBLICDIR}>> as <<$$targetfile>>" \
+	  && cp "${FILE}" "${PUBLICDIR}"/"$$targetfile" \
+	  ; \
+	fi
+
+PUBLICREPO = 
+
+##
+## base directory, not the lectures directory
+## DO NoT escape any spaces!
+##
+STUDENTREPO = ${HOME}/Current/SSC/STC/2022 Fall/sds335fall2022
+REPOSUBDIR =
+upload_studentrepo ::
+	@if [ ! -z "${STUDENTREPO}" ] ; then \
+	  if [ -z "${TARGETFILE}" ] ; then \
+	        targetfile=${FILE} ; else targetfile=${TARGETFILE} ; fi \
+	  && if [ -z "${REPOSUBDIR}" ] ; then \
+	        echo "Copying <<${FILE}>> to studentrepo: <<${STUDENTREPO}>> as <<$$targetfile>>" \
+	         && cp "${FILE}" "${STUDENTREPO}"/"$$targetfile" \
+	     ; else \
+	        echo "Copying <<${FILE}>> to studentrepo: <<${STUDENTREPO}/${REPOSUBDIR}>> as <<$$targetfile>>" \
+	         && cp "${FILE}" "${STUDENTREPO}/${REPOSUBDIR}"/"$$targetfile" \
+	    ; fi \
+	  ; \
+	fi

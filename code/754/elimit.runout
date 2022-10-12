@@ -1,0 +1,12 @@
+clang   -g -O2 -std=c99    -DN=32 \
+	    -c elimit.c
+step  1 one_plus_one_over_n=2.0000000000 e-ish=2.000000e+00
+step  2 one_plus_one_over_n=1.1000000238 e-ish=2.593743e+00
+step  3 one_plus_one_over_n=1.0099999905 e-ish=2.704811e+00
+step  4 one_plus_one_over_n=1.0010000467 e-ish=2.717051e+00
+step  5 one_plus_one_over_n=1.0001000166 e-ish=2.718597e+00
+step  6 one_plus_one_over_n=1.0000100136 e-ish=2.721962e+00
+step  7 one_plus_one_over_n=1.0000009537 e-ish=2.595227e+00
+step  8 one_plus_one_over_n=1.0000001192 e-ish=3.293968e+00
+step  9 one_plus_one_over_n=1.0000000000 e-ish=1.000000e+00
+step 10 one_plus_one_over_n=1.0000000000 e-ish=1.000000e+00

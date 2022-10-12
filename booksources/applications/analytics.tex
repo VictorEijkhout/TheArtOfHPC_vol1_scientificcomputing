@@ -1,0 +1,155 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\R{{\cal R}}
+
+\Level 0 {Clustering}
+\index{clustering|(textbf}
+
+An important part of many data analytics algorithms
+is a \emph{clustering} stage, which sorts the data
+in a small number of groups that, presumably, belong together.
+
+\Level 1 {$k$-means clustering}
+
+The \indextermsub{$k$-means}{clustering} algorithm sorts data
+into a predefined number of clusters. Each cluster is defined by
+its center, and a data point belongs to a cluster if it's closer
+to the center of that cluster than to that of any other.
+
+\begin{enumerate}
+\item Find $k$ distinct points to serve as initial cluster centers.
+\item Now repeat until the clusters are stable:
+\item Group to the points according to the center they are closets to;
+\item recompute the centers based on these points.
+\end{enumerate}
+
+\Level 1 {Spectral clustering}
+\label{sec:spectral-cluster}
+
+The disadvantage of $k$-means clustering is that it presumes convex clusters.
+Other algorithms are more general. For instance, in spectral graph theory
+(section~\ref{app:fiedler}) the \indexterm{Fiedler vector} sorts the nodes of a graph
+into a small number of connected groups. We could apply this method as follows:
+\begin{enumerate}
+\item Let $D$ be the distance matrix $D_{ij}=|x_i-x_j|$ of the data points.
+\item Let $W$ be the diagonal matrix containing the row sums of~$D$; then
+\item $W-D$ is a matrix for which we can find the Fiedler vector.
+\end{enumerate}
+
+Normally, we would use \indexterm{inverse iteration} to find this vector,
+but it is also possible~\cite{LinCohen:PIC} to use the power method;
+section~\ref{app:power-method}.
+
+\index{clustering|)}
+
+\Level 0 {Classification}
+
+\Level 1 {Decision trees}
+
+A \indexterm{decision tree} is a classifier for a combination of ordered and
+unordered attributes. For each attribute, we have a list of
+\begin{quote}
+  record-id $|$ class $|$ value
+\end{quote}
+triplets.
+
+Building the decision tree now goes as follows:\\
+\begin{tabbing}
+  until \=all attributes are covered:\\
+  \>find an attribute\\
+  \>find a way to split the attribute\\
+  \>for \=all other attributes\\
+  \>\>split\= the attribute lists in\\
+  \>\>\>a `left' and `right' part
+\end{tabbing}
+
+Finding an attribute is typically done using the \indexterm{gini
+  index}. After that, finding a split point in that attribute is
+relatively simple for numerical attributes, though this is facilitated
+by always \indexterm{sorting} the lists.
+
+Splitting non-numeric, or `categorical', attributes is harder. We make
+a count of the records with the various values. We then group these to
+give a balanced split.
+
+Spliting the attribute lists takes one
+scan per attribute list:\\
+\begin{tabbing}
+  for \=each item:\\
+  \>use\= the record identifier to\\
+  \>\>find its value of the split attribute\\
+  \>based on this assign the item to\\
+  \>\>the `left' or `right' part of this attribute list.
+\end{tabbing}
+
+If the splitting attribute is categorical, assigning a record is
+slightly harder. For this, in the splitting stage
+typically a \indexterm{hash table} is used, noting for each record
+number in which subtree it is classified. For the other attribute
+lists the record number is then used to move the item left or right.
+
+\cite{Sprint:classifier,ScalParC}
+
+\Level 0 {Recommender systems}
+
+The article 
+\url{http://www2.research.att.com/~volinsky/papers/ieeecomputer.pdf}
+describes systems such as from \indexterm{Netflix}
+that try to predict how much a given person will like a given item.
+
+The approach here is identify a, relatively low dimensional, space~$\R^f$
+of \indexterm{features}. For movies one could for instance adopt two features:
+low-brow versus high-brow, and historic vs contemporary.
+(High-brow historic: Hamlet; low-brow historic: Robin Hood, men in tights; 
+high-brow contemporary: anything by Godard; low-brow contemporary, eh, 
+do I really need to find examples?)
+For each item (movie)~$i$ there is then a vector $q_i\in\R^f$ that characterises
+the item, and for each person there is a vector $p_j\in\R^f$ that
+characterises how much that person likes such movies. The predicted rating
+for a user of a movie is then $r_{ij}=q_i^tp_j$.
+
+The vectors $q_i,p_j$ are gradually learned based on actual
+ratings~$r_{ij}$, for instance by gradually minimizing
+\[ \min_{p,q} \sum_{ij} (r_{ij}-q_i^tp_j)^2+
+    \lambda \bigl( \|q_i\|^2+\|p_j\|^2 \bigr)
+\]
+
+\Level 1 {Stochastic gradient descent}
+\index{stochastic gradient descent}
+
+Let $e_{ij}=r_{ij}-q_i^tp_j$ be the difference between actual and predicted rating.
+\[
+\begin{array}{l}
+  q_i\leftarrow q_i+\gamma (e_{ij}p_j-\lambda q_i)\\
+  p_j\leftarrow p_j+\gamma (e_{ij}q_i-\lambda p_j)
+\end{array}
+\]
+
+Decentralized recommending:~\cite{Zheng:2016arXiv:decentral-recommend}
+
+\Level 1 {Alternating least squares}
+
+First fix all $p_j$ and minimize the $q_i$ (in parallel),
+then fix $q_i$ and minimize the~$p_j$.
+This handles missing data better.
+
+%Machine learning, for an introduction to ML techniques; see~\cite{Tara:MLbiology}.
+
+\Level 0 {Distributed hash tables}
+
+See \indexterm{memcached}
+\url{https://en.wikipedia.org/wiki/Memcached}

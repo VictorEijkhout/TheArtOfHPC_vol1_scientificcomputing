@@ -1,0 +1,154 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012/3/4/5/
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\index{complexity|(}
+
+At various places in this book we are interested in how many
+operations an algorithm takes. It depends on the context what these
+operations are, but often we count additions (or subtractions) and
+multiplications. This is called the \emph{arithmetic} or
+\indextermsub{computational}{complexity}
+of an algorithm. For
+instance, summing $n$ numbers takes $n-1$ additions.  Another quantity
+that we may want to describe is the amount of space (computer memory)
+that is needed. Sometimes the space to fit the input and output of an
+algorithm is all that is needed, but some algorithms need temporary
+space. The total required space is called the
+\indextermsub{space}{complexity}
+of an algorithm.
+
+Both arithmetic and space complexity depend on some description of the
+input, for instance, for summing an array of numbers, the length $n$
+of the array is all that is needed. We express this dependency by
+saying `summing an array of numbers has time complexity $n-1$
+additions, where $n$ is the length of the array'.
+
+The time (or space) the summing algorithm takes is not dependent on
+other factors such as the values of the numbers.  By contrast, some
+algorithms such as computing the greatest common divisor of an array
+of integers \emph{can} be dependent on the actual values.
+
+\begin{exercise}
+  What is the time and space complexity of multiplying two square
+  matrices of size $n\times n$? Assume that an addition and a
+  multiplication take the same amount of time.
+\end{exercise}
+
+Often we aim to simplify the formulas that describe time or space
+complexity. For instance, if the complexity of an algorithm is
+$n^2+2n$, we see that for $n>2$ the complexity is less than $2n^2$,
+and for $n>4$ it is less than $(3/2)n^2$. On the other hand, for all
+values of~$n$ the complexity is at least~$n^2$.  Clearly, the
+quadratic term $n^2$ is the most important, and the linear term~$n$
+becomes less and less important by ratio. We express this informally
+by saying that the complexity is quadratic in $n$ as
+$n\rightarrow\infty$: there are constants~$c,C$ so that for $n$ large
+enough the complexity is at least $cn^2$ and at most~$Cn^2$. 
+
+This is
+expressed for short by saying that the complexity is of
+\indexterm{order} $n^2$, written as~$O(n^2)$ as
+$n\rightarrow\infty$. In
+chapter~\ref{ch:odepde} you will see phenomena that we want to
+describe as orders of a parameter that goes to zero. In that case we
+write for instance $f(h)=O(h^2)$ as $h\downarrow0$, meaning that $f$
+is bounded by $ch^2$ and $Ch^2$ for certain constants $c,C$ and $h$
+small enough.
+
+\Level 0 {Formal definitions}
+
+Formally, we distinguish the following complexity types:
+\begin{itemize}
+\item Big-Oh complexity. This states the existence of an upperbound
+  on the absolute magnitude:
+  \[ g(x) = O(f(x)) \equiv \exists_{C>0,x_0>0} \forall_{x>x_0} \colon |g(x)|<Cf(x) \]
+\item Little-oh complexity. This states a function is essentially smaller than another:
+  \[ g(x) = o(f(x)) \equiv \forall_{C>0} \exists_{x_0>0} \forall_{x>x_0} \colon |g(x)|<Cf(x) \]
+\item Big-Theta complexity. This is like Big-Oh, except that now we have upper and lower bounds:
+  \[ g(x) = \Theta(f(x)) \equiv \exists_{C>c>0,x_0>0} \forall_{x>x_0} \colon cf(x) < g(x) < Cf(x) \]
+\item Finally: Big-Omega complexity states that a function is at least as large as another:
+  \[ g(x) = \Omega(f(x)) \equiv \exists_{C>0,x_0>0} \forall_{x>x_0} \colon g(x) > Cf(x) \]
+\end{itemize}
+
+\Level 0 {The Master Theorem}
+\label{sec:compl-master}
+
+For many operations, complexity is easily expressed recursively.
+For instance, the \indextermsub{complexity of}{quicksort}
+obeys a recurrence
+\[ T(n) = 2T(n/2) + O(n), \]
+expressing that sorting an array of $n$ numbers involves twice sorting $n/2$ numbers,
+plus the splitting step, which is linear in the array size.
+
+The so-called \indextermdef{master theorem} of complexity
+allows you to convert these recursive expression to a closed form formula.
+
+Suppose the function~$T$ satisfies
+\[ T(n) = a T\bigl( \frac{n}{b} \bigr) + f(n) \]
+with $a,b\geq 1$ and $f(\cdot)$ asymptotically positive.
+Then there are three cases:
+\begin{enumerate}
+\item If
+  \[ f(n)=O\left( n^{\log_b(a)-\epsilon} \right )
+  \quad\hbox{then}\quad
+  T(n) = \Theta \left( n^{\log_b(a)} \right )
+  \]
+\item If
+  \[ f(n)=O\left( n^{\log_b(a)} \right )
+  \quad\hbox{then}\quad
+  T(n) = \Theta \left( n^{\log_b(a)}\log(n) \right )
+  \]
+\item If
+  \[ f(n)=O\left( n^{\log_b(a)+\epsilon} \right )
+  \quad\hbox{then}\quad
+  T(n) = \Theta \left( f(n) \right )
+  \]
+\end{enumerate}
+
+Some examples follow.
+
+\Level 1 {Quicksort and mergesort}
+
+The \indexterm{quicksort} and \indexterm{mergesort} algorithms
+recursively divide work into two (hopefully) equal halves,
+preceeded/followed by a linear splitting/merging step.
+Thus their complexity satisfies
+\[ T(n) = 2T(n/2) + O(n) \]
+giving, with $a=b=2$ and $f(n)=n$, by case 2:
+\[ T(n) = \Theta( n\log n ). \]
+
+\Level 1 {Matrix-matrix multiplication}
+
+We already know that the ordinary triple-loop formulation of
+matrix-matrix multiplication has a complexity of~$O(n^3)$.
+Multiplying matrices by recursive bisection into $2\times 2$ blocks
+gives
+\[ T(n) = 8T(n/2) + O(n^2). \]
+Substituting $a=8,b=2$ gives $\log_b(a)=3$
+so case~1 applies with $\epsilon=1$,
+and we find
+\[ T(n) = \Theta( n^3 ). \]
+
+Slightly more interesting, the
+\indexterm{Strassen}\index{Strassen algorithm|see{matrix, times matrix product, Strassen algorithm for}}
+algorithm~\cite{St:gaussnotoptimal}
+has $a=7$,
+giving an essentially lower complexity of~$O(n^{\log 7}) \approx O(n^{2.81})$.
+There are other algorithms like this~\cite{Pa:combinations},
+with slightly lower complexities,
+though all still well above~$O(n^2)$.
+
+%\index{complexity|)}

@@ -1,0 +1,9 @@
+// square.c
+  int nmax,i;
+  float *squares,sum;
+
+  fscanf(stdin,"%d",nmax);
+  for (i=1; i<=nmax; i++) {
+    squares[i] = 1./(i*i); sum += squares[i];
+  }    
+  printf("Sum: %e\n",sum);

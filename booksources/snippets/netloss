@@ -1,0 +1,17 @@
+float Net::calculateLoss(Dataset &testSplit) {
+    testSplit.stack();
+    feedForward(testSplit.dataBatch);
+    const VectorBatch &result = output_mat();
+
+    float loss = 0.0;
+    for (int vec=0; vec<result.batch_size(); vec++) { // iterate over all items
+      const auto& one_result = result.get_vector(vec);
+      const auto& one_label  = testSplit.labelBatch.get_vector(vec);
+      assert( one_result.size()==one_label.size() );
+      for (int i=0; i<one_result.size(); i++) // Calculate loss of result
+	loss += lossFunction( one_label[i], one_result[i] );
+    }
+    loss = -loss / (float) result.batch_size();
+    
+    return loss;
+}

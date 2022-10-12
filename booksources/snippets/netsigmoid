@@ -1,0 +1,9 @@
+// funcs.cpp
+template <typename V>
+void sigmoid_io(const V &m, V &a) {
+    a.vals.assign(m.vals.begin(),m.vals.end());
+    for (int i = 0; i < m.r * m.c; i++) {
+        // a.vals[i]*=(a.vals[i]>0); // values will be 0 if negative, and equal to themselves if positive
+        a.vals[i] = 1 / (1 + exp(-a.vals[i]));
+    }
+}

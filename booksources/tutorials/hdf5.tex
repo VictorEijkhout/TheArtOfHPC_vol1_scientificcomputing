@@ -1,0 +1,308 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012/3/4/5
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+There are many ways of storing data, in particular data that comes in
+arrays. A~surprising number of people stores data in spreadsheets,
+then exports them to ascii files with comma or tab delimiters, and expects other
+people (or other programs written by themselves) to read that in
+again. Such a process is wasteful in several respects:
+\begin{itemize}
+\item The ascii representation of a number takes up much more space
+  than the internal binary representation. Ideally, you would want a
+  file to be as compact as the representation in memory.
+\item Conversion to and from ascii is slow; it may also lead to loss
+  of precision.
+\end{itemize}
+For such reasons, it is desirable to have a file format that is based
+on binary storage. There are a few more requirements on a useful file
+format:
+\begin{itemize}
+\item Since binary storage can differ between platforms, a good file
+  format is platform-independent. This will, for instance, prevent the
+  confusion between \indexterm{big-endian} and
+  \indexterm{little-endian} storage, as well as conventions of 32
+  versus 64 bit floating point numbers.  
+\item Application data can be heterogeneous, comprising integer,
+  character, and floating point data. Ideally, all this data should be
+  stored together.
+\item Application data is also structured. This structure should be
+  reflected in the stored form.
+\item It is desirable for a file format to be
+  \emph{self-documenting}. If you store a matrix and a right-hand side
+  vector in a file, wouldn't it be nice if the file itself told you
+  which of the stored numbers are the matrix, which the vector, and
+  what the sizes of the objects are?
+\end{itemize}
+This tutorial will introduce the HDF5 library, which fulfills these
+requirements. HDF5 is a large and complicated library, so this
+tutorial will only touch on the basics. For
+further information, consult \url{http://www.hdfgroup.org/HDF5/}.
+While you do this tutorial, keep your browser open on
+\url{http://www.hdfgroup.org/HDF5/doc/} or
+\url{http://www.hdfgroup.org/HDF5/RM/RM_H5Front.html} 
+for the exact
+syntax of the routines.
+
+\Level 0 {Introduction to HDF5}
+
+As described above, HDF5 is a file format that is machine-independent
+and self-documenting. Each HDF5 file is set up like a directory tree,
+with subdirectories, and leaf nodes which contain the actual
+data. This means that data can be found in a file by referring to its
+name, rather than its location in the file. In this section you will
+learn to write programs that write to and read from HDF5 files. In
+order to check that the files are as you intend, you can use the
+\n{h5dump} utility on the command line.\footnote{In order to do the
+  examples, the \n{h5dump} utility needs to be in your path, and you
+  need to know the location of the \n{hdf5.h} and \n{libhdf5.a} and
+  related library files.}
+
+Just a word about compatibility. The HDF5 format is not compatible
+with the older version HDF4, which is no longer under development. You
+can still come across people using hdf4 for historic reasons. This
+tutorial is based on HDF5 version~1.6. Some interfaces changed in the
+current version~1.8; in order to use 1.6 APIs with 1.8 software, add a
+flag \n{-DH5_USE_16_API} to your compile line.
+
+Many HDF5 routines are about creating objects: file handles, members
+in a dataset, et cetera. The general syntax for that is
+\begin{verbatim}
+hid_t h_id;
+h_id = H5Xsomething(...);
+\end{verbatim}
+Failure to create the object is indicated by a negative return
+parameter, so it would be a good idea to create a file
+\n{myh5defs.h}  containing:
+\begin{verbatim}
+#include "hdf5.h"
+#define H5REPORT(e) \
+  {if (e<0) {printf("\nHDF5 error on line %d\n\n",__LINE__); \
+   return e;}}
+\end{verbatim}
+and use this as:
+\begin{verbatim}
+#include "myh5defs.h"
+
+hid_t h_id;
+h_id = H5Xsomething(...); H5REPORT(h_id);
+\end{verbatim}
+
+\Level 0 {Creating a file}
+
+First of all, we need to create an HDF5 file.
+\begin{verbatim}
+hid_t file_id;
+herr_t status;
+
+file_id = H5Fcreate( filename, ... );
+    ...
+status = H5Fclose(file_id); 
+\end{verbatim}
+This file will be the container for a number of data items, organized
+like a directory tree.
+
+\practical{Create an HDF5 file by compiling and running the \n{create.c}
+  example below.}{A file \n{file.h5} should be created.}{Be sure to add HDF5
+  include and library directories:\\ \n{cc -c create.c
+    -I. -I/opt/local/include}\\ and\\ \n{cc -o create create.o
+    -L/opt/local/lib -lhdf5}. The include and lib directories will be
+  system dependent.}
+\begin{tacc}
+  On the TACC clusters, do \n{module load hdf5}, which will give you
+  environment variables \n{TACC_HDF5_INC} and \n{TACC_HDF5_LIB} for
+  the include and library directories, respectively.
+\end{tacc}
+
+{\small \verbatiminput{tutorials/hdf5/create.c} }
+
+You can display the created file on the commandline:
+\begin{verbatim}
+%% h5dump file.h5
+HDF5 "file.h5" {
+GROUP "/" {
+}
+}
+\end{verbatim}
+Note that an empty file corresponds to just the root of the directory
+tree that will hold the data.
+
+\Level 0 {Datasets}
+
+Next we create a dataset, in this example a 2D grid. To describe this,
+we first need to construct a dataspace:
+\begin{verbatim}
+   dims[0] = 4; dims[1] = 6; 
+   dataspace_id = H5Screate_simple(2, dims, NULL);
+   dataset_id = H5Dcreate(file_id, "/dset", dataspace_id, .... );
+   ....
+   status = H5Dclose(dataset_id);
+   status = H5Sclose(dataspace_id);
+\end{verbatim}
+Note that datasets and dataspaces need to be closed, just like files.
+
+\practical{Create a dataset by compiling and running the \n{dataset.c}
+  code below}{This creates a file \n{dset.h} that can be displayed
+  with \n{h5dump}.}{}
+
+{\small \verbatiminput{tutorials/hdf5/dataset.c} }
+
+We again view the created file online:
+\begin{verbatim}
+%% h5dump dset.h5 
+HDF5 "dset.h5" {
+GROUP "/" {
+   DATASET "dset" {
+      DATATYPE  H5T_STD_I32BE
+      DATASPACE  SIMPLE { ( 4, 6 ) / ( 4, 6 ) }
+      DATA {
+      (0,0): 0, 0, 0, 0, 0, 0,
+      (1,0): 0, 0, 0, 0, 0, 0,
+      (2,0): 0, 0, 0, 0, 0, 0,
+      (3,0): 0, 0, 0, 0, 0, 0
+      }
+   }
+}
+}
+\end{verbatim}
+
+The datafile contains such information as the size of the arrays you
+store. Still, you may want to add related scalar information. For
+instance, if the array is output of a program, you could record
+with what input
+parameter was it generated.
+
+\begin{verbatim}
+   parmspace = H5Screate(H5S_SCALAR);
+   parm_id = H5Dcreate
+     (file_id,"/parm",H5T_NATIVE_INT,parmspace,H5P_DEFAULT);
+\end{verbatim}
+
+\practical{Add a scalar dataspace to the HDF5 file, by compiling and
+  running the \n{parmwrite.c} code below.}{A new file \n{wdset.h5}
+  is created.}{}
+
+{\small \verbatiminput{tutorials/hdf5/parmdataset.c} }
+
+\begin{verbatim}
+%% h5dump wdset.h5 
+HDF5 "wdset.h5" {
+GROUP "/" {
+   DATASET "dset" {
+      DATATYPE  H5T_IEEE_F64LE
+      DATASPACE  SIMPLE { ( 4, 6 ) / ( 4, 6 ) }
+      DATA {
+      (0,0): 0.5, 1.5, 2.5, 3.5, 4.5, 5.5,
+      (1,0): 6.5, 7.5, 8.5, 9.5, 10.5, 11.5,
+      (2,0): 12.5, 13.5, 14.5, 15.5, 16.5, 17.5,
+      (3,0): 18.5, 19.5, 20.5, 21.5, 22.5, 23.5
+      }
+   }
+   DATASET "parm" {
+      DATATYPE  H5T_STD_I32LE
+      DATASPACE  SCALAR
+      DATA {
+      (0): 37
+      }
+   }
+}
+}
+\end{verbatim}
+
+\Level 0 {Writing the data}
+
+The datasets you created allocate the space in the hdf5 file. Now you
+need to put actual data in it. This is done with the \n{H5Dwrite} call.
+
+{\small
+\begin{verbatim}
+/* Write floating point data */
+for (i=0; i<24; i++) data[i] = i+.5;
+status = H5Dwrite
+  (dataset,H5T_NATIVE_DOUBLE,H5S_ALL,H5S_ALL,H5P_DEFAULT,
+   data); 
+/* write parameter value */
+parm = 37;
+status = H5Dwrite
+  (parmset,H5T_NATIVE_INT,H5S_ALL,H5S_ALL,H5P_DEFAULT,
+   &parm);
+\end{verbatim}
+
+\verbatiminput{tutorials/hdf5/parmwrite.c}
+
+\begin{verbatim}
+%% h5dump wdset.h5     
+HDF5 "wdset.h5" {
+GROUP "/" {
+   DATASET "dset" {
+      DATATYPE  H5T_IEEE_F64LE
+      DATASPACE  SIMPLE { ( 4, 6 ) / ( 4, 6 ) }
+      DATA {
+      (0,0): 0.5, 1.5, 2.5, 3.5, 4.5, 5.5,
+      (1,0): 6.5, 7.5, 8.5, 9.5, 10.5, 11.5,
+      (2,0): 12.5, 13.5, 14.5, 15.5, 16.5, 17.5,
+      (3,0): 18.5, 19.5, 20.5, 21.5, 22.5, 23.5
+      }
+   }
+   DATASET "parm" {
+      DATATYPE  H5T_STD_I32LE
+      DATASPACE  SCALAR
+      DATA {
+      (0): 37
+      }
+   }
+}
+}
+\end{verbatim}
+}
+
+If you look closely at the source and the dump, you see that the data
+types are declared as `native', but rendered as \n{LE}.  The `native'
+declaration makes the datatypes behave like the built-in C or Fortran
+data types. Alternatively, you can explicitly indicate whether data is
+\indexterm{little-endian} or \indexterm{big-endian}. These terms
+describe how the bytes of a data item are ordered in memory. Most
+architectures use little endian, as you can see in the dump output,
+but, notably, IBM\index{IBM} uses big endian.
+
+\Level 0 {Reading}
+
+Now that we have a file with some data, we can do the mirror part of
+the story: reading from that file. The essential commands are
+\begin{verbatim}
+  h5file = H5Fopen( .... )
+  ....
+  H5Dread( dataset, .... data .... )
+\end{verbatim}
+where the \n{H5Dread} command has the same arguments as the
+corresponding \n{H5Dwrite}.
+
+\practical{Read data from the \n{wdset.h5} file that you create in the
+  previous exercise, by compiling and running the \n{allread.c}
+  example below.}{Running the \n{allread} executable will print the
+  value~\n{37} of the parameter, and the value~\n{8.5} of the
+  \n{(1,2)} data point of the array.}{Make sure that you run
+  \n{parmwrite} to create the input file.}
+
+{\small \verbatiminput{tutorials/hdf5/allread.c} }
+
+\begin{verbatim}
+ %% ./allread
+parameter value: 37
+arbitrary data point [1,2]: 8.500000e+00
+\end{verbatim}
+
+% LocalWords:  Eijkhout ascii endian HDF hdf libhdf APIs DH API myh
+% LocalWords:  defs cc lhdf lib TACC commandline dataspace dataspaces
+% LocalWords:  dset parmwrite wdset Dwrite LE datatypes allread

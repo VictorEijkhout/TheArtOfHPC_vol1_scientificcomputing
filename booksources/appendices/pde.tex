@@ -1,0 +1,82 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012/3/4/5/
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Partial Differential Equations\index{partial differential equations}
+are the source of a large fraction of \ac{HPC} problems. Here is a
+quick derivation of two of the most important ones.
+
+\Level 0 {Partial derivatives}
+
+Derivatives of a function $u(x)$ are a measure of the rate of
+change. Partial derivatives to the same, but for a function $u(x,y)$
+of two variables. Notated $u_x$ and $u_y$, these \indexterm{partial
+  derivates} indicate the rate of change if only one variable changes
+and the other stays constant.
+
+Formally, we define
+$u_x,u_y$ by:
+\[ u_x(x,y) = \lim_{h\rightarrow0}\frac{u(x+h,y)-u(x,y)}h,\quad
+   u_y(x,y) = \lim_{h\rightarrow0}\frac{u(x,y+h)-u(x,y)}h
+\]
+
+\Level 0 {Poisson or Laplace Equation}
+
+Let $T$ be the temperature of a material, then its heat energy is
+proportional to it. A~segment of length~$\Delta x$ has heat energy
+$Q=c\Delta x\cdot u$. If the heat energy in that
+segment is constant
+\[ \frac{\delta Q}{\delta t}=c\Delta x\frac{\delta u}{\delta t}=0 \]
+but it is also the difference between inflow and outflow of the
+segment. Since flow is proportional to temperature differences, that
+is, to~$u_x$, we see that also
+\[ 0=
+    \left.\frac{\delta u}{\delta x}\right|_{x+\Delta x}-
+    \left.\frac{\delta u}{\delta x}\right|_{x}
+\]
+In the limit of $\Delta x\downarrow0$ this gives $u_{xx}=0$, which is
+called the \indexterm{Laplace equation}. If we have a source term, for
+instance corresponding to externally applied heat, the equation
+becomes $u_{xx}=f$, which is called the \indexterm{Poisson equation}.
+
+\Level 0 {Heat Equation}
+\label{sec:derive-heat}
+
+Let $T$ be the temperature of a material, then its heat energy is
+proportional to it. A~segment of length~$\Delta x$ has heat energy
+$Q=c\Delta x\cdot u$. The rate of change in heat energy in that
+segment is
+\[ \frac{\delta Q}{\delta t}=c\Delta x\frac{\delta u}{\delta t} \]
+but it is also the difference between inflow and outflow of the
+segment. Since flow is proportional to temperature differences, that
+is, to~$u_x$, we see that also
+\[ \frac{\delta Q}{\delta t}=
+    \left.\frac{\delta u}{\delta x}\right|_{x+\Delta x}-
+    \left.\frac{\delta u}{\delta x}\right|_{x}
+\]
+In the limit of $\Delta x\downarrow0$ this gives $u_t=\alpha u_{xx}$.
+
+\Level 0 {Steady state}
+\label{app:steadystate}
+
+The solution of an \ac{IBVP} is a function $u(x,t)$. In cases where
+the forcing function and the boundary conditions do not depend on
+time, the solution will converge in time, to a function called the
+\indexterm{steady state} solution:
+\[ \lim_{t\rightarrow\infty} u(x,t)=u_{\mathrm{steady state}}(x). \]
+This solution satisfies a \ac{BVP}, which can be found by setting
+$u_t\equiv\nobreak0$. For instance, for the heat equation \[
+u_t=u_{xx}+q(x) \] the steady state solution satisfies $-u_{xx}=q(x)$.
+

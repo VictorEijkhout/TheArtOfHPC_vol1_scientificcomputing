@@ -1,0 +1,254 @@
+% this file is no longer used
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Collective operations play an important part in linear algebra
+operations. In fact, the scalability of the operations can depend on
+the cost of these
+collectives. (See~\cite{Chan2007Collective,Hoefler:implementing-collective,Rabenseifner2004OptimizationOC}
+for details.)
+
+\index{3@$\alpha$|see{latency}}
+\index{3@$\beta$|see{bandwidth}}
+\index{3@$\gamma$|see{computation rate}}
+In computing the cost of a collective operation, three architectural
+constants are enough to give lower bounds: $\alpha$,~the \indexterm{latency} of
+sending a single message, $\beta$,~the inverse of the \indexterm{bandwidth} for
+sending data (see section~\ref{sec:latencybandwidth}), and $\gamma$,
+the inverse of the \indexterm{computation rate}, the
+time for performing an arithmetic operation. Sending $n$ data
+items then takes time $\alpha +\beta n$. We further assume that a
+processor can only send one message at a time. We make no assumptions
+about the connectivity of the processors; thus, the lower bounds
+derived here will hold for a wide range of architectures.
+
+The main implication of the architectural model above is that the
+number of active processors can only double in each step of an
+algorithm. For instance, to do a broadcast, first processor~0 sends
+to~1, then 0~and~1 can send to 2~and~3, then 0--3 send to 4--7, et
+cetera. This cascade of messages is called
+a \indextermbus{minimum}{spanning tree} of the processor network, and
+it follows that any collective algorithm has at least $\alpha\log_2p$
+cost associated with the accumulated latencies.
+
+\Level 2 {Broadcast}
+\index{broadcast|(}
+
+In a \emph{broadcast} operation, a single processor has $n$ data elements
+that is needs to send to all others: the other processors need a full
+copy of all $n$ elements.  By
+the above doubling argument, we conclude that a broadcast to $p$
+processors takes time at least $\lceil\log_2 p\rceil$ steps with a
+total latency of $\lceil\log_2 p\rceil \alpha$. Since $n$ elements are
+sent, this adds at least a time $n\beta$ for all elements to leave the
+sending processor, giving a total cost lower bound of
+\[ \lceil\log_2 p\rceil \alpha+n\beta. \]
+
+We can illustrate the spanning tree method as follows:
+\[
+\begin{array}{|c|cccc|}
+\hline
+  &t=0&t=1&t=2&t=3\\ \hline
+p_0&x_0,x_1,x_2,x_3&x_0\downarrow,x_1\downarrow,x_2\downarrow,x_3\downarrow
+   &x_0\downarrow,x_1\downarrow,x_2\downarrow,x_3\downarrow
+   &x_0,x_1,x_2,x_3\\
+p_1&&&x_0\downarrow,x_1\downarrow,x_2\downarrow,x_3\downarrow
+   &x_0,x_1,x_2,x_3\\
+p_2&&&&x_0,x_1,x_2,x_3\\
+p_3&&&&x_0,x_1,x_2,x_3\\
+\hline
+\end{array}
+\]
+(On $t=1$, $p_0$ sends to $p_1$; on $t=2$ $p_0,p_1$ send to $p_2,p_3$.)
+This algorithm has the correct $\log_2p\cdot\alpha$ term, but processor~0 repeatedly
+sends the whole vector, so the bandwidth cost is $\log_2p\cdot n\beta$.
+
+The following algorithm implements the broadcast as a combination of a scatter
+and a \indexterm{bucket brigade algorithm}:
+\[
+\begin{array}{|c|lll|}
+\hline
+  &t=0&t=1&et cetera\\ \hline
+p_0&x_0\downarrow\hphantom{,x_1\downarrow,x_2\downarrow,x_3\downarrow}
+   &x_0\hphantom{\downarrow,x_1\downarrow,x_2\downarrow,}x_3\downarrow
+   &x_0,\hphantom{x_1,}x_2,x_3\\
+p_1&\hphantom{x_0\downarrow,}x_1\downarrow\hphantom{,x_2\downarrow,x_3\downarrow}
+   &x_0\downarrow,x_1\hphantom{\downarrow,x_2\downarrow,x_3\downarrow}
+   &x_0,x_1,\hphantom{x_2,}x_3\\
+p_2&\hphantom{x_0\downarrow,x_1\downarrow,}x_2\downarrow\hphantom{,x_3\downarrow}
+   &\hphantom{x_0\downarrow,}x_1\downarrow,x_2\hphantom{\downarrow,x_3\downarrow}
+   &x_0,x_1,x_2\hphantom{,x_3}\\
+p_3&\hphantom{x_0\downarrow,x_1\downarrow,x_2\downarrow,}x_3\downarrow
+   &\hphantom{x_0\downarrow,x_1\downarrow,}x_2\downarrow,x_3\hphantom{\downarrow}
+   &\hphantom{x_0,}x_1,x_2,x_3\\
+\hline
+\end{array}
+\]
+The complexity now becomes \[ p\alpha+\beta n(p-1)/p \]
+which is not optimal in latency, but is a better algorithm if $n$ is large.
+
+\index{broadcast|)}
+
+\Level 2 {Reduction}
+\index{reduction|(}
+
+In a \emph{reduction} operation, each processor has $n$ data elements, and
+one processor needs to combine them elementwise, for instance
+computing $n$ sums or products.
+
+By running the broadcast backwards in time, we see that a reduction
+operation has the same lower bound on the communication of
+$\lceil\log_2 p\rceil \alpha+n\beta$.  A~reduction operation also
+involves computation, which would take a total time of $(p-1)\gamma n$
+sequentially: each of
+$n$ items gets reduced over $p$ processors. Since these operations can
+potentially be parallelized, the lower bound on the computation is
+$\frac{p-1}p \gamma n$, giving a total of
+    \[ \lceil\log_2 p\rceil \alpha+n\beta +\frac{p-1}p \gamma n. \]
+
+We illustrate this again, using the notation $x_i^{(j)}$ for the data item~$i$
+that was originally on processor~$j$, and $x_i^{(j:k)}$ for the sum of
+the items~$i$ of processors $j\ldots k$.
+
+\[
+\begin{array}{|c|ccc|}
+\hline
+  &t=1&t=2&t=3\\ \hline
+p_0&x_0^{(0)},x_1^{(0)},x_2^{(0)},x_3^{(0)}
+   &x_0^{(0:1)},x_1^{(0:1)},x_2^{(0:1)},x_3^{(0:1)}
+   &x_0^{(0:3)},x_1^{(0:3)},x_2^{(0:3)},x_3^{(0:3)}\\
+p_1&x_0^{(1)}\uparrow,x_1^{(1)}\uparrow,x_2^{(1)}\uparrow,x_3^{(1)}\uparrow
+   &&\\
+p_2&x_0^{(2)},x_1^{(2)},x_2^{(2)},x_3^{(2)}
+   &x_0^{(2:3)}\uparrow,x_1^{(2:3)}\uparrow,x_2^{(2:3)}\uparrow,x_3^{(2:3)}\uparrow
+   &\\
+p_3&x_0^{(3)}\uparrow,x_1^{(3)}\uparrow,x_2^{(3)}\uparrow,x_3^{(3)}\uparrow
+   &&\\
+\hline
+\end{array}
+\]
+
+On time $t=1$ processors $p_0,p_2$ receive from $p_1,p_3$, and on
+$t=2$ $p_0$ receives from~$p_2$.
+
+\index{reduction|)}
+
+\Level 2 {Allreduce}
+\index{allreduce|(}
+
+An \emph{allreduce} operation computes the same elementwise reduction of $n$
+elements on each processor, but leaves the result on each processor,
+rather than just on the root of the spanning tree. This could be
+implemented as a reduction followed by a broadcast, but more clever
+algorithms exist.
+
+The lower bound on the cost of an allreduce is, somewhat remarkably,
+almost the same as of a simple reduction: since in a reduction not all
+processors are active at the same time, we assume that the extra work
+can be spread out perfectly. This means that the lower bound on the
+latency and computation stays the same. For the bandwidth we reason as
+follows: in order for the communication to be perfectly parallelized,
+$\frac{p-1}p n$ items have to arrive at, and leave each
+processor. Thus we have a total time of
+\[ \lceil \log_2 p\rceil\alpha +2\frac{p-1}pn\beta
+    +\frac{p-1}pn\gamma. \]
+
+\index{allreduce|)}
+
+\Level 2 {Allgather}
+\index{allgather|(}
+
+In a \indexterm{gather} operation on $n$ elements, each processor has
+$n/p$ elements, and one processor collects them all, without combining
+them as in a reduction. The \emph{allgather} computes the same gather,
+but leaves the result on all processors.
+
+Again we assume that gathers with multiple
+targets are active simultaneously. Since every processor originates a
+minimum spanning tree, we have $\log_2p\alpha$ latency; since each
+processor receives $n/p$ elements from $p-1$ processors, there is
+$\frac{p-1}p\beta$ bandwidth cost. The total cost for constructing a
+length~$n$ vector by allgather is then
+\[ \lceil \log_2 p\rceil\alpha +\frac{p-1}pn\beta. \]
+
+\[
+\begin{array}{|c|ccc|}
+\hline
+  &t=1&t=2&t=3\\ \hline
+p_0&x_0\downarrow&x_0x_1\downarrow&x_0x_1x_2x_3\\
+p_1&x_1\uparrow&x_0x_1\downarrow&x_0x_1x_2x_3\\
+p_2&x_2\downarrow&x_2x_3\uparrow&x_0x_1x_2x_3\\
+p_3&x_3\uparrow&x_2x_3\uparrow&x_0x_1x_2x_3\\
+\hline
+\end{array}
+\]
+At time $t=1$, there is an exchange between neighbors $p_0,p_1$ and
+likewise $p_2,p_3$; at $t=2$ there is an exchange over distance two
+between $p_0,p_2$ and likewise~$p_1,p_3$.
+
+\index{allgather|)}
+
+\Level 2 {Reduce-scatter}
+\index{reduce-scatter|(}
+
+In a \indexterm{reduce-scatter} operation, each processor has $n$
+elements, and an $n$-way reduction is done on them. Unlike in the
+reduce or allreduce, the result is then broken up, and distributed as
+in a scatter operation.
+
+Formally, processor~$i$ has an
+item~$x_i^{(i)}$, and it needs $\sum_j x_i^{(j)}$. We could implement
+this by doing a size~$p$ reduction, collecting the vector $(\sum_i
+x_0^{(i)},\sum_i x_1^{(i)},\ldots)$ on one processor, and scattering
+the results. However it is possible to combine these operations in a
+so-called \indexterm{bidirectional exchange} algorithm:
+
+\[
+\begin{array}{|c|ccc|}
+\hline
+  &t=1&t=2&t=3\\ \hline
+p_0&x_0^{(0)},x_1^{(0)},x_2^{(0)}\downarrow,x_3^{(0)}\downarrow
+   &x_0^{(0:2:2)},x_1^{(0:2:2)}\downarrow
+    \hphantom{x_0^{(0:2:2)},x_1^{(0:2:2)}\downarrow}
+   &x_0^{(0:3)}
+    \hphantom{x_3^{(0:3)}x_3^{(0:3)}x_3^{(0:3)}}\\
+p_1&x_0^{(1)},x_1^{(1)},x_2^{(1)}\downarrow,x_3^{(1)}\downarrow
+   &x_0^{(1:3:2)}\uparrow,x_1^{(1:3:2)}
+    \hphantom{x_0^{(0:2:2)},x_1^{(0:2:2)}\downarrow}
+   &\hphantom{x_3^{(0:3)}} x_1^{(0:3)}
+    \hphantom{x_3^{(0:3)}x_3^{(0:3)}} \\
+p_2&x_0^{(2)}\uparrow,x_1^{(2)}\uparrow,x_2^{(2)},x_3^{(2)}
+   &\hphantom{x_0^{(0:2:2)},x_1^{(0:2:2)}\downarrow}
+    x_2^{(0:2:2)},x_3^{(0:2:2)}\downarrow
+   &\hphantom{x_3^{(0:3)}x_3^{(0:3)}} x_2^{(0:3)}
+    \hphantom{x_3^{(0:3)}}\\
+p_3&x_0^{(3)}\uparrow,x_1^{(3)}\uparrow,x_2^{(3)},x_3^{(3)}
+   &\hphantom{x_0^{(0:2:2)},x_1^{(0:2:2)}\downarrow}
+    x_0^{(1:3:2)}\uparrow,x_1^{(1:3:2)}
+   &\hphantom{x_3^{(0:3)}x_3^{(0:3)}x_3^{(0:3)}}
+    x_3^{(0:3)}\\
+\hline
+\end{array}
+\]
+
+The reduce-scatter can be considered as a allgather run in reverse,
+with arithmetic added, so the cost is 
+\[ \lceil \log_2 p\rceil\alpha +\frac{p-1}pn(\beta+\gamma). \]
+
+\index{reduce-scatter|)}
+
+% LocalWords:  Eijkhout elementwise Allreduce allreduce Allgather
+% LocalWords:  allgather

@@ -1,0 +1,548 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{libraries!numerical|(}
+
+There are many libraries for scientific computing. Some are
+specialized to certain application areas, others are quite general. In
+this section we will take a brief look at the PETSc library for sparse
+matrix computations, and the BLAS/Lapack libraries for dense
+computations.
+
+\Level 0 {The Portable Extendable Toolkit for Scientific Computing}
+\index{linear algebra!software!sparse|(}
+\index{PETSc|(}
+
+PETSc, the Portable Extendable Toolkit for Scientifc
+Computation~\cite{}, is a large powerful library, mostly concerned
+with linear and nonlinear system of equations that arise from
+discretized \acp{PDE}. Since it has many hundreds of routines (and a
+good manual already exists) we limit this tutorial to going through
+a few simple, yet representative, PETSc programs.
+
+\Level 1 {What is in PETSc?}
+
+PETSc can be used as a library in the traditional sense, where you use
+some high level functionality, such as solving a nonlinear system of
+equations, in your program. However, it can also be used as a toolbox,
+to compose your own numerical applications using low-level tools.
+
+  \begin{itemize}
+  \item Linear system solvers (sparse/dense, iterative/direct)
+  \item Nonlinear system solvers
+  \item Tools for distributed matrices
+  \item Support for profiling, debugging, graphical output
+  \end{itemize}
+
+The basic functionality of PETSc can be extended through external
+packages:
+
+  \begin{itemize}
+  \item Dense linear algebra: \n{Scalapack}, \n{Plapack}
+  \item Grid partitioning software: \n{ParMetis}, \n{Jostle}, \n{Chaco}, \n{Party}
+  \item ODE solvers: \n{PVODE}
+  \item Eigenvalue solvers (including SVD): \n{SLEPc}
+  \item Optimization: \n{TAO}
+  \end{itemize}
+
+\Level 1 {Design of PETSc}
+
+PETSc has an object-oriented design, even though it is implemented in
+C, a not object oriented language. PETSc is also parallel: all objects
+in Petsc are defined on an MPI communicator
+(section~\ref{sec:mpi}). For an object such as a matrix this means
+that it is stored distributed over the processors in the communicator;
+for objects such as solvers it means that their operation is
+distributed over the communicator.  PETSc objects can only interact if
+they are based on the same communicator.  Most of the time objects
+will be defined on the \n{MPI_COMM_WORLD} communicator, but
+subcommunicators can be used too. This way, you can define a matrix or
+a linear system on all your available processors, or on a subset.
+
+Parallelism is handled through MPI. You may need to have occasional
+MPI calls in a PETSc code, but the vast bulk of communication is done
+behind the scenes inside PETSc calls. Shared memory parallel (such as
+through OpenMP; section~\ref{sec:openmp}) is not used explicitly, but
+the user can incorporate it without problems.
+
+The object-oriented design means that a call such as matrix-vector
+multiplication
+\begin{verbatim}
+  MATMult(A,x,y); // y <- A x
+\end{verbatim}
+looks the same, regardless whether $A$ is sparse or dense, sequential
+or parallel.
+
+One implication of this is that the actual data are usually hidden from
+the user. Data can be accessed through routines such as
+\begin{verbatim}
+  double *array;
+  VecGetArray(myvector,&array); 
+\end{verbatim}
+but most of the time the application does not explicitly maintain the
+data, only the PETSc objects containing the data. As the ultimate consequence
+of this, the user usually does not allocate data; rather, matrix and vector
+arrays get created through the PETSc create calls, and subsequent
+values are inserted through PETSc calls:
+\begin{verbatim}
+  MatSetValue(A,i,j,v,INSERT_VALUES); // A[i,j] <- v
+\end{verbatim}
+This may feel like the user is giving up control, but it actually
+makes programming a lot easier, since the user does not have to worry
+about details of storage schemes, especially in parallel.
+
+\Level 1 {Small examples}
+
+In this section we will go through a number of successively more
+complicated examples of the use of PETSc. The files can be downloaded
+from the repository of this book.
+
+While doing these
+examples it is a good idea to keep the manual page open:\\
+\url{http://tinyurl.com/PETSc-man-page}.
+
+When you do these examples, make sure to use a version of PETSc that
+has debug mode enabled!
+\begin{tacc}
+At TACC, do \n{module load petsc/3.5}, or other version number
+as applicable; and \n{module load petsc/3.5-debug} for the
+corresponding debug version.
+\end{tacc}
+
+\Level 2 {Program structure}
+
+The first example (we only list C sources in this book; the download
+includes their Fortran equivalents) illustrates the basic structure of
+a PETSc program: the include file at the top and the calls to
+\n{PetscInitialize}, \n{PetscFinalize}. Furthermore it uses two
+routines:
+\begin{itemize}
+\item \n{PetscOptionsGetInt} is used to check if the program was
+  invoked with a \n{-n} option and a numerical value: if you ran your
+  program as \n{./init -n 45}, the variable \n{n} should have the
+  value~45.
+\item \n{PetscPrintf} functions like the \n{printf} function, except
+  that only one processor executes the print command. If you ran your
+  program as \n{mpiexec -np 4 init} and you used \n{printf}, you would
+  get four copies of the output.
+\end{itemize}
+
+%\srclisting{init.c}{tutorials/petsc/exercises/cexercises/init.c}
+\verbatimsnippet{petscprint}
+
+Just about  the only lines
+of MPI that you need to know when programming PETSc are:
+\begin{verbatim}
+C:
+ierr = MPI_Comm_size(comm,&ntids);
+ierr = MPI_Comm_rank(comm,&mytid);
+F:
+call MPI_Comm_size(comm,&ntids,ierr);
+call MPI_Comm_rank(comm,&mytid,ierr);
+\end{verbatim}
+The first line gives the size of the communicator, meaning how many
+processes there are; the second one gives the rank of the current
+process as a number from zero to the number of processes minus one.
+
+\begin{exercise}
+Add these two lines to your program.
+Look up the routine \n{PetscSynchronizedPrintf} in the documentation
+and use it to let each process print out a line like \n{Process 3 out
+  of 7}. You may also need to use \n{PetscSynchronizedFlush}.
+\end{exercise}
+
+
+\Level 2 {Vectors}
+
+Next we start making PETSc objects, first a vector.
+\srclisting{vec.c}{tutorials/petsc/exercises/cexercises/vec.c}
+Note how it takes several calls to fully create the vector
+object:
+\begin{itemize}
+\item The type \n{VECMPI} means that the vector will be distributed.
+\item The routine setting the size has two size parameters; the second
+  specifies that the global size is~\n{n}, and the first one says
+  that  you leave the distribution for PETSc to decide.
+\end{itemize}
+
+At the end of the program there is a to \n{VecDestroy}, which
+deallocates the memory for the vector. While this is strictly speaking
+not necessary for the functioning of the program, it is a good idea to
+issue \n{Destroy} calls for each \n{Create} call, since it can prevent
+potential \emph{memory leaks}\index{memory!leak}.
+
+\begin{exercise}
+  Comment out the \n{VecDestroy} call, and run the program with the
+  option \n{-malloc_dump}. PETSc will now report on all memory that
+  had not been freed at the time of the \n{PetscFinalize} call.
+\end{exercise}
+
+If you run the program in parallel the vector will be created
+distributed over the processors. The program contains 
+a call to \n{VecGetOwnershipRange} to discover what part of the vector
+lives on what processor. You see that the \n{VecView} calls display
+for each processor precisely that part of the vector.
+
+\begin{exercise}
+  The listing has a call to \n{VecSet} to set the vector elements to a
+  constant value. Remove this line.
+  Use the \n{myfirst,mylast} variables and the PETSc routine
+  \n{VecSetValue} to let every process set its
+  local vector elements to the processor number. (The last argument of
+  \n{VecSetValue} should be \n{INSERT_VALUES}.) That is, if the
+  vector is six elements long and there are three processors, the
+  resulting vector should be $(0,0,1,1,2,2)$.
+\end{exercise}
+
+\begin{exercise}
+  Change the code from the previous exercise. Now every vector element
+  should be the sum of the processor number and the previous
+  processor numbers; in the above example the result should be
+  $(0,0,1,1,3,3)$. Read the man page for \n{VecSetValue}!
+\end{exercise}
+
+Run the code from the previous two exercises again, adding a
+commandline argument \n{-log_summary}. Observe that the first code has
+no messages in the \n{VecAssemblyBegin/End} calls, but the second one
+does.
+
+\Level 2 {Matrices}
+
+Let's move up to matrices. Creating a matrix is similar to creating a
+vector. In this case the type is \n{MPIAIJ} which stands for a
+distributed sparse matrix.
+\srclisting{mat.c}{tutorials/petsc/exercises/cexercises/mat.c}
+In this example a diagonal matrix is constructed, with each processor
+setting only its locally stored elements.
+
+\begin{exercise}
+  In addition to setting the diagonal, also set the first
+  subdiagonal and the first superdiagonal, that is, the elements
+  $(i,i-1)$ and $(i,i+1)$. To set all three elements in a row with one
+  call you can do this:
+\begin{verbatim}
+vm = 1.*mytid;
+for (i=myfirst; i<mylast; i++) {
+  PetscInt j[3]; PetscReal v[3];
+  j[0] = i-1; j[1] = i; j[2] = i+1;
+  v[0] = --vm-1; v[1] = 2*vm; v[2] = -vm+1;
+  ierr = MatSetValues
+            (A,1,&i,3,j,v,INSERT_VALUES); CHKERRQ(ierr);
+}
+\end{verbatim}
+However, this code is not entirely correct. Edit the program using
+this fragment and run it. Diagnose the problem and fix it.
+\end{exercise}
+
+\Level 2 {Matrix-vector operations}
+
+Next we will create a file \n{mul.c} based on \n{mat.c} and multiply the
+matrix and the vector. Make sure that the size declarations
+of the matrix and the vector are compatible. You also need a second
+vector to store the result of the multiplication. This is easiest done
+by
+\begin{verbatim}
+ierr = VecDuplicate(x,&y); CHKERRQ(ierr);
+\end{verbatim}
+
+\begin{exercise}
+  Look up the \n{MatMult} routine in the documentation and use it your
+  program. Use \n{VecView} to inspect the result. Note that no size
+  parameters or anything pertaining to parallelism appears in the
+  calling sequence.
+\end{exercise}
+
+\Level 2 {Solvers}
+
+Copy your \n{mat.c} file to \n{sys.c}: we are going to explore linear
+system solving.
+First you need to create a solver object and give
+it the matrix as operator:
+\begin{verbatim}
+ierr = KSPCreate(comm,&solver); CHKERRQ(ierr);
+ierr = KSPSetOperators(solver,A,A,0); CHKERRQ(ierr);
+ierr = KSPSolve(solver,x,y); CHKERRQ(ierr);
+ierr = VecView(y,0); CHKERRQ(ierr);
+\end{verbatim}
+
+\begin{exercise}
+  Add these lines to your code. Make sure you know what the correct
+  solution is by using \n{MatMult} to obtain the right hand side.
+\end{exercise}
+
+You have just used the default linear system solver. Run the program
+again, but with the option \n{-ksp_view}. This will tell you all the
+details of what solver was used.
+
+Solving the linear system is a one line call to \n{KSPSolve}. The
+story would end there if it weren't for some complications:
+\begin{itemize}
+\item Iterative methods can fail, and the solve call does not tell us
+  whether that happened.
+\item If the system was solved successfully, we would like to know in
+  how many iterations.
+\item There can be other reason for the iterative method to halt, such
+  as reaching its maximum number of iterations without converging.
+\end{itemize}
+
+\begin{exercise}
+  Use the
+  routine \n{KSPGetConvergedReason} to inspect the status of the
+  solution vector. Use \n{KSPGetIterationNumber} to see how many
+  iterations it took.
+\end{exercise}
+
+\begin{exercise}
+  Add code to your program to compute the residual and its norm. For
+  the residual, look up the routines \n{VecDuplicate} and \n{VecAXPY};
+  for computing its norm look up \n{VecNorm}.
+\end{exercise}
+
+\begin{exercise}
+  Add a call to \n{KSPSetFromOptions} to your code. Use the option
+  \n{-ksp_monitor} to observe the convergence behavior.
+\end{exercise}
+
+The workings of a PETSc program can be customized to a great degree
+through the use of commandline options. This includes setting the type
+of the solver. In order for such options to be obeyed, you first need
+to put a command \n{KSPSetFromOptions} before the \n{KSPSolve} call.
+
+\begin{exercise}
+  The \n{-ksp_view} option told you what solver and preconditioner
+  were used. Look up the routines \n{KSPSetType} and \n{PCSetType} and
+  use those to change the iterative method to CG and the
+  preconditioner to Jacobi. Do this first by using commandline
+  options, and then by editing the code.
+\end{exercise}
+
+\Level 1 {A realistic program}
+
+This section will give you some further help towards solving a
+realistic \ac{PDE} problem.
+
+\Level 2 {Construction of the coefficient matrix}
+
+In the examples above you used a commandline argument to determine the
+matrix size directly.  Here we construct the matrix of 5-point stencil
+for the Poisson operator (see section~\ref{sec:2dbvp} and in
+particular figure~\ref{fig:laplacedomain}). Determining its size
+takes two steps: you need to read the domain size $n=1/h-1$ and
+compute the matrix size from it.
+
+C:
+\begin{verbatim}
+  int domain_size,matrix_size;
+  PetscOptionsGetInt
+    (PETSC_NULL,"-n",&domain_size,&flag);
+  matrix_size = domain_size*domain_size;
+\end{verbatim}
+Fortran:
+\begin{verbatim}
+  integer :: domain_size,matrix_size
+  call PetscOptionsGetInt(PETSC_NULL_CHARACTER,
+ >     "-n",domain_size,flag)
+  matrix_size = domain_size*domain_size;
+\end{verbatim}
+
+Now you use the \n{matrix_size} parameter for constructing the matrix.
+
+\Level 2 {Filling in matrix elements}
+
+Just like in the examples above, you want each processor to set only
+its local rows. The easiest way to iterate over those is to iterate
+over all variables~/ matrix rows and select only the local ones.
+
+We will now set matrix elements (refer to
+the full domain, but only inserting those elements that are in its
+matrix block row.
+
+C:
+\begin{verbatim}
+MatGetOwnershipRange(A,&myfirst,&mylast);
+for ( i=0; i<domain_size; i++ ) {
+  for ( j=0; j<domain_size; j++ ) {
+    I = j + matrix_size*i;
+    if (I>=myfirst && I<mylast) {
+      J = I; // for the diagonal element
+      MatSetValues
+          (A,1,&I,1,&J,&v,INSERT_VALUES);
+      J = .... // for the other points
+      J = .... 
+    }
+  }
+}
+MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);
+MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);
+\end{verbatim}
+
+Fortran:
+\begin{verbatim}
+call MatGetOwnershipRange(A,myfirst,mylast) 
+do i=0,matrix_size-1
+   do j=0,domain_size-1
+      ii = j + domain_size*i
+      if (ii>=myfirst .and. ii<mylast) then
+        jj = ii ; for the diagonal element
+        call MatSetValues
+ >           (A,1,ii,1,jj,v,INSERT_VALUES) 
+        jj = ii... ; for the other elements
+        jj = ii...
+      end if
+   end do
+end do
+call MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY)
+call MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY)
+\end{verbatim}
+
+\begin{exercise}
+  Construct the matrix from equation~\eqref{eq:5starmatrix} in
+  section~\ref{sec:2dbvp}. Compute and output the product with the
+  identity vector (meaning that all elements are~$1$), and check that
+  the result is correct. Make sure to test your program in parallel.
+\end{exercise}
+
+\Level 2 {Finite Element Matrix assembly}
+
+PETSc's versatility in dealing with Finite Element matrices (see
+sections \ref{sec:fem} and~\ref{sec:fem-assembly}), where elements are
+constructed by adding together contributions, sometimes from different
+processors. This is no problem in PETSc: any processor can set (or
+add to) any matrix element. The assembly calls will move data to their
+eventual location on the correct processors.
+
+\begin{verbatim}
+for (e=myfirstelement; e<mylastelement; e++) {
+  for (i=0; i<nlocalnodes; i++) {
+    I = localtoglobal(e,i);
+    for (j=0; j<nlocalnodes; j++) {
+      J = localtoglobal(e,j);
+      v = integration(e,i,j);
+      MatSetValues
+            (mat,1,&I,1,&J,&v,ADD_VALUES);
+      ....
+    }
+  }
+}
+MatAssemblyBegin(mat,MAT_FINAL_ASSEMBLY);
+MatAssemblyEnd(mat,MAT_FINAL_ASSEMBLY);
+\end{verbatim}
+
+\Level 2 {Linear system solver}
+
+We have covered the basics of setting up the solver and solving the
+system above.
+
+As an illustration of the toolbox nature of PETSc, you can now use
+routines you have already seen to compute the residual and its norm.
+
+\begin{exercise}
+  Create a new vector~\n{z} (use \n{VecDuplicate}) and store the
+  product of \n{A} and the computed solution~\n{y} (use \n{MatMult})
+  in it. If you solved the system accurately, \n{z}~should now be
+  equal to~\n{x}. To see how close it is, use
+\begin{verbatim}
+PetscReal norm;
+VecAXPY(z,-1,x);
+VecNorm(z,NORM_2,&norm);
+\end{verbatim}
+  to subtract \n{x} from~\n{z} and compute the norm of the result.
+\end{exercise}
+
+\Level 1 {Quick experimentation}
+
+Reading a parameter from the
+commandline above is actually a special case of a general mechanism
+for influencing PETSc's workings through commandline options.
+
+Here is an example of setting the iterative solver and preconditioner
+from the commandline:
+\begin{verbatim}
+yourprog -ksp_type gmres -ksp_gmres_restart 25
+    -pc_type ilu -pc_factor_levels 3
+\end{verbatim}
+
+In order for this to work, your code needs to call
+\begin{verbatim}
+KSPSetFromOptions(solver);
+\end{verbatim}
+before the system solution. This mechanism is very powerful, and it
+obviates the need for much code recompilation.
+
+\Level 1 {Review questions}
+
+\begin{exercise}
+Write a PETSc program that does the following:
+\begin{itemize}
+\item Construct the matrix
+  \[
+  A=
+  \begin{pmatrix}
+    2&-1\\ -1&2&-1\\ &\ddots&\ddots&\ddots\\ &&-1&2&-1\\ &&&-1&2\\
+  \end{pmatrix}
+  \]
+\item Compute the sequence
+  \[ 
+  x_0=(1,0,\ldots,0)^t,\quad y_{i+1}=Ax_i,\quad x_i=y_i/\|y_i\|_2.
+  \]
+  This is the power method (section~\ref{app:power-method}), which is
+  expected to converge to the dominant eigenvector.
+\item In each iteration of this process, print out the norm of~$y_i$
+  and for $i>0$ the norm of the difference~$x_i-x_{i-1}$. Do this for
+  some different problem sizes. What do you observe?
+\item The number of iterations and the size of the problem should be
+  specified through commandline options. Use the routine
+  \n{PetscOptionsGetInt}.
+\end{itemize}
+For a small problem (say, $n=10$) print out the first couple $x_i$
+vectors. What do you observe? Explanation?
+\end{exercise}
+
+
+\begin{exercise}
+  Extend the previous exercise: if a commandline option \n{-inverse}
+  is present, the sequence should be generated as
+  $y_{i+1}=A^{-1}x_i$. Use the routine \n{PetscOptionsHasName}.
+
+  What do you observe now about the norms of the $y_i$ vectors?
+\end{exercise}
+
+
+\index{PETSc|)}
+\index{linear algebra!software!sparse|)}
+
+\Level 0 {Libraries for dense linear algebra: BLAS, Lapack, Scalapack}
+
+\index{linear algebra!software!dense|(}
+\input tutorials/blas
+\index{linear algebra!software!dense|)}
+
+\index{libraries!numerical|)}
+\index{libraries!numerical|see{PETSc}}
+\index{libraries!numerical|see{Lapack}}
+
+% LocalWords:  Eijkhout PETSc BLAS Lapack Extendable Scientifc PDE np
+% LocalWords:  discretized Scalapack Plapack ParMetis Chaco PVODE SVD
+% LocalWords:  SLEPc Petsc MPI COMM subcommunicators OpenMP pdf TACC
+% LocalWords:  petsc PetscInitialize PetscFinalize PetscOptionsGetInt
+% LocalWords:  init PetscPrintf printf mpiexec petscprint vec VECMPI
+% LocalWords:  PetscSynchronizedPrintf PetscSynchronizedFlush malloc
+% LocalWords:  VecDestroy VecGetOwnershipRange VecView VecSet myfirst
+% LocalWords:  mylast VecSetValue commandline VecAssemblyBegin MPIAIJ
+% LocalWords:  subdiagonal superdiagonal mul MatMult sys ksp KSPSolve
+% LocalWords:  KSPGetConvergedReason KSPGetIterationNumber VecAXPY CG
+% LocalWords:  VecDuplicate VecNorm KSPSetFromOptions behaviour tri
+% LocalWords:  preconditioner KSPSetType PCSetType Jacobi PETSc's
+% LocalWords:  nonzeros Gershgorin PetscOptionsHasName

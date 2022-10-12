@@ -1,0 +1,6 @@
+\bibitem{frenkel-smit} D. Frenkel and B. Smit, {\em Understanding Molecular Simulations: From Algorithms to Applications}, 2nd edition, Academic Press, 2002.
+\bibitem{plimpton} S. Plimpton, ``Fast parallel algorithms for short-range molecular dynamics,''
+{\em J.\ Comput.\ Phys.}, 117, 1--19, 1995.
+\bibitem{shaw} D. E. Shaw, ``A fast, scalable method for the parallel evaluation of
+distance-limited pairwise particle interactions,'' {\em J.\ Comput.\ Chem.}, 26, 1318--1328, 2005.
+pp.

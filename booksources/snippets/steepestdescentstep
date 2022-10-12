@@ -1,0 +1,13 @@
+// minimlib.cxx
+valuevector steepest_descent_step
+    ( const function& objective,const valuevector& point ) {
+  auto grad = objective.grad(point);
+  auto delta = objective.delta(point);
+
+  auto search_direction( grad );
+  auto hf = grad.inprod(search_direction);
+  auto hfh = search_direction.inprod( delta->mvp(search_direction) );
+  auto tau = - hf / hfh;
+  auto new_point = point + ( search_direction * tau );
+  return new_point;
+};

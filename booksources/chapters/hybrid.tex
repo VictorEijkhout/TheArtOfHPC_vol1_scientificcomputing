@@ -1,0 +1,98 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Modern architectures are often a mix of shared and distributed
+memory. For instance, a cluster will be distributed on the level of
+the nodes, but sockets and cores on a node will have shared
+memory. One level up, each socket can have a shared L3 cache but
+separate L2 and L1 caches. Intuitively it seems clear that a mix of
+shared and distributed programming techniques would give code
+that is optimally matched to the architecture. In this section we will
+discuss such hybrid programming models, and discuss their efficacy.
+
+A common setup of clusters uses distributed memory
+\emph{nodes}\index{node}, where each node contains several
+\emph{sockets}\index{socket}, that share memory. This suggests
+using MPI to communicate between the nodes
+(\indexterm{inter-node communication}) and OpenMP for parallelism on
+the node (\indexterm{intra-node communication}).
+
+In practice this is realized as follows:
+\begin{itemize}
+\item On each node a single MPI process is started (rather than one
+  per core);
+\item This one MPI process then uses OpenMP (or another threading
+  protocol) to spawn as many threads are there are independent sockets
+  or cores on the node.
+\item The OpenMP threads can then access the shared memory of the node.
+\end{itemize}
+The alternative would be to have an MPI process on each core or
+socket and do all communication through message passing, even between
+processes that can see the same shared memory.
+
+\begin{remark}
+  For reasons of \indexterm{affinity} it may be desirable to start
+  one MPI process per socket, rather than per node.
+  This does not materially alter the above argument.
+\end{remark}
+
+This hybrid strategy may sound like a good idea but the truth is complicated.
+\begin{itemize}
+\item Message passing between MPI processes sounds like it's more
+  expensive than communicating through shared memory. However,
+  optimized versions of MPI can typically detect when processes are on
+  the same node, and they will replace the message passing by a simple
+  data copy. The only argument against using MPI is then that each
+  process has its own data space, so there is memory overhead because
+  each process has to allocate space for buffers and duplicates of the
+  data that is copied.
+\item Threading is more flexible: if a certain part of the code needs
+  more memory per process, an OpenMP approach could limit the number
+  of threads on that part. On the other hand, flexible handling of
+  threads incurs a certain amount of \ac{OS} overhead that MPI does
+  not have with its fixed processes.
+\item Shared memory programming is conceptually simple, but there can
+  be unexpected performance pitfalls. For instance, the performance of
+  two processes can now be impeded by the need for maintaining
+  \indextermsub{cache}{coherence} and by \indexterm{false sharing}.
+\end{itemize}
+
+On the other hand, the hybrid approach offers some advantage since it
+bundles messages. For instance, if two MPI processes on one node send
+messages to each of two processes on another node there would be four
+messages; in the hybrid model these would be bundled into one
+message.
+
+\begin{exercise}
+  Analyze the discussion in the last item above. Assume that the
+  bandwidth between the two nodes is only enough to sustain one
+  message at a time. What is the cost savings of the hybrid model over
+  the purely distributed model? Hint: consider bandwidth and latency
+  separately.
+\end{exercise}
+
+This bundling of MPI processes may have an advantage for a deeper
+technical reason. In order to support a \indexterm{handshake protocol},
+each MPI process needs a small amount of buffer space for each other process.
+With a larger number of processes this can be a limitation, so bundling
+is attractive on high core count processors such as the \indextermbus{Intel}{Xeon Phi}.
+
+The MPI library is explicit about what sort of threading it supports:
+you can query whether multi-threading is supported at all, whether all MPI 
+calls have to originate from one thread or one thread at-a-time, or whether 
+there is complete freedom in making MPI calls from threads.
+
+% LocalWords:  Eijkhout MPI OpenMP Xeon

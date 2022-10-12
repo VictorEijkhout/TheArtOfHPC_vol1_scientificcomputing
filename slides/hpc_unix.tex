@@ -1,0 +1,595 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% hpc_unix.tex : unix tutorial
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,headernav]{beamer}
+
+\usepackage{beamerthemeTACC}
+\parskip=.5\baselineskip plus .5\baselineskip
+\input semester
+
+\setcounter{tocdepth}{1}
+%% \AtBeginSection[]
+%% {
+%%   \begin{numberedframe}
+%%     \frametitle{Table of Contents}
+%%     %\tableofcontents[currentsection]
+%%   \end{numberedframe}
+%% }
+
+\usepackage{pslatex}
+\usepackage{amsmath,multicol}
+% multirow,
+% ,arydshln
+
+\setbeamertemplate{footline}{Eijkhout: shell\hfill \arabic{page}}
+
+\newdimen\unitindent \unitindent=20pt
+
+\usepackage{comment}
+
+\input slidemacs
+
+\input scimacs
+
+%\usepackage{makeidx}
+%\makeindex
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{Introduction to Unix}
+\author{Victor Eijkhout}
+\date{2021}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\tocslide
+
+\begin{numberedframe}{Justification}
+  Unix, in particular Linux, is the \textsl{de facto}
+  operating system in \ac{HPC}.
+\end{numberedframe}
+
+\Level 0 {Files and such}
+
+\begin{numberedframe}{\texttt{ls}, \texttt{touch}}
+  \label{sl-lnx:ls}
+  \begin{itemize}
+  \item List files: \n{ls}
+  \item Maybe your account is still empty: do \n{touch newfile},
+    then \n{ls} again.
+  \item Options: \n{ls -l} or for specific file \n{ls -l newfile}.
+  \end{itemize}
+\end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/1 ls empty}
+%% \end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/2 ls newfile}
+%% \end{numberedframe}
+
+\begin{numberedframe}{Display / add to file: \texttt{cat}}
+  \label{sl-lnx:cat}
+  \begin{itemize}
+  \item Display a file: \n{cat myfile}
+  \item Put something in a file: \n{cat > myfile}\\
+    end with Control-D.\\
+    Or use an editor, but this is sometimes still useful.
+  \item Now \n{cat} it again.
+  \item Do \n{cat >> myfile} and enter some text.
+    What did this do?
+  \end{itemize}
+\end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/3 cat into myfile}
+%% \end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/4 cat the myfile}
+%% \end{numberedframe}
+
+\begin{numberedframe}{\texttt{cp}, \texttt{mv}, \texttt{rm}}
+  \label{sl-lnx:cpmv}
+  \begin{itemize}
+  \item Copy: \n{cp file1 file2}\\
+    Do this, check that it's indeed a copy.
+  \item Rename or `move': \n{mv file1 file2}\\
+    check that the original file doesn't exist any more.
+  \item Remove: \n{rm myfile}\\
+    This is irrevocable!
+  \end{itemize}
+\end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/5 copy myfile}
+%% \end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/6 mv new file to old}
+%% \end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/7 rm old}
+%% \end{numberedframe}
+
+\begin{numberedframe}{Dealing with large (text) files}
+  \label{sl-lnx:headtail}
+  \begin{itemize}
+  \item If a file is larger than your screen:\\
+    \n{less yourfile}
+  \item If the start or end is interesting enough:\\
+    \n{head yourfile}, \n{tail yourfile}
+  \item Explore options: \n{head -n 5 yourfile}
+  \end{itemize}
+\end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/8 less lorem}
+%% \end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/9 head lorem}
+%% \end{numberedframe}
+
+\begin{exercise}{Put the pieces together}
+  How would you display the 3rd line of a file?
+\end{exercise}
+
+\Level 0 {Directories}
+
+\begin{numberedframe}{Directories}
+  \label{sl-lnx:cd}
+  \begin{itemize}
+  \item Make a subdirectory `folder': \n{mkdir newdir}
+  \item Check where you are: \n{pwd}
+  \item Now go to the new directory: \n{cd newdir} and \n{pwd}\\
+    `change directory' and `present working directory'
+  \item Back to your home directory: \n{cd} without further arguments.
+  \end{itemize}
+\end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/10 newdir}
+%% \end{numberedframe}
+
+\begin{numberedframe}{Paths}
+  \label{sl-lnx:path}
+  \begin{itemize}
+  \item Do:
+    \begin{enumerate}
+    \item \n{cd newdir} \item \n{touch nested_file} \item \n{cd}
+    \end{enumerate}
+  \item Now: \n{ls newdir/nested_file}
+  \item That is called a path
+    \begin{itemize}
+    \item Relative path: does not start with slash
+    \item Absolute path (such as \n{pwd} output): starts at root
+    \end{itemize}
+  \end{itemize}
+\end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/11 nested file}
+%% \end{numberedframe}
+
+\begin{numberedframe}{More paths}
+  \label{sl-lnx:morepath}
+  \begin{itemize}
+  \item Path to your home directory: tilde
+    \n{cd ~}
+  \item Current directory:~\n{.}
+  \item Going out of a directory:~\n{cd ..}\\
+    (confusing: do you call this a level up or down?)
+  \item You can use this in paths: \n{ls newdir/subdir1/../subdir2}
+  \end{itemize}
+  %% Exercise: copy the lorem ipsum file from the repo to a new directory.
+\end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/12 more dir file}
+%% \end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/13 dot path}
+%% \end{numberedframe}
+
+\begin{exercise}{Paths}
+  After the following commands:
+\begin{verbatim}
+mkdir somedir
+touch somedir/somefile
+\end{verbatim}
+Give at least two ways of specifying the path to \n{somefile}
+from the current directory
+for instance for the \n{ls} command.\\
+Same after doing \n{cd somedir}
+\end{exercise}
+
+\Level 0 {Redirection, pipes}
+
+\begin{numberedframe}{In/Output redirection}
+  \label{sl-lnx:redirect}
+  \begin{itemize}
+  \item There are three standard files: \n{stdin}, \n{stdout}, \n{stderr}
+  \item Normally connected to keyboard, screen, and screen respectively.
+  \item Redirection: standard out to file:\\
+    \n{ls > directorycontents}\\
+    (actually, screen is a file, so it is really a \textbf{re}direct)
+  \item Standard in from file:
+    \n{mail < myfile}\\
+    (actually, the keyboard is also a file, so again \textbf{re}direction)
+  \end{itemize}
+\end{numberedframe}
+
+\begin{exercise}{}
+  Make a copy of a file, using redirection (so no \n{cp} command).
+\end{exercise}
+
+\begin{numberedframe}{Advanced: splitting out and err}
+  \label{sl-lnx:stderr}
+  \begin{itemize}
+  \item Sometimes you want to split standard out and error:
+  \item Use \n{stdout}$=1$ and \n{stderr}$=2$:\\
+    \n{myprogram 1>results.out 2>results.err}
+  \item Very useful: get rid of errors:\\
+    \n{myprogram 2>/dev/null}
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Pipes}
+  \label{sl-lnx:pipe}
+  \begin{itemize}
+  \item Redirection is command-to-file.
+  \item Pipe: command-to-command\\
+    \n{ls | wc -l}\\
+    (what does this do?)
+  \item Unix philosophy: small building blocks, put together.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{More command sequencing}
+  \label{sl-lnx:backtick}
+  More complicated case of one command providing input for another:
+\begin{verbatim}
+echo The line count is wc -l foo
+\end{verbatim}
+where \n{foo} is the name of an existing file.
+
+Use backquotes or command macro:
+\begin{verbatim}
+echo The line count is `wc -l foo`
+echo "There are $( wc -l foo ) lines"
+\end{verbatim}
+\end{numberedframe}
+
+\begin{exercise}{}
+  This way \n{wc} prints the file name.
+  Can you figure out a way to prevent that from happening?
+\end{exercise}
+
+\Level 0 {Permissions}
+
+\begin{numberedframe}{Basic permissions}
+  \label{sl-lnx:rwx}
+  \begin{itemize}
+  \item Three degrees of access: user/group/other
+  \item three types of access: read/write/execute
+  \end{itemize}
+  \[ \begin{array}{ccc}
+    \hline user&group&other\\ \hline rwx&rwx&rwx \\ \hline
+  \end{array}
+  \]
+  Example: \n{rw-r-----}:\\
+  owner read-write, group read, world nothing
+\end{numberedframe}
+
+\begin{numberedframe}{Permission setting}
+  \label{sl-lnx:755}
+  \begin{itemize}
+  \item Add permissions \n{chmod g+w myfile}
+  \item recursively: \n{chmod -R o-r mydirectory}
+  \item Permissions are an octal number:
+    \n{chmod 644 myfile}
+  \end{itemize}
+\end{numberedframe}
+
+%% \begin{numberedframe}{}
+%%   \includegraphics[scale=.4]{unixshots/14 mod plus x}
+%% \end{numberedframe}
+
+\begin{numberedframe}{Share files}
+  \label{sl-lnx:share}
+  \begin{itemize}
+  \item Make a file in your \n{$WORK} file system,
+    and make it visible to the world.
+  \item Ask a fellow student to view it.
+  \item $\Rightarrow$ also necessary to make \n{$WORK} readable.\\
+    (Not a good idea to make \n{$HOME} readable.)
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{The \texttt{x} bit}
+  \label{sl-lnx:x}
+  The \n{x} bit has two meanings:
+  \begin{itemize}
+  \item For regular files: executable.
+  \item For directories: you can go into them.
+  \item Make all directories viewable:\\
+    \n{chmod -R g+X,o+X rootdir}
+  \end{itemize}
+\end{numberedframe}
+
+\Level 0 {Shell programming}
+
+\begin{numberedframe}{Command execution}
+  \label{sl-lnx:execute}
+  \begin{itemize}
+  \item Some shell commands are built-in, however most are programs.
+  \item \n{which ls}
+  \item Exercise: what can you find out about the \n{ls} program?
+  \item Programs can be called directly: \n{/bin/ls}
+    or found along the search path \n{$PATH}:\\
+    \n{echo $PATH}
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{The PATH variable}
+  \begin{itemize}
+  \item The \n{PATH} variable is set by the system
+  \item You can add in the \n{.bashrc} file
+  \item TACC module system~\ldots
+  \item Temporary:
+\begin{verbatim}
+export PATH=/my/bin/dir:${PATH}
+\end{verbatim}
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Things that look like commands}
+  \label{sl-lnx:alias}
+  \begin{itemize}
+  \item Use \n{alias} to give a new name to a command:\\
+    \n{alias ls='ls -F'}\\
+    \n{alias rm='rm -i'}
+  \item There is a shell level \n{function} mechanism,
+    not explained here.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Processes}
+  \label{sl-lnx:ps}
+\begin{tabular}{ll}
+  \toprule
+  \n{ps}&list (all) processes\\
+  \n{kill}&kill a process\\
+  \verb+CTRL-c+&kill the foreground job\\
+  \verb+CTRL-z+&suspect the foreground job\\
+  \n{jobs}&give the status of all jobs\\
+  \n{fg}&bring the last suspended job to the foreground\\
+  \verb+fg %3+&bring a specific job to the foreground\\
+  \n{bg}&run the last suspended job in the background\\
+  \bottomrule
+\end{tabular}
+
+Exercise: how many programs do you have running?
+\end{numberedframe}
+
+\begin{numberedframe}{Variables}
+  \label{sl-lnx:var}
+  \begin{itemize}
+  \item \n{PATH} is a variable, built-in to the shell
+    \item you can make your own variables:
+\begin{verbatim}
+a=5
+echo $a
+\end{verbatim}
+No spaces around the equals!
+  \end{itemize}
+Exercise: what happens when you try to add two variables together?
+\begin{verbatim}
+a=3
+b=5
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Variable manipulation}
+  \begin{itemize}
+  \item Often you want to strip prefixes or suffixes from a variable:\\
+    \n{program.c} $\Rightarrow$ \n{program}\\
+    \n{/usr/bin/program} $\Rightarrow$ \n{program}
+  \item Parameter expansion:
+\begin{verbatim}
+a=program.c
+echo ${a%%.c}
+a=/foo/bar/program.c
+eecho ${a##*/}
+\end{verbatim}
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Conditionals}
+  \label{sl-lnx:if}
+\begin{itemize}
+  \item Mostly text-based tests:
+\begin{verbatim}
+if [ $a = "foo" ] ; then
+  echo "that was foo"
+else
+  echo "that was $a"
+fi
+\end{verbatim}
+\item Single line:
+{  \footnotesize
+\begin{verbatim}
+if [ $a = "foo" ] ; then echo "foo" ; else echo "something" ; fi
+\end{verbatim}
+}
+Note the semicolons!\\
+also spaces around square brackets.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Other conditionals}
+  \begin{itemize}
+\item Numerical tests:/
+\begin{verbatim}
+if [ $a -gt 2 ] ....
+\end{verbatim}
+\item File and directory:
+{ \footnotesize
+\begin{verbatim}
+if [ -f $HOME ] ; then echo "exists" ; else echo "no such" ; fi
+if [ -d $HOME ] ; then echo "directory!" ; else echo "file" ; fi
+\end{verbatim}
+}
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Looping}
+  \label{sl-lnx:for}
+  \begin{itemize}
+  \item Loop: for item in list\\
+    the item is available as macro
+\begin{verbatim}
+for letter in a b c ; do echo $letter ; done
+\end{verbatim}
+\item Loop over files:
+\begin{verbatim}
+for file in * ; do echo $file ; done
+\end{verbatim}
+  \end{itemize}
+  Exercises:
+  \begin{enumerate}
+  \item for each file, print its name and how many lines there are in it.
+  \item loop through your files, print which ones are directories.
+  \item for each C program, remove the object file.
+  \end{enumerate}
+\end{numberedframe}
+
+\begin{numberedframe}{Numerical looping}
+
+  \begin{itemize}
+  \item Type \n{seq 1 5}
+  \item Exercise: can you figure out how to loop $1\ldots5$?
+\begin{verbatim}
+n=12
+## input
+for i in ....... ; do echo $i ; done
+## output
+1
+....
+12
+\end{verbatim}
+  \end{itemize}
+\end{numberedframe}
+
+\Level 0 {Scripting}
+
+\begin{numberedframe}{Script execution}
+  \label{sl-lnx:script}
+  \begin{itemize}
+  \item Create a script \n{script.sh}:
+\begin{verbatim}
+#!/bin/bash
+echo foo
+\end{verbatim}
+\item Can you execute this? Does the error suggest a remedy?
+\item What is the remaining problem?
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Arguments}
+
+  \begin{itemize}
+  \item You want to call \n{./script.sh myfile}
+    \item Parameters are \n{$1} et cetera:
+\begin{verbatim}
+#!/bin/bash
+echo "$1 is a file"
+\end{verbatim}
+\item How many arguments: \n{$#}
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Exercise}
+
+  Write a script that takes as input a file name argument, and reports how many
+  lines are in that file.
+
+  Edit your script to test whether the file has less than 10 lines
+  (use the \n{foo -lt bar} test), and if it does, \n{cat} the
+  file. 
+
+  Add a
+  test to your script so that it will give a helpful message if you call
+  it without any arguments.
+
+\end{numberedframe}
+
+\begin{numberedframe}{Exercise}
+  \label{sl-lnx:plag}
+  Write a `plagiarism detector'.
+  \begin{itemize}
+  \item Write a script that accepts two argument: one text file and one directory\\
+    \n{./yourscript.sh myfile targetdir}\\
+    (the \n{.sh} extension is required for this exercise)
+  \item Your script should compare the text file to the contents of the directory:
+    \begin{itemize}
+    \item If the file is different from anything in the directory, it
+      should be copied into the directory;
+      the script should not produce any output in this case.
+    \item If the file is the same as a file in the directory,
+      the script should complain.
+    \item The test whether files are `the same' should be made with the \n{diff}
+      command. Explore options that allow \n{diff} to ignore differences that
+      are only in whitespace.
+    \end{itemize}
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Turn it in!}
+  \label{sl-lnx:plag-test}
+  Here is how you submit your homework.
+  \begin{itemize}
+  \item There is a test/submit script:\\
+    \n{sds_plagiarism yourscript.sh}\\
+    This tests the correctness of your script.
+  \item If your script passes the test, use the \n{-s} option to submit:\\
+    \n{sds_plagiarism -s yourscript.sh}\\
+    or use the \n{-i} option to submit incomplete:\\
+    \n{sds_plagiarism -i yourscript.sh}
+  \item Add the \n{-d} option for some debugging output:\\
+    \n{sds_plagiarism -d yourscript.sh}
+  \item (after you run the script once, you'll see in your directory
+    the files that are used for testing)
+  \end{itemize}
+\end{numberedframe}
+
+\end{document}
+
+\begin{numberedframe}{}
+  \label{sl-lnx:}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{numberedframe}
+
+

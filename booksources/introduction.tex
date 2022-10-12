@@ -1,0 +1,167 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\thispagestyle{empty}
+\section*{Preface}
+
+The field of high performance scientific computing lies at the
+crossroads of a number of disciplines and skill sets, and
+correspondingly, for someone to be successful at using high performance
+computing in science requires at least elementary knowledge of and
+skills in all these areas.  Computations stem from an application
+context, so some acquaintance with physics and engineering sciences is
+desirable. Then, problems in these application areas are typically
+translated into linear algebraic, and sometimes combinatorial,
+problems, so a computational scientist needs knowledge of several
+aspects of numerical analysis, linear algebra, and discrete
+mathematics. An efficient implementation of the practical formulations
+of the application problems requires some understanding of computer
+architecture, both on the CPU level and on the level of parallel
+computing. Finally, in addition to mastering all these sciences, a
+computational scientist needs some specific skills of software
+management.
+
+%The authors of this book felt that, 
+While good texts exist on numerical
+modeling, numerical linear algebra, computer architecture, parallel
+computing, performance optimization, no book brings together these
+strands in a unified manner. The need for a book such as the present
+became apparent to the author working at a computing center:
+users are domain experts who not necessarily have mastery
+of all the background that would make them
+efficient computational scientists. This book, then, teaches those
+topics that seem indispensible for scientists
+engaging in large-scale computations.
+
+This book consists largely of theoretical material on HPC.
+For programming and tutorials see the other volumes in this series.
+The chapters in this book
+have exercises that can be assigned in a classroom, however, their
+placement in the text is such that a reader not inclined to do
+exercises can simply take them as statement of fact.
+
+\begin{notlulu}
+\paragraph*{\bf Public draft}
+
+This book is 
+open for comments.
+What is missing or incomplete or unclear? Is material
+presented in the wrong sequence? Kindly mail me with any comments you
+may have.
+\end{notlulu}
+
+\begin{download}
+You may have found this book in any of a number of places;
+the authoritative location for all my textbooks is
+\url{https://theartofhpc.com}.
+That page also links to \n{lulu.com} where you can get a nicely printed copy.
+\end{download}
+\begin{lulu}
+Thank you for buying a printed copy of this book. 
+You can also download a pdf 
+version, as well as lecture slides and complete source code from
+\url{https://theartofhpc.com}
+\end{lulu}
+
+\bigskip
+\noindent
+Victor Eijkhout {\tt eijkhout@tacc.utexas.edu}\\
+Research Scientist\\
+Texas Advanced Computing Center\\
+The University of Texas at Austin
+
+\paragraph*{\bf Acknowledgement}
+
+Helpful discussions with Kazushige Goto and John McCalpin are gratefully
+acknowledged. Thanks to Dan Stanzione for his notes on cloud computing,
+Ernie Chan for his notes on scheduling of block algorithms, and John
+McCalpin for his analysis of the top500.
+Thanks to Elie de Brauwer, Susan Lindsey, Tim Haines, and Lorenzo Pesce
+for proofreading and many comments.
+Edmond Chow wrote the chapter on Molecular Dynamics. Robert van de Geijn
+contributed several sections on dense linear algebra.
+
+\begin{lulu}
+\pagebreak
+\paragraph*{\bf About the cover}
+
+Have you wondered about the cover of this book? It can stand for any
+number of things; just take your pick. Maybe the pattern of the
+cobblestones stands for a processor grid, maybe it stands for a block
+matrix. Maybe the cobblestones themselves refer to the author's Dutch
+background. And maybe it symbolizes that the book teaches many topics
+that normally fall between the cracks\ldots
+\end{lulu}
+
+\pagebreak
+\thispagestyle{empty}
+\section*{Introduction}
+
+Scientific computing is the cross-disciplinary field at the
+intersection of modeling scientific processes, and the use of
+computers to produce quantitative results from these models.
+It is what takes a domain science and turns it into a computational
+activity.
+%
+As a definition, we may posit
+\begin{quote}
+  The efficient computation of constructive methods in applied mathematics.
+\end{quote}
+This clearly indicates the three branches of science that scientific
+computing touches on:
+\begin{itemize}
+\item Applied mathematics: the mathematical modeling of real-world
+  phenomena. Such modeling often leads to implicit descriptions, for
+  instance in the form of partial differential equations. In order to
+  obtain actual tangible results we need a constructive approach.
+\item Numerical analysis provides algorithmic thinking about
+  scientific models. It offers a constructive approach to solving the
+  implicit models, with an analysis of cost and stability.
+\item Computing takes numerical algorithms and analyzes the efficacy
+  of implementing them on actually existing, rather than hypothetical,
+  computing engines.
+\end{itemize}
+
+One might say that `computing' became a scientific field in its own
+right, when the mathematics of real-world phenomena was asked to be
+constructive, that is, to go from proving the existence of solutions
+to actually obtaining them. At this point, algorithms become an object
+of study themselves, rather than a mere tool.
+
+The study of algorithms became especially important when computers were
+invented. Since mathematical operations now were endowed with a
+definable time cost, complexity of algorithms became a field of study;
+since computing was no longer performed in `real' numbers but in
+representations in finite bitstrings, the accuracy of algorithms
+needed to be studied. Some of these considerations in fact predate the
+existence of computers, having been inspired by computing with
+mechanical calculators.
+
+A prime concern in scientific computing is efficiency. While to some
+scientists the abstract fact of the existence of a solution is enough,
+in computing we actually want that solution, and preferably
+yesterday. For this reason, in this book we will be quite specific about the
+efficiency of both algorithms and hardware. It is important not to
+limit the concept of efficiency to that of efficient use of
+hardware. While this is important, the difference between two
+algorithmic approaches can make optimization for specific hardware a
+secondary concern.
+
+This book aims to cover the basics of this gamut of knowledge that a
+successful computational scientist needs to master. It is set up as a
+textbook for graduate students or advanced undergraduate students;
+others can use it as a reference text, reading the exercises for their
+information content.
+

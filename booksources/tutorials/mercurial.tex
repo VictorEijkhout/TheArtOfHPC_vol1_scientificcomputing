@@ -1,0 +1,657 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Mercurial (hg) and Git}
+\index{mercurial|(}
+\index{hg|see{mercurial}}
+\index{git|(}
+
+\emph{Mercurial} and \emph{git} are the best known of a new generation
+of \indextermsub{distributed}{source code control} systems. Many
+commands are the same as for subversion, but there are some new
+ones, corresponding to the new level of sophistication.
+Mercurial and git share some commands, but there are also differences.
+Git is ultimately more powerful, but mercurial is easier to use at first.
+
+Here is a translation between the two systems:
+\url{https://github.com/sympy/sympy/wiki/Git-hg-rosetta-stone}.
+
+Minimal introduction to git: \url{http://rogerdudler.github.io/git-guide/}
+
+This lab should be done two people, to simulate a group
+of programmers working on a joint project. You can also do this on
+your own by using two clones of the repository, 
+preferably opening two windows on your computer.
+
+Best practices for distributed version control:
+\url{https://homes.cs.washington.edu/~mernst/advice/version-control.html}
+
+\Level 0 {Create and populate a repository}
+
+\begin{purpose}
+  In this section you will create a repository and make a local copy
+  to work on.
+\end{purpose}
+
+\begin{tabular}{|l|l|}
+  \midrule
+  Clone an existing repository\\
+  mercurial&git\\
+  \midrule
+  \n{hg clone <url> [ localdir ]}&
+  \n{git clone <url> [ localdir ]}\\
+  \midrule
+  Create a completely new repository\\
+  &git init \# current directory or add explicit \\
+  &git remote add origin git@github.com:Name/Repo.git \# or other URL\\
+  &git push --set-upstream origin master \# when you first push\\
+  \midrule
+\end{tabular}
+
+First we need to have a repository. In practice, you will often use
+one that has been previously set up, but there are several ways to
+set up a repository yourself.
+There are commercial and free hosting services such as
+  \url{http://bitbucket.org}. (Academic users can have more private
+  repositories.)
+
+Let's assume that one student has created a repository \n{your-project}
+on Bitbucket. Both students can then clone it:
+\begin{verbatim}
+%% hg clone https://YourName@bitbucket.org/YourName/your-project
+updating to branch default
+0 files updated, 0 files merged, 0 files removed, 
+    0 files unresolved
+\end{verbatim}
+or
+\begin{verbatim}
+%% git clone git@bitbucket.org:YourName/yourproject.git
+Cloning into 'yourproject'...
+warning: You appear to have cloned an empty repository.
+\end{verbatim}
+You now have an empty directory \n{your-project}.
+
+\practical{Go into the project directory and see if it is really
+  empty.}{There is a hidden directory \n{.hg} or \n{.git}}{}
+
+\Level 0 {New files}
+\label{sec:hg-push}
+
+\heading{Creating an untracked file}
+
+\begin{purpose}
+  In this section you will make some simple changes:
+  creating a new file
+  and
+  editing an existing file
+\end{purpose}
+
+\begin{tabular}{|l|l|}
+  \midrule
+  mercurial&git\\
+  \midrule
+  \n{hg status [ path] }&
+  \n{git status [ path ]}\\
+  \n{hg add [ files ] }&
+  \n{git add [ files ]}\\
+  once for each file&every time the file is changed\\
+  \midrule
+\end{tabular}
+
+One student now makes a file to add to the repository:
+\begin{verbatim}
+%%  cat > firstfile
+a
+b
+c
+d
+e
+f
+^D
+\end{verbatim}
+(where \verb+^D+ stands for control-D, which terminates the input.)
+This file is unknown to \n{hg}:
+\begin{verbatim}
+%% hg status
+? firstfile
+\end{verbatim}
+Git is a little more verbose:
+\begin{verbatim}
+git status
+On branch master
+
+Initial commit
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+firstfile
+
+nothing added to commit but untracked files present
+  (use "git add" to track)
+\end{verbatim}
+
+\heading{Adding the file to the repository}
+
+\begin{figure}[ht]
+  \includegraphics[scale=.4]{git-push}
+  \caption{Add local changes to the remote repository.}
+  \label{fig:git-push}
+\end{figure}
+
+We need to declare the file as belonging to the repository; a
+subsequent \n{hg commit} command then copies it into the repository.
+\begin{verbatim}
+%% hg add firstfile 
+%% hg status
+A firstfile
+%% hg commit -m "made a first file"
+\end{verbatim}
+or
+\begin{verbatim}
+%% git add firstfile
+%% git status
+On branch master
+
+Initial commit
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+
+        new file:   firstfile
+%% git commit -a -m "adding a first file"
+  [master (root-commit) f4b738c] adding a first file
+  1 file changed, 5 insertions(+)
+  create mode 100644 firstfile
+\end{verbatim}
+
+\begin{tabular}{|l|l|}
+  \midrule
+  mercurial&git\\
+  \midrule
+  \n{hg commit -m <message>}&
+  \n{git commit -m <message>}\\
+  \n{hg push}&
+  \n{git push origin master}\\
+  \midrule
+\end{tabular}
+
+Unlike with Subversion, the file has now only been copied into the 
+local repository, so that you can, for instance, roll back your
+changes. If you want this file added to the main repository,
+you need the \n{hg push} command:
+\begin{verbatim}
+%% hg push https://YourName@bitbucket.org/YourName/your-project
+pushing to https://YourName@bitbucket.org/YourName/your-project
+searching for changes
+remote: adding changesets
+remote: adding manifests
+remote: adding file changes
+remote: added 1 changesets with 1 changes to 1 files
+remote: bb/acl: YourName is allowed. accepted payload.
+\end{verbatim}
+In the \n{push} step you were probably asked for your password. You can
+prevent that by having some lines in your \verb+$HOME/.hgrc+ file:
+{\footnotesize
+\begin{verbatim}
+[paths]
+projectrepo = https://YourName:yourpassword@bitbucket.org/YourName/my-project
+[ui]
+username=Your Name <you@somewhere.youruniversity.edu>
+\end{verbatim}
+}
+Now the command \n{hg push projectrepo} will push the local changes
+to the global repository without asking for your password. Of course,
+now you have a file with a cleartext password, so you should set the
+permissions of this file correctly.
+
+With git you need to be more explicit, since the ties between your
+local copy and the `upstream' repository can be more fluid.
+\begin{verbatim}
+git remote add origin git@bitbucket.org:YourName/yourrepo.git
+git push origin master
+\end{verbatim}
+
+\begin{figure}[ht]
+  \includegraphics[scale=.4]{git-pull}
+  \caption{Get changes that were made to the remote repository.}
+  \label{fig:git-pull}
+\end{figure}
+
+The second student now needs to update their repository. Just like the
+upload took two commands, this pass also takes two. First you do \n{hg
+  pull} to update your local repository. This does not update the
+local files you have: for that you need to do \n{hg update}.
+
+\practical{Do this and check that the contents of the file are
+  correct.}{In order to do the update command, you have to be in a
+  checked-out copy of the repository.}
+
+\practical{Let both students create a new directory with a few
+  files. Declare the directory and commit it. Pull and update to
+  obtain the changes the other mde.}{You can do \n{hg add} on the
+  directory, this will also add the files contained in it.}{}
+
+Since you will mostly be doing an update immediately after a pull, you
+can combine them:
+\begin{verbatim}
+hg pull -u
+\end{verbatim}
+Git will report what files are updated; for Hg you need to take the
+changeset number and query:
+\begin{verbatim}
+hg status --change 82ffb99c79fd
+\end{verbatim}
+
+\begin{remark}
+  In order for Mercurial to keep track of your files, you should never do
+  the shell commands
+  \n{cp} or \n{mv} on files that are in the repository. Instead, do
+  \n{hg cp} or \n{hg mv}. Likewise, there is a command \n{hg rm}.
+\end{remark}
+
+\Level 0 {Editing files}
+
+Mercurial and Git differ in their behavior regarding edited files.
+Both show them as modified, but 
+\begin{itemize}
+\item Mercurial will automatically include them in a commit, and push them upstream.
+\item Git needs an explicit \n{git add} each time the file is edited, otherwise it will not
+  become part of a commit. Do not \n{git add -A} since this will probably add too much
+  to your repo, such as auto-save and binary files.
+  You can simplify your life by doing \n{git add -u} which adds all `updated' files to a commit.
+\end{itemize}
+
+\Level 0 {Oops! Undo!}
+
+One of the reasons for having source code control is to be able to
+revert changes. The easiest undo is to go back to the last stored
+version in the repository.
+
+\begin{tabular}{|l|l|}
+  \midrule
+  mercurial&git\\
+  \midrule
+  \n{hg revert <yourfile>}&
+  \n{git checkout -- <yourfile>}\\
+  \midrule
+\end{tabular}
+
+\Level 0 {Conflicts}
+
+\begin{purpose}
+  In this section you will learn about how do deal with conflicting
+  edits by two users of the same repository.
+\end{purpose}
+
+Now let's see what happens when two people edit the same file.
+Let both students make an edit to \verb+firstfile+, but one to the
+top, the other to the bottom. After one student commits the edit, the
+other can commit changes, after all, these only affect the local repository.
+However, trying to push that change gives an error:
+\begin{verbatim}
+%% emacs firstfile # make some change
+%% hg commit -m ``first again''
+%% hg push test
+abort: push creates new remote head b0d31ea209b3!
+(you should pull and merge or use push -f to force)
+\end{verbatim}
+The solution is to get the other edit, and commit again. This takes a 
+couple of commands:
+{\small
+\begin{verbatim}
+%% hg pull myproject
+searching for changes
+adding changesets
+adding manifests
+adding file changes
+added 1 changesets with 1 changes to 1 files (+1 heads)
+(run 'hg heads' to see heads, 'hg merge' to merge)
+
+%% hg merge
+merging firstfile
+0 files updated, 1 files merged, 0 files removed, 0 files unresolved
+(branch merge, don't forget to commit)
+
+%% hg status
+M firstfile
+%% hg commit -m ``my edit again''
+%% hg push test
+pushing to https://VictorEijkhout:***@bitbucket.org/
+                       VictorEijkhout/my-project
+searching for changes
+remote: adding changesets
+remote: adding manifests
+remote: adding file changes
+remote: added 2 changesets with 2 changes to 1 files
+remote: bb/acl: VictorEijkhout is allowed. accepted payload.
+\end{verbatim}
+}
+
+This may seem complicated, but you see that Mercurial prompts you 
+for what commands to execute, and the workflow is clear, if you refer
+to figure~\ref{fig:hg}.
+
+\practical{Do a \n{cat} on the file that both of you have been editing.
+You should find that both edits are incorporated. That is the `merge'
+that Mercurial referred to.}{}{}
+
+If both students make edits on the same part of the file, version
+control can no
+longer resolve the conflicts. For instance, let one student insert a
+line between the first and the second, and let the second student edit
+the second line. Whoever tries to push second, will get messages
+like this:
+{\small
+\begin{verbatim}
+%% hg pull test
+added 3 changesets with 3 changes to 1 files (+1 heads)
+(run 'hg heads' to see heads, 'hg merge' to merge)
+%% hg merge
+merging firstfile
+warning: conflicts during merge.
+merging firstfile incomplete! 
+    (edit conflicts, then use 'hg resolve --mark')
+0 files updated, 0 files merged, 0 files removed, 1 files unresolved
+use 'hg resolve' to retry unresolved file merges 
+    or 'hg update -C .' to abandon
+\end{verbatim}
+}
+
+For git:
+\begin{verbatim}
+CONFLICT (content): Merge conflict in <name of some file>
+Automatic merge failed; fix conflicts and then commit the result.
+[solutions-mpi-c:955] emacs <name of some file>
+[solutions-mpi-c:956] git add !$ && git commit -m "fix conflict" && git pull && git push
+\end{verbatim}
+
+There are now the following options:
+\begin{enumerate}
+\item There is usually a way to indicate whether to use the local or
+  the remote version.
+\item There are graphical programs to resolve conflicts. They will
+  typically show you 3 colums, for the two versions, and for your
+  resolution. You can then indicate `take this from the local version,
+  and this from the remote'.
+\item You can also edit the file to resolve the conflicts yourself. We
+  will discuss that shortly.
+\end{enumerate}
+
+Both  will give you several options. It is easiest to resolve the
+conflict with a text editor. If you open the file that has the conflict
+you'll see something like:
+\begin{verbatim}
+<<<<<<< local
+aa
+bbbb
+=======
+aaa
+a2
+b
+>>>>>>> other
+c
+\end{verbatim}
+indicating the difference between the local version (`mine') and the
+other, that is the version that you pulled and tried to merge.
+You need to edit the file to resolve the conflict.
+
+After this, you tell hg that the conflict was resolved:
+\begin{verbatim}
+ hg resolve --mark
+%% hg status
+M firstfile
+? firstfile.orig
+\end{verbatim}
+or
+\begin{verbatim}
+git add <name of that file>
+git commit -m "fixed conflict in <name of that file>"
+\end{verbatim}
+After this you can commit and push again.
+The other student then needs to do another update to get the
+correction.
+
+For conflicts in binary files, git has a flag where you can indicate
+which version to use:
+\begin{verbatim}
+git checkout --ours path/to/file
+git checkout --theirs path/to/file
+\end{verbatim}
+
+Not all files can be merged: for binary files Mercurial will ask you:
+\begin{verbatim}
+%% hg merge
+merging proposal.tex
+merging summary.tex
+merking references.tex
+ no tool found to merge proposal.pdf
+keep (l)ocal or take (o)ther? o
+\end{verbatim}
+This means that the only choices are to keep your local version
+(type~\n{l} and hit return) or take the other version (type~\n{o} and
+hit return). In the case of a binary file that was obvious generated
+automatically, some people argue that they should not be in the
+repository to begin with.
+
+\Level 0 {Inspecting the history}
+
+\begin{purpose}
+  In this section, you will learn how to view and compare files in the
+  repository.
+\end{purpose}
+
+If you want to know where you cloned a repository from, look in the
+file \n{.hg/hgrc}.
+
+The main sources of information about the repository are \n{hg log}
+and \n{hg id}. The latter gives you global information, depending
+on what option you use. For instance, \n{hg id -n} gives the local revision
+number.
+\begin{itemize}
+\item [\texttt{hg log}] gives you a list of all changesets so far,
+  with the comments you entered.
+\item [\texttt{hg log -v}] tells you what files were affected in each changeset.
+\item [\texttt{hg log -r 5}] or \n{hg log -r 6:8} gives information on
+  one or more changesets.
+\end{itemize}
+
+To see differences in various revisions of individual files, use
+\n{hg diff}. First 
+make sure you are up to date. Now do \n{hg diff firstfile}. No
+output, right? Now make an edit in \n{firstfile} and do \n{hg diff
+  firstfile} again. This gives you the difference between the last
+commited version and the working copy.
+
+\begin{tabular}{|l|l|}
+  \midrule
+  mercurial&git\\
+  \midrule
+  \n{hg diff <file>}&
+  \n{git diff HEAD <file>}\\
+  \n{hg diff -r A -r B <file>}&
+  \n{git diff A..B <file>}\\
+  \midrule
+\end{tabular}
+
+For example:
+\begin{verbatim}
+[src:1151] git pull
+[...]
+From github.com:Username/Reponame
+   c5aaa43..2f5ce0b  main       -> origin/main
+Updating c5aaa43..2f5ce0b
+Fast-forward
+ src/net.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+[src:1156] git diff c5aaa43..2f5ce0b net.cpp
+\end{verbatim}
+\begin{itemize}
+\item The \n{pull} command tells you what the previous and current
+  commit identifiers are; and
+\item With \n{diff}, specifying these identifiers, you get the changes
+  in \indextermunix{diff} format.
+\end{itemize}
+%% To github.com:ZhanweiDU/TACC-COVID-19.git
+%%    987cc99..ae0396a  Demo-vec -> Demo-vec
+
+Check for yourself what happens when you do a commit but no push, and 
+you issue the above diff command.
+
+You can also ask for differences between committed versions with
+\n{hg diff -r 4:6 firstfile}.
+
+The output of this diff command is a bit cryptic, but you can
+understand it without too much trouble. There are also fancy GUI
+implementations of hg for every platform that show you differences in
+a much nicer way.
+
+If you simply want to see what a file used to look like, do \n{hg
+  cat -r 2 firstfile}. To get a copy of a certain revision of the
+repository, do \n{hg export -r 3 . ../rev3}, which exports the
+repository at the current directory (`dot') to the directory \n{../rev3}.
+
+If you save the output of \n{hg diff}, it is possible to apply it
+with the Unix \n{patch} command. This is a quick way to send patches
+to someone without them needing to check out the repository.
+
+\Level 0 {Branching}
+
+Create branch:
+
+\n{git checkout -b newbranch}
+
+List available:
+
+\n{git branch}
+
+After that switch:
+
+\n{git checkout branchname}
+
+\n{git push --set-upstream origin newbranch}
+
+
+See what branches there are: \n{hg brances}
+
+See what branch you are working on: \n{hg branch}
+
+Switch to a branch (this undoes local changes): \n{hg update -C branchname}
+
+\Level 0 {Pull requests and forks}
+
+Suppose you want to contribute changes to a repository,
+but you don't have write permissions on a repository.
+(Of course, you need to have read permissions to the repository
+in order to make the changes.)
+Lack of write permission means that you can not create a branch,
+and push and merge it.
+A \indexterm{pull request} is then a way to communicate
+your changes so that they can be pulled, rather
+than you pushing them.
+
+\begin{enumerate}
+\item
+  In github, creating a fork is made with a press of the `Fork' button.
+\item
+  Clone your fork.
+\begin{verbatim}
+git clone <original-url> repo-fork
+cd repo-fork
+\end{verbatim}
+\item
+  Make your edits in the cloned fork.
+\item You need to keep your fork up to date with the original repo.
+  First you connect the original repo as `upstream' to your fork:
+\begin{verbatim}
+git remote add upstream <original-url>
+git remote -v # check on the state of things
+\end{verbatim}
+(the name `upstream' is the conventional name; it is not a keyword.)
+\item
+  Optionally, check out a branch. If you \texttt{git status}, you should see
+\begin{verbatim}
+On branch YourBranch
+Your branch is up to date with 'origin/YourBranch.
+\end{verbatim}
+\item Keep your fork updated:
+\begin{verbatim}
+git fetch upstream
+git merge upstream/master master # or specific branch
+\end{verbatim}
+\end{enumerate}
+
+To make pull request:
+\begin{enumerate}
+\item Create a new branch
+\begin{verbatim}
+git checkout -b YourChangesBranch
+\end{verbatim}
+\item 
+  Make your changes and commit them:
+\begin{verbatim}
+git add file1 file2
+git commit -m "changes summary"
+\end{verbatim}
+\item Push your changes to the origin, that is,
+  your repo on github:
+\begin{verbatim}
+git push --set-upstream origin YourChangesBranch
+\end{verbatim}
+(remember that you didn't have write permission to the original repo!)
+\item You probably now get a message with URL to visit for creating
+  a pull request.
+\end{enumerate}
+
+
+\Level 0 {Other issues}
+
+\Level 1 {Transport}
+
+Mercurial and git can use either \texttt{ssh} or \texttt{http} as
+\indexterm{transport}%
+\index{ssh!as transport}%
+\index{http!as transport}.
+With Git you may need to redefine the transport for a \texttt{push}:
+\begin{verbatim}
+git remote rm origin
+git remote add origin git@github.com:TACC/pylauncher.git
+\end{verbatim}
+
+You can change the transport with \n{git remote set-url}:
+\begin{verbatim}
+git remote -v # check current transport
+git remote set-url origin git@hostname:USERNAME/REPOSITORY.git
+git remote -v # verify changes
+\end{verbatim}
+\index{mercurial|)}
+\index{git|)}
+
+\endinput
+
+$ git config --global user.name "Vlad Dracula"
+$ git config --global user.email "vlad@tran.sylvan.ia"
+
+git config --global init.defaultBranch main
+
+
+
+
+% LocalWords:  Eijkhout hg url localdir init Bitbucket projectrepo cp
+% LocalWords:  cleartext mde changeset mv rm repo yourfile workflow
+% LocalWords:  colums hgrc changesets diff firstfile commited vec rev
+% LocalWords:  newbranch branchname brances github ssh http
+

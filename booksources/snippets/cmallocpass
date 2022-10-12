@@ -1,0 +1,8 @@
+// cmalloc.c
+void set_last( float *x,int len,float value ) {
+  x[len-1] = value;
+}
+  float *x;
+  x = (float*) malloc( len*sizeof(float) );
+  set_last(x,len,3.14);
+  printf("%e\n",x[len-1]);

@@ -1,0 +1,71 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The architecture of modern CPUs is largely dictated by the fact that
+getting data from memory is much slower than processing it. Hence, a
+hierarchy of ever faster and smaller memories tries to keep data as close to
+the processing unit as possible, mitigating the long latency and small
+bandwidth of main memory. The \ac{ILP} in the processing unit 
+also helps to hide the latency and more fully utilize the available
+bandwidth. 
+
+However, finding \ac{ILP} is a job for the compiler and
+there is a limit to what it can practically find. On the other hand,
+scientific codes are often very \indexterm{data parallel} in a sense
+that is obvious to the programmer, though not necessarily to the
+compiler. Would it be possible for the programmer to specify this
+parallelism explicitly and for the processor to use it?
+
+In section~\ref{sec:simd} you saw that \ac{SIMD} architectures can be
+programmed in an explicitly data parallel way. What if we have a great
+deal of data parallelism but not that many processing units? In that
+case, we could turn the parallel instruction streams into threads (see
+section~\ref{sec:threads}) and have multiple threads be executed on
+each processing unit. Whenever a thread would stall because of an
+outstanding memory request, the processor could switch to another
+thread for which all the necessary inputs are available. This is
+called \indexterm{multi-threading}. While it sounds like a way of
+preventing the processor from waiting for memory, it can also be
+viewed as a way of keeping memory maximally occupied.
+
+\begin{exercise}
+  If you consider the long latency and limited bandwidth of memory as
+  two separate problems, does multi-threading address them both?
+\end{exercise}
+
+The problem here is that most CPUs are not good
+at switching quickly between threads. A~\indextermbus{context}{switch}
+(switching between one thread and another) takes a large number of
+cycles, comparable to a wait for data from main memory. In a so-called
+\indexacf{MTA} a context-switch is very efficient, sometimes as little
+as a single
+cycle, which makes it possible for one processor to work on many
+threads simultaneously.
+
+The multi-threaded concept was explored in the \indextermbus{Tera
+  Computer}{MTA} machine, which evolved into the current
+\indextermbus{Cray}{XMT}
+\begin{footnoteenv}
+{Tera Computer renamed itself
+  \indexterm{Cray Inc.} after acquiring \indexterm{Cray Research} from
+  \indexterm{SGI}.}
+  \end{footnoteenv}%
+  .
+
+The other example of an \ac{MTA} is the \ac{GPU}, where the processors
+work as \ac{SIMD} units, while being themselves multi-threaded; see
+section~\ref{sec:gpu}.
+
+% LocalWords:  Eijkhout ILP MTA Tera XMT SGI GPU

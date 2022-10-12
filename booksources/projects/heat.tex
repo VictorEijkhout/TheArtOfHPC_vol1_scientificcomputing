@@ -1,0 +1,186 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this project you will combine some of the theory and practical
+skills you learned in class to solve a real world problem. In addition
+to writing code that solves the program, you will use the following
+software practices:
+\begin{itemize}
+  \item use source code control,
+  \item give the program checkpoint/restart capability, and
+  \item use basic profiling and visualization of the results.
+\end{itemize}
+
+The Heat Equation (see section~\ref{sec:heateq}) is given by
+\[ \frac{\partial T(x,t)}{\partial t}=
+\begin{cases}
+  \alpha \frac{\partial^2 T(x,y)}{\partial x^2}+q(x,t)&\hbox{1D}\\
+  \alpha \frac{\partial^2 T(x,y)}{\partial x^2}+
+    \alpha \frac{\partial^2 T(x,y)}{\partial y^2}+q(x,t)&\hbox{2D}\\
+    \ldots&\hbox{3D}
+\end{cases}
+\]
+where $t\geq 0$ and $x\in[0,1]$, subject to boundary conditions
+\[ T(x,0)=T_0(x),\quad\hbox{for $x\in[0,1]$}, \]
+and similar in higher dimensions, and
+\[ T(0,t)=T_a(t),\, T(1,t)=T_b(t),\quad\hbox{for $t>0$}. \]
+You will solve this problem using the explicit and implicit Euler
+methods.
+
+\Level 0 {Software}
+
+As \acp{PDE} go, this is a fairly simple one. In particular the
+regular structure makes it easy to code this project using regular
+arrays to store the data.
+However, you can also
+write your software using the PETSc library.
+In that case, use the \n{MatMult} routine
+for matrix-vector multiplication and \n{KSPSolve} for linear system
+solution. Exception: code the Euler methods yourself.
+
+Be sure to use a Makefile for building your project (tutorial~\CARPref{tut:gnumake}).
+
+Add your source files, Makefile, and job scripts to a git repository
+(tutorial~\CARPref{tut:git}); do not add binaries or output files. Make
+sure that there is a README
+file with instructions on how to build and run your code.
+
+Implement a checkpoint/restart facility by writing vector data, size
+of the time step, and other necessary items, to an \n{hdf5} file
+(tutorial~\CARPref{tut:hdf5}). Your program should be able to read this
+file and resume execution.
+
+\Level 0 {Tests}
+
+Do the following tests on a single core.
+
+\subsection*{Method stability}
+
+Run your program for the 1D case with 
+\[
+\begin{cases}
+  q=\sin\ell\pi x\\ T_0(x)=e^x\\ T_a(t)=T_b(t)=0\\ \alpha=1
+\end{cases}
+\]
+Take a space discretization at least $h=10^{-2}$ but especially in
+parallel do not be afraid to try large problem sizes. Try various 
+time steps
+and show that
+the explicit method can diverge. What is the maximum time step for
+which it is stable? 
+
+For the implicit method, at first use a direct method to solve the
+system.
+This corresponds to PETSc options \n{KSPPREONLY} and \n{PCLU} (see
+section~\ref{sec:cg}).
+
+Now use an iterative method (for instance \n{KSPCG} and \n{PCJACOBI});
+is the method still stable? Explore using a low convergence tolerance
+and large time steps. 
+
+Since the forcing function~$q$ and the boundary conditions have no
+time dependence, the solution $u(\cdot,t)$ will converge to a
+\indexterm{steady state} solution~$u_\infty(x)$
+as~$t\rightarrow\nobreak\infty$. What is the influence of the time step on the
+speed with which implicit method converges to this steady state?
+
+Hint: the steady state is described by $u_t\equiv0$. Substitute this
+in the \ac{PDE}. Can you find explicitly what the steady state is?
+
+Run these tests with various values for~$\ell$.
+
+\subsection*{Timing}
+
+If you run your code with the commandline option \n{-log_summary}, you
+will get a table of timings of the various PETSc routines. Use that to do
+the following timing experiments. Make sure you use a version of PETSc
+that was \emph{not} compiled with debug mode.
+
+Construct your coefficient matrix as a dense matrix, rather than
+sparse. Report on the difference in total memory, and the runtime and
+flop rate of doing one time step. Do this for both the explicit and
+implicit method and explain the results.
+
+With a sparse coefficient matrix, report on the timing of a
+  single time step. Discuss the respective flop counts and the
+  resulting performance.
+
+
+\subsection*{Restart}
+
+Implement a restart facility: every 10 iterations write out the
+values of the current iterate, together with values of $\Delta x$,
+$\Delta t$, and~$\ell$. Add a flag \n{-restart} to your program that
+causes it to read the restart file and resume execution, reading all
+parameters from the restart file.
+
+Run your program for 25 iterations, and restart, causing it to run
+again from iteration~20. Check that the values in iterations
+$20\ldots25$ match.
+
+\Level 0 {Parallelism}
+
+Do the following tests to determine the parallel scaling of your code.
+
+At first test the explicit method, which should be perfectly
+  parallel. Report on actual speedup attained. Try larger and smaller
+  problem sizes and report on the influence of the problem size.
+
+The above settings for the implicit method (\n{KSPPREONLY} and
+\n{PCLU}) lead to a runtime error. One way out is to let the system be
+solved by an iterative method. Read the PETSc manual and web pages to
+find out some choices of iterative method and preconditioner and try
+them. Report on their efficacy.
+
+\Level 0 {Comparison of solvers}
+
+In the implicit timestepping method you need to solve linear
+systems. In the 2D (or 3D) case it can make a big difference whether
+you use a direct solver or an iterative one.
+
+Set up your code to run with $q\equiv0$ and zero boundary
+  conditions everywhere; start with a nonzero initial solution. You
+  should now get convergence to a zero steady state, thus the norm of
+  the current solution is the norm of the iterate. 
+
+Now do the following comparison; take several values for the time
+step.
+
+\subsection*{Direct solver}
+
+If your PETSc installation includes direct solvers such as
+\indexterm{MUMPS}, you can invoke them with
+\begin{verbatim}
+myprog -pc_type lu -ksp_type preonly \
+    -pc_factor_mat_solver_package mumps 
+\end{verbatim}
+Run your code with a direct solver, both sequentially and in parallel,
+and record how long it takes for the error to get down to $10^{-6}$.
+
+\subsection*{Iterative Solver}
+
+Use an iterative solver, for instance \n{KSPCG} and \n{KSPBCGS}.
+Experiment with the convergence tolerance: how many timesteps does it
+take to get a $10^{-6}$ error if you set the iterative method
+tolerance to $10^{-12}$, how much if you take a lesser tolerance?
+
+Compare timings between direct and iterative method.
+
+\Level 0 {Reporting}
+
+Write your report using \LaTeX\ (tutorial~\CARPref{tut:latex}). Use both
+tables and graphs to report numerical results. Use \n{gnuplot}
+(tutorial~\CARPref{tut:gnuplot}) or a related utility for graphs.
+

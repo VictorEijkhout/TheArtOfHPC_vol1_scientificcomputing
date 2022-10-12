@@ -1,0 +1,29 @@
+In this project you're asked to analyze the \acf{BSP} model, both
+abstractly and by simulation.
+
+\Level 0 {Discussion}
+
+For your assignment you need to investigate Bulk Synchronous
+Programming. Read the wikipedia article
+\url{http://en.wikipedia.org/wiki/Bulk_synchronous_parallel} and
+section~\ref{sec:bsp} in the book.  
+
+Consider the following questions.
+
+\begin{enumerate}
+\item Discuss the relation between the complexity model of BSP and the
+  $\alpha,\beta,\gamma$ model you learned in
+  section~\ref{sec:collective-cost}.
+\item \ac{BSP} uses barrier synchronisations. Are these necesary in
+  practice? Consider separately two different classes of algorithms, namely
+  \ac{PDE} solving, and large scale graph computations.
+\end{enumerate}
+
+\Level 0 {Simulation}
+
+In the defining paper on \ac{BSP}, Valiant~\cite{Valiant:1990:BSP}
+advocates making more tasks than processors, and distributing them
+randomly. Program a simulation and test if this strategy solves the
+load balance problem. Discuss the random placement strategy in the
+context of various algorithms.
+

@@ -1,0 +1,122 @@
+# -*- makefile -*-
+################################################################
+################################################################
+####
+#### This Makefile belong with the sources
+#### for Introduction to High-Performance Scientific Computing
+#### by Victor Eijkhout
+#### copyright 2010-2022
+####
+#### basic make compile rules
+####
+################################################################
+################################################################
+
+# disable stupid default application building
+MAKEFLAGS += --no-builtin-rules
+% : %.o
+
+OMPFLAGS_intel    = -g -qopenmp
+OMPFLAGS_gcc      = -ggdb -fopenmp
+OMPFLAGS_clang    = -fopenmp
+OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
+
+info ::
+	@echo "================ Compile rules:"
+	@echo "make PROGRAM (in: ${PROGRAMS} ${APPS})"
+	@echo "    [ OPTLEVEL=0/1/2, default:${OPTLEVEL} ]"
+	@echo "    [ ECHO=0/1 for cmd line display ]"
+OPTLEVEL = 2
+
+info ::
+	@echo "    [ EXTRA_OPTIONS=... ] [ INCLUDES=... ]"
+
+ifdef TACC_TAU_DIR
+  C_COMPILER = tau_cc.sh
+  CXX_COMPILER = tau_cxx.sh
+  F_COMPILER = tau_f90.sh
+  MPI_C_COMPILER = tau_cc.sh
+  MPI_CXX_COMPILER = tau_cxx.sh
+  MPI_F_COMPILER = tau_f90.sh
+else
+
+  ## non-TAU compilation
+  CSTANDARD = 99
+  C_COMPILER_intel = icc
+  C_COMPILER_gcc   = gcc
+  C_COMPILER_clang   = clang
+  CFLAGS = -g -O${OPTLEVEL} -std=c${CSTANDARD}
+  MPI_C_COMPILER = mpicc
+
+  CXX_COMPILER_intel = icpc
+  CXX_COMPILER_gcc   = g++
+  CXX_COMPILER_clang   = clang++
+  CXXFLAGS = -g -O${OPTLEVEL} -std=c++17
+  MPI_CXX_COMPILER = mpicxx
+
+  F_COMPILER_intel = ifort
+  F_COMPILER_gcc   = gfortran
+  F_COMPILER_clang   = gfortran
+  FFLAGS = -g -O${OPTLEVEL}
+  MPI_F_COMPILER = mpif90
+
+  ifeq "${MODE}" "mpi"
+    C_COMPILER   = ${MPI_COMPILER}
+    CXX_COMPILER = ${MPI_CXX_COMPILER}
+    F_COMPILER   = ${MPI_F_COMPILER}
+  else
+    C_COMPILER = ${C_COMPILER_${TACC_FAMILY_COMPILER}}
+    CXX_COMPILER = ${CXX_COMPILER_${TACC_FAMILY_COMPILER}}
+    F_COMPILER = ${F_COMPILER_${TACC_FAMILY_COMPILER}}
+  endif
+
+endif
+CLINKER   = ${C_COMPILER}
+FLINKER   = ${F_COMPILER}
+CXXLINKER = ${CXX_COMPILER}
+LINKER    = ${${LANGUAGE}LINKER}
+
+ifeq "${MODE}" "omp"
+  CFLAGS += ${OMPFLAGS} 
+  CXXFLAGS += ${OMPFLAGS} 
+  FFLAGS += ${OMPFLAGS} 
+  LINKERFLAGS += ${OMPFLAGS}
+endif
+
+%.o : %.c
+	@if [ -z "${C_COMPILER}" ] ; then \
+	    echo "Could not determine C compiler" && exit 1 ; fi
+	@cmd="${C_COMPILER}   ${CFLAGS}   ${PIC_OPTION} ${INCLUDES} \
+	        ${EXTRA_OPTIONS} ${EXTRA_EXTRA_OPTIONS} \
+	    -c $^" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo "Compile: $$cmd" ; fi \
+	 && eval $${cmd}
+
+%.o : %.cxx
+	@if [ -z "${CXX_COMPILER}" ] ; then \
+	    echo "Could not determine CXX compiler" && exit 1 ; fi
+	@cmd="${CXX_COMPILER} ${CXXFLAGS} ${PIC_OPTION} ${INCLUDES} \
+	        ${EXTRA_OPTIONS} ${EXTRA_EXTRA_OPTIONS} \
+	    -c $^" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo "Compile: $$cmd" ; fi \
+	 && eval $${cmd}
+
+%.o : %.F90
+	${F_COMPILER}   ${FFLAGS}   ${PIC_OPTION} ${INCLUDES} ${EXTRA_OPTIONS} ${EXTRA_EXTRA_OPTIONS} \
+	    -c $^
+
+.SECONDEXPANSION:
+# use double colon to add more dependencies elsewhere
+info ::
+	@echo "for linking:"
+	@echo "    [ EXTRALIBS=... ]"
+${APPS} ${PROGRAMS} : $$@.o ${EXTRA_OBJS}
+	@cmdline="${LINKER} ${LINKERFLAGS} \
+	    -o $@ $^ ${EXTRALIBS}" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo "Link line: $$cmdline" ; fi \
+	 && eval $$cmdline
+
+

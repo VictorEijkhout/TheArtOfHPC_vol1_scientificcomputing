@@ -1,0 +1,45 @@
+# -*- makefile -*-
+################################################################
+################################################################
+####
+#### This Makefile belong with the sources
+#### for Introduction to High-Performance Scientific Computing
+#### by Victor Eijkhout
+#### copyright 2010-2021
+####
+#### basic make clean rule for any directory
+####
+################################################################
+################################################################
+
+info ::
+	@echo && echo "================================"
+	@echo "clean rules:" && echo
+	@echo "make basic_clean clean recursive_clean"
+
+.PHONY: localclean basic_clean clean recursive_clean
+localclean basic_clean :
+	@/bin/rm -f \
+	  *~ \#* \
+	  *.{aux,blg,idx,ilg,log,mtc,maf,nav,out,snm,svn,toc,vrb} \
+	  *.{gch,o} *.mtc[0-9]* *.pyc \
+	  *.cut
+	@/bin/rm -rf *.dSYM __pycache__
+clean :: localclean 
+	@rm -f ${PROGRAMS}
+total_clean :: localclean
+recursive_clean :: clean
+	for d in * ; do \
+	    echo "$$d" \
+	    && if [ -d "$$d" ] ; then \
+	        ( cd "$$d" \
+	          && echo " .. cleaning in $${d%%.*private}" \
+	          && if [ -f Makefile ] ; then \
+	                make clean \
+	             ; else \
+	                make clean -f ../Makefile MAKEFILESDIR=../../makefiles \
+	             ; fi \
+	        ) \
+	    ; fi \
+	 ; done
+

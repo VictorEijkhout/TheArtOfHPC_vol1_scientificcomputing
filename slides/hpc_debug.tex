@@ -1,0 +1,83 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% hpc_course.tex : main file for the big HPC slide deck
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,headernav]{beamer}
+
+\usepackage{beamerthemeTACC}
+\parskip=.5\baselineskip plus .5\baselineskip
+\input semester
+
+\setcounter{tocdepth}{1}
+\AtBeginSection[]
+{
+  \begin{numberedframe}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{numberedframe}
+}
+
+\usepackage{pslatex}
+\usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
+
+\setbeamertemplate{footline}{Eijkhout: programming}
+
+\newdimen\unitindent \unitindent=20pt
+
+\usepackage{comment}
+
+\input slidemacs
+\input snippetmacs
+\input scimacs
+
+\usepackage{makeidx}
+\makeindex
+
+\includecomment{diagonalstorage}
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{HPC debugging}
+\author{Victor Eijkhout}
+\date{2022}
+
+\begin{frame}{}
+  \titlepage
+\end{frame}
+
+\Level 0 {Profiling and debugging; optimization and programming strategies.}
+
+\input ProfilingOptimization-slides
+\input Debug-slides
+
+\end{document}
+
+\Level 0 {Cross-language linking}
+
+\begin{numberedframe}{}
+  \label{sl-tut:}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{}
+  \label{sl-tut:}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{numberedframe}
+

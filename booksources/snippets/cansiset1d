@@ -1,0 +1,6 @@
+void set_last( int array[],int len, int value ) {
+  array[len-1] = value;
+}
+  int x[5];
+  set_last(x,5,3);
+  printf("%d\n",x[4]);

@@ -1,0 +1,9 @@
+// falsesharing-omp.cxx
+  for (int spacing : {16,12,8,4,3,2,1,0} ) {
+      int iproc = omp_get_thread_num();
+      floattype *write_addr = results.data() + iproc*spacing;
+      for (int r=0; r<how_many_repeats; r++) {
+	for (int w=0; w<stream_length; w++) {
+	  *write_addr += *( read_stream+w );
+	}
+      }

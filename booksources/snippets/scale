@@ -1,0 +1,8 @@
+// example1.F90
+  do i=1,n
+     xarray(i) = 1.d0
+  end do
+  call dscal(n,scale,xarray,1)
+  do i=1,n
+     if (.not.assert_equal( xarray(i),scale )) print *,"Error in index",i
+  end do

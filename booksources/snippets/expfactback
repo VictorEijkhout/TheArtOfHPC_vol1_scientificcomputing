@@ -1,0 +1,6 @@
+  partial_sum = 0.;
+  for (int term=how_many_terms; term>=1; term--) {
+    partial_sum += inverse_factorial;
+    inverse_factorial *= term;
+  }
+  partial_sum += 1.;

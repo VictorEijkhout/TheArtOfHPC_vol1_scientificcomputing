@@ -1,0 +1,268 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-8
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% chapter on quantum computing
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\dirac#1{\left|#1\right\rangle}
+
+\Level 0 {Introduction}
+
+We notate `classical bits', or \indextermdef{cbit}s, either as vectors
+with two components or with a \emph{Dirac vector
+  notation}\index{vector!Dirac notation}:
+\[
+\dirac{0} \equiv
+\begin{pmatrix}
+  1\\0
+\end{pmatrix},\qquad
+\dirac{1} \equiv
+\begin{pmatrix}
+  0\\1
+\end{pmatrix}
+\]
+Think that location of the~$1$ determines value.
+
+On a single bit we can define four operations, that we represent by
+matrices:
+\begin{itemize}
+\item Identity
+  \[ 
+  \begin{pmatrix}
+    1&0\\ 0&1
+  \end{pmatrix}
+  \begin{pmatrix}
+    1\\0
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    1\\0
+  \end{pmatrix}
+  ,\qquad
+  \begin{pmatrix}
+    1&0\\ 0&1
+  \end{pmatrix}
+  \begin{pmatrix}
+    0\\1
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    0\\1
+  \end{pmatrix}
+  \]
+\item Negation
+  \[ 
+  \begin{pmatrix}
+    0&1\\ 1&0
+  \end{pmatrix}
+  \begin{pmatrix}
+    1\\0
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    0\\1
+  \end{pmatrix}
+  ,\qquad
+  \begin{pmatrix}
+    0&1\\ 1&0
+  \end{pmatrix}
+  \begin{pmatrix}
+    0\\1
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    1\\0
+  \end{pmatrix}
+  \]
+\item Constant zero
+\item Constant one.
+\end{itemize}
+
+Of these operations, the first two are reversible: given the output
+you can find the input.
+
+A \indexterm{tensor product} of two vectors has a a result with a
+size that is the product of the sizes of the inputs.
+\[
+\begin{pmatrix}
+  x_0\\x_1
+\end{pmatrix}
+\otimes
+\begin{pmatrix}
+  y_0\\y_1
+\end{pmatrix}
+=
+\begin{pmatrix}
+  x_0
+  \begin{pmatrix} y_0\\y_1 \end{pmatrix} \\
+  x_1
+  \begin{pmatrix} y_0\\y_1 \end{pmatrix} \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+  x_0 y_0\\ x_0y_1\\ x_1y_0\\ x_1y_1
+\end{pmatrix}
+,\qquad
+\begin{pmatrix}
+  x_0\\x_1
+\end{pmatrix}
+\otimes
+\begin{pmatrix}
+  y_0\\y_1
+\end{pmatrix}
+\otimes
+\begin{pmatrix}
+  z_0\\z_1
+\end{pmatrix}
+=
+\begin{pmatrix}
+  x_0 y_0 z_0\\ x_0 y_0 z_1 \\
+  x_0 y_1 z_0\\ x_0 y_1 z_1\\
+  x_1 y_0 z_0\\ x_1 y_0 z_1 \\
+  x_1 y_1 z_0\\ x_1 y_1 z_1\\
+\end{pmatrix}
+\]
+
+We use this tensor notation for a multi-bit state in Dirac notation:
+\[ \dirac{00} = 
+\begin{pmatrix}
+  1\\0
+\end{pmatrix}
+\otimes
+\begin{pmatrix}
+  1\\0
+\end{pmatrix}
+=
+\begin{pmatrix}
+  1\\ 0\\ 0\\ 0
+\end{pmatrix}
+,\qquad
+\dirac{3}=\dirac{11}=
+\begin{pmatrix}
+  0\\1
+\end{pmatrix}
+\otimes
+\begin{pmatrix}
+  0\\1
+\end{pmatrix}
+=
+\begin{pmatrix}
+  0\\ 0\\ 0\\ 1
+\end{pmatrix}
+\]
+In general, a string of $n$ bits is represented as a vector of
+size~$2^n$.
+
+
+The \indextermdef{cnot} gate $C$ works on two bits, where the most significant
+bit is a `control bit': if it is~1, the other bit, the input bit, is
+flipped, otherwise it is reproduced.
+\[
+C\dirac{00} = 
+\begin{pmatrix}
+  1&0&0&\\ 0&1&0&0\\ 0&0&0&1\\ 0&0&1&0
+\end{pmatrix}
+\begin{pmatrix}
+  1\\ 0\\ 0\\ 0
+\end{pmatrix}
+=
+\begin{pmatrix}
+  1\\ 0\\ 0\\ 0
+\end{pmatrix}
+=\dirac{00}
+,\qquad
+C\dirac{10} = 
+\begin{pmatrix}
+  1&0&0&\\ 0&1&0&0\\ 0&0&0&1\\ 0&0&1&0
+\end{pmatrix}
+\begin{pmatrix}
+  0\\ 0\\ 1\\ 0
+\end{pmatrix}
+=
+\begin{pmatrix}
+  0\\ 0\\ 0\\ 1
+\end{pmatrix}
+=\dirac{11}
+\]
+The cnot gate is of course reversible.
+
+\Level 1 {Qbits}
+
+We now generalize cbits to \indextermdef{qbit}s: any two-component
+vector $(a b)^t$ with $a,b$ complex and
+$\|a\|^2+\|b\|^2=1$. Such a qbit is also called a superposition of the
+cbits zero and one.
+
+We can measure a qbit, which means map it to~0 with
+probabiity~$\|a\|^2$ and to~1 with probability~$\|b\|^2$.
+The cbits introduced above collapse to 0 or~1 with chance~1.
+As an example, the qbit
+$(\sqrt{2}/2\, \sqrt{2}/2)^t$ collapses to 0 or 1 both with chance~$1/2$.
+
+It is easy to prove that the tensor product preserves the unit norm:
+\[ 
+\begin{pmatrix}
+  a\\b
+\end{pmatrix}
+\otimes
+\begin{pmatrix}
+  c\\d
+\end{pmatrix}
+=
+\begin{pmatrix}
+  ac\\ad\\bc\\bd
+\end{pmatrix}
+\quad\hbox{and}\quad
+\|ac\|^2+\|ad\|^2+\|bc\|^2+\|bd\|^2=1
+\]
+
+We can perform all the above matrix operators on qbits.
+
+For instance, the \indexterm{Hadamard gate} takes a zero or one bit
+and puts it into equal superposition:
+\[ H\dirac{0} =
+\begin{pmatrix}
+  \sqrt{2}/2&\sqrt{2}/2\\ \sqrt{2}/2&-\sqrt{2}/2
+\end{pmatrix}
+\begin{pmatrix}
+  1\\0
+\end{pmatrix}
+=
+\begin{pmatrix}
+  \sqrt{2}/2\\ \sqrt{2}/2
+\end{pmatrix}
+,\qquad
+\begin{pmatrix}
+  \sqrt{2}/2&\sqrt{2}/2\\ \sqrt{2}/2&-\sqrt{2}/2
+\end{pmatrix}
+\begin{pmatrix}
+  0\\1
+\end{pmatrix}
+=
+\begin{pmatrix}
+  \sqrt{2}/2\\ -\sqrt{2}/2
+\end{pmatrix}
+\]
+This operation is reversible, so it can take an equal superposition
+and turn it into a zero or one bit.
+
+\Level 1 {Deutsch oracle}
+
+Suppose you have a function on one bit. (See above: there are four of
+those.) You need two queries (test inputs) to determine what the
+function is. On the other hand, you could ask if the function is
+constant (identically zero or one), or variable (that is, either
+identity or negation). Classically this again takes two queries, but
+on a quantum computer a single query suffices.
+

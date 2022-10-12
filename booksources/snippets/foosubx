@@ -1,0 +1,4 @@
+// foosub.cxx
+void bar( string s ) {
+  cout << s;
+}

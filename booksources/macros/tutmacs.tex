@@ -1,0 +1,68 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% this text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{purpose}
+  {\begin{quotation}\noindent {\bf Purpose.}\ \ignorespaces}
+  {\end{quotation}\bigskip}
+\newcommand\practical[3]{%
+  \par \medskip
+    {\bf Exercise. }#1\par % do this
+  \smallskip
+  \def\next{#2}\def\empty{}
+  \ifx\next\empty\else
+    \begin{quotation}\small\noindent{\sl Expected outcome. }#2\end{quotation}
+  \fi
+  \def\next{#3}\def\empty{}
+  \ifx\next\empty\else
+    \smallskip
+    \begin{quotation}\small\noindent{\sl Caveats. }#3\end{quotation}
+  \fi
+  \medskip
+}
+
+
+\newcommand\dirdisplay[1]{\par
+  \vbox{\hrule
+        \hbox{\vrule\vbox{\hsize=.8\hsize \dirtree{#1}}}
+        \hrule
+       }
+  }
+
+\usepackage{dirtree}
+\usepackage{forest}
+\forestset{
+  default preamble={
+    for tree={
+      font=\ttfamily, grow'=0,
+      child anchor=west, parent anchor=south,
+      anchor=west, calign=first,
+      edge path={
+        \noexpand\path [draw, \forestoption{edge}]
+        (!u.south west) +(7.5pt,0) |- node[fill,inner sep=1.25pt] {}
+        (.child anchor)\forestoption{edge label};
+      },
+      %% before typesetting nodes={
+      %%   if n=1
+      %%   {insert before={[,phantom]}}
+      %%   {}
+      %% },
+      fit=band,
+      before computing xy={l=15pt},
+    }
+}}
+
+\endinput
+

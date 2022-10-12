@@ -1,0 +1,12 @@
+// denormal.cxx
+    /* init data */
+    for ( int t=0; t<stream_length; t++)
+      memory[t] = startvalue;
+    
+    /* repeated scale the array */
+    for (int r=0; r<repeats; r++) {
+      for ( int t=0; t<stream_length; t++) {
+	memory[t] = ratio * memory[t];
+      }
+      memory.front() = memory.back();
+    }

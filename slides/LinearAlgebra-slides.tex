@@ -1,0 +1,412 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of slides for
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2020
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}{Linear algebra}
+  \begin{itemize}
+  \item Mathematical aspects: mostly linear system solving
+  \item Practical aspects: even simple operations are hard
+    \begin{itemize}
+    \item Dense matrix-vector product: scalability aspects
+    \item Sparse matrix-vector: implementation
+    \end{itemize}
+  \end{itemize}
+  Let's start with the math\ldots
+\end{frame}
+
+\frame{\frametitle{Two approaches to linear system solving}
+  Solve $Ax=b$
+
+  Direct methods:
+  \begin{itemize}
+  \item Deterministic
+  \item Exact up to machine precision
+  \item Expensive (in time and space)
+  \end{itemize}
+  Iterative methods:
+  \begin{itemize}
+  \item Only approximate
+  \item Cheaper in space and (possibly) time
+  \item Convergence not guaranteed
+  \end{itemize}
+}
+
+\frame{\frametitle{Really bad example of direct method}
+  Cramer's rule\\
+  write $|A|$ for determinant, then
+  \[ x_i=\left|
+    \begin{matrix}
+      a_{11}&a_{12}&\ldots&a_{1i-1}&b_1&a_{1i+1}&\ldots&a_{1n}\\
+      a_{21}&      &\ldots&        &b_2&        &\ldots&a_{2n}\\
+      \vdots&      &      &        &\vdots&     &      &\vdots\\
+      a_{n1}&      &\ldots&        &b_n&        &\ldots&a_{nn}
+    \end{matrix}\right|
+    / |A|
+    \]
+    Time complexity $O(n!)$
+}
+
+\begin{frame}{Not a good method either}
+  \[ Ax = b \]
+  \begin{itemize}
+  \item
+    Compute explictly $A\inv$,
+  \item
+    then $x\leftarrow A\inv b$.
+  \item Numerical stability issues.
+  \item Amount of work?
+  \end{itemize}
+  
+\end{frame}
+
+\sectionframe{A close look linear system solving: direct methods}
+
+\frame{\frametitle{Gaussian elimination}
+  \footnotesize
+  Example
+  \[ 
+  \left(
+    \begin{matrix}
+      6&-2&2\\ 12&-8&6\\ 3&-13&3
+    \end{matrix}\right)
+  x =
+  \left(
+    \begin{matrix}
+      16\\ 26\\ -19
+    \end{matrix}\right)
+  \]
+  \[
+  \left[
+    \begin{matrix}
+      6&-2&2&|&16\\ 12&-8&6&|&26\\ 3&-13&3&|&-19      
+    \end{matrix}\right] \longrightarrow
+  \left[
+    \begin{matrix}
+      6&-2&2&|&16\\ 0&-4&2&|&-6\\ 0&-12&2&|&-27
+    \end{matrix}\right] \longrightarrow
+  \left[
+    \begin{matrix}
+      6&-2&2&|&16\\ 0&-4&2&|&-6\\ 0&0&-4&|&-9
+    \end{matrix}\right]
+  \]
+  Solve $x_3$, then $x_2$, then $x_1$
+
+  $6,-4,-4$ are the `pivots'
+}
+
+\newcommand\macro[1]{$\langle$#1$\rangle$} %pyskip
+\begin{frame}{Gaussian elimination, step by step}
+\begin{tabbing}
+  \kern20pt\=\kern10pt\=\kill
+  \macro{$LU$ factorization}:\\
+  \>for\={} $k=1,n-1$:\\
+  \>\>\macro{eliminate values in column $k$}\\ [5pt]
+  \macro{eliminate values in column $k$}:\\
+  \>for $i=k+1$ to $n$:\\
+  \>\>\macro{compute multiplier for row $i$}\\
+  \>\>\macro{update row $i$}\\ [5pt]
+  \macro{compute multiplier for row $i$}\\
+  \> $a_{ik}\leftarrow a_{ik}/a_{kk}$\\ [5pt]
+  \macro{update row $i$}:\\
+  \>for $j=k+1$ to $n$:\\
+  \>\>$a_{ij}\leftarrow a_{ij}-a_{ik}*a_{kj}$
+\end{tabbing}
+\end{frame}
+
+\begin{frame}{Gaussian elimination, all together}
+\begin{tabbing}
+  \kern20pt\=\kern10pt\=\kern10pt\=\kern10pt\=\kill
+  \macro{$LU$ factorization}:\\
+  \>for\={} $k=1,n-1$:\\
+  \>\>for\={} $i=k+1$ to $n$:\\
+  \>\>\> $a_{ik}\leftarrow a_{ik}/a_{kk}$\\
+  \>\>\>for\={} $j=k+1$ to $n$:\\
+  \>\>\>\>$a_{ij}\leftarrow a_{ij}-a_{ik}*a_{kj}$
+\end{tabbing}
+Amount of work:
+\[ \sum_{k=1}^{n-1}\sum_{i,j>k} 1 =
+\sum_k^{n-1} (n-k)^2
+\approx \sum_k k^2 \approx n^3/3 \]
+\end{frame}
+
+\frame{\frametitle{Pivoting}
+  If a pivot is zero, exchange that row and another.\\
+  (there is always a row with a nonzero pivot if the matrix is nonsingular)\\
+  best choice is the largest possible pivot\\
+  in fact, that's a good choice even if the pivot is not zero:\\
+  \textbf{partial pivoting}\\
+  (full pivoting would be row \textsl{and} column exchanges)
+}
+
+\frame{\frametitle{Roundoff control}
+
+  Consider
+  \[ \left(
+    \begin{matrix}
+      \epsilon&1\\ 1&1
+    \end{matrix}\right) x = \left(
+    \begin{matrix}
+      1+\epsilon\\2
+    \end{matrix}\right)
+  \] with solution $x=(1,1)^t$
+
+  Ordinary elimination:
+\[ \left(
+  \begin{matrix}
+    \epsilon&1\\ 0&1-\frac1\epsilon
+  \end{matrix}\right) x =
+  \left(
+  \begin{matrix}
+    1+\epsilon\\ 2-\frac{1+\epsilon}\epsilon
+  \end{matrix}\right)
+  =
+  \begin{pmatrix}
+    1+\epsilon\\ 1-\frac1\epsilon
+  \end{pmatrix}
+  .
+\]
+We can now solve $x_2$ and from it~$x_1$:
+\[ 
+\left\{
+\begin{array}{rl}
+  x_2&=(1-\epsilon\inv)/(1-\epsilon\inv)=1\\
+  x_1&=\epsilon\inv(1+\epsilon - x_2)=1
+\end{array}
+\right.
+\]
+
+}
+
+\frame{\frametitle{Roundoff 2}
+  If $\epsilon<\epsilon_{\mathrm{mach}}$, then in the rhs
+  $1+\epsilon\rightarrow 1$, so the system is:
+\[ \left(
+  \begin{matrix}
+    \epsilon&1\\ 1&1
+  \end{matrix}\right) x = \left(
+  \begin{matrix}
+    1\\2
+  \end{matrix}\right)
+\] 
+The solution $(1,1)$ is still correct!
+
+Eliminating:
+\[ \begin{pmatrix}
+    \epsilon&1\\ 0&1-\epsilon\inv
+  \end{pmatrix} x = 
+  \begin{pmatrix}
+    1\\2-\epsilon\inv
+  \end{pmatrix}
+  \quad\Rightarrow\quad
+  \begin{pmatrix}
+    \epsilon&1\\ 0&-\epsilon\inv
+  \end{pmatrix} x = 
+  \begin{pmatrix}
+    1\\-\epsilon\inv
+  \end{pmatrix}
+\] 
+
+Solving first $x_2$, then~$x_1$, we get:
+\[ \left\{
+\begin{array}{rl}
+  x_2&=\epsilon\inv / \epsilon\inv = 1\\
+  x_1&=\epsilon\inv (1-1\cdot x_2) = \epsilon \inv \cdot 0 = 0,
+\end{array}
+\right.
+\]
+so $x_2$ is correct, but $x_1$ is completely wrong.
+}
+
+\frame{\frametitle{Roundoff 3}
+  Pivot first:
+  \[ 
+  \begin{pmatrix}
+    1&1\\ \epsilon&1
+  \end{pmatrix} x =
+  \begin{pmatrix}
+    2\\1+\epsilon
+  \end{pmatrix}
+  \Rightarrow
+  \begin{pmatrix}
+    1&1\\ 0&1-\epsilon
+  \end{pmatrix} x=
+  \begin{pmatrix}
+    2\\ 1-\epsilon
+  \end{pmatrix}
+  \]
+  Now we get, regardless the size of epsilon:
+  \[ x_2=\frac{1-\epsilon}{1-\epsilon}=1,\qquad
+  x_1=2-x_2=1
+  \]
+}
+
+\frame{\frametitle{LU factorization}
+  Same example again:
+  \[ A=
+  \left(
+    \begin{matrix}
+      6&-2&2\\ 12&-8&6\\ 3&-13&3
+    \end{matrix}\right)
+  \]
+  2nd row minus $2\times$ first; 3rd row minus $1/2\times$ first;\\
+  equivalent to
+  \[ L_1Ax=L_1b,\qquad
+  L_1=\left(
+    \begin{matrix}
+      1&0&0\\ -2&1&0\\ -1/2&0&1
+    \end{matrix}\right)
+  \]
+  (elementary reflector)
+}
+
+\frame{\frametitle{LU 2}
+  Next step: $L_2L_1Ax=L_2L_1b$ with
+  \[ L_2=\left(
+    \begin{matrix}
+      1&0&0\\ 0&1&0\\ 0&-3&1
+    \end{matrix}\right)
+  \]
+  Define $U=L_2L_1A$, then $A=LU$ with $L=L_1^{-1}L_2^{-1}$\\
+  `LU factorization'
+}
+
+\frame{\frametitle{LU 3}
+  Observe:
+  \[ 
+  L_1=\left(
+    \begin{matrix}
+      1&0&0\\ -2&1&0\\ -1/2&0&1
+    \end{matrix}\right)\qquad
+  L_1^{-1}=\left(
+    \begin{matrix}
+      1&0&0\\ 2&1&0\\ 1/2&0&1
+    \end{matrix}\right)
+  \]
+  Likewise
+  \[ L_2=\left(
+    \begin{matrix}
+      1&0&0\\ 0&1&0\\ 0&-3&1
+    \end{matrix}\right)\qquad
+  L_2\inv=\left(
+    \begin{matrix}
+      1&0&0\\ 0&1&0\\ 0&3&1
+    \end{matrix}\right)
+  \]
+  Even more remarkable:
+  \[ L_1^{-1}L_2^{-1} = \left(
+    \begin{matrix}
+      1&0&0\\ 2&1&0\\ 1/2&3&1
+    \end{matrix}\right)
+  \]
+  Can be computed in place! (pivoting?)
+}
+
+\frame{\frametitle{Solve LU system}
+  \onslide<1->{
+    $Ax=b\longrightarrow LUx=b$ solve in two steps:\\
+    $Ly=b$, and $Ux=y$
+
+
+    Forward sweep:
+    \[ \left(
+    \begin{matrix}
+      1&&&\emptyset\\ \ell_{21}&1\\ \ell_{31}&\ell_{32}&1\\
+      \vdots&&\ddots\\ \ell_{n1}&\ell_{n2}&&\cdots&1
+    \end{matrix}\right) \left(
+    \begin{matrix}
+      y_1\\ y_2\\ \\ \vdots\\ y_n
+    \end{matrix}\right) = \left(
+    \begin{matrix}
+      b_1\\ b_2\\ \\ \vdots\\ b_n
+    \end{matrix}\right)
+    \]
+  }
+  \onslide<2->{
+    \[ y_1=b_1,\quad y_2=b_2-\ell_{21}y_1,\ldots \]
+    }
+}  
+
+\frame{\frametitle{Solve LU 2}
+  \onslide<1->{
+    Backward sweep:
+    \[ \left(
+    \begin{matrix}
+      u_{11}&u_{12}&\ldots&u_{1n}\\ &u_{22}&\ldots&u_{2n}\\
+      &&\ddots&\vdots\\ \emptyset&&&u_{nn}
+    \end{matrix}\right) \left(
+    \begin{matrix}
+      x_1\\ x_2\\ \vdots\\ x_n
+    \end{matrix}\right)=\left(
+    \begin{matrix}
+      y_1\\ y_2\\ \vdots\\ y_n
+    \end{matrix}\right)
+    \]
+  }
+  \onslide<2->{
+    \[ x_n=u_{nn}^{-1}y_n,\quad x_{n-1}=u_{n-1n-1}^{-1}(y_{n-1}-u_{n-1n}x_n),
+    \ldots \]
+  }
+}
+
+\begin{frame}{Computational aspects}
+  Compare:
+  \begin{multicols}{2}
+    \footnotesize
+    Matrix-vector product:
+    \[
+    \begin{pmatrix}
+      y_1\\\vdots\\y_n
+    \end{pmatrix}
+    \leftarrow
+    \begin{pmatrix}
+      a_{11}&\ldots&a_{1n}\\
+      \vdots& &\vdots\\
+      a_{n1}&\ldots&a_{nn}\\
+    \end{pmatrix}
+    \begin{pmatrix}
+      x_1\\\vdots\\x_n
+    \end{pmatrix}
+    \]
+    \vfil
+    \columnbreak
+    Solving LU system:
+    \[ 
+    \begin{pmatrix}
+      a_{11}&&\emptyset\\
+      \vdots&\ddots &\\
+      a_{n1}&\ldots&a_{nn}\\
+    \end{pmatrix}
+    \begin{pmatrix}
+      x_1\\\vdots\\x_n
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      y_1\\\vdots\\y_n
+    \end{pmatrix}
+    \]
+    (and similarly the $U$ matrix)
+    \vfil
+    \columnbreak
+  \end{multicols}
+  Compare operation counts. Can you think of other points of
+  comparison? (Think modern computers.)
+\end{frame}
+
+\begin{comment}
+  \begin{frame}{Computational aspects}
+    \begin{itemize}
+    \item Factoring and solving are recursive: parallellism is not trivial
+    \item (compare matrix-matrix and matrix-vector product)
+    \item Complexity: $O(n^3)$ operations for factorization,\\
+      $O(n^2)$ for solution
+    \item Much more stable than inversion, not quite as stable as QR
+    \end{itemize}
+  \end{frame}
+\end{comment}

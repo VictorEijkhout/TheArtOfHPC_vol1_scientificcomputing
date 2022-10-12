@@ -1,0 +1,48 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-7
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Co-array Fortran}
+
+Extension to Fortran to facilitate parallel programming~\cite{coarray}.
+
+For example, one problem with co-array fortran is that it does not
+allow the programmer to specify nonblocking transfer operations. In
+MPI (or other explicit message passing environments), the programmer
+can initiate a transfer of data between processors, and then go off
+and do some useful work while the data is being transferred, query
+the transfer operation to determine when it is complete, and then
+begin operating on that data when it is available. This
+functionality is missing in co-array fortran.
+
+A coarray program certainly can start a transfer long before
+the data is needed and go do some other unrelated work.
+The images synchronize only at a sync statement.
+Depending upon your specific application, various combinations
+of sync statements, volatile attributes and flush statements
+might be best.
+
+For example,
+
+\begin{verbatim}
+local_b(:) = remote_b(:)[over_there]
+call big_honking_calculation_involving_a( a)
+sync memory
+! now work with b
+\end{verbatim}
+
+Co-arrays part of the Fortran standard;
+support in G95~\cite{g95coarray}
+
+% LocalWords:  Eijkhout Co co fortran MPI coarray

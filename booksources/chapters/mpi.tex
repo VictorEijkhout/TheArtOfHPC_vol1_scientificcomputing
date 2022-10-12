@@ -1,0 +1,422 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+If OpenMP is the way to program shared memory,
+\acf{MPI}~\cite{mpi-reference} is the standard solution for
+programming distributed memory. MPI (`Message Passing Interface') is a
+specification for a library interface for moving data
+between processes that do
+not otherwise share data. The MPI routines can be divided roughly in
+the following categories:
+\begin{itemize}
+\item Process management. This includes querying the parallel
+  environment and constructing subsets of processors.
+\item Point-to-point communication\index{point-to-point
+  communication}. This is a set of calls where two processes
+  interact. These are mostly variants of the send and receive calls.
+\item\index{collective communication} Collective calls. In these
+  routines, all processors (or the whole of a specified subset) are
+  involved. Examples are the \indexterm{broadcast} call, where one
+  processor shares its data with every other processor, or the
+  \indexterm{gather} call, where one processor collects data from all
+  participating processors.
+\end{itemize}
+
+Let us consider how the OpenMP examples can be coded in
+MPI
+\begin{footnoteenv}
+{This is not a course in MPI programming, and consequently
+  the examples will leave out many details of the MPI calls. If you
+  want to learn MPI programming, consult for
+  instance~\cite{Gropp:UsingMPI1,Gropp:UsingMPI2,Gropp:UsingAdvancedMPI}.}
+  \end{footnoteenv}%
+  . First of all, we no longer allocate
+\begin{verbatim}
+double a[ProblemSize];
+\end{verbatim}
+but
+\begin{verbatim}
+double a[LocalProblemSize];
+\end{verbatim}
+where the local size is roughly a $1/P$ fraction of the global
+size. (Practical considerations dictate whether you want this
+distribution to be as evenly as possible, or rather biased in some
+way.)
+
+The parallel loop
+is trivially parallel, with the only difference that it now operates
+on a fraction of the arrays:
+\begin{verbatim}
+for (i=0; i<LocalProblemSize; i++) {
+  a[i] = b[i];
+}
+\end{verbatim}
+
+However, if the loop involves a calculation based on the iteration
+number, we need to map that to the global value:
+\begin{verbatim}
+for (i=0; i<LocalProblemSize; i++) {
+  a[i] = b[i]+f(i+MyFirstVariable);
+}
+\end{verbatim}
+(We will assume that each process has somehow calculated the values of
+\n{LocalProblemSize} and \n{MyFirstVariable}.)
+Local variables are now automatically local, because each process has
+its own instance:
+\begin{verbatim}
+for (i=0; i<LocalProblemSize; i++) {
+  t = b[i]*b[i];
+  a[i] = sin(t) + cos(t);
+}
+\end{verbatim}
+However, shared variables are harder to implement. Since each process
+has its own data, the local accumulation has to be explicitly assembled:
+\begin{verbatim}
+for (i=0; i<LocalProblemSize; i++) {
+  s = s + a[i]*b[i];
+}
+MPI_Allreduce(s,globals,1,MPI_DOUBLE,MPI_SUM);
+\end{verbatim}
+The `reduce' operation sums together all local values~\n{s} into a
+variable \n{globals} that receives an identical value on each
+processor. This is known as a \indexterm{collective operation}.
+
+Let us make the example slightly more complicated:
+\begin{verbatim}
+for (i=0; i<ProblemSize; i++) {
+  if (i==0)
+    a[i] = (b[i]+b[i+1])/2
+  else if (i==ProblemSize-1)
+    a[i] = (b[i]+b[i-1])/2
+  else
+    a[i] = (b[i]+b[i-1]+b[i+1])/3
+}
+\end{verbatim}
+If we had shared memory, we could write the following parallel code:
+\begin{verbatim}
+for (i=0; i<LocalProblemSize; i++) {
+  bleft = b[i-1]; bright = b[i+1];
+  a[i] = (b[i]+bleft+bright)/3
+}
+\end{verbatim}
+To turn this into valid distributed memory code,
+first we account for the fact that \n{bleft} and \n{bright} need to be
+obtained from a different processor for \n{i==0} (\n{bleft}), and for
+\n{i==LocalProblemSize-1} (\n{bright}). We do this with a exchange
+operation with our left and right neighbor processor:
+\begin{verbatim}
+// get bfromleft and bfromright from neighbor processors, then
+for (i=0; i<LocalProblemSize; i++) {
+  if (i==0) bleft=bfromleft;
+    else bleft = b[i-1]
+  if (i==LocalProblemSize-1) bright=bfromright;
+    else bright = b[i+1];
+  a[i] = (b[i]+bleft+bright)/3
+}
+\end{verbatim}
+Obtaining the neighbor values is done as follows. First we need to
+ask our processor number, so that we can start a communication with
+the processor with a number one higher and lower.
+\begin{verbatim}
+MPI_Comm_rank(MPI_COMM_WORLD,&myTaskID);
+MPI_Sendrecv
+   (/* to be sent:  */ &b[LocalProblemSize-1],
+    /* destination  */ myTaskID+1,
+    /* to be recvd: */ &bfromleft,
+    /* source:      */ myTaskID-1, 
+    /* some parameters omitted */ 
+   );
+MPI_Sendrecv(&b[0],myTaskID-1,
+    &bfromright, /* ... */ );
+\end{verbatim}
+There are still two problems with this code. First, the sendrecv
+operations need exceptions for the first and last processors. This can
+be done elegantly as follows:
+\begin{verbatim}
+MPI_Comm_rank(MPI_COMM_WORLD,&myTaskID);
+MPI_Comm_size(MPI_COMM_WORLD,&nTasks);
+if (myTaskID==0) leftproc = MPI_PROC_NULL;
+  else leftproc = myTaskID-1;
+if (myTaskID==nTasks-1) rightproc = MPI_PROC_NULL;
+  else rightproc = myTaskID+1;
+MPI_Sendrecv( &b[LocalProblemSize-1], &bfromleft,  rightproc );
+MPI_Sendrecv( &b[0],                  &bfromright, leftproc);
+\end{verbatim}
+
+\begin{exercise}
+  There is still a problem left with this code: the boundary
+  conditions from the original, global, version have not been taken
+  into account. Give code that solves that problem.
+\end{exercise}
+
+MPI gets complicated if different processes need to take
+different actions, for example, if one needs to send data to
+another. The problem here is that each process executes the same
+executable, so it needs to contain both the send and the receive
+instruction, to be executed depending on what the rank of the process
+is.
+\begin{verbatim}
+if (myTaskID==0) {
+  MPI_Send(myInfo,1,MPI_INT,/* to: */ 1,/* labeled: */,0,
+    MPI_COMM_WORLD);
+} else {
+  MPI_Recv(myInfo,1,MPI_INT,/* from: */ 0,/* labeled: */,0,
+    /* not explained here: */&status,MPI_COMM_WORLD);
+}   
+\end{verbatim}
+
+\Level 2 {Blocking}
+\label{sec:blocking}
+
+Although MPI is sometimes called the `assembly language of parallel
+programming', for its perceived difficulty and level of explicitness,
+it is not all that hard to learn, as evinced by the large number of scientific
+codes that use it. The main issues that make MPI somewhat intricate to
+use are buffer management and blocking semantics.
+
+These issues are related, and stem from the fact that, ideally, data
+should not be in two places at the same time. Let us briefly
+consider what happens if processor~1 sends data to processor~2. The
+safest strategy is for processor~1 to execute the send instruction,
+and then wait until processor~2 acknowledges that the data was
+successfully received. This means that processor~1 is temporarily
+blocked until processor~2 actually executes its receive instruction,
+and the data has made its way through the network. This is the
+standard behavior of the \n{MPI_Send} and \n{MPI_Recv} calls, which
+are said to use \indextermsub{blocking}{communication}.
+
+Alternatively,
+processor~1 could put its data in a buffer, tell the system to make
+sure that it gets sent at some point, and later checks to see that the
+buffer is safe to reuse. This second strategy is called
+\indexterm{non-blocking communication}, and it requires the use
+of a temporary buffer.
+
+\Level 2 {Collective operations}
+\label{sec:mpi-collective}
+\index{collective communication|(}
+
+In the above examples, you saw the \n{MPI_Allreduce} call, which
+computed a global sum and left the result on each processor. There is
+also a local version \n{MPI_Reduce} which computes the result only on
+one processor. These calls are examples of \emph{collective
+  operations} or collectives. The collectives are:
+\begin{description}
+\item[reduction]: each processor has a data item, and these items need
+  to be combined arithmetically with an addition, multiplication, max,
+  or min operation. The result can be left on one processor, or on
+  all, in which case we call this an {\bf allreduce} operation.
+\item[broadcast]: one processor has a data item that all processors
+  need to receive.
+\item[gather]: each processor has a data item, and these items need
+  to be collected in an array, without
+  combining them in an operations such as an addition. The result can
+  be left on one processor, or on all, in which case we call this an
+  {\bf allgather}.
+\item[scatter]: one processor has an array of data items, and each
+  processor receives one element of that array.
+\item[all-to-all]: each processor has an array of items, to be
+  scattered to all other processors.
+\end{description}
+Collective operations are blocking (see section~\ref{sec:blocking}),
+although MPI~3.0\index{MPI!MPI 3.0 draft}
+(which is currently only a draft) will have
+non-blocking collectives.
+We will analyze the cost of collective operations in detail in
+section~\ref{sec:collective-cost}.
+
+\index{collective communication|)}
+
+\Level 2 {Non-blocking communication}
+\label{sec:nonblocking}
+
+In a simple computer program, each instruction takes some time to
+execute, in a way that depends on what goes on in the processor. In
+parallel programs the situation is more complicated. A~send operation,
+in its simplest form, declares that a certain buffer of data needs to
+be sent, and program execution will then stop until that buffer has
+been safely sent and received by another processor. This sort of
+operation is called a \indexterm{non-local operation} since it depends
+on the actions of other processes, and a \indexterm{blocking
+  communication} operation since execution will halt until a certain
+event takes place.
+
+Blocking operations have the disadvantage that they can lead to
+\indextermdef{deadlock}. In the context of message passing this
+describes the situation that a process is waiting for an event that
+never happens; for instance, it can be waiting to receive a message
+and the sender of that message is waiting for something else.
+Deadlock occurs if two processes are waiting
+for each other, or more generally, if you have a cycle of processes
+where each is waiting for the next process in the cycle. Example:
+\begin{verbatim}
+if ( /* this is process 0 */ )
+   // wait for message from 1
+else if ( /* this is process 1 */ )
+   // wait for message from 0
+\end{verbatim}
+A block receive here leads to deadlock.
+Even without deadlock, they can lead to considerable \indexterm{idle
+  time} in the processors, as they wait without performing any useful work.
+On the other hand,  they have the advantage that it is clear when the
+buffer can be reused: after the operation completes, there is a
+guarantee that the data has been safely received at the other end.
+
+The blocking behavior can be avoided, at the cost of complicating the
+buffer semantics, by using \indexterm{non-blocking communication} operations. A
+non-blocking send (\n{MPI_Isend}) declares that a data buffer needs to
+be sent, but then does not wait for the completion of the
+corresponding receive. There is a second operation \n{MPI_Wait} that
+will actually block until the receive has been completed. The
+advantage of this decoupling of sending and blocking is that it now
+becomes possible to write:
+\begin{verbatim}
+MPI_ISend(somebuffer,&handle); // start sending, and
+    // get a handle to this particular communication
+{ ... }  // do useful work on local data
+MPI_Wait(handle); // block until the communication is completed;
+{ ... }  // do useful work on incoming data
+\end{verbatim}
+With a little luck, the local operations take more time than the
+communication, and you have completely eliminated the communication
+time.
+
+In addition to non-blocking sends, there are non-blocking receives. A
+typical piece of code then looks like
+\begin{verbatim}
+MPI_ISend(sendbuffer,&sendhandle);
+MPI_IReceive(recvbuffer,&recvhandle);
+{ ... }  // do useful work on local data
+MPI_Wait(sendhandle); Wait(recvhandle);
+{ ... }  // do useful work on incoming data
+\end{verbatim}
+
+\begin{exercise}
+  Take another look at equation~\eqref{eq:cyclic-add} and give pseudocode that
+  solves the problem using non-blocking sends and receives. What is
+  the disadvantage of this code over a blocking solution?
+\end{exercise}
+
+\Level 2 {MPI version 1 and 2 and 3}
+\label{sec:mpi-1-2}
+
+The first MPI standard~\cite{mpi-ref} had a number of notable
+omissions, which are included in the MPI~2
+standard~\cite{mpi-2-reference}. One of these concerned parallel
+input/output: there was no facility for multiple processes to access
+the same file, even if the underlying hardware would allow
+that. A~separate project MPI-I/O has now been rolled into the MPI-2
+standard. We will discuss parallel I/O in this book.
+
+A second facility missing in MPI, though it was present in
+\indexterm{PVM}~\cite{pvm-1,pvm-2} which predates MPI, is process
+management: there is no way to create new processes and have them be
+part of the parallel run.
+
+Finally, MPI-2 has support for one-sided communication: one process
+puts data into the memory of another, without the receiving process
+doing an actual receive instruction. We will have a short discussion
+in section~\ref{sec:one-sided} below.
+
+With MPI-3 the standard has gained a number of new features, such as
+non-blocking collectives, neighborhood collectives, and a profiling
+interface. The one-sided mechanisms have also been updated.
+
+\Level 2 {One-sided communication}
+\index{one-sided communication|(}
+\label{sec:one-sided}
+
+The MPI way of writing matching send and receive instructions is not
+ideal for a number of reasons. First of all, it requires the
+programmer to give the same data description twice, once in the send
+and once in the receive call. Secondly, it requires a rather precise
+orchestration of communication if deadlock is to be avoided; the
+alternative of using asynchronous calls is tedious to program,
+requiring the program to manage a lot of buffers.
+Lastly, it requires a receiving processor to know how many incoming
+messages to expect, which can be tricky in irregular applications.
+Life would be so much easier if it was
+possible to pull data from another processor, or conversely to put it
+on another processor, without that other processor being explicitly
+involved. 
+
+This style of programming is further encouraged by the
+existence of \indexacf{RDMA} support on some hardware. An early example was
+the  \indextermbus{Cray}{T3E}. 
+These days, one-sided communication is widely available through its
+incorporation in the MPI-2 library; section~\ref{sec:mpi-1-2}.
+
+Let us take a brief look at one-sided communication in MPI-2, using
+averaging of array values as an example:
+\[ \forall_i\colon a_i\leftarrow (a_i+a_{i-1}+a_{i+1})/3. \]
+The MPI parallel code will look like
+\begin{verbatim}
+// do data transfer
+a_local = (a_local+left+right)/3
+\end{verbatim}
+It is clear what the transfer has to accomplish: the \n{a_local}
+variable needs to become the \n{left} variable on the processor with
+the next higher rank, and the \n{right} variable on the one with the
+next lower rank.
+
+First of all, processors need to declare explicitly what memory area
+is available for one-sided transfer, the so-called `window'. In this
+example, that consists of the \n{a_local}, \n{left}, and \n{right}
+variables on the processors:
+\begin{verbatim}
+MPI_Win_create(&a_local,...,&data_window);
+MPI_Win_create(&left,....,&left_window);
+MPI_Win_create(&right,....,&right_window);
+\end{verbatim}
+The code now has two options: it is possible to push data out
+\begin{verbatim}
+target = my_tid-1;
+MPI_Put(&a_local,...,target,right_window);
+target = my_tid+1;
+MPI_Put(&a_local,...,target,left_window);
+\end{verbatim}
+or to pull it in
+\begin{verbatim}
+data_window = a_local;
+source = my_tid-1;
+MPI_Get(&right,...,data_window);
+source = my_tid+1;
+MPI_Get(&left,...,data_window);
+\end{verbatim}
+The above code will have the right semantics if the Put and Get calls
+are blocking; see section~\ref{sec:blocking}. However, part of the
+attraction of one-sided communication is that it makes it easier to
+express communication, and for this, a non-blocking semantics is
+assumed. 
+
+The problem with non-blocking one-sided calls is that it becomes
+necessary to ensure explicitly that communication is successfully
+completed. For instance, if one processor does a one-sided \emph{put}
+operation on another, the other processor has no way of checking that
+the data has arrived, or indeed that transfer has begun at
+all. Therefore it is necessary to insert a global barrier in the program,
+for which every package has its own implementation. In MPI-2 the
+relevant call is the 
+\n{MPI_Win_fence} routine. These barriers in effect divide the program
+execution in \indexterm{supersteps}; see section~\ref{sec:bsp}.
+
+Another form of one-sided communication is used in the Charm++
+package; see section~\ref{sec:charm++}.
+
+\index{one-sided communication|)}
+
+% LocalWords:  Eijkhout OpenMP MPI LocalProblemSize MyFirstVariable
+% LocalWords:  bleft sendrecv Recv Allreduce min allreduce allgather
+% LocalWords:  Isend PVM RDMA supersteps

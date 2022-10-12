@@ -1,0 +1,237 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this section we will take a short look at terms such as
+\emph{cloud computing}, 
+and an earlier term
+\emph{distributed computing}.
+These are concepts that have a
+relation to parallel computing in the scientific sense, but that
+differ in certain fundamental ways.
+
+Distributed computing can be traced back
+as coming from large database servers, such as
+airline reservations systems, which had to be accessed by many travel
+agents simultaneously. For a large enough volume of database
+accesses a single server will not suffice, so the mechanism of
+\indexterm{remote procedure call} was invented, where the central
+server would call code (the procedure in question) on a different
+(remote) machine. The remote call could involve transfer of data, the
+data could be already on the remote machine, or there would be some
+mechanism that data on the two machines would stay synchronized. This
+gave rise to the \indexac{SAN}. A~generation later than distributed
+database systems, web servers had to deal with the same problem of
+many simultaneous accesses to what had to act like a single server.
+
+We already see one big difference between distributed computing and
+high performance parallel computing. Scientific computing needs
+parallelism because a single simulation becomes too big or slow for
+one machine; the business applications sketched above deal with many
+users executing small programs (that is, database or web queries)
+against a large data set. For scientific needs, the processors of a
+parallel machine (the nodes in a cluster) have to have a very fast
+connection to each other; for business needs no such network is
+needed, as long as the central dataset stays coherent.
+
+Both in \indexac{HPC} and in business computing, the server has to stay
+available and operative, but in distributed computing there is
+considerably more liberty in how to realize this. For a user
+connecting to a service such as a database, it does not matter what
+actual server executes their request. Therefore, distributed computing
+can make use of \indexterm{virtualization}: a virtual server can be
+spawned off on any piece of hardware.
+
+An analogy can be made between remote servers, which supply computing
+power wherever it is needed, and the electric grid, which supplies
+electric power wherever it is needed. This has led to \indexterm{grid
+  computing} or \indexterm{utility computing}, with the Teragrid,
+owned by the US National Science Foundation, as an example. Grid
+computing was originally intended as a way of hooking up computers
+connected by a \indexac{LAN} or \indexac{WAN}, often the Internet. The machines
+could be parallel themselves, and were often owned by different
+institutions. More recently, it has been viewed as a way of sharing
+resources, both datasets, software resources, and scientific
+instruments, over the network.
+
+The notion of utility computing as a way of making services available,
+which you recognize from the above description of distributed
+computing, went mainstream
+with Google's search engine, which
+indexes the whole of the Internet. Another example is the GPS capability
+of Android mobile phones, which combines GIS, GPS, and mashup
+data. The computing model by which Google's gathers and processes data
+has been formalized in
+MapReduce~\cite{Google:mapreduce}. It combines a data parallel aspect (the
+`map' part) and a central accumulation part (`reduce'). Neither
+involves the tightly coupled neighbor-to-neighbor communication that
+is common in scientific computing.
+%
+An open
+source framework for MapReduce computing exists in
+Hadoop~\cite{Hadoop-wiki}. Amazon offers a commercial Hadoop service.
+
+The concept of having a remote computer serve user needs is attractive
+even if no large datasets are involved, since it absolves the user
+from the need of maintaining software on their local machine. Thus,
+Google Docs\index{Google!Google Docs} offers various `office'
+applications without the user actually installing any software. This
+idea is sometimes called \indexac{SAS}, where
+the user connects to an `application server', and accesses it through
+a client such as a web browser. In the case of Google Docs, there is
+no longer a large central dataset, but each user interacts with their
+own data, maintained on Google's servers. This of course has the large
+advantage that the data is available from anywhere the user has access
+to a web browser.
+
+The \ac{SAS} concept has several connections to earlier
+technologies. For instance, after the mainframe and workstation eras,
+the so-called \indexterm{thin client} idea was briefly popular. Here,
+the user would have a workstation rather than a terminal, yet work on
+data stored on a central server. One product along these lines was
+Sun's \indextermbus{Sun}{Ray} (circa 1999) where users relied on a smartcard to
+establish their local environment on an arbitrary, otherwise stateless,
+workstation.
+
+\Level 1 {Usage scenarios}
+
+The model where services are available on demand is attractive for
+businesses, which increasingly are using cloud services. The
+advantages are that it requires no initial monetary and time
+investment, and that no decisions about type and size of equipment
+have to be made. At the moment, cloud services are mostly focused on
+databases and office applications, but scientific clouds with a high
+performance interconnect are under development.
+
+The following is a broad classification of usage scenarios of cloud
+resources
+\begin{footnoteenv}
+  {Based on a blog post by Ricky Ho:
+    \url{http://blogs.globallogic.com/five-cloud-computing-patterns}.}
+\end{footnoteenv}
+.
+\begin{itemize}
+\item Scaling. Here the cloud resources are used as a platform that
+  can be expanded based on user demand. This can be considered
+  Platform-as-a-Service (PAS): the cloud provides software and development platforms,
+  eliminating the administration and maintenance for the user. 
+
+  We can distinguish between two cases: if the user is running single
+  jobs and is actively waiting for the output, resources can be added
+  to minimize the wait time for these jobs (capability computing). On
+  the other hand, if the user is submitting jobs to a queue and the
+  time-to-completion of any given job is not crucial (capacity
+  computing), resources can be added as the queue grows.
+
+  In HPC applications, users can consider the cloud resources as a
+  cluster; this falls under Infrastructure-as-a-Service (IAS): the
+  cloud service is a computing platforms allowing 
+  customization at the operating system level.
+\item Multi-tenancy. Here the same software is offered to multiple
+  users, giving each the opportunity for individual
+  customizations. This falls under Software-as-a-Service (SAS):
+  software is provided on demand; the customer does not purchase
+  software, but only pays for its use.
+\item Batch processing. This is a limited version of one of the Scaling
+  scenarios above: the user has a large amount of data to process in
+  batch mode. The
+  cloud then becomes a batch processor. This model is a good candidate
+  for MapReduce computations; section~\ref{sec:mapreduce}.
+\item Storage. Most cloud providers offer database services, so this
+  model absolves the user from maintaining their own database, just
+  like the Scaling and Batch processing models take away the user's
+  concern with maintaining cluster hardware.
+\item Synchronization. This model is popular for commercial user
+  applications. Netflix and Amazon's Kindle allow users to consume
+  online content (streaming movies and ebooks\index{ebook}
+  respectively); after pausing the content they can resume from any
+  other platform. Apple's recent iCloud\index{Apple!iCloud} provides
+  synchronization for data in office applications, but unlike Google
+  Docs\index{Google!Google Docs} the applications are not `in the
+  cloud' but on the user machine.
+\end{itemize}
+
+The first Cloud to be publicly accessible was Amazon's Elastic Compute 
+cloud (EC2), launched in 2006. EC2 offers a variety of different 
+computing platforms and storage facilities. Nowadays
+more than a hundred companies provide cloud based services, well beyond 
+the initial concept of computers-for-rent.
+
+The infrastructure for cloud computing can be interesting from a
+computer science point of view, involving distributed file systems,
+scheduling, virtualization, and mechanisms for ensuring high
+reliability.
+
+An interesting project, combining aspects of grid and cloud computing
+is the Canadian Advanced Network For Astronomical
+Research\cite{canfar-lecture}. Here large central datasets are being
+made available to astronomers as in a grid, together with compute
+resources to perform analysis on them, in a cloud-like
+manner. Interestingly, the cloud resources even take the form of
+user-configurable virtual clusters.
+
+\Level 1 {Characterization}
+
+Summarizing
+\begin{footnoteenv}
+  {The remainder of this section is based on the
+  NIST definition of cloud
+  computing~\url{http://csrc.nist.gov/publications/nistpubs/800-145/SP800-145.pdf}.}
+\end{footnoteenv}
+we have three \indextermbus{cloud computing}{service models}:
+\begin{description}
+  \item[Software as a Service] The consumer runs the provider's
+    application, typically through a thin client such as a browser;
+    the consumer does not install or administer software.
+    A~good example is Google Docs\index{Google!Google Docs}
+\item[Platform as a Service] The service offered to the consumer is
+  the capability to run applications developed by the consumer, who
+  does not otherwise manage the processing platform or data storage
+  involved.
+\item[Infrastructure as a Service] The provider offers to the consumer
+  both the capability to run software, and to manage storage and
+  networks. The consumer can be in charge of operating system choice
+  and network components such as firewalls.
+\end{description}
+These can be deployed as follows:
+\begin{description}
+  \item[Private cloud] The cloud infrastructure is managed by one organization for its own exclusive use.
+  \item[Public cloud] The cloud infrastructure is managed for use by a broad customer base.
+\end{description}
+One could also define hybrid models such as community clouds.
+
+The characteristics of cloud computing are then:
+\begin{description}
+  \item[On-demand and self service] The consumer can quickly request services
+    and change service levels, without requiring human interaction with the provider.
+  \item[Rapid elasticity] The amount of storage or computing power appears to the consumer
+    to be unlimited, subject only to budgeting constraints. Requesting extra facilities
+    is fast, in some cases automatic.
+  \item[Resource pooling] Virtualization mechanisms make a cloud
+    appear like a single entity, regardless its underlying
+    infrastructure. In some cases the cloud remembers the `state' of
+    user access; for instance, Amazon's Kindle books allow one to read
+    the same book on a PC, and a smartphone; the cloud-stored book
+    `remembers' where the reader left off, regardless the platform.
+  \item[Network access] Clouds are available through a variety of
+    network mechanisms, from web browsers to dedicated portals.
+  \item[Measured service] Cloud services are typically `metered', with the consumer
+    paying for computing time, storage, and bandwidth.
+\end{description}
+
+
+% LocalWords:  Eijkhout SAN HPC Teragrid Android GIS mashup MapReduce
+% LocalWords:  Hadoop Docs SAS smartcard Ricky IAS ebooks ebook EC
+% LocalWords:  iCloud NIST

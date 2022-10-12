@@ -1,0 +1,12 @@
+// up.c
+  int nlocal = 100,i;
+  double s, *array = (double*) malloc(nlocal*sizeof(double));
+  for (i=0; i<nlocal; i++) {
+    double di = (double)i;
+    array[i] = 1/(di*di);
+  }
+  s = 0.;
+  for (i=nlocal-1; i>=0; i++) {
+    double di = (double)i;
+    s += array[i];
+  }

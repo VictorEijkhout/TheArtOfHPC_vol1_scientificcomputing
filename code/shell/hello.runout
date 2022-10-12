@@ -1,0 +1,13 @@
+once:
+hello world
+twice:
+hello world
+hello world
+thrice upper :
+HELLO WORLD
+HELLO WORLD
+HELLO WORLD
+error
+Unrecognized option: -e
+Usage: ./hello.sh [ -n nnn] [ -u ]
+make[1]: *** [run_hello] Error 1

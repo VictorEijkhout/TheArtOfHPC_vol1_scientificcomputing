@@ -1,0 +1,899 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this section we will look at how different ways of programming can
+influence the performance of a code. This will only be an introduction
+to the topic.
+
+The full listings of the codes and explanations of the data graphed
+here can be found in chapter~\ref{app:codes}.
+
+\Level 1 {Peak performance}
+
+For marketing purposes, it may be desirable to define a `top speed' for a
+CPU. Since a pipelined floating point unit can yield one result per
+cycle asymptotically, you would calculate the theoretical
+\indexterm{peak performance} as the product of the clock speed (in
+ticks per second), number of floating point units, and the number of
+cores; see section~\ref{sec:multicore}.  This top speed is
+unobtainable in practice, and very few codes come even close to it.
+The \indextermbus{Linpack}{benchmark} is one of the measures how close
+you can get to it; the parallel version of this benchmark is reported
+in the `top 500'; see section~\ref{sec:top500}. 
+
+\Level 1 {Bandwidth}
+
+You have seen in section~\ref{sec:roofline} that algorithms can be
+\indexterm{bandwidth-bound}, meaning that they are more limited
+by the available bandwidth than by available processing power.
+In that case we can wonder if the amount of bandwidth per core
+is a function of the number of cores: it is conceivable that
+the total bandwidth is less than the product
+of the number of cores and the bandwidth to a single core.
+
+We test this on TACC's \indexterm{Frontera} cluster,
+with dual-socket \indextermbus{Intel}{Cascade Lake} processors,
+with a total of 56 cores per node.
+
+We let each core execute a simple streaming kernel:
+%
+\cxxverbatimsnippet{cachesumstream}
+%
+and execute this on different threads and disjoint memory locations:
+%
+\cxxverbatimsnippet{bandwidththreads}
+
+We see that for 40 threads there is essentially no efficiency loss,
+but with 56 threads there is a 10~percent loss.
+
+{\scriptsize
+\verbatiminput{code/hardware/bandwidth.runout}
+}
+
+\Level 1 {Pipelining}
+\label{sec:coding-pipeline}
+\index{pipeline|(}
+
+In section~\ref{sec:pipeline} you learned that the floating point
+units in a modern CPU are pipelined, and that pipelines require a
+number of independent operations to function efficiently. The typical
+pipelineable operation is a vector addition; an example of an
+operation that can not be pipelined is the inner product accumulation
+\begin{verbatim}
+for (i=0; i<N; i++)
+  s += a[i]*b[i];
+\end{verbatim}
+The fact that \n{s} gets both read and written halts the addition
+pipeline. One way to fill the \indexterm{floating point pipeline}
+is to apply \indextermbusdef{loop}{unrolling}:
+\begin{verbatim}
+for (i = 0; i < N/2-1; i ++) {
+  sum1 += a[2*i] * b[2*i];
+  sum2 += a[2*i+1] * b[2*i+1];
+}
+\end{verbatim}
+Now there are two independent multiplies in between the accumulations.
+With a little indexing optimization this becomes:
+\begin{verbatim}
+for (i = 0; i < N/2-1; i ++) {
+  sum1 += *(a + 0) * *(b + 0);
+  sum2 += *(a + 1) * *(b + 1);
+
+  a += 2; b += 2;
+}
+\end{verbatim}
+
+In a further optimization, we disentangle the addition and
+multiplication part of each instruction. The hope is that while the
+accumulation is waiting for the result of the multiplication, the
+intervening instructions will keep the processor busy, in effect
+increasing the number of operations per second.
+\begin{verbatim}
+for (i = 0; i < N/2-1; i ++) {
+  temp1 = *(a + 0) * *(b + 0);
+  temp2 = *(a + 1) * *(b + 1);
+
+  sum1 += temp1; sum2 += temp2;
+
+  a += 2; b += 2;
+}
+\end{verbatim}
+Finally, we realize that the furthest we can move the addition away
+from the multiplication, is to put it right in front of the
+multiplication \emph{of the next iteration}:
+\begin{verbatim}
+for (i = 0; i < N/2-1; i ++) {
+  sum1 += temp1;
+  temp1 = *(a + 0) * *(b + 0);
+
+  sum2 += temp2;
+  temp2 = *(a + 1) * *(b + 1);
+
+  a += 2; b += 2;
+}
+s = temp1 + temp2;
+\end{verbatim}
+Of course, we can unroll the operation by more than a factor of
+two. While we expect an increased performance because of the longer
+sequence of pipelined operations, large unroll factors
+need large numbers of registers. Asking for more registers than a CPU
+has is called \indextermbus{register}{spill}, and it will decrease
+performance.
+
+Another thing to keep in mind is that the total number of operations
+is unlikely to be divisible by the unroll factor. This requires
+\indexterm{cleanup code} after the loop to account for the final
+iterations. Thus, unrolled code is harder to write than straight code,
+and people have written tools to perform such
+\indexterm{source-to-source transformations} automatically.
+
+\Level 2 {Semantics of unrolling}
+
+An observation about the unrollling transformation
+is that we are implicitly using
+associativity and commutativity of addition: while the same quantities
+are added, they are now in effect added in a different order. As you
+will see in chapter~\ref{ch:arithmetic}, in computer arithmetic
+this is not guaranteed to
+give the exact same result. 
+
+For this reason, a compiler will only apply this transformation
+if explicitly allowed. For instance, for the \indextermbus{Intel}{compiler},
+the option \indextermtt{fp-model precise} indicates
+that code transformations should preserve the semantics of
+floating point arithmetic, and unrolling is not allowed.
+On the other hand \indextermtt{fp-model fast} indicates
+that floating point arithmetic can be sacrificed for speed.
+
+\lstinputlisting{code/hardware/unroll-clx.runout}
+
+\begin{comment}
+  Cycle times for unrolling the inner product operation up to six times
+  are given in table~\ref{tab:unroll-inner}. Note that the timings do
+  not show a monotone behavior at the unrolling by four. This sort of
+  variation is due to various memory-related factors.
+
+  \begin{table}[ht]
+    \leavevmode\kern\unitindent
+    \begin{tabular}{rrrrrr}
+      \toprule
+      1&2&3&4&5&6\\ \midrule 6794&507&340&359&334&528\\ \bottomrule
+    \end{tabular}
+    \caption{Cycle times for the inner product operation, unrolled up to
+      six times.}
+    \label{tab:unroll-inner}
+  \end{table}
+\end{comment}
+
+\index{pipeline|)}
+
+\Level 1 {Cache size}
+\label{sec:coding-cachesize}
+
+Above, you learned that data from L1 can be moved with lower latency
+and higher bandwidth than from~L2, and L2 is again faster than L3 or
+memory.
+This is easy to demonstrate with code that repeatedly accesses
+the same data:
+\begin{verbatim}
+for (i=0; i<NRUNS; i++)
+  for (j=0; j<size; j++)
+    array[j] = 2.3*array[j]+1.2;
+\end{verbatim}
+If the size parameter allows the array to fit in cache, the operation
+will be relatively fast. As the size of the dataset grows, parts of it
+will evict other parts from the L1 cache, so the speed of the
+operation will be determined by the latency and bandwidth of the L2
+cache. This can be seen in figure~\ref{fig:cache-overflow}.
+\begin{figure}[ht]
+  \begin{quote}
+  \includegraphics[scale=.45]{cacheoverflow}
+  \end{quote}
+  \caption{Average cycle count per operation as function of the
+    dataset size.}
+  \label{fig:cache-overflow}
+\end{figure}
+%% The full code is given in section~\ref{sec:cachesize-code}.
+
+\begin{exercise}
+  Argue that with a large enough problem and an \ac{LRU} replacement policy
+  (section~\ref{sec:lru}) essentially all data in the L1 will be
+  replaced in every iteration of the outer loop. Can you write an
+  example code that will let some of the L1 data stay resident?
+\end{exercise}
+
+Often, it is possible to arrange the operations to keep data in L1
+cache. For instance, in our example, we could write
+\begin{verbatim}
+for (b=0; b<size/l1size; b++) {
+  blockstart = 0;
+  for (i=0; i<NRUNS; i++) {
+    for (j=0; j<l1size; j++)
+      array[blockstart+j] = 2.3*array[blockstart+j]+1.2; 
+  }
+  blockstart += l1size;
+}
+\end{verbatim}
+assuming that the L1 size divides evenly in the dataset size.
+This strategy is called \indextermbus{cache}{blocking} or
+\indexterm{blocking for cache reuse}.
+
+\begin{exercise}
+  Measure the number of memory accesses per cycle in the following loop,
+  for various values of the cache size.
+  If you observe that the time is independent of the cachesize,
+  let your compiler generate an
+  \emph{optimization report}\index{compiler!optimization!report}.
+  For the \indextermbus{Intel}{compiler} use \n{-qopt-report}.
+\begin{lstlisting}
+for (int irepeat=0; irepeat<how_many_repeats; irepeat++) {
+  for (int iword=0; iword<cachesize_in_words; iword++)
+    memory[iword] += 1.1;
+}    
+\end{lstlisting}
+Argue what happened. Can you find a way to prevent the loop exchange?
+\end{exercise}
+
+\begin{exercise}
+  To arrive at the blocked code, the loop over \n{j} was split into a
+  loop over blocks and an inner loop over the elements of the block;
+  the outer loop over \n{i} was then exchanged with the loop over the
+  blocks. In this particular example you could also simply exchange
+  the \n{i} and \n{j} loops. Why may this not be optimal for performance?
+\end{exercise}
+
+\begin{remark}
+  Like unrolling, blocking code may change the order of evaluation of
+  expressions. Since floating point arithmetic is not
+  \emph{associative}%
+  \index{floating point arithmetic!associativity of},
+  blocking is not a transformation that compilers are allowed to make.
+\end{remark}
+
+\Level 1 {Cache lines and striding}
+\label{sec:coding-cacheline}
+
+Since data is moved from memory to cache in consecutive chunks named
+cachelines (see section~\ref{sec:cacheline}), code that does not
+utilize all data in a cacheline pays a bandwidth penalty. This is born
+out by a simple code
+\begin{verbatim}
+for (i=0,n=0; i<L1WORDS; i++,n+=stride)
+  array[n] = 2.3*array[n]+1.2;
+\end{verbatim}
+Here, a fixed number of operations is performed, but on elements that
+are at distance \n{stride}. As this \indexterm{stride} increases, we expect an
+increasing runtime, which is born out by
+\begin{figure}[ht]
+  \begin{quote}
+  \includegraphics[scale=.45]{cacheline8}
+  \end{quote}
+  \caption{Run time in kcycles and L1 reuse as a function of stride.}
+  \label{fig:cacheline}
+\end{figure}
+the graph in figure~\ref{fig:cacheline}.
+
+The graph also shows a decreasing reuse of cachelines, defined as the
+number of vector elements divided by the number of L1 misses (on
+stall; see section~\ref{sec:prefetch}). 
+
+%The full code is given in section~\ref{sec:cacheline-code}.
+
+The effects of striding can be mitigated by the bandwidth
+and cache behavior of a processor.
+Consider some run on the \indextermbus{Intel}{Cascade Lake} processor
+of the \indexterm{Frontera} cluster at TACC,
+(28-cores per socket, dual socket, for a total of 56 cores per node).
+We measure the time-per-operation on a simple streaming kernel,
+using increasing strides. 
+Table~\ref{fig:strides-p56-k3200} reports in the second column
+indeed a per-operation time that goes up linearly with the stride.
+
+\begin{table}
+  \begin{tabular}{rrrr}
+    \toprule
+    stride&nsec/word&&\\
+    &56 cores, 3M& 56 cores, 0.3M&28 cores, 3M\\
+    \midrule
+  1 &  7.268 & 1.368 & 1.841\\
+  2 & 13.716 & 1.313 & 2.051\\
+  3 & 20.597 & 1.319 & 2.852\\
+  4 & 27.524 & 1.316 & 3.259\\
+  5 & 34.004 & 1.329 & 3.895\\
+  6 & 40.582 & 1.333 & 4.479\\
+  7 & 47.366 & 1.331 & 5.233\\
+  8 & 53.863 & 1.346 & 5.773\\
+    \bottomrule
+  \end{tabular}
+  \caption{Time per operation in nanoseconds as a function of striding
+    on 56 cores of Frontera, per-core datasize 3.2M.}
+  \label{fig:strides-p56-k3200}
+\end{table}
+
+However, this is for a dataset that overflows the L2 cache.
+If we make this run contained in the L2 cache,
+as reported in the 3rd column,
+this increase goes away as there is enough bandwdidth
+available to stream strided data at full speed from L2 cache.
+
+\begin{figure}[t]
+  \tikzsetnextfilename{hpc-stride}
+  \begin{tikzpicture}  
+    \begin{semilogyaxis}
+      [  
+        enlargelimits=0.15,
+        legend style={at={(0.4,-0.1)},anchor=north,legend columns=-1},     
+        xlabel={stride},
+        ylabel={nsec per access},
+        symbolic x coords={1,2,3,4,5,6,7,8},
+        xtick=data,  ytick={1,5,10,20,50,100},
+        %nodes near coords,  
+        %nodes near coords align={vertical},  
+      ]
+      \addplot coordinates {(1,1.28242) (2,1.27552) (3,1.28164) (4,1.37031) (5,1.60352) (6,1.87578) (7,2.15923) (8,2.45104)        };
+      \addplot coordinates {(1,1.325) (2,1.27943) (3,1.28359) (4,1.39792) (5,1.61133) (6,1.89062) (7,2.16926) (8,2.46042)        };
+      \addplot coordinates {(1,1.33177) (2,1.27813) (3,1.2832) (4,1.41302) (5,1.68164) (6,1.9375) (7,2.24673) (8,2.56667)        };
+      \addplot coordinates {(1,1.35938) (2,1.29427) (3,1.33047) (4,1.61458) (5,1.95247) (6,2.27969) (7,2.6341) (8,2.96875)        };
+      \addplot coordinates {(1,1.56615) (2,1.85443) (3,2.3125) (4,2.91615) (5,3.36328) (6,3.87578) (7,4.45153) (8,4.64271)        };
+      \addplot coordinates {(1,3.85742) (2,6.29115) (3,9.52109) (4,12.5911) (5,15.7852) (6,18.9852) (7,22.2084) (8,25.399)        };
+      \addplot coordinates {(1,6.68464) (2,12.8784) (3,19.1059) (4,25.2547) (5,31.4414) (6,37.5648) (7,43.7269) (8,49.7188)        };
+      \addplot coordinates {(1,10.6857) (2,20.7807) (3,30.9996) (4,41.1042) (5,51.2148) (6,61.3164) (7,71.0678) (8,81.0687)        };
+      \legend{1 core,2 cores,4,8,12,26,38,56}
+    \end{semilogyaxis}
+  \end{tikzpicture}  
+  \caption{Nano second per access for various core and stride counts.}
+  \label{fig:strided-access}
+\end{figure}
+
+\Level 1 {TLB}
+\label{sec:coding-tlb}
+
+As explained in section~\ref{sec:tlb}, the \acf{TLB} maintains a small
+list of frequently used memory pages and their locations; addressing
+data that are location on one of these pages is much faster than data
+that are not. Consequently, one wants to code in such a way that the
+number of pages accessed is kept low.
+
+Consider code for traversing the elements of a two-dimensional array
+in two different ways.
+\begin{verbatim}
+#define INDEX(i,j,m,n) i+j*m
+array = (double*) malloc(m*n*sizeof(double));
+
+/* traversal #1 */
+for (j=0; j<n; j++)
+  for (i=0; i<m; i++)
+    array[INDEX(i,j,m,n)] = array[INDEX(i,j,m,n)]+1;
+
+/* traversal #2 */
+for (i=0; i<m; i++)
+  for (j=0; j<n; j++)
+    array[INDEX(i,j,m,n)] = array[INDEX(i,j,m,n)]+1;
+\end{verbatim}
+
+The results (see Appendix~\ref{sec:tlb-code} for the source code) are
+plotted in figures \ref{fig:tlb_row} and~\ref{fig:tlb_col}. 
+
+\begin{figure}[ht]
+  \begin{quote}
+  \includegraphics[scale=.45]{tlb_col}
+  \end{quote}
+  \caption{Number of TLB misses per column as function of the number
+    of columns; columnwise traversal of the array.}
+  \label{fig:tlb_col}
+\end{figure}
+\begin{figure}[ht]
+  \begin{quote}
+  \includegraphics[scale=.45]{tlb_row}
+  \end{quote}
+  \caption{Number of TLB misses per column as function of the number
+    of columns; rowwise traversal of the array.}
+  \label{fig:tlb_row}
+\end{figure}
+
+Using $m=1000$ means that, on the \indextermbus{AMD}{Opteron} which
+has pages of $512$ doubles, we need roughly two pages for each
+column. We run this example, plotting the number `TLB misses', that
+is, the number of times a page is referenced that is not recorded in
+the TLB.
+\begin{enumerate}
+\item In the first traversal this is indeed what happens. After we
+  touch an element, and the TLB records the page it is on, all other
+  elements on that page are used subsequently, so no further TLB
+  misses occur. Figure~\ref{fig:tlb_col} shows that, with increasing~$n$,
+  the number of TLB misses per column is roughly two.
+\item In the second traversal, we touch a new page for every element
+  of the first row. Elements of the second row will be on these pages,
+  so, as long as the number of columns is less than the number of TLB
+  entries, these pages will still be recorded in the TLB. As the
+  number of columns grows, the number of TLB increases, and ultimately
+  there will be one TLB miss for each element
+  access. Figure~\ref{fig:tlb_row} shows that, with a large enough number
+  of columns, the number of TLB misses per column is equal to the
+  number of elements per column.
+\end{enumerate}
+
+\Level 1 {Cache associativity}
+\label{sec:assoc-coding}
+
+There are many algorithms that work by recursive division of a
+problem, for instance the \indexac{FFT} algorithm. As a result, code
+for such algorithms will often operate on vectors whose length is a power of
+two. Unfortunately, this can cause conflicts with certain
+architectural features of a CPU, many of which involve powers of two.
+
+In section~\ref{sec:directmap} you saw how
+the operation of adding a small number of vectors
+\[ \forall_j\colon y_j= y_j+\sum_{i=1}^mx_{i,j} \]
+is a problem for direct mapped caches or set-associative caches with
+associativity.
+
+As an example we take the
+\indextermbus{AMD}{Opteron}, which has an L1 cache of 64K bytes, and
+which is two-way set associative. Because of the set associativity,
+the cache can handle two addresses being mapped to the same cache
+location, but not three or more. Thus, we let the vectors be of
+size~$n=4096$ doubles, and we measure the effect in cache misses and
+cycles of letting $m=1,2,\ldots$.
+
+\begin{figure}[ht]
+  \begin{quote}
+  \includegraphics[scale=.5]{l1_assoc}
+  \end{quote}
+  \caption{The number of L1 cache misses and the number of cycles for
+    each $j$ column accumulation, vector length~$4096$.}
+  \label{fig:l1_assoc}
+\end{figure}
+
+\begin{figure}[ht]
+  \begin{quote}
+  \includegraphics[scale=.5]{l1_assocshift}
+  \end{quote}
+  \caption{The number of L1 cache misses and the number of cycles for
+    each $j$ column accumulation, vector length~$4096+8$.}
+  \label{fig:l1_assoc_shift}
+\end{figure}
+
+First of all, we note that we use the vectors sequentially, so, with a
+cacheline of eight doubles, we should ideally see a cache miss rate of
+$1/8$ times the number of vectors~$m$. Instead, in
+figure~\ref{fig:l1_assoc} we see a rate approximately proportional
+to~$m$, meaning that indeed cache lines are evicted immediately. The
+exception here is the case $m=1$, where the two-way associativity
+allows the cachelines of two vectors to stay in cache.
+
+Compare this to figure~\ref{fig:l1_assoc_shift}, where we used a
+slightly longer vector length, so that locations with the same $j$ are
+no longer mapped to the same cache location. As a result, we see a
+cache miss rate around $1/8$, and a smaller number of cycles,
+corresponding to a complete reuse of the cache lines. 
+
+Two remarks: the cache miss numbers are in fact lower than the theory
+predicts, since the processor will use prefetch streams. Secondly, in
+figure~\ref{fig:l1_assoc_shift} we see a decreasing time with
+increasing~$m$; this is probably due to a progressively more
+favorable balance between load and store operations. Store operations
+are more expensive than loads, for various reasons.
+
+\Level 1 {Loop nests}
+\index{loop!nested|(}
+
+If your code has \emph{nested loops}, and the iterations of the outer
+loop are independent, you have a choice which loop to make outer and
+which to make inner.
+
+\begin{exercise}
+  Give an example of a doubly-nested loop where the loops can be
+  exchanged; give an example where this can not be done. If at all
+  possible, use practical examples from this book.
+\end{exercise}
+
+If you have such choice, there are many factors that can influence
+your decision.
+
+\heading{Programming language: C~versus~Fortran}
+%
+If your loop describes the $(i,j)$ indices of a two-dimensional array,
+it is often best to let the $i$-index be in the inner loop for
+Fortran, and the $j$-index inner for~C.
+
+\begin{exercise}
+  Can you come up with at least two reasons why this is possibly better for performance?
+\end{exercise}
+
+However, this is not a hard-and-fast rule. It can depend on the size
+of the loops, and other factors. For instance, in the matrix-vector
+product, changing the loop ordering changes how the input and output
+vectors are used.
+
+
+\heading{Parallelism model}
+%
+If you want to parallelize your loops with \indexterm{OpenMP}, you
+generally want the outer loop to be larger than the inner. Having a
+very short outer loop is definitely bad. A~short inner loop can also
+often be \emph{vectorized by the
+  compiler}\index{compiler!vectorization}.
+On the other hand, if you are targeting a \indexac{GPU}, you want the
+large loop to be the inner one. The unit of parallel work should not have branches
+or loops.
+
+Other effects of loop ordering in OpenMP are discussed in \PCSEref{sec:omp-row-col-major}.
+
+\index{loop!nested|)}
+
+\Level 1 {Loop tiling}
+\label{sec:loop-tiling}
+
+In some cases performance can be increased by breaking up a loop into
+two nested loops, an outer one for the blocks in the iteration space,
+and an inner one that goes through the block. This is known as
+\indextermbusdef{loop}{tiling}: the (short) inner loop is a tile, many
+consecutive instances of which form the iteration space.
+
+For instance
+\begin{verbatim}
+for (i=0; i<n; i++)
+  ...
+\end{verbatim}
+becomes
+\begin{verbatim}
+bs = ...       /* the blocksize */
+nblocks = n/bs /* assume that n is a multiple of bs */
+for (b=0; b<nblocks; b++)
+  for (i=b*bs,j=0; j<bs; i++,j++)
+    ...
+\end{verbatim}
+For a single loop this may not make any difference, but given the
+right context it may. For instance, if an array is repeatedly used,
+but it is too large to fit into cache:
+\begin{verbatim}
+for (n=0; n<10; n++)
+  for (i=0; i<100000; i++)
+    ... = ...x[i] ...
+
+\end{verbatim}
+then loop tiling may lead to a situation where the array is divided
+into blocks that will fit in cache:
+\begin{verbatim}
+bs = ... /* the blocksize */
+for (b=0; b<100000/bs; b++)
+  for (n=0; n<10; n++)
+    for (i=b*bs; i<(b+1)*bs; i++)
+      ... = ...x[i] ...
+\end{verbatim}
+For this reason, loop tiling is also known as
+\indextermbus{cache}{blocking}. The block size depends on how much
+data is accessed in the loop body; ideally you would try to make data
+reused in L1 cache, but it is also possible to block for L2 reuse. Of
+course, L2 reuse will not give as high a performance as L1 reuse.
+
+\begin{exercise}
+  Analyze this example. When is \n{x} brought into cache, when is it
+  reused, and when is it flushed? What is the required cache size in
+  this example? Rewrite this example, using a constant
+\begin{verbatim}
+#define L1SIZE 65536
+\end{verbatim}
+\end{exercise}
+
+For a less trivial example, let's look at
+\indextermbus{matrix}{transposition} $A\leftarrow B^t$. Ordinarily you would traverse
+the input and output matrices:
+%
+\verbatimsnippet{regulartranspose}
+%
+Using blocking this becomes:
+%
+\verbatimsnippet{blockedtranspose}
+%
+Unlike in the example above, each element of the input and output is
+touched only once, so there is no direct reuse. However, there is
+reuse of cachelines. 
+
+\begin{figure}[ht]
+  \includegraphics[scale=.13]{blockedtranspose}
+  \caption{Regular and blocked traversal of a matrix.}
+  \label{fig:blockedtranspose}
+\end{figure}
+Figure~\ref{fig:blockedtranspose} shows how one of the matrices is
+traversed in a different order from its storage order, for instance
+columnwise while it is stored by rows. This has the effect that each
+element load transfers a cacheline, of which only one element is
+immediately used. In the regular traversal, this streams of cachelines
+quickly overflows the cache, and there is no reuse. In the blocked
+traversal, however, only a small number of cachelines is traversed
+before the next element of these lines is needed. Thus there is reuse
+of cachelines, or \indextermsub{spatial}{locality}.
+
+The most important example of attaining performance through blocking
+is the \indexterm{matrix!matrix product!tiling}.
+In section~\ref{sec:locality} we looked at the matrix-matrix
+multiplication, and concluded that little data could be kept in
+cache. With loop tiling we can improve this situation. For instance,
+the standard way of writing this product
+\begin{verbatim}
+for i=1..n
+  for j=1..n
+    for k=1..n
+      c[i,j] += a[i,k]*b[k,j]
+\end{verbatim}
+can only be optimized to keep \n{c[i,j]} in register:
+\begin{verbatim}
+for i=1..n
+  for j=1..n
+    s = 0
+    for k=1..n
+      s += a[i,k]*b[k,j]
+    c[i,j] += s
+\end{verbatim}
+Using loop tiling we can keep parts of~\n{a[i,:]} in cache,
+assuming that \n{a} is stored by rows:
+\begin{verbatim}
+for kk=1..n/bs
+  for i=1..n
+    for j=1..n
+      s = 0
+      for k=(kk-1)*bs+1..kk*bs
+        s += a[i,k]*b[k,j]
+      c[i,j] += s
+\end{verbatim}
+
+
+\Level 1 {Gradual underflow}
+
+The way a processor handles underflow can have an effect on the performance
+of a code. See section~\ref{sec:subcompute}.
+
+\Level 1 {Optimization strategies}
+\label{sec:scalar-opt}
+
+\begin{figure}[ht]
+  \begin{quote}
+  \includegraphics[scale=.5]{dft}
+  \end{quote}
+  \caption{Performance of naive and optimized implementations of the Discrete Fourier Transform.}
+  \label{fig:dft-perf}
+\end{figure}
+
+\begin{figure}[ht]
+  \begin{quote}
+  \includegraphics[scale=.5]{gemm}
+  \end{quote}
+  \caption{Performance of naive and optimized implementations of the matrix-matrix product.}
+  \label{fig:gemm-perf}
+\end{figure}
+
+Figures \ref{fig:dft-perf} and \ref{fig:gemm-perf} show that there can
+be wide discrepancy between the performance of naive implementations
+of an operation (sometimes called the `reference implementation'), and
+optimized implementations. Unfortunately, optimized implementations
+are not simple to find. For one, since they rely on blocking, their
+loop nests are double the normal depth: the matrix-matrix
+multiplication becomes a six-deep loop. Then, the optimal block size
+is dependent on factors like the target architecture.
+
+We make the following observations:
+\begin{itemize}
+\item Compilers\index{compiler} are not able to extract anywhere close
+  to optimal performance
+  \begin{footnoteenv}
+    {Presenting a compiler with the
+    reference implementation may still lead to high performance, since
+    some compilers are trained to recognize this operation. They will
+    then forego translation and simply replace it by an optimized
+    variant.}
+  \end{footnoteenv}
+  .
+\item There are \indexterm{autotuning} projects for automatic
+  generation of implementations that are tuned to the
+  architecture. This approach can be moderately to very
+  successful. Some of the best known of these projects are
+  Atlas~\cite{atlas-parcomp} for Blas kernels, and
+  Spiral~\cite{spiral} for transforms.
+\end{itemize}
+
+\Level 1 {Cache aware and cache oblivious programming}
+
+Unlike registers and main memory, both of
+which can be addressed in (assembly) code, use of caches is
+implicit. There is no way a programmer can load data explicitly to a
+certain cache, even in assembly language. 
+
+However, it is possible to code in a `cache aware' manner. Suppose a
+piece of code repeatedly operates on an amount of data that is less
+than the cache size. We can assume that the first time the data is
+accessed, it is brought into cache; the next time it is accessed it
+will already be in cache. On the other hand, if the amount of data is
+more than the cache size
+\begin{footnoteenv}
+  {We are conveniently ignoring matters
+  of set-associativity here, and basically assuming a fully
+  associative cache.}
+\end{footnoteenv}
+, it will partly or fully be flushed out of cache
+in the process of accessing it.
+
+We can experimentally demonstrate this phenomenon. With a very
+accurate counter, the code fragment
+\begin{verbatim}
+for (x=0; x<NX; x++)
+  for (i=0; i<N; i++)
+    a[i] = sqrt(a[i]);
+\end{verbatim}
+will take time linear in \texttt{N} up to the point where \texttt{a}
+fills the cache. An easier way to picture this is to compute a
+normalized time, essentially a time per execution of the inner loop:
+\begin{verbatim}
+t = time();
+for (x=0; x<NX; x++)
+  for (i=0; i<N; i++)
+    a[i] = sqrt(a[i]);
+t = time()-t;
+t_normalized = t/(N*NX);
+\end{verbatim}
+The normalized time will be constant until the array \texttt{a} fills
+the cache, then increase and eventually level off again. (See
+section~\ref{sec:coding-cachesize} for an elaborate discussion.)
+
+The explanation is that,
+as long as \texttt{a[0]...a[N-1]} fit in L1 cache, the inner loop will
+use data from the L1 cache. Speed of access is then determined by the
+latency and bandwidth of the L1 cache.
+As the amount of data grows beyond the L1 cache size, some or all of
+the data will be flushed from the L1, and performance will be determined by
+the characteristics of the L2 cache. Letting the amount of data grow
+even further, performance will again drop to a linear behavior
+determined by the bandwidth from main memory.
+
+\index{cache!oblivious programming|(}
+
+If you know the cache size, it is possible in cases such as above to
+arrange the algorithm to use the cache optimally. However, the cache
+size is different per processor, so this makes your code not portable,
+or at least its high performance is not portable. Also, blocking for
+multiple levels of cache is complicated. For these reasons, some
+people advocate \emph{cache oblivious
+  programming}~\cite{Frigo:oblivious}. 
+
+Cache oblivious programming can be described as a way of programming
+that automatically uses all levels of the
+\indextermbus{cache}{hierarchy}. This is typically done by using a
+\indexterm{divide-and-conquer} strategy, that is, recursive
+subdivision of a problem.
+
+As a simple example of cache oblivious programming is the \indextermbus{matrix}
+{transposition} operation $B\leftarrow A^t$. First we observe that each
+element of either matrix is accessed once, so the only reuse is in the
+utilization of cache lines. If both matrices are stored by
+rows and we traverse $B$ by rows, then $A$~is traversed by columns,
+and for each element accessed one cacheline is loaded. If the number
+of rows times the number of elements per cacheline is more than the
+cachesize, lines will be evicted before they can be reused.
+
+\begin{figure}[ht]
+  \includegraphics[scale=.1]{oblivious1}
+  \caption{Matrix transpose operation, with simple and recursive
+    traversal of the source matrix.}
+  \label{fig:oblivious-transpose}
+\end{figure}
+In a cache oblivious implementation we divide $A$ and~$B$ as
+$2\times2$ block matrices, and recursively compute $B_{11}\leftarrow
+A_{11}^t$, $B_{12}\leftarrow A_{21}^t$, et cetera; see
+figure~\ref{fig:oblivious-transpose}. At some point in the recursion,
+blocks $A_{ij}$ will now be small enough that they fit in cache, and
+the cachelines of~$A$ will be fully used. Hence, this algorithm
+improves on the simple one by a factor equal to the cacheline size.
+
+The cache oblivious strategy can often yield improvement, but it is
+not necessarily optimal. In the
+%
+\emph{matrix-matrix product}\index{matrix!times matrix product!cache oblivious}
+it improves on
+the naive algorithm, but it is not as good as an algorithm that is
+explicitly designed to make optimal use of
+caches~\cite{GotoGeijn:2008:Anatomy}.
+
+See section~\ref{sec:fd-oblivious} for a discussion of such techniques
+in stencil computations.
+
+\index{cache!oblivious programming|)}
+
+\Level 1 {Case study: Matrix-vector product}
+\label{sec:mvp-opt}
+\index{matrix!times vector product!reuse analysis|(}
+
+Let us consider in some detail
+the \indexterm{matrix-vector product}
+\[ \forall_{i,j}\colon y_i\leftarrow a_{ij}\cdot x_j \] This involves $2n^2$
+operations on $n^2+2n$ data items, so reuse is~$O(1)$: memory accesses
+and operations are of the same order. However, we note that there is a
+double loop involved, and the $x,y$ vectors have only a single index,
+so each element in them is used multiple times.
+
+Exploiting this theoretical reuse is not trivial. In
+\begin{verbatim}
+/* variant 1 */
+for (i)
+  for (j)
+    y[i] = y[i] + a[i][j] * x[j];
+\end{verbatim}
+the element \texttt{y[i]} seems to be reused. However, the statement
+as given here would write \texttt{y[i]} to memory in every inner
+iteration, and we have to write the loop as
+\begin{verbatim}
+/* variant 2 */
+for (i) {
+  s = 0;
+  for (j)
+    s = s + a[i][j] * x[j];
+  y[i] = s;
+}
+\end{verbatim}
+to ensure reuse. This variant uses $2n^2$ loads and $n$~stores.
+This optimization is likely to be done by the compiler.
+
+This code fragment only exploits the reuse
+of~\texttt{y} explicitly. If the cache is too small to hold the whole
+vector~\texttt{x} plus a column of~\texttt{a}, each element
+of~\texttt{x} is still repeatedly loaded in every outer iteration.
+%
+Reversing the loops as
+\begin{verbatim}
+/* variant 3 */
+for (j)
+  for (i)
+    y[i] = y[i] + a[i][j] * x[j];
+\end{verbatim}
+exposes the reuse of~\texttt{x}, especially if we write this as
+\begin{verbatim}
+/* variant 3 */
+for (j) {
+  t = x[j];
+  for (i)
+    y[i] = y[i] + a[i][j] * t;
+}
+\end{verbatim}
+but now \texttt{y} is no longer
+reused. Moreover, we now have $2n^2+n$ loads, comparable to variant~2,
+but $n^2$~stores, which is of a higher order.
+
+It is possible to get reuse both of $x$ and~$y$, but this requires
+more sophisticated programming. The key here is to split the loops into
+blocks. For instance:
+\begin{verbatim}
+for (i=0; i<M; i+=2) {
+  s1 = s2 = 0;
+  for (j) {
+    s1 = s1 + a[i][j] * x[j];
+    s2 = s2 + a[i+1][j] * x[j];
+  }
+  y[i] = s1; y[i+1] = s2;
+}
+\end{verbatim}
+This is also called \indexterm{loop}{unrolling},
+or \indexterm{strip mining}. The amount by which you unroll
+loops is determined by the number of available registers.
+
+\index{matrix!times vector product!reuse analysis|)}
+
+
+% LocalWords:  Eijkhout Goedeker Hoisie AMD Opteron TACC Linpack qopt
+% LocalWords:  pipelineable cachesize int irepeat iword frepeat nsec
+% LocalWords:  floattype cachelines cacheline kcycles Cascadelake TLB
+% LocalWords:  Frontera bandwdidth strided columnwise rowwise FFT SOR
+% LocalWords:  OpenMP vectorized GPU regulartranspose autotuning Blas
+% LocalWords:  blockedtranspose

@@ -1,0 +1,11 @@
+// bandwidth.cxx
+    vector<double> results(nthreads,0.);
+    for ( int t=0; t<nthreads; t++) {
+      auto start_point = t*stream_length;
+      threads.push_back
+	( thread( [=,&results] () {
+	    results[t] = memory.sumstream(how_many_repeats,stream_length,start_point);
+	  } ) );
+    }
+    for ( auto &t : threads )
+      t.join();

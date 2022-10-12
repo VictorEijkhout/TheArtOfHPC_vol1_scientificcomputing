@@ -1,0 +1,4 @@
+// c99.c
+  int len;
+  scanf("%d",&len);
+  int x[len];

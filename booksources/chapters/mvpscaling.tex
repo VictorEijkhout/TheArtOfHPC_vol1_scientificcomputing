@@ -1,0 +1,176 @@
+% this file doesn't seem to be used
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input chapters/robertmacros
+
+In this section, we discuss the parallelization of the
+computation $ y \becomes A x $, where $ x, y \in \Rn $ and $ A \in \Rnxn $.
+We will assume that $ p $ nodes will be used, identified by $ {\cal P}_0, 
+\ldots , {\cal P}_{p-1} $.
+
+We partition $A$ by rows:
+\[
+A \rightarrow \defcolvector{A}{p} 
+\quad
+x \rightarrow \defcolvector{x}{p} ,
+\quad
+\mbox{and}
+\quad
+y \rightarrow \defcolvector{y}{p} ,
+\]
+where $ A_i \in \R^{m_i \times n} $ and $ x_i, y_i \in \R^{m_i} $ with
+$ \sum_{i=0}^{p-1} m_i = n $ and $ m_i \approx n / p $.
+
+We will start by assuming
+that $ A_i $, $ x_i $, and $ y_i $ are originally assigned to $ {\cal P}_i $.
+
+\paragraph*{Algorithm}
+
+An algorithm for computing $ y = A x $ in parallel is then given by
+\\[0.1in]
+\begin{center}
+\begin{tabular}{| p{3.5in} |  p{3.0in} |}\toprule
+Step & Cost (lower bound) \\ \midrule
+Allgather $ x_i $ so that $ x $ is available on all nodes & 
+$ \lceil \log_2(p)\rceil \alpha + \frac{p-1}{p} n \beta \approx
+\log_2(p) \alpha + n \beta $ \\
+Locally compute $ y_i = A_i x $ &
+$ \approx 2 \frac{n^2}{p} \gamma $ \\ \bottomrule
+\end{tabular}
+\end{center}
+where $\alpha$ and $\beta$ are the latency and bandwidth,
+respectively.
+
+\paragraph*{Cost analysis}
+
+The total cost of the algorithm is given by, approximately,
+\[
+T_p(n) = T_p^{\mbox{1D-row}}(n) = 
+2 \frac{n^2}{p} \gamma + 
+\begin{array}[t]{c}
+\underbrace{\log_2(p) \alpha + n \beta.}
+\\
+\mbox{Overhead}
+\end{array}
+\]
+Since the sequential cost is $ T_1(n) = 2 n^2 \gamma $, the speedup is given by
+\[
+S_p^{\mbox{1D-row}}(n) = 
+\frac{T_1(n)}
+{T_p^{\mbox{1D-row}}(n)} = 
+\frac{2 n^2 \gamma}
+{ 2 \frac{n^2}{p} \gamma + 
+\log_2(p) \alpha + n \beta}
+= 
+\frac{p}
+{ 1 + \frac{p \log_2(p)}{2 n^2} \frac{\alpha}{\gamma} 
++ \frac{p}{2 n} \frac{\beta}{\gamma} }
+\]
+and the parallel efficiency by
+\[
+E_p^{\mbox{1D-row}}(n) = 
+\frac{S_p^{\mbox{1D-row}}(n)}{p}
+= 
+\frac{1}
+{ 1 + \frac{p \log_2(p)}{2 n^2} \frac{\alpha}{\gamma} 
++ \frac{p}{2 n} \frac{\beta}{\gamma} }.
+\]
+
+\begin{exercise}
+  Show that, for fixed $p$ and growing $n$, the efficiency goes
+  to~1. Why is this result not practically useful? Show that, for
+  fixed~$n$ and $p$~growing, efficiency goes to zero. Why is that
+  result not surprising?
+\end{exercise}
+
+A realistic analysis recognizes that the total amount of memory that is
+available to store the problem scales linearly with~$ p $.  Let $ M $
+equal the number of floating point numbers that can be stored in a
+single node's memory.  The aggregate memory is then given by~$ M p $.
+Let $ n_{\mbox{max}}(p) $ equal the largest problem size that can be
+stored in the aggregate memory of $ p $ nodes.  Then, if {\em all}
+memory can be used for the matrix,
+\[
+(n_{\mbox{max}}(p))^2 = M p
+\quad
+\mbox{or}
+\quad
+n_{\mbox{max}}(p) = \sqrt{M} {p}.
+\]
+The efficiency for the largest problem that can be stored on $ p $
+nodes is then:
+\begin{eqnarray*}
+E_p^{\mbox{1D-row}}(n_{\mbox{max}}(p)) &=& 
+\frac{1}
+{1 + \frac{p \log_2(p)}{2 (n_{\mbox{max}}(p))^2} \frac{\alpha}{\gamma} 
++ \frac{p}{2 n_{\mbox{max}}(p)} \frac{\beta}{\gamma} }
+\\
+&=&
+\frac{1}
+{ 1 + \frac{\log_2(p)}{2 M} \frac{\alpha}{\gamma} 
++ \frac{\sqrt{p}}{2 \sqrt{M}} \frac{\beta}{\gamma} }.
+\end{eqnarray*}
+Now, if one analyzes what happens when the number of nodes
+becomes large, one finds that
+\[
+\lim_{p \rightarrow \infty} E_p( n_{\mbox{max}}(p) ) 
+=
+\lim_{p \rightarrow \infty}
+\left[
+\frac{1}
+{1 + \frac{\log_2(p)}{2 M} \frac{\alpha}{\gamma} 
++ \frac{\sqrt{p}}{2 \sqrt{M}} \frac{\beta}{\gamma} }
+\right]
+=
+0.
+\]
+Thus, this parallel algorithm for matrix-vector multiplication
+does not scale.
+
+Alternatively, a realist realizes that he/she has a limited amount of time,
+$ T_{\mbox{max}} $ on
+his/her hands.  Under the best of circumstances, the largest problem
+that we can solve in time $ T_{\mbox{max}} $ is given by
+\[ 
+T_p(n_{\mbox{max}}(p)) = 2 \frac{(n_{\mbox{max}}(p))^2}{p} \gamma = T_{\mbox{max}} .
+\]
+Thus
+\[
+(n_{\mbox{max}}(p))^2 = \frac{T_{\mbox{max}} p}{2 \gamma}
+\quad
+\mbox{or}
+\quad
+n_{\mbox{max}}(p) = \frac{\sqrt{T_{\mbox{max}}} \sqrt{p}}{\sqrt{2 \gamma}}.
+\]
+Then the parallel efficiency that is attained by the algorithm for the largest
+problem that can be solved in time $ T_{\mbox{max}} $ is given by
+\[
+~
+\cdots
+~\]
+and the parallel efficiency as the number of nodes becomes large approaches
+\[
+~
+\cdots
+~
+\]
+Again, efficiency cannot be maintained as the number of processors increases and the execution time is capped.
+
+\begin{exercise}
+  Perform a similar analysis for a partitioning by columns.
+\end{exercise}
+
+% LocalWords:  Eijkhout Allgather ison col

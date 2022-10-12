@@ -1,0 +1,41 @@
+In this project you explore the ramifications of the
+\indextermbus{memory}{wall}; see section~\ref{sec:hierarchy}.
+This project involves literature search, but little programming.
+
+\Level 0 {Background}
+
+Wulf and McKee~\cite{Wulf:memory-wall} observed trends in the average
+latency in processors. Let $t_m$ be the latency from memory, $t_c$~the
+latency from cache, and $p$~the probability of a cache hit, then the
+average latency is
+\[ t_{\mathrm{avg}} = pt_c + (1-p)t_m. \]
+
+As the gap between processor speed and memory speed increases, 
+this latency will grow, unless one can drive $p$ down, that is,
+reduce the number of cache misses or at least lessen their importance.
+
+\Level 0 {Assignment}
+
+Do a literature search and discuss the following topics.
+\begin{itemize}
+\item What have the trends been in processor speed and memory speed?
+  What bearing does the introduction of multicore chips have on this
+  balance?
+\item Section~\ref{sec:cache-miss} discussed various types of cache
+  misses. Some misses are more related to the algorithm and some more
+  to the hardware. What strategies have hardware designers used to
+  less then impact of cache misses?
+\item Compulsory cache misses seem unavoidable, since they are a
+  property of the algorithm. However, if they can be hidden (see
+  section~\ref{sec:latencybandwidth} for `latency hiding') their
+  performance impact disappears. Research the topic of prefetch
+  streams and their relation to latency hiding.
+\item How does the size of a cacheline interact with this behaviour?
+\item Discuss compiler techniques that lessen the incidence of cache misses.
+\item Can you find examples of algorithm options, that is, algorithms
+  that compute the same result (not necessarily in the arithmetic
+  sense; compare direct square root versus iterative approximation)
+  but with different computational behaviour?
+\end{itemize}
+
+For all of these topics you are encouraged to write simulations.

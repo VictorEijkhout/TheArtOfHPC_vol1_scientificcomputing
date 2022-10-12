@@ -1,0 +1,185 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The Ising model (for an introduction, see~\cite{Cipra:Ising}) was
+originally proposed to model ferromagnetism. Magnetism is the result
+of atoms aligning their `spin' direction: let's say spin can only be
+`up' or `down', then a material has magnetism if more atoms have spin
+up than down, or the other way around. The atoms are said to be in a
+structure called a `lattice'.
+
+Now imagine heating up a material, which loosens up the atoms. If an
+external field is applied to the material, the atoms will start
+aligning with the field, and if the field is removed the magnetism
+disappears again. However, below a certain critical temperature the
+material will retain its magnetism.
+We will use Monte Carlo simulation to find the stable configurations
+that remain.
+
+Let's say the lattice $\Lambda$ has $N$ atoms, and we denote a
+configuration of atoms as $\sigma=(\sigma_1,\ldots,\sigma_N)$ where
+each $\sigma_i=\pm1$.
+The energy of a lattice is modeled as
+\[ H=H(\sigma)=-J\sum_i\sigma_i-E\sum_{ij}\sigma_i\sigma_j. \]
+The first term models the interaction of individual spins $\sigma_i$
+with an external field of strength~$J$. The second term, which sums
+over nearest neighbour pairs, models
+alignment of atom pairs: the product $\sigma_i\sigma_j$ is positive if
+the atoms have identical spin, and negative if opposite.
+
+In \indexterm{statistical mechanics}, the probability of a
+configuration is 
+\[ P(\sigma) = \exp(-H(\sigma))/Z \]
+where the `partitioning function' $Z$ is defined as 
+\[ Z = \sum_\sigma \exp(H(\sigma)) \]
+where the sum runs over all $2^N$ configurations.
+
+A configuration is stable if its energy does not decrease under small
+perturbations. To explore this, we iterate over the lattice, exploring
+whether altering the spin of atoms lowers the energy. We introduce an
+element of chance to prevent artificial solutions. (This is the
+\indexterm{Metropolis algorithm}~\cite{Metropolis}.)
+
+\begin{displayalgorithm}
+  \For{fixed number of iterations}{
+    \For{each atom $i$}{
+      {calculate the change $\Delta E$ from changing the sign of $\sigma_i$}\;
+      \If{$\Delta E<$ or $\exp(-\Delta E)$ greater than some random number}{
+        accept the change}\;
+    }
+  }
+\end{displayalgorithm}
+
+This algorithm can be parallelized, if we notice the similarity with
+the structure of the sparse matrix-vector product. In that algorithm too we
+compute a local quantity by combining inputs from a few nearest
+neighbours. This means we can partitioning the lattice, and compute
+the local updates after each processor collects a \indexterm{ghost
+  region}.
+
+Having each processor iterate over local points in the lattice
+corresponds to a particular global ordering of the lattice; to make
+the parallel computation equivalent to a sequential one we also need a
+parallel random generator (section~\ref{sec:parallel-random}).
+
+\endinput
+
+Atomic order can be studied theoretically by applying Monte Carlo
+simulations to a generalized Ising model. An Ising model describes the
+energy of any arrangement of atoms on a lattice.
+To illustrate this, consider a triangular two dimensional lattice.
+
+\includegraphics{ising/ising1}
+
+Assume that two types of atoms (call them A and B) can reside at each
+lattice site. At each lattice site i, we associate an occupation
+variable s(i) such that
+
+s(i)=+1 if A resides at site i
+
+s(i)=-1 if B resides at site i
+
+It can be shown that any property that depends on the arrangement of A
+and B atoms on the lattice (e.g. the energy) can be exactly expanded
+in terms of polynomials of occupation variables associated with
+different lattice sites according to
+
+\includegraphics{ising/ising2}
+
+where the polynomial basis functions are simply products of occupation
+variables belonging to clusters of sites (e.g. a pair cluster, a
+triplet cluster etc.). The expansion goes over all possible clusters
+of lattice sites, but in practice the expression is truncated after
+some maximal cluster. The coefficients of the polynomial basis
+functions are constant and are to be determined with a first
+principles electronic structure method.
+
+Monte Carlo simulation
+
+Ordering at different temperatures can be studied by applying Monte
+Carlo simulations to the Ising model. In a Monte Carlo simulation,
+different arrangements of A and B atoms on the lattice are sampled
+according to the probability distribution of statistical mechanics
+which is given by
+
+\includegraphics{ising/ising3}
+
+where:
+
+P(a) is the probability of occurrence of a particular arrangement a
+
+E(a) is the energy of that arrangement as calculated with the Ising model energy expression
+
+T is the temperature
+
+k is the Boltzmann constant
+
+The basic algorithm of a Monte Carlo code is very simple and can be
+summarized as follows:
+
+\includegraphics[scale=.6]{ising/ising4}
+
+Generalized Monte Carlo code
+
+Usually, Monte Carlo programs for Ising model simulations are written
+for a specific lattice. The reason for this is that in a typical
+simulation, the Ising Model energy expression is evaluated many times
+(~1000000 times). In order to evaluate this energy expression quickly,
+it is necessary to explicitly write it within the code. This
+expression, however, is different for different lattices.
+
+This can be illustrated with the following example:
+
+\includegraphics[scale=.3]{ising/ising5}
+
+Compare a square lattice with a triangular lattice (see above
+figure). Assume that the Ising model expressions only have nearest
+neighbor interaction terms (i.e. all other terms corresponding to
+larger clusters are truncated). Each site on a square lattice has 4
+nearest neighbors while each site on a triangular lattice has 6
+nearest neighbors (the nearest neighbors are connected to point 5 with
+the bold lines). The Ising Model energy expressions for these lattices
+thus look very different, since the connectivity of the sites is
+different in different lattices.
+
+To avoid manually writing a new Monte Carlo code for each different
+lattice, a preprocessor was created in this work that uses the group
+theory of crystallography to automatically write the energy expression
+for a particular lattice. This energy expression is then automatically
+incorporated into the body of a standard Monte Carlo code. All that is
+needed as input is the space group of the lattice (which can be found
+in the literature) and the coordinates of a representative cluster of
+each type appearing in the Ising Model energy expression. A user of
+this preprocessor, is therefore not required to know the details of a
+Monte Carlo code.
+
+Parallelization
+
+The Monte Carlo code was parallelized by dividing the lattice into as
+many slabs as there are processors. Each processor then performs the
+above algorithm locally within each slab. Since the atoms at each
+lattice site interact with atoms at distant lattice sites, those atoms
+at the edge of each slab will interact with atoms in adjacent
+slabs. Therefore, in order to correctly evaluate the Ising model
+energy expression, each processor must be made aware of changes made
+within a thin layer at the border (call it the "border layer" which
+has a thickness equal to the maximum interaction range) of the
+adjacent slab. Communication is done with MPI. After each border layer
+has been passed by a given processor, the modified occupation
+variables are packed into an array and sent to the processor working
+in the adjacent slab. This is done before the processor of the
+adjacent slab comes within the interaction range of the border layer.
+

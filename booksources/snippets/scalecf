@@ -1,0 +1,10 @@
+// example0c.cxx
+void dscal_(int*,double*,double*,int*);
+  xarray = new double[n]; yarray = new double[n];
+
+  for (int i=0; i<n; i++)
+    xarray[i] = 1.;
+  dscal_(&n,&scale,xarray,&ione);
+  for (int i=0; i<n; i++)
+    if (!assert_equal( xarray[i],scale ))
+      printf("Error in index %d",i);

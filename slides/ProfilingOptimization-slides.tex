@@ -1,0 +1,74 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of slides for
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Analysis basics}
+  \begin{itemize}
+  \item Measurements: repeated and controlled\\
+    beware of transients, do you know where your data is?
+  \item Document everything
+  \item Script everything
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Compiler options}
+  \begin{itemize}
+  \item Defaults are a starting point
+  \item use reporting options: \texttt{-opt-report}, \texttt{-vec-report}\\
+    useful to check if optimization happened~/ could not happen
+  \item test numerical correctness before/after optimization change (there are options for numerical corretness)
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Optimization basics}
+  \begin{itemize}
+  \item Use libraries when possible: don't reinvent the wheel
+  \item Premature optimization is the root of all evil (Knuth)
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Code design for performance}
+  \begin{itemize}
+  \item Keep inner loops simple: no conditionals, function calls, casts
+  \item Avoid small functions: try macros or inlining
+  \item Keep in mind all the cache,TLB, SIMD stuff from before
+  \item SIMD: Fortran array syntax helps
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Multicore / multithread}
+  \begin{itemize}
+  \item Use \texttt{numactl}: prevent process migration
+  \item `first touch' policy: allocate data where it will be used
+  \item Scaling behaviour mostly influenced by bandwidth
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Multinode performance}
+  \begin{itemize}
+  \item Influenced by load balancing
+  \item Use HPCtoolkit, Scalasca, TAU for plotting
+  \item Explore `eager' limit (mvapich2: environment variables)
+  \end{itemize}
+\end{numberedframe}
+
+\endinput
+
+\begin{numberedframe}{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{numberedframe}
+

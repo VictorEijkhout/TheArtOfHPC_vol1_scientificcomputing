@@ -1,0 +1,22 @@
+Very much in progress.
+
+Two-electron contribution to the Fock matrix (in GAMESS)
+
+\begin{verbatim}
+do ish = ISH,1 ???
+  do jsh = 1,ish
+    do ksh = 1,ish
+      if ish==ksh
+        lmax = jsh
+      else
+        lmax = ksh
+      do lsh = 1,lmax
+        test = max(D,ish,jsh,ksh,lsh) *
+               max(I,ish,jsh,ksh,lsh)
+        if test>cutoff
+          calcuate(ish,jsh,ksh,lsh)
+          call DIRFCK
+\end{verbatim}
+
+The jsh/ksh loops can be parallelized together.
+The outer loop is sequential.

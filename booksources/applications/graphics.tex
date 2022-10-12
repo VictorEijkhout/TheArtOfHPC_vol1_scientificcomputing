@@ -1,0 +1,153 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{graphics|(}
+
+\Level 0 {Image blurring}
+
+Many problems in computer graphics can be
+considered as a case of \ac{SIMD} programming:
+an image is a square or rectangular array
+where each pixel can be manipulated independently,
+and often with the same operation.
+
+For instance, an image with $1024\times 1024$
+pixels, of 8~bits each, takes $2^{20}$~bytes or 1~megabyte.
+In the context of a movie with a framerate of 60~frames,
+and a processor with an average instruction rate
+of 1~GHz, this means that each operation can take about 16~nanoseconds.
+%
+(While this sounds like a reasonable operation rate,
+of course we also have to wonder about the bandwidth.)
+
+Examples of operations on a single pixel are
+thresholding and contrast stretching.
+
+Other operations involve several pixels at once:
+smoothing operations such as removing noise
+use a \indexterm{difference stencil}.
+A~typical averaging stencil would be 
+\[
+\begin{matrix}
+  1&1&1\\ 1&8&1\\ 1&1&1
+\end{matrix}
+\]
+The stencils you saw in Chapter~\ref{ch:odepde} represent
+differentiation; in graphics that can be used for operations
+such as edge detection. A~popular choice for a differentiation stencil is
+\[
+\hbox{$x$: }
+\begin{matrix}
+  -1&0&1\\ -2&0&2\\ -1&0&1
+\end{matrix}
+\qquad\hbox{$y$: }
+\begin{matrix}
+  -1&-2&-1\\ 0&0&0\\ -1&-2&-1
+\end{matrix}
+\]
+
+
+The sequential code for applying a $3\times 3$ stencil
+on an $N\times N$ image
+would be
+\begin{verbatim}
+for (i=0; i<N; i++) {
+  for (j=0; j<N; j++) {
+    s = 0;
+    for (ii=-1; ii<=1; ii++)
+      for (jj=-1; jj<=1; jj++)
+        s += frame[i+ii][j+jj];
+    avg[i,j] = s;
+  }
+}
+\end{verbatim}
+
+As discussed in section~\ref{sec:aos-soa}, this code structure
+is advantageous for certain types of parallelism. For instance,
+in \indexac{CUDA} one would write a \emph{kernel}\index{kernel!CUDA}
+containing the inner two loops, and instantiate this
+in parallel on each $[i,j]$ coordinate of the averages array.
+
+On the other hand, this code structure would not be right for
+\indextermbus{vector}{instructions} or \emph{pipeline
+  instructions}\index{pipeline!instruction} where the parallelism has
+to be in the inner loop, and preferably be as large as possible.
+
+\Level 0 {Ray tracing}
+
+The \indexterm{light transport equation} states that the outgoing
+radiance $L_o(p,\omega_o)$ from a point~$p$ in a direction~$\omega_o$
+is the sum light generated there, plus incident light reflected from all other
+sources:
+\[ L_o(p,\omega_o) = L_e(p,\omega_o)
+   + \int_S f(p,\omega_o,\omega_i) L_i(p,\omega_i) \left|\cos \omega_i\right| 
+   d\omega_i,
+\]
+scaled by a 
+bidirectional scattering distribution function (BSDF)~$f(p,\omega_o,\omega_i)$
+and a cosine term to account for the angle between incident and
+outgoing rays.
+
+The basic \indextermbus{Eikonal}{equation} of ray propagation is
+\begin{equation}
+  \| \nabla S(\mathbf x) \| = n
+  \label{eq:ekonal}
+\end{equation}
+states that the gradient of the \indextermdef{Eikonal} $S(\cdot)$ is
+the \indextermsub{index of}{refraction}. The surfaces
+$|S(x)|=\mathrm{const}$ are
+\emph{wavefronts}\index{wavefront!(of light propagation)},
+describing the iso-surface of constant time of light propagation from
+a single source.
+
+This gives the \emph{ray equation of geometric optics}:
+\begin{equation}
+  \frac{d}{ds}\bigl( n\frac{d\mathbf x}{ds} \bigr)
+  = \nabla n
+\end{equation}
+which can be written as coupled \acp{ODE}:
+\begin{equation}
+  n\frac{d\mathbf{x}}{dx}=\mathbf{d}, \qquad
+  \frac{d\mathbf{d}}{ds} = \nabla n.
+\end{equation}
+where $\mathbf{d}$ is the local ray direction, scaled by the
+refractive index.
+
+\Level 1 {Computational aspects}
+
+The tiles in an image can be processed independently. For reasons of
+\indextermbus{load}{balancing}, we over-decompose the image into more
+tiles than there are processing elements (such as cores).
+
+\Level 0 {Volume reconstruction}
+
+The above equations are normally applied to a known medium, to derive
+the paths the light rays take. However, we can also consider the
+\indextermbus{inverse}{problem}:
+\begin{quotation}
+  Given an unknown object, with known rays entering, and measurements of
+  rays exiting: can we reconstruct the object?
+\end{quotation}
+For this we observe that
+\begin{equation}
+  \mathbf{d}^{\scriptstyle\mathrm{out}} =
+  \int_c \nabla n\, ds
+  +
+  \mathbf{d}^{\scriptstyle\mathrm{in}}.
+\end{equation}
+
+
+\index{graphics|)}

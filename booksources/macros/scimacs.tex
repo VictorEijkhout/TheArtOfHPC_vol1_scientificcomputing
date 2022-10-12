@@ -1,0 +1,318 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{array,booktabs,arydshln,multirow,multicol}
+
+\newcounter{lesson} % for lesson tables
+\newcommand\furtherreading{\Level 0 {Further Reading}\label{sec:furtherreading-\chapshortname}}
+
+{\catcode`\^^I=13 \globaldefs=1
+\newcommand\srclisting[2]{\begingroup\small\par\vspace{1ex}
+  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
+  \noindent\fbox{#1}
+  \verbatiminput{#2}\endgroup
+  }
+\newcommand\codelisting[1]{\begingroup\small\par\vspace{1ex}
+  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
+  \noindent\fbox{#1}
+  \verbatiminput{#1}\endgroup}
+}
+\newcommand\inv{^{-1}}
+\newcommand\invt{^{-t}}
+\newcommand\setspan[1]{[\![#1]\!]}
+\newcommand\fp[2]{#1\cdot10^{#2}}
+\newcommand\fxp[2]{\langle #1,#2\rangle}
+\def\n#{\bgroup
+  \catcode`\_=12 \catcode`\>=12 \catcode`\<=12 \catcode`\$=12
+  \catcode`\&=12 \catcode`\^=12 \catcode`\~=12 \catcode`\#=12
+  \def\\{\char`\\}\relax
+  \tt \let\next=}
+
+\newcommand\diag{\mathop{\mathrm {diag}}}
+\newcommand\argmin{\mathop{\mathrm {argmin}}}
+\newcommand\defined{
+  \mathrel{\lower 5pt \hbox{${\equiv\atop\mathrm{\scriptstyle D}}$}}}
+\newcommand\lulubreak{\message{Hard page break!}\pagebreak\relax}
+
+\newcommand\bbP{\mathbb{P}}
+\newcommand\bbR{\mathbb{R}}
+
+\newtheorem{remark}{Remark}
+\expandafter\ifx\csname definition\endcsname\relax
+    \newtheorem{definition}{Definition}
+\fi
+\expandafter\ifx\csname theorem\endcsname\relax
+    \newtheorem{theorem}{Theorem}
+\fi
+\expandafter\ifx\csname lemma\endcsname\relax
+    \newtheorem{lemma}{Lemma}
+\fi
+\expandafter\ifx\csname proof\endcsname\relax
+ \newenvironment{proof}{\begin{quotation}\small\sl\noindent Proof.\ \ignorespaces}
+     {\end{quotation}}
+\fi
+\newenvironment{footnoteenv}[1]{\unskip\nobreak\footnote{#1}}{\unskip}
+
+\newcommand\cppstandard[1]{C++#1\index{C++!C++#1}}
+\newcommand\cstandard[1]{C#1\index{C!C#1}}
+\newcommand\fstandard[1]{Fortran#1\index{Fortran!Fortran#1}}
+\newcommand\cmakestandard[1]{CMake-#1\index{CMake!version #1}}
+
+%% \newenvironment{highermath}
+%%     {\bigskip\begin{quotation}\noindent\emph{MMM}}
+%%     {\end{quotation}\bigskip\noindent\ignorespaces}
+
+\usepackage{acronym}
+\newwrite\acrowrite
+\openout\acrowrite=acronyms.tex
+\def\acroitem#1#2{\acrodef{#1}{#2}
+    \write\acrowrite{\message{defining #1}\noexpand\acitem{#1}{#2}}
+}
+%\def\acitem#1#2{\item[#1] #2}
+\def\acitem#1#2{\item[#1]{#2}\index{#1|see{#2}}}
+\def\acitemi#1#2#3{\item[#1]{#2}\index{#1|see{#3}}}
+
+\acroitem{AMR}{Adaptive Mesh Refinement}
+\acroitem{AOS}{Array-Of-Structures}
+\acroitem{API}{Application Programmer Interface}
+\acroitem{AVX}{Advanced Vector Extensions}
+\acroitem{BEM}{Boundary Element Method}
+\acroitem{BFS}{Breadth-First Search}
+\acroitem{BLAS}{Basic Linear Algebra Subprograms}
+\acroitem{BSP}{Bulk Synchronous Parallel}
+\acroitem{BVP}{Boundary Value Problem}
+\acroitem{CAF}{Co-array Fortran}
+\acroitem{CCS}{Compressed Column Storage}
+\acroitem{CG}{Conjugate Gradients}
+\acroitem{CGS}{Classical Gram-Schmidt}
+\acroitem{COO}{Coordinate Storage}
+\acroitem{CPU}{Central Processing Unit}
+\acroitem{CRS}{Compressed Row Storage}
+\acroitem{CUDA}{Compute-Unified Device Architecture}
+\acroitem{DAG}{Directed Acyclic Graph}
+\acroitem{DL}{Deep Learning}
+\acroitem{DRAM}{Dynamic Random-Access Memory}
+\acroitem{DSP}{Digital Signal Processing}
+\acroitem{FD}{Finite Difference}
+\acroitem{FMA}{Fused Multiply-Add}
+\acroitem{FDM}{Finite Difference Method}
+\acroitem{FEM}{Finite Element Method}
+\acroitem{FMM}{Fast Multipole Method}
+\acroitem{FOM}{Full Orthogonalization Method}
+\acroitem{FPU}{Floating Point Unit}
+\acroitem{FFT}{Fast Fourier Transform}
+\acroitem{FSA}{Finite State Automaton}
+\acroitem{FSB}{Front-Side Bus}
+\acroitem{FPGA}{Field-Programmable Gate Array}
+\acroitem{GMRES}{Generalized Minimum Residual}
+\acroitem{GPU}{Graphics Processing Unit}
+\acroitem{GPGPU}{General Purpose Graphics Processing Unit}
+\acroitem{GS}{Gram-Schmidt}
+\acroitem{HDFS}{Hadoop File System}
+\acroitem{HPC}{High-Performance Computing}
+\acroitem{HPF}{High Performance Fortran}
+\acroitem{IBVP}{Initial Boundary Value Problem}
+\acroitem{IDE}{Integrated Development Environment}
+\acroitem{ILP}{Instruction Level Parallelism}
+\acroitem{ILU}{Incomplete LU}
+\acroitem{IMP}{Integrative Model for Parallelism}
+\acroitem{IVP}{Initial Value Problem}
+\acroitem{LAPACK}{Linear Algebra Package}
+\acroitem{LAN}{Local Area Network}
+\acroitem{LBM}{Lattice Boltzmann Method}
+\acroitem{LRU}{Least Recently Used}
+\acroitem{MIC}{Many Integrated Cores}
+\acroitem{MIMD}{Multiple Instruction Multiple Data}
+\acroitem{MGS}{Modified Gram-Schmidt}
+\acroitem{ML}{Machine Learning}
+\acroitem{MPI}{Message Passing Interface}
+\acroitem{MSI}{Modified-Shared-Invalid}
+\acroitem{MTA}{Multi-Threaded Architecture}
+\acroitem{NUMA}{Non-Uniform Memory Access}
+\acroitem{ODE}{Ordinary Diffential Equation}
+\acroitem{OS}{Operating System}
+\acroitem{PGAS}{Partitioned Global Address Space}
+\acroitem{PDE}{Partial Diffential Equation}
+\acroitem{PRAM}{Parallel Random Access Machine}
+\acroitem{RDMA}{Remote Direct Memory Access}
+\acroitem{SAN}{Storage Area Network}
+\acroitem{SAS}{Software As a Service}
+\acroitem{SFC}{Space-Filling Curve}
+\acroitem{SGD}{Stochastic Gradient Descent}
+\acroitem{SIMD}{Single Instruction Multiple Data}
+\acroitem{SIMT}{Single Instruction Multiple Thread}
+\acroitem{SM}{Streaming Multiprocessor}
+\acroitem{SMP}{Symmetric Multi Processing}
+\acroitem{SMT}{Symmetric Multi Threading}
+\acroitem{SOA}{Structure-Of-Arrays}
+\acroitem{SOR}{Successive Over-Relaxation}
+\acroitem{SSOR}{Symmetric Successive Over-Relaxation}
+\acroitem{SP}{Streaming Processor}
+\acroitem{SPMD}{Single Program Multiple Data}
+\acroitem{SPD}{symmetric positive definite}
+\acroitem{SRAM}{Static Random-Access Memory}
+\acroitem{SSE}{SIMD Streaming Extensions}
+\acroitem{STL}{Standard Template Library}
+\acroitem{TLB}{Translation Look-aside Buffer}
+\acroitem{UMA}{Uniform Memory Access}
+\acroitem{UPC}{Unified Parallel C}
+\acroitem{WAN}{Wide Area Network}
+\acresetall
+\closeout\acrowrite
+
+\newcommand{\indexterm}[1]{\emph{#1}\index{#1}}
+\newcommand{\indextermtt}% begin term with underscore
+           {\bgroup\catcode`\_=12 \indextermtteg}
+\newcommand{\indextermtteg}[1]%end term with underscore
+           {{\ttfamily\slshape #1}%
+            \index{#1@\makeusletter\texttt{#1}\makeusother}\egroup
+           }
+\newcommand{\indextermttdef}% begin term with underscore
+           {\bgroup\catcode`\_=12 \indextermttdefeg}
+\newcommand{\indextermttdefeg}[1]%end term with underscore
+           {{\ttfamily\slshape #1}%
+            \index{#1@\makeusletter\texttt{#1}\makeusother|textbf}\egroup
+           }
+%% \newcommand{\indextermttdef}[1]{{\ttfamily\slshape #1}\index{#1@\texttt{#1}|textbf}}
+
+\newcommand{\indexcmake}
+           {\bgroup\catcode`\_=12 \indextermcmeg}
+\newcommand{\indextermcmeg}[1]%end term with underscore
+           {{\lstinline+#1+}%
+            \index{#1@\makeusletter\texttt{#1}\makeusother (cmake)}\egroup
+           }
+
+\newcommand\makeusletter{\catcode`\_=11 }
+\newcommand\makeusother{\catcode`\_=12 }
+\newcommand{\indextermunix}% begin term with underscore
+           {\bgroup\catcode`\_=12 \indextermunixeg}
+\newcommand{\indextermunixeg}[1]%end term with underscore
+           {{\ttfamily\slshape #1}%
+            \index{#1@\makeusletter\texttt{#1}\makeusother!(unix command)}\egroup
+           }
+\newcommand{\indextermunixdef}[1]
+           {{\ttfamily\slshape #1}\index{#1@\texttt{#1}!(unix command)|textbf}}
+\newcommand{\indextermunixdefus}% begin term with underscore
+           {\bgroup\catcode`\_=12 \indextermunixdefeg}
+\newcommand{\indextermunixdefeg}[1]%end term with underscore
+           {{\ttfamily\slshape #1}%
+            \index{#1@\makeusletter\texttt{#1}\makeusother!(unix command)|textbf}\egroup
+           }
+
+\newcommand{\indextermcmake}% begin term with underscore
+           {\bgroup\catcode`\_=12 \indextermcmakeeg}
+\newcommand{\indextermcmakeeg}[1]%end term with underscore
+           {{\ttfamily\slshape #1}%
+            \index{#1@\makeusletter\texttt{#1}\makeusother!(cmake command)}\egroup
+           }
+
+\newcommand{\indextermdef}[1]{\emph{#1}\index{#1|textbf}}
+\newcommand{\indextermp}[1]{\emph{#1s}\index{#1}}
+\newcommand{\indextermsub}[2]{\emph{#1 #2}\index{#2!#1}}
+\newcommand{\indextermsubdef}[2]{\emph{#1 #2}\index{#2!#1|textbf}}
+\newcommand{\indextermsubp}[2]{\emph{#1 #2s}\index{#2!#1}}
+\newcommand{\indextermbus}[2]{\emph{#1 #2}\index{#1!#2}}
+\newcommand{\indextermbusdef}[2]{\emph{#1 #2}\index{#1!#2|textbf}}
+\newcommand{\indextermstart}[1]{\emph{#1}\index{#1|(}}
+\newcommand{\indextermend}[1]{\index{#1|)}}
+\newcommand{\indexstart}[1]{\index{#1|(}}
+\newcommand{\indexend}[1]{\index{#1|)}}
+
+\makeatletter
+\newcommand\indexac[1]{\emph{\ac{#1}}%
+  %\tracingmacros=2 \tracingcommands=2
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname%
+    @\acl{#1} (#1)}}\tmp}
+\newcommand\indexacdef[1]{\emph{\ac{#1}}%
+  %\tracingmacros=2 \tracingcommands=2
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname%
+    @\acl{#1} (#1)}|textbf}\tmp}
+\newcommand\indexacp[1]{\emph{\ac{#1}}%
+  %\tracingmacros=2 \tracingcommands=2
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname%
+    @\aclp{#1} (#1)}}\tmp}
+\newcommand\indexacf[1]{\emph{\acf{#1}}%
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname
+    @\acl{#1} (#1)}}\tmp}
+\newcommand\indexacstart[1]{%
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname
+    @\acl{#1} (#1)|(}}\tmp}
+\newcommand\indexacend[1]{%
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname
+    @\acl{#1} (#1)|)}}\tmp}
+\makeatother
+
+%%%%%%%%%%%%%%%%
+%%%% Titles
+%%%%%%%%%%%%%%%%
+\def\chaptertitle{\csname\chaptername title\endcsname}
+\def\chaptershorttitle{\csname\chaptername shorttitle\endcsname}
+
+\def\sequentialtitle{Processor Architecture}
+\def\sequentialshorttitle{CPU}
+
+\def\paralleltitle{Parallel Computer Architecture}
+\def\parallelshorttitle{Parallelism}
+
+\def\arithmetictitle{Computer Arithmetic}
+\def\arithmeticshorttitle{Arithmetic}
+
+\def\odepdetitle{Ordinary and Partial Differential Equations}
+\def\odedeshorttitle{PDEs}
+
+\def\lineartitle{Numerical Linear Algebra}
+\def\linearshorttitle{Algebra}
+
+\def\parallellineartitle{High Performance Linear Algebra}
+\def\parallellinearshorttitle{HPC}
+
+\def\mdtitle{Molecular Dynamics}
+\def\mdshorttitle{MD}
+
+\def\combinatoricstitle{Combinatorics}
+\def\combinatoricsshorttitle{Combinatorics}
+
+%% tutorials
+\def\unixtitle{Introduction to Unix}
+\def\unixshorttitle{unix}
+
+\def\latextitle{Introduction to \LaTeX}
+\def\latexshorttitle{latex}
+
+\def\gnumaketitle{Managing software projects with Make}
+\def\gnumakeshorttitle{gnumake}
+
+\def\gnuplottitle{Plotting data with GnuPlot}
+\def\gnuplotshorttitle{gnuplot}
+
+\def\svntitle{Source code control with Subversion}
+\def\svnshorttitle{svn}
+
+%% appendices
+\def\petsctitle{The Portable Extendable Toolkit for Scientific
+  Computing (PETSc)}
+\def\petscshorttitle{petsc}

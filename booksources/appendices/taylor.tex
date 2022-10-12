@@ -1,0 +1,104 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012/3/4/5/
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Taylor series expansion is a powerful mathematical tool. In this
+course it is used several times in proving properties of numerical
+methods.
+
+The Taylor expansion theorem, in a sense, asks how well functions can
+be approximated by polynomials, that is, for a given
+function~$f$, can we find coefficients~$c_i$ with $i=1,\ldots,n$ so that
+\[ f(x)\approx c_0+c_1x+c_2x^2+\cdots+c_nx^n.\]
+This question obviously needs to be refined. What do we mean by
+`approximately equal'? This approximation formula can not
+hold for all functions~$f$ and all~$x$: the function $\sin x$ is
+bounded for all~$x$, but any polynomial is unbounded for $x\rightarrow
+\pm\infty$, so any polynomial approximation to the $\sin x$ function
+is unbounded. Clearly we can only approximate on an interval.
+
+We will show that a function~$f$ with sufficiently many derivatives
+can be approximated as follows: if the $n$-th derivative~$f^{(n)}$ is
+continuous on an interval~$I$, then there are coefficients
+$c_0,\ldots,c_{n-1}$ such that
+\[
+  \forall_{x\in I}\colon |f(x)-\sum_{i<n}c_ix^i|\leq cM_n
+    \qquad\hbox{where $M_n=\max_{x\in I}|f^{(n)}(x)|$}
+\]
+It is easy to get inspiration for what these coefficients should
+be. Suppose
+\[ f(x) = c_0+c_1x+c_2x^2+\cdots \]
+(where we will not worry about matters of convergence and how long the
+dots go on) then filling in
+\[ \hbox{$x=0$ gives $c_0=f(0)$.} \]
+Next, taking the first derivative 
+\[ f'(x) = c_1+2c_2x+3c_3x^2+\cdots \]
+and filling in
+\[ \hbox{$x=0$ gives $c_1=f'(0)$.} \]
+From the second derivative
+\[ f''(x) = 2c_2+6c_3x+\cdots \]
+so filling in $x=0$ gives
+\[ c_2=f''(0)/2. \]
+Similarly, in the third derivative
+\[ \hbox{filling in $x=0$ gives $c_3=\frac1{3!}f^{(3)}(0)$.} \]
+
+Now we need to be a bit more precise. Cauchy's form of Taylor's
+theorem says that
+\[ f(x) = 
+    f(a)+\frac1{1!}f'(a)(x-a)+\cdots+\frac1{n!}f^{(n)}(a)(x-a)^n
+    +R_n(x)
+\]
+where the `rest term' $R_n$ is 
+\[ R_n(x) = \frac1{(n+1)!}f^{(n+1)}(\xi)(x-a)^{n+1}
+    \quad\hbox{where $\xi\in(a,x)$ or $\xi\in(x,a)$ depending.}
+\]
+If $f^{(n+1)}$ is bounded, and $x=a+h$, then the form in which we
+often use
+Taylor's theorem is 
+\[ f(x) = \sum_{k=0}^n \frac1{k!}f^{(k)}(a)h^k+O(h^{n+1}).\]
+We have now approximated the function~$f$ on a certain interval by a
+polynomial, with an error that decreases geometrically with the
+inverse of the degree of the polynomial.
+
+For a proof of Taylor's theorem we use integration by parts. First we
+write
+\[ \int_a^xf'(t)dt=f(x)-f(a) \]
+as
+\[ f(x) = f(a)+\int_a^xf'(t)dt \]
+Integration by parts then gives
+\[
+\begin{array}{r@{=}l}
+  f(x)
+    &f(a)+[xf'(x)-af'(a)]-\int_a^xtf''(t)dt\\
+    &f(a)+[xf'(x)-xf'(a)+xf'(a)-af'(a)]-\int_a^xtf''(t)dt\\
+    &f(a)+x\int_a^xf''(t)dt+(x-a)f'(a)-\int_a^xtf''(t)dt\\
+    &f(a)+(x-a)f'(a)+\int_a^x(x-t)f''(t)dt\\
+\end{array}
+\]
+Another application of integration by parts gives
+\[ f(x)=f(a)+(x-a)f'(a)+\frac12(x-a)^2f''(a)
+    +\frac12 \int_a^x(x-t)^2f'''(t)dt
+\]
+Inductively, this gives us Taylor's theorem with
+\[ R_{n+1}(x) = \frac1{n!}\int_a^x(x-t)^nf^{(n+1)}(t)dt \]
+By the mean value theorem this is
+\[
+\begin{array}{r@{=}l}
+R_{n+1}(x)
+&\frac1{(n+1)!}f^{(n+1)}(\xi)\int_a^x(x-t)^nf^{(n+1)}(t)dt\\
+&\frac1{(n+1)!}f^{(n+1)}(\xi)(x-a)^{n+1}
+\end{array}
+\]
+

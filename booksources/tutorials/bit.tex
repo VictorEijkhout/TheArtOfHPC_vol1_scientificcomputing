@@ -1,0 +1,120 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012/3/4/5
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% bit.tex: tutorial on bitwise operations
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+In most of this book we consider numbers, such as integer or floating
+point representations of real numbers, as our lowest building
+blocks. Sometimes, however, it is necessary to dig deeper and consider
+the actual representation of such numbers in terms of bits.
+
+Various programming languages have support for bit operations.
+We will explore the various options.
+
+\Level 0 {Construction and display}
+
+\Level 1 {C/C++}
+
+The built-in possibilities for display are limited:
+\begin{lstlisting}
+printf("Octal: %o",i);
+printf("Hex  : %x",i);
+\end{lstlisting}
+gives octal and hexadecimal representation, but there is no
+\indexterm{format specifier}
+for binary. Instead use the following bit of magic:
+\begin{lstlisting}
+void printBits(size_t const size, void const * const ptr)
+{
+  unsigned char *b = (unsigned char*) ptr;
+  unsigned char byte;
+  for (int i=size-1; i>=0; i--) {
+      for (int j=7; j>=0; j--) {
+	  byte = (b[i] >> j) & 1;
+	  printf("%u", byte);
+	}
+    }
+}
+/* ... */
+printBits(sizeof(i),&i);  
+\end{lstlisting}
+
+\Level 1 {Python}
+
+\begin{itemize}
+\item The python \pyinline{int} function converts a string to
+  int. A~second argument can indicate what base the string is to be
+  interpreted in:
+\begin{lstlisting}
+five     = int('101',2)
+maxint32 = int('0xffffffff',16)
+\end{lstlisting}
+\item Function \pyinline{bin} \pyinline{hex}
+  convert an int to a string in base 2,8,16 respectively.
+\item Since python integers can be of unlimited length, there is a
+  function to determine the bit length (Python version~3.1):
+  \pyinline{i.bit_length()}.
+\end{itemize}
+
+\Level 0 {Bit operations}
+
+Boolean operations are usually applied to the boolean datatype of the
+programming language. Some languages allow you to apply them to actual
+bits.
+
+\begin{tabular}{|r|lll|}
+  \midrule
+  &boolean&bitwise (C)&bitwise (Py)\\
+  and&\verb+&&+ & \verb+&+ & \verb+&+ \\
+  or &\verb+||+ & \verb+|+ & \verb+|+ \\
+  not&\verb+!+  &          & \verb+~+ \\
+  xor&          & \verb+^+ &          \\
+  \midrule
+\end{tabular}
+
+Additionally, there are operations on the bit string as such:
+
+\begin{tabular}{|r|l|}
+  \midrule
+  left  shift& \verb+<<+ \\
+  right shift& \verb+>>+ \\
+  \midrule
+\end{tabular}
+
+\begin{exercise}
+  \label{tutex:bit-even}
+  Use bit operations to test whether a number is odd or even.
+\end{exercise}
+
+The shift operations are sometimes used as an efficient shorthand for
+arithmetic. For instance, a left shift by one position corresponds to
+a multiplication by two.
+
+\begin{exercise}
+  \label{ex:malloc_align}
+  Given an integer~$n$, find the largest multiple of~8 that is~$\leq
+  n$.
+
+  This mechanism is sometimes used to allocate aligned memory.
+  Write a routine
+\begin{verbatim}
+aligned_malloc( int Nbytes, int aligned_bits );
+\end{verbatim}
+  that allocates \n{Nbytes} of memory, where the first byte has an
+  address that is a multiple of \n{aligned_bits}.
+\end{exercise}
+
+% LocalWords:  Eijkhout

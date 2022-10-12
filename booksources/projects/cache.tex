@@ -1,0 +1,62 @@
+In this project you will build a cache simulator and analyze the cache
+hit/miss behaviour of code, either real or simulated.
+
+\Level 0 {Cache simulation}
+
+A simulated cache is a simple data structure that records for each
+cache address what memory address it contains, and how long the data
+has been present. Design this data structure and write the access
+routines. (Use of an object oriented language is recommended.)
+
+Write your code so that your cache can have various levels of
+associativity, and different replacement policies.
+
+For simplicity, do not distinguish between read and write
+access. Therefore, the execution of a program becomes a stream of
+\begin{verbatim}
+cache.access_address( 123456 );
+cache.access_address( 70543 );
+cache.access_address( 12338383 );
+.....
+\end{verbatim}
+calls where the argument is the memory address. Your code will record
+whether the request can be satisfied from cache, or whether the data
+needs to be loaded from memory.
+
+\Level 0 {Code simulation}
+
+Find some example codes, for instance from a scientific project you
+are involved in, and translate the code to a sequence of memory
+address. 
+
+You can also simulate codes by generating a stream of access
+instructions as above:
+\begin{itemize}
+\item Some access will be to random locations, corresponding to use of
+  scalar variables;
+\item At other times access will be to regularly space addresses,
+  corresponding to the use of an array;
+\item Array operations with indirect addressing will cause prolonged
+  episodes of random address access.
+\end{itemize}
+Try out various mixes of the above instruction types. For the array
+operations, try smaller and larger arrays with various degrees of
+reuse.
+
+Does your simulated code behave like a real code?
+
+\Level 0 {Investigation}
+
+First implement a single cache level and investigate the behaviour of
+cache hits and misses. Explore different associativity amounts and
+different replacement policies.
+
+\Level 0 {Analysis}
+
+Do a statistical analysis of the cache hit/miss behaviour. You can
+start with~\cite{Rao:1978:cache}\footnote{Strictly speaking that paper
+  is about page swapping out of virtual memory
+  (section~\ref{sec:tlb}), but everything translates to cacheline
+  swapping out of main memory.}. Hartstein~\cite{Hartstein:cache-sqrt}
+found a power law behaviour. Are you finding the same?
+

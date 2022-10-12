@@ -1,0 +1,9 @@
+// layer.cpp
+void Layer::forward(const VectorBatch &prevVals) {
+
+	VectorBatch output( prevVals.r, weights.c, 0 );
+    prevVals.v2mp( weights, output );
+	output.addh(biases); // Add the bias
+    activated_batch = output;
+    apply_activation<VectorBatch>.at(activation)(output, activated_batch);
+}

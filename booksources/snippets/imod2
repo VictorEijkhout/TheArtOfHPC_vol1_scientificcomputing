@@ -1,0 +1,8 @@
+// oddeven.c
+  int
+    i_without_unit = (i>>1)<<1;
+  printf("i mod 2: %d\n",i-i_without_unit);
+
+  int
+    last_bit_of_i = i&1;
+  printf("i mod 2: %d\n",last_bit_of_i);

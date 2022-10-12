@@ -1,0 +1,176 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{mdframed,xcolor}
+
+\def\verbatimsnippet#1{\verbatiminput{snippets/#1}}
+\def\cverbatimsnippet  #1{\lverbatimsnippet{#1}{C}}
+\def\cxxverbatimsnippet#1{\lverbatimsnippet{#1}{C++}}
+\def\fverbatimsnippet  #1{\lverbatimsnippet{#1}{Fortran}}
+\def\lverbatimsnippet#1#2{%
+    \IfFileExists
+        {snippets/#1}
+        {\lstinputlisting[language=#2]{snippets/#1}}
+        {\par MISSING SNIPPET #1\par}
+}
+\usepackage{listings,verbatim,xcolor}
+\lstdefinelanguage{CMake}{
+  morekeywords={project,cmake_minimum_required,
+    add_executable,add_library,
+    target_compile_definitions,target_compile_options,
+    target_include_libraries,target_include_directories,
+    target_link_library,target_link_directories,target_link_libraries,
+    target_compile_features,target_sources,
+    add_subdirectory,
+    find_library,find_package,pkg_check_modules,
+    install,math,message,option,set,
+    if,else,elseif,endif,file,while,endwhile,foreach,endforeach,
+    DIRECTORY,DESTINATION,FILES,GLOB,INTERFACE,MATCHES,
+    NOTICE,VERBOSE,FATAL_ERROR,SEND_ERROR,WARNING,AUTHOR_WARNING,DEPRECATION,
+    STATUS,VERBOSE,DEBUG,TRACE,
+    PRIVATE,PUBLIC,REQUIRED,SHARED,TARGETS,TRUE,VERSION,
+    CMAKE_CXX_COMPILER,CMAKE_C_COMPILER,CMAKE_LINKER,
+    CMAKE_CXX_FLAGS,CMAKE_C_FLAGS,CMAKE_LINKER_FLAGS,
+    CMAKE_BUILD_TYPE,CMAKE_CXX_COMPILE_FEATURES,
+    CMAKE_INSTALL_PREFIX,CMAKE_PREFIX_PATH,CMAKE_MODULE_PATH,
+    CMAKE_CURRENT_BINARY_DIR,CMAKE_CURRENT_SOURCE_DIR,CMAKE_SOURCE_DIR,
+    CMAKE_INSTALL_RPATH,CMAKE_INSTALL_RPATH_USE_LINK_PATH,
+    FILES_MATCHING_PATTERNS,
+    LIBRARY_OUTPUT_PATH,
+    PROJECT_SOURCE_DIR,PROJECT_NAME,
+    }
+}
+\lstdefinelanguage{git}{
+  morekeywords={git,add,checkout,clone,commit,remote,revert,
+  log,diff,HEAD,
+    }
+}
+\lstdefinestyle{gitsession}{
+  language=git,
+  basicstyle=\footnotesize\ttfamily,
+  breaklines=true, breakatwhitespace=true,
+  postbreak=\hbox{{$\hookrightarrow$}}, % \textcolor{green}
+}
+\lstset{language=C}
+\lstdefinestyle{reviewcode}{
+  belowcaptionskip=1\baselineskip, breaklines=true,
+  xleftmargin=.5\unitindent, showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\color{red!60!black},
+  identifierstyle=\slshape\color{black},
+  stringstyle=\color{green!60!black}, columns=fullflexible,
+  keepspaces=true, }
+\lstset{style=reviewcode}
+\newcommand\pyinline[1]{\lstset{language=Python}\lstinline{#1}\lstset{language=C}}
+
+\def\codedir{code}
+\newif\ifMakeOut \MakeOutfalse
+\lstdefinestyle{snippetcode}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\color{red!60!black},
+  stringstyle=\bfseries\color{gray!50!black},
+  identifierstyle=\slshape\color{black},
+  columns=fullflexible,
+  keepspaces=true,
+}
+\lstdefinelanguage{verbatim}{keywords=}
+\def\getRunOut#1#2{
+      \ifMakeOut
+        \immediate\write18{
+          cd #1 && make run_#2 > #2.runout 2>&1
+        }
+      \fi
+      \lstinputlisting[language=verbatim,style=snippetcode,frame=none,xleftmargin=0pt]{#1/#2.runout}
+}
+
+\makeatletter
+\newcommand{\answerwithoutput}[3]{
+  \message{Code snippet <#1> in directory <#2> running program <#3>}
+  % go into vertical mode
+  \par
+  % make nice two-column layout
+  \moveright .5\unitindent
+  \hbox{%
+    \begin{minipage}[t]{.6\hsize}
+      \def\verbatim@startline{\verbatim@line{\leavevmode\relax}}
+      \footnotesize\textbf{Code:}
+      \lstset{xleftmargin=0pt}
+      \lstinputlisting{snippets/#1}
+      \lstset{xleftmargin=.5\unitindent}
+    \end{minipage}
+    \begin{minipage}[t]{.3\hsize}
+      { \footnotesize \raggedright \textbf{Output\\\relax [#2] #3:}\par }
+      \getRunOut{#2}{#3}
+    \end{minipage}
+  }
+}
+\newcommand\snippetwithoutput[4][]{
+  \answerwithoutput{#2}{#3}{#4}
+}
+\newcommand\csnippetwithoutput[4][]{
+  \begingroup
+  \lstset{language=C}
+  \answerwithoutput{#2}{#3}{#4}
+  \lstset{language=C}
+  \endgroup
+}
+\newcommand\cxxsnippetwithoutput[4][]{
+  \begingroup
+  \lstset{language=C++}
+  \answerwithoutput{#2}{#3}{#4}
+  \lstset{language=C}
+  \endgroup
+}
+\newcommand{\snippetoutput}[2]{
+  \message{In directory <#1> running program <#2>}
+  % go into vertical mode
+  \par
+  % make nice two-column layout
+  \begin{minipage}[t]{.3\hsize}{%
+      \footnotesize \raggedright \textbf{Output\\\relax [#1] #2:}\par }
+      \getRunOut{#1}{#2}
+  \end{minipage}
+}
+\newcommand{\snippetmakeoutput}[2]{
+  \message{In directory <#1> running program <#2>}
+  % go into vertical mode
+  \par
+  % make nice two-column layout
+  \begin{minipage}[t]{.3\hsize}{%
+      \footnotesize \raggedright \textbf{Output\\\relax [#1] #2:}\par }
+      \getRunOut{#1}{#2}
+  \end{minipage}
+}
+\makeatother
+
+%%%%
+%%%% input file without header
+%%%%
+\newcommand\strippedinput[2]{
+  \immediate\write18{
+    cd #1 && ls #2 
+    && awk 'p==1 && !/codesnippet/ {print} NF==0 {p=1}' #2 > #2.stripped.out
+  }
+  \IfFileExists
+      {#1/#2.stripped.out}
+      {\lstinputlisting{#1/#2.stripped.out}}
+      {\message{Could not strip file #1/#2}\lstset{basicstyle=\tiny\ttfamily} \lstinputlisting{#1/#2}}
+}

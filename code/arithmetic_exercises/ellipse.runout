@@ -1,0 +1,1 @@
+make[1]: *** No rule to make target `vectorlib.h', needed by `ellipse.o'.  Stop.

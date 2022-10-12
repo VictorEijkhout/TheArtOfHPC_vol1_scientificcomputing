@@ -1,0 +1,27 @@
+clang   -g -O2 -std=c99     \
+	    -c expfact.c
+%%%%%%%%%%%%%
+How many terms?
+Computed result from  3 terms: 2.666666746e+00
+  all iterations evaluated
+  recomputed result:           2.666666746e+00
+%%%%%%%%%%%%%
+How many terms?
+Computed result from  5 terms: 2.716666937e+00
+  all iterations evaluated
+  recomputed result:           2.716666698e+00
+%%%%%%%%%%%%%
+How many terms?
+Computed result from 10 terms: 2.718281984e+00
+  all iterations evaluated
+  recomputed result:           2.718281984e+00
+%%%%%%%%%%%%%
+How many terms?
+Computed result from 12 terms: 2.718281984e+00
+  last iteration evaluated: 11
+  recomputed result:           2.718281984e+00
+%%%%%%%%%%%%%
+How many terms?
+Computed result from 15 terms: 2.718281984e+00
+  last iteration evaluated: 11
+  recomputed result:           2.718281984e+00

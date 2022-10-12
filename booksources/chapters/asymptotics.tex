@@ -1,0 +1,143 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+If we ignore limitations such as that the number of processors has to
+be finite, or the physicalities of the  interconnect between them, we can
+derive theoretical results on the limits of parallel computing. This
+section will give a brief introduction to such results, and discuss
+their connection to real life high performance computing.
+
+Consider for instance the matrix-matrix multiplication
+$C=AB$, which takes $2N^3$ operations where $N$ is the matrix
+size. Since there are no dependencies between the operations for the
+elements of~$C$, we can perform them all in parallel. If we had $N^2$
+processors, we could assign each to an $(i,j)$ coordinate in~$C$, and
+have it compute $c_{ij}$ in $2N$ time. Thus, this parallel operation
+has efficiency~$1$, which is optimal.
+
+\begin{exercise}
+  Show that this algorithm ignores some serious issues about memory
+  usage:
+  \begin{itemize}
+  \item If the matrix is kept in shared memory, how many simultaneous
+    reads from each memory locations are performed?
+  \item If the processors keep the input and output to the local
+    computations in  local storage, how much duplication
+    is there of the matrix elements?
+  \end{itemize}
+\end{exercise}
+
+Adding $N$ numbers $\{x_i\}_{i=1\ldots N}$ can be performed in
+$\log_2 N$ time with $N/2$ processors.
+If we have $n/2$ processors we
+could compute:
+\begin{enumerate}
+\item Define $s^{(0)}_i = x_i$.
+\item Iterate with $j=1,\ldots,\log_2 n$:
+\item Compute $n/2^j$ partial sums $s^{(j)}_i=s^{(j-1)}_{2i}+s^{(j-1)}_{2i+1}$
+\end{enumerate}
+We see that the $n/2$ processors perform a total of $n$ operations (as
+they should) in $\log_2n$ time. The efficiency of this parallel scheme
+is~$O(1/\log_2n)$, a slowly decreasing function of~$n$.  
+\begin{exercise}
+  Show that, with the scheme for parallel addition just outlined, you
+  can multiply two matrices in $\log_2 N$ time with $N^3/2$
+  processors. What is the resulting efficiency?
+\end{exercise}
+
+It is now a legitimate theoretical question to ask
+\begin{itemize}
+\item If we had infinitely many processors, what is the lowest
+  possible time complexity for matrix-matrix multiplication, or
+\item Are there faster algorithms that still have $O(1)$ efficiency?
+\end{itemize}
+Such questions have been researched (see for
+instance~\cite{He:surveyparallel}), but they have little bearing on
+high performance computing. 
+
+A first objection to these kinds of theoretical bounds is that they
+implicitly assume some form of shared memory. In fact, the formal
+model for these algorithms is called a \indexac{PRAM}, where the
+assumption is that every memory location is accessible to any
+processor.
+
+Often an additional assumption is made that multiple simultaneous
+accesses to the same location are in fact possible.
+Since write and write accesses have a different behavior
+in practice, there is the concept of
+CREW-PRAM, for Concurrent Read, Exclusive Write PRAM.
+
+The basic assumptions of the PRAM model are
+unrealistic in practice, especially in the context of scaling up the
+problem size and the number of processors. A~further objection to the
+\ac{PRAM} model is that even on a single processor it ignores the
+memory hierarchy; section~\ref{sec:hierarchy}.
+
+But even if we take distributed memory into account, theoretical
+results can still be unrealistic. The above summation algorithm can
+indeed work unchanged in distributed memory, except that we have to
+worry about the distance between active processors increasing as we
+iterate further. If the processors are connected by a linear array,
+the number of `hops' between active processors doubles, and with that,
+asymptotically, the computation time of the iteration. The total
+execution time then becomes~$n/2$, a disappointing result given that
+we throw so many processors at the problem. 
+
+What if the processors are
+connected with a hypercube topology (section~\ref{sec:hypercube})?
+It is not hard to see that the
+summation algorithm can then indeed work in $\log_2n$ time. However,
+as $n\rightarrow\infty$,
+can we physically construct a sequence of hypercubes of $n$ nodes
+and keep the communication time between two connected constant? Since
+communication time depends on latency, which partly depends on the
+length of the wires, we have to worry about the physical distance
+between nearest neighbors.
+
+The crucial question here is whether the hypercube (an $n$-dimensional
+object) can be embedded in 3-dimensional space, while keeping the
+distance (measured in meters) constant between connected neighbors.
+It is easy to see that a 3-dimensional grid can be scaled up
+arbitrarily while maintaining a unit wire length, but the question is
+not clear for a hypercube.  There, the length of the wires may have to
+increase as $n$ grows, which runs afoul of the finite speed of
+electrons.
+
+We sketch a proof (see~\cite{Fisher:fastparallel} for more details)
+that, in our three dimensional world and with a finite speed of light,
+speedup is limited to $\sqrt[4]{n}$ for a problem on $n$ processors,
+no matter the interconnect. The argument goes as follows. Consider an
+operation that involves collecting a final result on one processor. Assume
+that each processor takes a unit volume of space, produces one result
+per unit time, and can send one data item per unit time. Then, in an
+amount of time~$t$, at most the processors in a ball with radius~$t$,
+that is, $O(t^3)$ processors total, can contribute to the
+final result; all others are too far away. In time~$T$, then, the
+number of operations 
+that can contribute to the final result is $\int_0^T
+t^3dt=O(T^4)$. This means that the maximum achievable speedup is the
+fourth root of the sequential time.
+
+Finally, the question `what if we had infinitely many processors' is
+not realistic as such, but we will allow it in the sense that we will
+ask the \indexterm{weak scaling} question (section~\ref{sec:scaling})
+`what if we let the problem size and the number of processors grow
+proportional to each other'. This question is legitimate, since it
+corresponds to the very practical deliberation whether buying more
+processors will allow one to run larger problems, and if so, with what
+`bang for the buck'.
+
+
+% LocalWords:  Eijkhout physicalities

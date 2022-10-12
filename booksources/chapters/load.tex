@@ -1,0 +1,429 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In much of this chapter, we assumed that a problem could be perfectly
+divided over processors, that is, a processor would always be
+performing useful work, and only be \indexterm{idle}
+because of latency in communication. In practice, however, a processor
+may be idle because it is waiting for a message, and the sending
+processor has not even reached the send instruction in its code. Such
+a situation, where one processor is working and another is idle, is
+described as \indextermbus{load}{unbalance}: there is no intrinsic reason
+for the one processor to be idle, and it could have been working if we
+had distributed the work load differently.
+
+There is an asymmetry between processors having too much work and
+having not enough work: it is better to have one processor that
+finishes a task early, than having one that is overloaded so that all
+others wait for it.
+
+\begin{exercise}
+  Make this notion precise. Suppose a parallel task takes time~1 on
+  all processors but one. 
+  \begin{itemize}
+  \item Let $0<\alpha<1$ and let one processor take time
+    $1+\alpha$. What is the speedup and efficiency as function of the
+    number of processors? Consider this both in the Amdahl and
+    Gustafsson sense (section~\ref{sec:amdahl}).
+  \item Answer the same questions if one processor takes time $1-\alpha$.
+  \end{itemize}
+\end{exercise}
+
+Load balancing is often expensive since it requires moving relatively
+large amounts of data. For instance, section~\ref{sec:pspmvp} has an
+analysis showing that the data exchanges during a sparse matrix-vector
+product is of a lower order than what is stored on the
+processor. However, we will not go into the actual cost of moving: our
+main concerns here are to balance the workload, and to preserve any
+locality in the original load distribution.
+
+\Level 1 {Load balancing versus data distribution}
+\label{sec:load-vs-data}
+
+There is a duality between work and data: in many applications
+the distribution of data implies a distribution of work and
+the other way around. If an application updates a large array,
+each element of the array typically `lives' on a uniquely determined
+processor, and that processor takes care of all the updates to that
+element. This strategy is known as \indexterm{owner computes}.
+
+Thus, there is a direct relation between data and work,
+and, correspondingly, data distribution and load balancing go hand in hand.
+For instance, in section~\ref{sec:parallel-dense-mvp} we will talk about
+how data distribution influences the efficiency, but this immediately translates
+to concerns about load distribution:
+\begin{itemize}
+\item Load needs to be evenly distributed. This can often be done by
+  evenly distributing the data, but sometimes this relation is not linear.
+\item Tasks need to be placed to minimize the amount of traffic between them.
+  In the matrix-vector multiplication case this means that a two-dimensional distribution
+  is to be preferred over a one-dimensional one; the discussion about
+  \emph{space-filling curves}\index{space-filling curve} is similarly motivated.
+\end{itemize}
+
+As a simple example of how the data distribution influences the load
+balance, consider a linear array where each point undergoes the same
+computation, and each computation takes the same amount of time.
+If the length of the array,~$N$, is perfectly divisible by the number
+of processors,~$p$, the work is perfectly evenly distributed.
+If the data is not evenly divisible, we start by assigning $\lfloor N/p\rfloor$
+points to each processor, and the remaining $N-p\lfloor N/p\rfloor$
+points to the last processors.
+
+\begin{exercise}
+In the worst case, how unbalanced does that make the processors' work?
+Compare this scheme to the option of assigning $\lceil N/p\rceil$
+points to all processors except one, which gets fewer; see the exercise above.
+\end{exercise}
+
+It is better to spread the surplus $r=N-p\lfloor N/p\rfloor$
+over $r$ processors than one. This could be done by giving one extra
+data point to the first or last $r$ processors. This can be achieved
+by assigning to process~$p$ the range
+\[ \bigl[ p\times \lfloor (N+p-1)/p \rfloor, (p+1)\times \lfloor
+  (N+p-1)/p \rfloor \bigr)
+\]
+While this scheme
+is decently balanced, computing for instance to what processor
+a given point belongs is tricky. The following scheme makes
+such computations easier: let $f(i)=\lfloor iN/p\rfloor$, then processor~$i$
+gets points $f(i)$ up to~$f(i+1)$.
+
+\begin{exercise}
+Show that $\lfloor N/p\rfloor \leq f(i+1)-f(i)\leq \lceil N/p\rceil$.
+\end{exercise}
+
+Under this scheme, the processor that owns index~$i$ is
+$\lfloor (p(i+1)-1)/N \rfloor$.
+
+\Level 1 {Load scheduling}
+\label{sec:load-schedule}
+
+In some circumstances, the computational load can be freely assigned
+to processors, for instance in the context of shared memory where all
+processors have access to all the data. In that case we can consider
+the difference between \indextermsub{static}{scheduling} using a
+pre-determined assignment of work to processors, or
+\indextermsub{dynamic}{scheduling} where the assignment is determined
+during executions.
+
+As an illustration of the merits of dynamic scheduling consider
+scheduling 8~tasks of decreasing runtime on 4~threads
+(figure~\ref{fig:staticdynamic}).
+%
+\begin{figure}[ht]
+  \begin{quote}
+  \includegraphics[scale=.1]{scheduling}
+  \end{quote}
+  \caption{Static or round-robin (left) vs dynamic (right) thread
+    scheduling; the task numbers are indicated.}
+  \label{fig:staticdynamic}
+\end{figure}
+%
+In static scheduling, the first thread gets
+tasks 1~and~4, the second 2 and~5, et cetera. In dynamic scheduling,
+any thread that finishes its task gets the next task. This clearly
+gives a better running time in this particular example. On the other
+hand, dynamic scheduling is likely to have a higher overhead.
+
+\Level 1 {Load balancing of independent tasks}
+
+In other cases, work load is not directly determined by data.
+This can happen if there is a pool of work to be done,
+and the processing time for each work item is not 
+easily computed from its description. In such cases
+we may want some flexibility in assigning work to processes.
+
+Let us first consider the case of a job that can be partitioned into
+independent tasks that do not communicate. An example would be
+computing the pixels of a \indexterm{Mandelbrot set} picture, where
+each pixel is set according to a mathematical function that does not
+depend on surrounding pixels. If we could predict the time it would
+take to draw an arbitrary part of the picture, we could make a perfect
+division of the work and assign it to the processors. This is known as
+\emph{static load balancing}\index{load!balancing,static}.
+
+More realistically, we can not predict the running time of a part of
+the job perfectly, and we use an \indexterm{overdecomposition} of the
+work: we divide the work in more tasks than there are
+processors. These tasks are then assigned to a \indexterm{work pool},
+and processors take the next job from the pool whenever they finish a
+job. This is known as \emph{dynamic load
+  balancing}\index{load!balancing, dynamic}. Many graph and
+combinatorial problems can be approached this way; see
+section~\ref{sec:task-parallel}. For task assignment in a multicore
+context, see section~\ref{sec:multicore-block}.
+
+There are results that show that randomized assignment of tasks to
+processors is statistically close to optimal~\cite{KarpZhang88}, but
+this ignores the aspect that in scientific computing tasks typically
+communicate frequently.
+
+\begin{exercise}
+  Suppose you have tasks $\{T_i\}_{i=1,\ldots,N}$ with running
+  times~$t_i$, and an unlimited number of processors.  Look up
+  \indexterm{Brent's theorem} in section~\ref{sec:critical-path}, and
+  derive from it that the fastest execution scheme for the tasks can
+  be characterized as follows: there is one processor that
+  only executes the task with maximal $t_i$ value.
+  (This exercise was inspired by~\cite{Pospiech2015}.)
+\end{exercise}
+
+\Level 1 {Load balancing as graph problem}
+\label{sec:graph-loadbalancing}
+
+Next let us consider a parallel job where the parts do communicate. In
+this case we need to balance both the scalar workload and the
+communication.
+
+A parallel computation can be formulated as a graph (see
+Appendix~\ref{app:graph} for an introduction to graph theory) where the
+processors are the vertices, and there is an edge between two vertices
+if their processors need to communicate at some point. Such a graph is
+often derived from an underlying graph of the problem being solved.
+As an example consider the matrix-vector product $y=Ax$ where
+$A$~is a sparse matrix, and look in detail at the processor that is
+computing~$y_i$ for some~$i$. The statement $y_i\leftarrow y_i+A_{ij}x_j$
+implies that this processor will need the value~$x_j$, so, if this
+variable is on a different processor, it needs to be sent over.
+
+We can formalize this: Let the vectors $x$ and~$y$ be distributed
+disjointly over the processors, and define uniquely $P(i)$ as the
+processor that owns index~$i$. Then there is an edge $(P,Q)$ if there
+is a nonzero element~$a_{ij}$ with $P=P(i)$ and $Q=P(j)$. This graph
+is undirected in the case of a
+\indextermsub{structurally symmetric}{matrix},
+that is $a_{ij}\not=0\Leftrightarrow a_{ji}\not=0$.
+
+The distribution of indices over the processors now gives us vertex
+and edge weights: a processor has a vertex weight that is the number
+of indices owned by it; an edge $(P,Q)$ has a weight that is the number of
+vector components that need to be sent from~$Q$ to~$P$, as described above.
+
+The load balancing problem can now be formulated as
+follows:
+\begin{quote}
+  Find a partitioning $\bbP=\cup_i \bbP_i$, such the variation in
+  vertex weights is minimal, and simultaneously the edge weights are
+  as low as possible.
+\end{quote}
+Minimizing the variety in vertex weights implies that all processor
+have approximately the same amount of work. Keeping the edge weights
+low means that the amount of communication is low. These two
+objectives need not be satisfiable at the same time: some trade-off is
+likely. 
+
+\begin{exercise}
+  Consider the limit case where processors are infinitely fast and
+  bandwidth between processors is also unlimited. What is the sole
+  remaining factor determining the runtime? What graph problem do you
+  need to solve now to find the optimal load balance? What property of
+  a sparse matrix gives the worst case behavior?
+\end{exercise}
+
+An interesting approach to load balancing comes from spectral graph
+theory (section~\ref{app:fiedler}): if $A_G$ is the adjacency matrix
+of an undirected graph and $D_G-A_G$ the \indextermbus{graph}{Laplacian},
+then the eigenvector~$u_1$ to the smallest eigenvalue zero is
+positive, and the eigenvector $u_2$ to the next eigenvalue is
+orthogonal to it. Therefore $u_2$ has to have elements of alternating
+sign; further analysis shows that the elements with positive sign are
+connected, as are the negative ones. This leads to a natural bisection
+of the graph.
+
+\Level 1 {Load redistributing}
+
+In certain applications an initial load distribution is clear, but
+later adjustments are needed. A~typical example is in \ac{FEM} codes,
+where load can be distributed by a partitioning of the physical
+domain; see section~\ref{sec:par-spmvp}. If later the discretization
+of the domain changes, the load has to be
+\emph{rebalanced}\index{load!rebalancing} or
+\emph{redistributed}\index{load!redistributing}. In the next
+subsections we will see techniques for load balancing and
+rebalancing aimed at preserving locality.
+
+\Level 2 {Diffusion load balancing}
+
+In many practical situations we can associate a
+\indextermbus{processor}{graph} with our problem: there is a vertex
+between any pair of processes that directly interacts through
+point-to-point communication. Thus, it seems a natural thought to use
+this graph in load balancing, and only move load from a processor to
+its neighbors in the graph.
+
+This is the idea by 
+\emph{diffusion}\index{load!balancing!by diffusion} load
+balancing~\cite{Cybenko:1989:balancing,HuBlake:diffusion1999}.
+
+While the graph is not intrinsically directed, for load balancing we
+put arbitrary directions on the edges. Load balancing is then
+described as follows.
+
+Let $\ell_i$ be the
+load on process~$i$, and $\tau^{(j)}_i$ the transfer of load on an edge
+$j\rightarrow i$. Then
+\[ \ell_i \leftarrow \ell_i
+    + \sum_{j\rightarrow i} \tau^{(j)}_i
+    - \sum_{i\rightarrow j} \tau^{(i)}_j
+\]
+Although we just used a $i,j$ number of edges, in practice
+we put a linear numbering the edges. We then get a system
+\[ AT=\bar L \]
+where
+\begin{itemize}
+\item $A$ is a matrix of size $|N|\times|E|$ describing what edges
+  connect in/out of a node, with elements values equal to $\pm1$ depending;
+\item $T$ is the vector of transfers, of size~$|E|$; and
+\item $\bar L$ is the load deviation vector, indicating for each node
+  how far over/under the average load they are.
+\end{itemize}
+
+In the case of a linear processor array this matrix is
+under-determined, with fewer edges than processors, but in most cases the
+system will be over-determined, with more edges than processes.
+Consequently, we solve
+%
+\[ T= (A^tA)\inv A^t\bar L \qquad\hbox{or} T=A^t(AA^t)\inv \bar L. \]
+%
+Since $A^tA$ and $AA^t$ are positive indefinite, we could solve the
+approximately by relaxation, needing only local knowledge.
+Of course, such relaxation has slow convergence, and a global method,
+such as \ac{CG}, would be faster~\cite{HuBlake:diffusion1999}.
+
+\Level 2 {Load balancing with space-filling curves}
+\label{sec:space-filling}
+\index{space-filling curve|(textbf}
+
+In the previous sections we considered two aspects of load balancing:
+making sure all processors have an approximately equal amount of work,
+and letting the distribution reflect the structure of the problem so
+that communication is kept within reason. We can phrase the second
+point trying to preserve the locality of the problem when
+distributed over a parallel machine: points in space that are close together
+are likely to interact, so they should be on the same processor, or
+at least one not too far away.
+
+Striving to preserve locality is not obviously the right strategy. In
+\ac{BSP} (see section~\ref{sec:bsp}) a statistical argument is made
+that \indexterm{random placement} will give a good load balance as
+well as balance of communication.
+
+\begin{exercise}
+  Consider the assignment of processes to processors, where the
+  structure of the problem is such that 
+  each processes only communicates with its
+  nearest neighbors, and let processors be ordered in a
+  two-dimensional grid. If we do the obvious assignment of the process
+  grid to the processor grid, there will be no contention. Now write a
+  program that assigns processes to random processors, and evaluate
+  how much contention there will be.
+\end{exercise}
+
+In the previous section you saw how graph partitioning techniques can
+help with the second point of preserving problem locality. In this
+section you will see a different technique that is attractive both for
+the initial load assignment and for subsequent
+\indextermbus{load}{rebalancing}. In the latter case, a processor's
+work may increase or decrease, necessitating moving some of the load
+to a different processor.
+
+For instance, some problems are adaptively
+refined\index{refinement!adaptive}
+\begin{footnoteenv}
+  {For a detailed
+    discussion, see~\cite{Campbell:octree}.}
+\end{footnoteenv}
+. This is illustrated in
+figure~\ref{fig:octree1}.
+\begin{figure}[ht]
+%  \includegraphics[scale=1]{octree1}
+  \includegraphics[scale=.14]{my_octree1}
+  \caption{Adaptive refinement of a domain in subsequent levels.}
+  \label{fig:octree1}
+\end{figure}
+If we keep track of these refinement levels, the problem gets a tree
+structure, where the leaves contain all the work.
+Load balancing becomes a matter of partitioning the leaves of the
+tree over the processors; figure~\ref{fig:octree2}.
+\begin{figure}[ht]
+%  \includegraphics[scale=1]{octree2}
+  \includegraphics[scale=.18]{my_octree2}
+  \caption{Load distribution of an adaptively refined domain.}
+  \label{fig:octree2}
+\end{figure}
+Now we observe that the problem has a certain locality: the subtrees
+of any non-leaf node are physically close, so there will probably be
+communication between them. 
+\begin{itemize}
+\item Likely there will be more subdomains than processors; to
+  minimize communication between processors, we want each processor to
+  contain a simply connected group of subdomains. Moreover, we want
+  each processor to cover a part of the domain that is `compact' in
+  the sense that it has low aspect ratio, and low surface-to-volume
+  ratio.
+\item When a subdomain gets further subdivided, part of the load of
+  its processor may need to be shifted to another processor. This
+  process of \indextermbus{load}{redistributing} should preserve
+  locality.
+\end{itemize}
+
+To fulfill these requirements we use \acfp{SFC}. A \acf{SFC} for the
+load balanced tree is shown in figure~\ref{fig:octree-sfc}. We will
+not give a formal discussion of \acp{SFC}; instead we
+\begin{figure}[ht]
+%  \includegraphics[scale=1]{octree3}
+  \includegraphics[scale=.18]{my_octree3}
+  \caption{A space filling curve for the load balanced tree.}
+  \label{fig:octree-sfc}
+\end{figure}
+will let figure~\ref{fig:octree3} stand for a definition: a \ac{SFC} is a
+recursively defined curve that touches each subdomain
+once
+\begin{footnoteenv}
+  {\acfp{SFC} were introduced by Peano as a mathematical
+  device for constructing a continuous surjective function from the
+  line segment $[0,1]$ to a higher dimensional cube $[0,1]^d$. This
+  upset the intuitive notion of dimension that `you can not stretch
+  and fold a line segment to fill up the square'. A~proper treatment
+  of the concept of dimension was later given by Brouwer.}
+\end{footnoteenv}
+.
+\begin{figure}[ht]
+  \includegraphics[scale=.08]{my_octree3_evolve}
+  \caption{Space filling curves, regularly and irregularly refined.}
+  \label{fig:octree3}
+\end{figure}
+The \ac{SFC} has the property that domain elements that are close
+together physically will be close together on the curve, so if we map
+the \ac{SFC} to a linear ordering of processors we will preserve the
+locality of the problem. 
+
+More importantly, if the domain is refined by
+another level, we can refine the curve accordingly. Load can then be
+redistributed to neighboring processors on the curve, and we will
+still have locality preserved.
+
+(The use of \acfp{SFC} is N-body problems was
+discussed in~\cite{Warren:1993:hash-octree} and~\cite{Springel:gadget}.)
+
+\index{space-filling curve|)}
+
+
+% LocalWords:  Eijkhout Gustafsson pre overdecomposition multicore CG
+% LocalWords:  Brent's Laplacian FEM discretization rebalanced textbf
+% LocalWords:  rebalancing BSP subdomains subdomain SFC Peano Brouwer
+% LocalWords:  surjective

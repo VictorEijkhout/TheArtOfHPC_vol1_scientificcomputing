@@ -1,0 +1,128 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of slides for
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Summing forces}
+  \includegraphics[scale=.45]{nbody_pic}
+\end{frame}
+
+\begin{frame}{Particle interactions}
+  \begin{tabbing}
+    for \=each particle $i$\\
+    \>for \= each particle $j$\\
+    \>\> let $\bar r_{ij}$ be the vector between $i$ and $j$;\\
+    \>\> then the force on $i$ because of $j$ is\\
+    \>\> $\quad f_{ij} = -\bar r_{ij}\frac{m_im_j}{|r_{ij}|}$\\
+    \>\> (where $m_i,m_j$ are the masses or charges) and\\
+    \>\> $f_{ji}=-f_{ij}$.
+  \end{tabbing}
+\end{frame}
+
+\begin{frame}{Complexity reduction}
+  \begin{itemize}
+  \item Naive all-pairs algorithm: $O(N^2)$
+  \item Clever algorithms: $O(N\log N)$, sometimes even~$O(N)$
+  \item Octree algorithm: Barnes-Hut
+  \end{itemize}  
+\end{frame}
+
+\begin{frame}[fragile]{Dynamic octree creation}
+\small
+\begin{verbatim}
+Procedure Quad_Tree_Build
+    Quad_Tree = {empty}
+    for j = 1 to N  // loop over all N particles
+         Quad_Tree_Insert(j, root)  // insert particle j in QuadTree
+    endfor
+    Traverse the Quad_Tree eliminating empty leaves
+
+Procedure Quad_Tree_Insert(j, n) // Try to insert particle j at node n in Quad_Tree
+    if n an internal node              // n has 4 children
+        determine which child c of node n contains particle j
+        Quad_Tree_Insert(j, c)
+   else if n contains 1 particle   //  n is a leaf
+        add n’s 4 children to the Quad_Tree
+        move the particle already in n into the child containing it
+        let c be the child of n containing j
+        Quad_Tree_Insert(j, c)
+    else                                         //  n empty 
+        store particle j in node n
+    end
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{Octree algorithm}
+  \begin{itemize}
+  \item Consider cells on the top level
+  \item if distance/diameter ratio small enough, take center of mass
+  \item otherwise consider children cells
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \includegraphics[scale=.08]{bh-quadrants-filled}
+  %
+  \includegraphics[scale=.08]{bh-quadrants-ratio}
+\end{frame}
+
+\begin{frame}{Complexity}
+  \begin{itemize}
+  \item Each cell considers `rings' of equi-distant cells
+  \item but at doubling distance
+  \item $c\log N$ cells to consider
+  \item $N\log N$ overall
+  \end{itemize}  
+\end{frame}
+
+\begin{frame}{Computational aspects}
+  \begin{itemize}
+  \item After position update, particles can move to next box: load redistribution
+  \item Naive octree algorithm is formulated for shared memory
+  \item Distributed memory by using inspector-executor paradigm
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Step 1: force by a particle}
+  \begin{tabbing}
+    for \=level $\ell$ from one above the finest to the coarsest:\\
+    \>for \=each cell $c$ on level $\ell$\\
+    \>\>let $g^{(\ell)}_c$ be the \=combination of the $g^{(\ell+1)}_i$
+    for all children $i$ of $c$
+  \end{tabbing}
+\end{frame}
+
+\begin{frame}{Step 2: force on a particle}
+  \begin{tabbing}
+    for \=level $\ell$ from one below the coarses to the finest:\\
+    \>for \=each cell $c$ on level $\ell$:\\
+    \>\>let $f^{(\ell)}_c$ \=be the sum of\\
+    \>\>\>1. the force $f^{(\ell-1)}_p$ on the parent $p$ of $c$, and\\
+    \>\>\>2. the sums $g^{(\ell)}_i$ for \=all $i$ on level $\ell$ that\\
+    \>\>\>\>satisfy the cell opening criterium
+  \end{tabbing}
+\end{frame}
+
+\begin{frame}{All-pairs methods}
+  \begin{itemize}
+  \item Traditional algorithm: distribute particles, allgather, compute
+  \item Problem: allgather has $O(N)\beta$ cost
+  \item does not go down with~$P$, so does not scale weakly
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{itemize}
+  \item Better algorithm: use $\sqrt P\times\sqrt P$ processor grid,
+  \item Divide particles in boxes of $N/\sqrt P$
+  \item Processor $(i,j)$ computes interaction of boxes $i$ and~$j$:
+  \item this requires broadcast (for duplication) and reduction (for
+    summing) in processor rows and columns
+  \item Cost $\beta N\sqrt P$.
+  \end{itemize}
+\end{frame}

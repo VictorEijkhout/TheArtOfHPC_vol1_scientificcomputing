@@ -1,0 +1,12 @@
+    auto mult =
+      [] ( vectorvalue v,matrixvalue m ) -> vectorvalue {
+	if (m==empty) return undefined;
+	else return v;
+      };
+    auto add =
+      [] ( vectorvalue x,vectorvalue y ) -> vectorvalue {
+	if (x==undefined) return y;
+	else return x;
+      };
+    auto shiftedvector = circular.leftmultiply
+      ( unitvector,mult,add );

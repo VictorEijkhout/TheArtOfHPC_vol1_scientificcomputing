@@ -1,0 +1,5 @@
+// bits.c
+  int five = 5;
+  printf("Five=%d, in bits: ",five);
+  printBits(sizeof(five),&five);
+  printf("\n");

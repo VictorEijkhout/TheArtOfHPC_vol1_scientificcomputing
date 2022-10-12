@@ -1,0 +1,2 @@
+// cmalloc2d.c
+  int (*numbers)[cols] = malloc( sizeof(int[rows][cols]) );

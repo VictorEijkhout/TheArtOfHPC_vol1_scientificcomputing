@@ -1,0 +1,6 @@
+void set_corner( int array[][10],int len, int value ) {
+  array[len-1][9] = value;
+}
+  int z[8][10];
+  set_corner( z,8,12 );
+  printf("%d\n",z[7][9]);

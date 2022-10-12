@@ -1,0 +1,14 @@
+// example3.F90
+  do j=1,n
+     xarray(j) = 1.d0
+     do i=1,m
+        matrix(i,j) = 1.d0
+     end do
+  end do
+
+  alpha = 1.d0; beta = 0.d0
+  call dgemv( 'N',M,N, alpha,matrix,M, xarray,1, beta,yarray,1)
+  do i=1,m
+     if (.not.assert_equal( yarray(i),dble(n) )) &
+          print *,"Error in index",i,":",yarray(i)
+  end do

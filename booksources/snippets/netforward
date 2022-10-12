@@ -1,0 +1,8 @@
+// net.cpp
+void Net::feedForward(const VectorBatch &input) {
+    this->layers.front().forward(input); // Forwarding the input
+
+    for (unsigned i = 1; i < layers.size(); i++) {
+        this->layers.at(i).forward(this->layers.at(i - 1).activated_batch);
+    }
+}

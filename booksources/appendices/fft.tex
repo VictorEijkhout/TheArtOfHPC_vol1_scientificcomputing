@@ -1,0 +1,163 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012/3/4/5/
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Let $y(t)$ be a function defined on $(-\infty,\infty)$. If this
+function is built up out of sine and cosine functions
+\[ y(t) = \sum_{k=-\infty}^\infty \alpha_k \sin 2\pi kt
+                + \beta_k \cos 2\pi kt
+\] 
+then we can recover the $\alpha_k,\beta_k$ coefficients from taking
+the inner product with sine and cosine functions:
+\[ (\sin 2\pi nt,\sin 2\pi mt)=0 \quad \hbox{if $n\not=m$} \]
+where the inner product is defined as
+\[ (f,g) = \int_{\-infty}^\infty f(t)g(t)dt \]
+This inspires us to make a transform function~$Y(\omega)$ that
+describes the frequency content in the function~$y(t)$:
+\[ Y(\omega) = \frac 1{\sqrt{2\pi}}
+    \int_{-\infty}^\infty e^{-i\omega T} y(t) dt
+\]
+If we limit $y(t)$ to a measurement interval $(0,T)$ (or we assume
+that the function is periodic on this interval) and we use a discrete
+interval $h=1/N$, giving measurement point $t_k=kh$ and frequencies
+$\omega_n = 2\pi n/Nh$,
+we can approximate
+\[ 
+\begin{array}{r@{=}l}
+  Y(\omega) 
+  & \frac 1{\sqrt{2\pi}} \int_{-\infty}^\infty e^{-i\omega t} y(t) dt\\
+  & \frac 1{\sqrt{2\pi}} \int_0^T e^{-i\omega t} y(t) dt\\
+  & \frac 1{\sqrt{2\pi}} \sum_{k=1}^N  e^{-i\omega_nt_k} y(t_k) h\\
+  & \frac 1{\sqrt{2\pi}} \sum_{k=1}^N  e^{-2\pi ikn/N} y(t_k) h\\
+\end{array}
+\]
+Dividing out $h$ we define
+\[ Y_n = Y(\omega_n)/h = \frac1{\sqrt{2\pi}} 
+        \sum_{k=1}^N y_k e^{-2\pi ikn/N}
+\]
+and the inverse transform
+\[ y(t) = \frac1{\sqrt{2\pi}} \int_{-\infty}^\infty e^{i\omega t}
+    \approx \sum_{n=1}^N \frac{2\pi}{Nh} \frac{e^{i\omega_n
+        t}}{\sqrt{2\pi}}
+    Y(\omega_n).
+\]
+With a complex variable $Z=e^{-2\pi i/N}$ this becomes
+\[ y_k = \frac{\sqrt{2\pi}}N \sum_{n=1}^N Z^{-nk} Y_n, \quad
+    Y_n = \frac1{\sqrt{2\pi}} \sum_{k=1}^N Z^{nk} y_k.
+\]
+
+To motivate the \acf{FFT} algorithm let us consider a concrete example
+with $N=8$. With $Z_n=e^{-2\pi n/8}$ we have that $Z_n=Z_{n+8k}$ and
+$Z_{n+4}=-Z_n$, so we only have to compute 4 $Z_n$ values. The
+computation
+\[ 
+\begin{array}{l}
+  Y_0 = Z_0y_0+Z_0y_1+\cdots\\
+  Y_1 = Z_0y_0+Z_1y_1+Z_2y_2+\cdots\\
+  Y_2 = Z_0y_0+Z_2y_1+Z_4y_2+Z_6y_3+\cdots\\
+  Y_3 = Z_0y_0+Z_3y_1+Z_6y_3+\cdots\\
+  \cdots\\
+  y_7 = Z_0y_1+Z_7y_1+Z_{14}y_2+\cdots
+\end{array}
+\]
+reduces to 
+\[
+\begin{array}{l}
+  Y_0=Z_0y_0+Z_0y_1+Z_0y_2+Z_0y_3+Z_0y_4+Z_0y_5+Z_0y_6+Z_0y_7 \\
+  Y_1=Z_0y_0+Z_1y_1+Z_2y_2+Z_3y_3-Z_0y_4-Z_1y_5-Z_2y_6-Z_3y_7 \\
+  Y_2=Z_0y_0+Z_2y_2-Z_0Y-2-Z_2y_3+Z_0y_4+Z_2y_5-Z_0y_6-Z_0y_7 \\
+  Y_3=Z_0y_0+Z_3y_1-Z_2y_2+Z_1y_3-Z_0y_4-Z_3y_5+Z_2y_6-Z_1y_7 \\
+  Y_4=Z_0y_0-Z_0y_1+Z_0y_2-Z_0y_3+Z_0y_4-Z_0y_5+Z_0y_6-Z_0y_7 \\
+  Y_5=Z_0y_0-Z_1y_1+Z_2y_2-Z_3y_3-Z_0y_4+Z_1y_5-Z_2y_6+Z_3y_7 \\
+  Y_6=Z_0y_0-Z_2y_2-Z_0Y_2+Z_2y_3+Z_0y_4-Z_2y_5-Z_0y_6+Z_0y_7 \\
+  Y_7=Z_0y_0-Z_3y_1-Z_2y_2-Z_1y_3-Z_0y_4+Z_3y_5+Z_2y_6+Z_1y_7 \\
+\end{array}
+\]
+There is a large number of common subexpressions and `almost
+subexpressions'. For instance, note that $Y_0,Y_1$ contain $Z_0y_0\pm
+Z_0y_4$. Next, $Y_0,Y_2$ and $Y_4,Y_6$ contain $(Z_0y_0\pm Z_2y_2) \pm
+(Z_0y_4\pm Z_2y_6)$. Et cetera. Thus, the \ac{FFT} algorithm can be
+built out of an elementary `butterfly'
+\[
+  \left. \begin{array}{r}x\\y\end{array} \right\} 
+    \Rightarrow
+  \left\{ \begin{array}{r}x+y\\x-y\end{array} \right.
+\]
+
+Let $\omega_n$ be the $n$-th root of unity: \[ \omega_n=e^{-2\pi i/n} \]
+which has the property that $\omega_{n/2}=\omega_n^2$.
+
+The Fourier sum
+\[ Y_k=\sum_{j=0}^{n-1} \omega_n^{jk} y_j \]
+If $n$ is even and $k\leq n/2-1$:
+\[
+\begin{array}{r@{{}={}}l}
+Y_k
+&\sum_{\mathrm{even}\,j} \omega_n^{jk} y_j + \sum_{\mathrm{odd}\,j} \omega_n^{jk} y_j \\
+&\sum_{j=0}^{n/2-1} \omega_n^{2jk} y_{2j} + \omega_n \sum_{j=0}^{n/2-1} \omega_n^{2jk} y_{2j+1} \\
+&\sum_{j=0}^{n/2-1} \omega_{n/2}^{jk} y_{2j} + \omega_n \sum_{j=0}^{n/2-1} \omega_{n/2}^{jk} y_{2j+1}
+\end{array}
+\]
+so the length-$n$ Fourier transform consists of two length-$n/2$ transforms and a single multiplication
+by~$\omega_n$.
+
+\endinput
+
+Define 
+\[
+\begin{cases}
+  G_N=e^{\frac{ik}N  2\pi}=\omega_N^k&\omega_N=e^{\frac iN2\pi}\\
+  G_{2N}=e^{\frac{ik}{2N} 2\pi}=\omega_{2N}^k&\omega_{2N}=e^{\frac iN\pi}\\
+\end{cases}
+\]
+For $f\in C(G_{2N})$,
+define $F_a,F_b\in C(G_N)$ by
+\[
+    F_a(\omega^r_N) = f(\omega^{2r}_{2N}),\qquad
+    F_b(\omega^r_N) = f(\omega^{2r+1}_{2N}),
+\]
+Also
+\[
+\begin{cases}
+  E_j(\omega_N^r) = \omega_N^{jr} & E_{j+N}=E_j\\
+  e_k(\omega_{2N}^s) = \omega_{2N}^{sk}\in C(G_{2N})
+\end{cases}
+\]
+\begin{enumerate}
+\item Computing $\omega_{2N}^s$ for $0\leq s<2N$ can be done in $2N$
+  multiplications.
+\item Assuming that the $N$ values of $F_a$ and $F_b$ can be computed
+  in $M$ operations, then the coefficients of $F_a,F_b$ can be
+  computed in $2M$.
+\end{enumerate}
+$O(N)$ time, then:
+\[
+\begin{array}{r@{=}l}
+  \hat f(e_k) = \hat f(\omega^k_{2N})
+    &(2N)\inv \sum_{r=0}^{N-1} f(\omega^r_{2N})e_k(\omega_{2N}^r)\\
+    &(2N)\inv \sum_{r=0}^{N-1} f(\omega^r_{2N})\omega^{rk}_{2N}\\
+    &1/2\left[
+      N\inv\sum_{r=0}^{N-1}f(\omega^{2r}_{2N})\omega^{2rk}_{2N}+
+      N\inv\sum_{r=0}^{N-1}f(\omega^{2r+1}_{2N})\omega^{(2r+1)k}_{2N}
+      \right]\\
+    &1/2\left[ \hat F_a(\omega^k_N) + \omega^k_{2N}\hat
+      F_b(\omega^k_N) \right]\\    
+\end{array}
+\]
+so the $2N$ coefficients of~$f(\omega^k_{2N})$ can also be computed
+in~$O(N)$. Inductively, computing all top level coefficients can be
+computed in $O(N\log N)$ time.
+
+

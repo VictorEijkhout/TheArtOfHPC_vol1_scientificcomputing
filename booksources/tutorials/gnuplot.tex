@@ -1,0 +1,157 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012/3/4/5
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The \indexterm{gnuplot}\index{GNU!gnuplot|see{gnuplot}} utility is a
+simple program for plotting sets of points or curves. This very short
+tutorial will show you some of the basics. For more commands and
+options, see the manual
+\url{http://www.gnuplot.info/docs/gnuplot.html}.
+
+\Level 0 {Usage modes}
+
+The two modes for running \n{gnuplot} are \emph{interactive} and
+\emph{from file}. In interactive mode, you call \n{gnuplot} from the
+command line, type commands, and watch output appear; you terminate an
+interactive session with \n{quit}.  If you want to save the results of
+an interactive session, do \n{save "name.plt"}. This file can be
+edited, and loaded with \n{load "name.plt"}.
+
+Plotting non-interactively, you call \n{gnuplot <your file>}.
+
+The output of \n{gnuplot} can be a picture on your screen, or drawing
+instructions in a file. Where the output goes depends on the setting
+of the \emph{terminal}. By default, \n{gnuplot} will try to draw a
+picture. This is equivalent to declaring
+\begin{verbatim}
+set terminal x11
+\end{verbatim}
+or \n{aqua}, \n{windows}, or any choice of graphics hardware.
+
+For output to file, declare
+\begin{verbatim}
+set terminal pdf
+\end{verbatim}
+or \n{fig}, \n{latex}, \n{pbm}, et cetera. Note that this will only
+cause the pdf commands to be written to your screen: you need to
+direct them to file with
+\begin{verbatim}
+  set output "myplot.pdf"
+\end{verbatim}
+or capture them with
+\begin{verbatim}
+  gnuplot my.plt > myplot.pdf
+\end{verbatim}
+
+\Level 0 {Plotting}
+
+The basic plot commands are \n{plot} for 2D, and \n{splot} (`surface
+plot') for 3D plotting.
+
+\Level 1 {Plotting curves}
+
+By specifying
+\begin{verbatim}
+plot x**2
+\end{verbatim}
+you get a plot of $f(x)=x^2$; \n{gnuplot} will decide on the range
+for~$x$.
+With
+\begin{verbatim}
+set xrange [0:1]
+plot 1-x title "down", x**2 title "up"
+\end{verbatim}
+you get two graphs in one plot, with the $x$~range limited to~$[0,1]$,
+and the appropriate legends for the graphs. The variable~\n{x} is the
+default for plotting functions.
+
+Plotting one function against another --~or equivalently, plotting a
+parametric curve~-- goes like this:
+\begin{verbatim}
+set parametric
+plot [t=0:1.57] cos(t),sin(t)
+\end{verbatim}
+which gives a quarter circle.
+
+To get more than one graph in a plot, use the command \n{set multiplot}.
+
+\Level 1 {Plotting data points}
+
+It is also possible to plot curves based on data points. The basic
+syntax is \n{plot 'datafile'}, which takes two columns from the data
+file and interprets them as $(x,y)$ coordinates. Since data files can often have
+multiple columns of data, the common syntax is \n{plot 'datafile'
+  using 3:6} for columns 3 and~6. Further qualifiers like \n{with
+  lines} indicate how points are to be connected.
+
+Similarly, \n{splot "datafile3d.dat" 2:5:7} will interpret three
+columns as specifying $(x,y,z)$ coordinates for a 3D plot.
+
+If a data file is to be interpreted as level or height values on a
+rectangular grid, do \n{splot "matrix.dat" matrix} for data points;
+connect them with
+\begin{verbatim}
+  split "matrix.dat" matrix with lines
+\end{verbatim}
+
+\Level 1 {Customization}
+
+Plots can be customized in many ways. Some of these customizations use
+the \n{set} command. For instance,
+\begin{verbatim}
+  set xlabel "time"
+  set ylabel "output"
+  set title "Power curve"
+\end{verbatim}
+You can also change the default drawing style with
+\begin{verbatim}
+set style function dots
+\end{verbatim}
+(\n{dots}, \n{lines}, \n{dots}, \n{points}, et cetera), or
+change on a single plot with
+\begin{verbatim}
+plot f(x) with points
+\end{verbatim}
+
+\Level 0 {Workflow}
+
+Imagine that your code produces a dataset that you want to plot, and
+you run your code for a number of inputs. It would be nice if the
+plotting can be automated. Gnuplot itself does not have the facilities
+for this, but with a little help from shell programming this is not
+hard to do.
+
+Suppose you have data files
+\begin{verbatim}
+  data1.dat data2.dat data3.dat
+\end{verbatim}
+and you want to plot them with the same gnuplot commands. You could
+make a file \n{plot.template}:
+\begin{verbatim}
+set term pdf
+set output "FILENAME.pdf"
+plot "FILENAME.dat"
+\end{verbatim}
+The string \n{FILENAME} can be replaced by the actual file names
+using, for instance \n{sed}:
+\begin{verbatim}
+for d in data1 data2 data3 ; do
+  cat plot.template | sed s/FILENAME/$d/ > plot.cmd
+  gnuplot plot.cmd
+done
+\end{verbatim}
+Variations on this basic idea are many.
+
+% LocalWords:  Eijkhout gnuplot plt pbm pdf splot multiplot dat sed
+% LocalWords:  Workflow

@@ -1,0 +1,9 @@
+    for ( int step=0; ; step++ ) {
+      auto stepvector = circular.leftmultiply
+	( distancevector,mult,add );
+      auto olddistances = distancevector;
+      distancevector.addin( stepvector,add );
+      if (not distancevector.different(olddistances))
+	break;
+      cout << "step " << step << ": " << distancevector.str() << "\n";
+    }

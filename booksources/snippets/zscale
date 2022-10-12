@@ -1,0 +1,7 @@
+// zscale.cxx
+extern "C" {
+void zscal_(int*,double complex*,double complex*,int*);
+}
+  complex double *xarray,*yarray, scale=2.;
+  xarray = new double complex[n]; yarray = new double complex[n];
+  zscal_(&n,&scale,xarray,&ione);

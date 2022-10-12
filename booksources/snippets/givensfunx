@@ -1,0 +1,7 @@
+// rotate.cxx
+void rotate(double& x,double& y,double alpha) {
+  double x0 = x, y0 = y;
+  x = cos(alpha) * x0 - sin(alpha) * y0;
+  y = sin(alpha) * x0 + cos(alpha) * y0;
+  return;
+}

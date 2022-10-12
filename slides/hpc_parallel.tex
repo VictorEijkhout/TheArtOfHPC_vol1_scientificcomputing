@@ -1,0 +1,65 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% hpc_parallel.tex : basic theory of parallelism
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{beamer}
+
+\usepackage{beamerthemeTACC}
+\parskip=.5\baselineskip plus .5\baselineskip
+\input semester
+%\beamertemplatenavigationsymbolsempty
+
+\usepackage{pslatex}
+\usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
+
+%\setbeamertemplate{footline}{Eijkhout: HPC intro}
+
+\newdimen\unitindent \unitindent=20pt
+
+\input slidemacs
+\input snippetmacs
+\input scimacs
+
+\excludecomment{answer}
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{What is parallelism?}
+\author{\hpcteachers}
+\date{\hpcsemester}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Justification}
+  Parallel computing has been a necessity for decades in computational science.
+  Here we discuss some of the basic concepts.
+  Actual parallel programming will be discussed in other lectures.
+\end{frame}
+
+\input Parallelism-slides
+
+\end{document}
+
+\begin{frame}[containsverbatim]{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\begin{lstlisting}
+\end{lstlisting}
+\end{frame}
+

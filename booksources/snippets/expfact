@@ -1,0 +1,11 @@
+// expfact.c
+  float partial_sum=1., inverse_factorial=1.;
+  int last_iteration=0; float last_partial_sum=0.;
+  for (int term=1; term<=how_many_terms; term++) {
+    inverse_factorial /= (float)(term);
+    float old_partial_sum = partial_sum;
+    partial_sum += inverse_factorial;
+    if (partial_sum==old_partial_sum && last_iteration==0) {
+      last_iteration = term; last_partial_sum = partial_sum;
+    }
+  }

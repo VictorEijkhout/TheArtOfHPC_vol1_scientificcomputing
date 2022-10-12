@@ -1,0 +1,83 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012/3/4/5
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A good text editor is an indispensable tool for any
+programmer\footnote {Alternatively, you could use an \acf{IDE} such as
+\indexterm{Visual Studio} or \indexterm{Eclipse}, but they are
+usually harder to customize, not installed on every system, et
+cetera. Really: make sure that you learn at least one common text
+editor.}. In this tutorial you will learn the basics of the two most
+common Unix editors: \indexterm{vi} and \indexterm{emacs}.
+
+\Level 0 {Vi}
+\index{vi|(textbf}
+
+\begin{purpose}
+  In this section you will learn the basics of text editing with `vi'.
+\end{purpose}
+
+Good set of
+tips: \url{https://www.cs.oberlin.edu/~kuperman/help/vim/home.html}
+
+The vi editor (pronounced `vee-eye', not `vai') has a `modal' setup:
+you are either in input mode, where what you type becomes part of your
+file, or you are in edit mode, where your typing is interpreted as
+commands.
+
+\Level 1 {Indentation}
+
+Decent settings for new files:
+\begin{verbatim}
+set smartindent
+set shiftwidth=2
+syntax on
+\end{verbatim}
+
+The command \n{[[=]]} applies the right indentation to the block
+surrounding the cursor position.
+
+\index{vi|)}
+
+\Level 0 {Emacs}
+
+\begin{purpose}
+  In this section you will learn the basics of text editing with `emacs'.
+\end{purpose}
+
+The emacs is always in input mode: ordinary characters you type become
+part of the file you are currently editing. To execute commands you
+need the `Control' and `Escape' (for historical reasons often called
+`Meta') keys.
+
+\Level 1 {Indentation}
+
+Emacs can usually detect the proper indentation scheme from the
+name or extension of your file, and it will go into the appropriate
+mode automatically. You can also force the mode explicitly by \n{Esc x
+  latex-mode} and similar commands.
+
+However, a file does not remember its mode, so if emacs can not deduce
+the mode of your file, put a line
+\begin{verbatim}
+// -*- c++ -*-
+\end{verbatim}
+at the top of your file. The first non-blank character(s) of this line
+are chosen to make it a comment in the language of a file. For
+example, to indicate that a \TeX\ file is for \LaTeX, you would use
+\begin{verbatim}
+% -*- latex -*-
+\end{verbatim}
+
+% LocalWords:  Eijkhout IDE textbf vee vai Esc

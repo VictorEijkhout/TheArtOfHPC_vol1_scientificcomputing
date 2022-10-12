@@ -1,0 +1,68 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-9
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% hpc_linear.tex : linear algebra
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{beamer}
+
+\beamertemplatenavigationsymbolsempty
+\usepackage{beamerthemeTACC}
+\parskip=.5\baselineskip plus .5\baselineskip
+\event{STC 335/394}
+\def\hpcsemester{Fall 2019}
+\def\hpcteachers{Victor Eijkhout}
+
+\usepackage{pslatex}
+\usepackage{amsmath,arydshln,comment,multirow,multicol}
+
+\newdimen\unitindent \unitindent=20pt
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{Last week's homework}
+\author{\hpcteachers}
+\date{\hpcsemester}
+
+\begin{frame}{Recurrence}
+  \[ x_{n+1}=f(x_n) = \
+  \begin{cases}
+    2x_n&\hbox{if $2x_n<1$}\\
+    2x_n-1&\hbox{if $2x_n\>1$}\\
+  \end{cases}
+  \]
+\end{frame}
+
+\begin{frame}{Analysis}
+  Multiply by two:
+  \[ 
+  \begin{array}{rll}
+    &1.d_1\cdots d_t&\times 2^n\quad\hbox{$n<0$}\\
+    \times 2\colon&1.d_1\cdots d_t&\times 2^{n'}\quad\hbox{$n'=n+1<1$}\\
+  \end{array}
+  \]
+  Cases:
+  \[ 
+  \begin{array}{rlll}
+    n'<0\colon&             1.d_1\cdots d_t&    \times 2^n&    \hbox{done}\\
+    n'=0\colon&             1.d_1\cdots d_t&    \times 2^n&    \hbox{is more than one}\\
+    \hbox{subtract~1}\colon&0.d_1\cdots d_t&    \times 2^n&    \hbox{is unnormalized}\\
+    \hbox{normalize}\colon& d_1.d_2\cdots d_t0& \times 2^{n-1}&\hbox{if $d_1\not=0$}\\
+    &                       d_2.d_3\cdots d_t00&\times 2^{n-2}&\hbox{if $d_1\not=0$}\\
+  \end{array}
+  \]
+  Every time $2x_n>1$ you lose at least one significant digit.
+\end{frame}
+
+\end{document}

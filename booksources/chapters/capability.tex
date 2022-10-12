@@ -1,0 +1,43 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Large parallel computers can be used in two different ways. In later
+chapters you will see how scientific problems can be scaled up almost
+arbitrarily. This means that with an increasing need for accuracy or
+scale, increasingly large computers are needed. The use of a whole
+machine for a single problem, with only time-to-solution as the
+measure of success, is known as \indexterm{capability computing}.
+
+On the other hand, many problems need less than a whole supercomputer
+to solve, so typically a computing center will set up a machine so
+that it serves a continuous stream of user problems, each smaller than
+the full machine. In this mode, the measure of success is the
+sustained performance per unit cost. This is known as
+\indexterm{capacity computing}, and it requires a finely tuned
+\indextermsub{job}{scheduling} strategy. 
+
+A~popular scheme is
+\indextermsub{fair-share}{scheduling}, which tries to allocate resources
+equally between users, rather than between processes. This means
+that it will lower a user's priority if the user had recent jobs, and it will 
+give higher priority to short or small jobs. Examples of schedulers 
+on this principle are \indexterm{SGE} and \indexterm{Slurm}.
+
+Jobs can have dependencies, which makes scheduling harder. In fact,
+under many realistic conditions scheduling problems are
+\indexterm{NP-complete}, so in practice heuristics will be used.
+This topic, while interesting, is not further discussed in this book.
+
+% LocalWords:  Eijkhout SGE Slurm NP

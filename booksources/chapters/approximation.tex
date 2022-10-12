@@ -1,0 +1,149 @@
+\Level 0 {Problem statement} 
+
+  Given a set of points $(x_i,f_i)$ where $f_i=f(x_i)$ for some
+  function~$f$, we want to approximate~$f$ in some range.
+
+  Approximate by known functions: $F(x)=\Sigma_{j=1}^mc_j\phi_j(x)$\\
+  objective: $F(x)$ should be ``close to $f(x)$''\\
+  (note: $m$ can be different from $n$)
+
+  \begin{itemize}
+  \item Fit data to a model
+  \item Approximate uncomputable quantities such as integrals
+  \item Approximate expensive computation (trig functions) by
+    something simpler, for instance table lookup plus interpolation.
+  \end{itemize}
+
+\Level 1 {Pointwise approximation}
+
+  From \[ f_i=F(x_i)=\Sigma_{j=1}^nc_j\phi_j(x_i) \qquad i=1,\ldots,n \]
+  $n$ equations with $m$ unknowns:
+  \[ M \utilde c = \utilde f,\quad M_{ij}=\phi_j(x_i) \]
+
+  \begin{itemize}
+  \item $n=m$: square matrix, can be solved if the $\phi_j$ linearly independent
+  \item $n\not=m$: over or underdetermined system; for instance solve
+    \[ M^tM \utilde c = M^t \utilde f \]
+  \end{itemize}
+
+\Level 1 {Approximation in norm}
+
+  Minimize the error between $f$ and~$F$:
+  \[ \min_{\utilde c} \frac12 \Sigma_{i=1}^n (F_i-f_i)^2 \quad\Rightarrow\quad
+  \forall_{k=1,\ldots,m}\colon \frac\partial{\partial c_k}E=0
+  \]
+  \def\pck{\frac\partial{\partial c_k}}
+  \begin{eqnarray*}
+    \pck E&=&\pck \left(\frac12\Sigma_{i=1}^n(F_i-f_i)^2\right)
+    = \frac12 \Sigma_{i=1}^n \pck (F_i-f_i)^2
+    = \frac12 \Sigma_{i=1}^n \left[2(F_i-f_i)\pck (F_i-f_i)\right ]\\
+    &=&\Sigma_{i=1}^n\left[(F_i-f_i)\pck F_i\right]
+    = \Sigma_{i=1}^n\left[ (F_i-f_i)\left(
+        \pck \sigma_{j=1}^m c_j\phi_j(x_i) \right) \right ]\\
+    &=& \Sigma_{i=1}^n[(F_i-f_i)\phi_k(x_i)]
+    = \Sigma_{i=1}^n\left[ \left( \Sigma_{j=1}^m c_j\phi_j(x_i)-f_i \right)
+      \phi_k(x_i) \right]\\
+    &=& \Sigma_{i=1}^n\Sigma_{j=1}^m \phi_j(x_i)\phi_k(x_i)
+    - \Sigma_{i=1}^m f_i\phi_k(x_i) = 0\\
+    &\Leftrightarrow&M^tM\utilde c=M^t\utilde f
+  \end{eqnarray*}
+
+\Level 0 {Mechanisms}
+
+\Level 1 {Choice of $\phi_i$ functions}
+  The $\phi_i$ functions need to be independent,\\
+  desirable to span ever larger polynomial spaces
+
+  Easiest choice $\phi_i(x)=x^i-1$ gives matrix
+  \[
+  \left(\begin{matrix}
+    1&x_1&x_1^2&\cdots&x_1^{m-1}\\ 1&&&&x_2^{m-1}\\ \vdots&&&&\vdots\\
+    1&x_n&x_n^2&\cdots&x_n^{m-1}
+  \end{matrix}\right)
+  \]
+  Vandermonde matrix: very badly conditioned
+
+\Level 1 {Lagrange interpolation}
+  
+  Match basis functions to individual interpolation points: let $m=n$ and
+  \[ \ell_j(x_i)=
+    \begin{cases}
+      0&j\not=i\\ 1&j=i
+    \end{cases}
+  \]
+  Then $F(x)=\Sigma_{j=1}^m f_j\phi_j(x)$\\
+  (Equation $M\utilde c=\utilde f$ now diagonal matrix)
+
+  Implementation:
+  \[ \ell_j(x)=\frac{\Pi_{k\not=j}(x-x_k)}{\Pi_{k\not=j}(x_j-x_k)} \]
+
+
+\Level 1 {Error of Lagrange interpolation}
+
+  \begin{itemize}
+  \item If $f$ (the function to be approximated) is a polynomial of
+    degree~$\leq m$, $F\equiv f$.
+  \item If $f$ is of higher degree:
+    \[ (F-f)(x)=\frac{f^{(n)}(\xi)}{n!}(x-x_1)\cdots(x-x_n) \]
+    derivatives bounded $\Rightarrow$ error goes down
+  \end{itemize}
+  % how do you prove that?
+
+
+\Level 1 {Newton's method for interpolation}
+
+Instead of direct construction, use induction
+\begin{itemize}
+\item Zeroth degree polynomial through one point $(x_1,y_1)$:
+\[ p_1(x)=y_1 \]
+\item First degree polynomial through two points:
+\[ p_2(x) = p_1(x)+c_2(x-x_1) \]
+then automatically $p_2(x_1) = p_1(x_1)=y_1$. Furthermore
+\[ p_2(x_2)=p_1(x_2)+c_2(x_2-x_1)\quad\Rightarrow\quad c_2=\ldots \]
+\item General: suppose $p_n(x_i)=y_i$ for $i\leq n$; define
+\[ p_{n+1}(x)=p_n(x)+c_{n+1}(x-x_1)\cdots(x-x_n) \]
+then $p_{n+1}(x_i)=p_n(x_i)$ for $i\leq n$, and
+from $p_{n+1}(x_{n+1})=y_{n+1}$ we get~$c_{n+1}$.
+\end{itemize}
+How does this relate to Lagrange interpolation?
+
+
+\Level 1 {Evaluation of newton polynomial}
+
+Naive evaluation:
+  $\mathop{\mathrm{cost}}(p_{n+1}(x))=2n+\mathop{\mathrm{cost}}(p_n(x))$:
+  quadratic in~$n$; this should of course be linear.
+\begin{itemize}
+\item Write
+\begin{eqnarray*}p_3&=&p_2+c_3(x-x_1)(x-x_2)\\
+&=&p_1+c_2(x-x_1)+c_3(x-x_1)(x-x_2)\\
+&=&y_1+(x-x_1)\bigl(c_2+c_3(x-x_2)\bigr)
+\end{eqnarray*}
+\item Similar:
+\[ p_4=y_1+(x-x_1)\left(c_2+(x-x_2)\bigl(c_3+c_4(x-x_3)\bigr)\right)\]
+et cetera. Now the cost is linear.
+\end{itemize}
+
+
+\Level 1 {Hermite interpolation}
+
+  Same idea as Lagrange, but now also matching derivatives:
+  \[ \forall_{i,j}\colon h_j(x_i)=0; \qquad
+  h'_j(x_i)=
+  \begin{cases}
+    0&j\not=i\\ 1&j=i
+  \end{cases}
+  \]
+  Implementation: \[ h_j(x)=\alpha_j(x-x_j)\Pi_{k\not=j}(x-x_k)^2 \]
+  Combination of Lagrange and Hermite interpolation for values and derivatives
+
+
+\Level 0 {More interpolation}
+
+  Certain choices of $x_i$ lead to higher accuracy: ``Gauss quadrature points''
+
+  Other norms lead to other basis functions, for instance
+  \[ \min_F \int_0^1 w(x)(F(x)-f(x))^2\,dx \]
+
+  Orthogonal polynomials: $\langle \phi_i,\phi_j\rangle=\delta_{ij}$.
+

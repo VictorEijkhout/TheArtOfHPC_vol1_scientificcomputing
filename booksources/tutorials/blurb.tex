@@ -1,0 +1,129 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In the theory part of this book you learned mathematical models can be
+translated to algorithms that can be realized efficiently on modern
+hardware. You learned how data structures and coding decisions
+influence the performance of your code. In other words, you should now
+have all the tools to write programs that solve scientific problems.
+
+This would be all you would need to know,
+if there was any guarantee that a correctly derived algorithm and
+well designed data structure could immediately be turned into a
+correct program.
+Unfortunately, there is more to scientific programming than that.
+A~good part of being an effective practitioner
+of High Performance Scientific Computing is
+what can be called `HPC Carpentry':
+a~number of skills that are not scientific in nature,
+but that are still indispensable to getting your work done.
+
+The vast majority of
+scientific programming is done on the Unix platform so we start out
+with a tutorial on Unix in chapter~\ref{tut:unix}, followed by an
+explanation of the how your code is handled by compilers and linkers
+and such in chapter~\ref{tut:compile}.
+
+Next you will learn about some tools that will increase your
+productivity and effectiveness: 
+\begin{itemize}
+\item The \emph{Make} utility is used for managing the building of
+  projects; chapter~\ref{tut:gnumake}.
+\item Source control systems store your code in such a way that you
+  can undo changes, or maintain multiple versions; in
+  chapter~\ref{tut:git} you will see the \emph{subversion} software.
+\item Storing and exchanging scientific data becomes an important
+  matter once your program starts to produce results; in
+  chapter~\ref{tut:hdf5} you will learn the use of \emph{HDF5}.
+\item Visual output of program data is important, but too wide a topic
+  to discuss here in great detail; chapter~\ref{tut:gnuplot} teaches
+  you the basics of the \emph{gnuplot} package, which is suitable for
+  simple data plotting.
+\end{itemize}
+
+We also consider the activity of program development itself:
+chapter~\ref{tut:coding} considers how to code to prevent errors, and
+chapter~\ref{tut:debug} teaches you to debug code with
+\emph{gdb}. 
+\begin{notready}
+Chapter~\ref{tut:performance} discusses measuring the
+performance of code.
+\end{notready}
+Chapter~\ref{tut:language} contains some information on
+how to write a program that uses more than one programming language.
+
+Finally, chapter~\ref{tut:latex} teaches you about the \LaTeX{}
+document system, so that you can report on your work in beautifully
+typeset articles.
+
+Many of the tutorials are very hands-on. Do them while sitting at a
+computer!
+
+\begin{table}[t]
+  \setcounter{lesson}{0}
+  \rightskip=0pt plus 1fil\relax
+  \setbox0=\hbox{homework }\edef\colwidth{.7in}%{\the\wd0}
+  % using array, which is incompatible somehow: >{\raggedright\arraybackslash}
+  \begin{tabular}{lp{\colwidth}p{\colwidth}p{\colwidth}p{\colwidth}p{\colwidth}p{\colwidth}}
+    \toprule % \hline
+    &&&&\multicolumn{2}{c}{Exercises}\\
+    \cmidrule{5-6}
+    lesson&Topic&Book&Slides&in-class&homework\\
+    \midrule % \hline
+
+    %%
+    \stepcounter{lesson}\arabic{lesson}
+    &Unix &\ref{tut:unix} &unix&&\ref{tut:ex:plagiarism}\\
+
+    %%
+    \stepcounter{lesson}\arabic{lesson}
+    &Git &\ref{tut:git} &\\
+
+    %%
+    \stepcounter{lesson}\arabic{lesson}
+    &Programming &\ref{tut:compile} &programming&\ref{ex:compile3}&\ref{ex:givens-optimize}\\
+
+    %%
+    \stepcounter{lesson}\arabic{lesson}
+    &Libraries &\ref{tut:compile} &programming\\
+
+    %%
+    \stepcounter{lesson}\arabic{lesson}
+    &Debugging &\ref{tut:debug} &&&root code\\
+
+    %%
+    \stepcounter{lesson}\arabic{lesson}
+    &Debugging &\ref{tut:} &\\
+
+    %%
+    \stepcounter{lesson}\arabic{lesson}
+    &\LaTeX{} &\ref{tut:latex} &&&\ref{ex:latex-doc}\\
+
+    %%
+    \stepcounter{lesson}\arabic{lesson}
+    &Make &\ref{tut:gnumake} &&&\ref{ex:make-main-lib}, \ref{ex:make-main-lib-f}\\
+
+    \bottomrule % \hline
+  \end{tabular}
+\caption{Timetable for the carpentry section of an HPC course.}
+\label{tab:carpentry}
+\end{table}
+
+Table~\ref{tab:carpentry} gives a proposed lesson outline for the carpentry section
+of a course.
+The article by Wilson~\cite{Wilson:bestpractices} is a good read
+on the thinking behind this `HPC carpentry'.
+
+% LocalWords:  Eijkhout HPC HDF gnuplot gdb

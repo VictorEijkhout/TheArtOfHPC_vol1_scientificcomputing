@@ -1,0 +1,6 @@
+// cansi.c
+void set_pointer( int *array, int loc, int value ) {
+  array[loc] = value;
+}
+  set_pointer(x,2,1);
+  printf("%d\n",x[2]);

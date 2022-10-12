@@ -1,0 +1,62 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Lattice Boltzmann methods}
+
+\acfp{LBM}\footnote{This chapter owes much to the presentation
+  in~\cite{ChenDoolen:LBM}.}  offer a different way of computing a
+discretized solution to a \ac{PDE}, based on dividing a domain in
+cells. Its basic idea is then to wonder `if there is a particle in
+this cell, and given the force on this cell, where does he particle
+move to?'. Rather than reasoning about actual particles, the \ac{LBM}
+considers the probability that there is a particle in a cell, and how
+that probability is updated.
+
+Distribution function~$f$ (or particle velocity distribution, just
+under equation~2?).  For each cell~$i$
+\[ f_i(\mathbf{x}+\mathbf{e}_i\Delta x,t+\Delta t) 
+    = f_i(\mathbf{x},t)+\Omega_i(f(\mathbf{x},t)).
+\]
+where $\Omega_i$ is the collision operator giving
+the rate of change of the distribution function~$f_i$.
+
+Density: $\rho=\sum_i f_i$,
+momentum density: $\rho\mathbf{u}=\sum_if_i\mathbf{e}_i$.
+
+Conservation of mass $\sum_i\Omega_i=0$
+conservation of momentum $\sum_i\Omega_i\mathbf{e}_i=0$
+
+
+Basic equation, second order in~$\epsilon$:
+\[
+  \frac{\partial f_i}{\partial t} + \mathbf{e}_i\cdot \nabla f_i +
+  \epsilon\left(
+    \frac12 \mathbf{e}_e\mathbf{e}_i\colon \nabla\nabla f_i +
+    \mathbf{e}_i\cdot\frac{\partial f_i}{\partial t} +
+    \frac12 \frac{\partial^2f_i}{\partial t^2}
+  \right) = \frac{\Omega_i}{\epsilon}
+\]
+
+
+\Level 0 {Hartree-Fock / Density Functional Theory}
+
+Replace particle-particle interactions with computing a field: 
+repeat until field is self-consistent.
+
+Field is matrix-valued
+
+Repeated diagonalization of the Kohn-sham matrix.
+

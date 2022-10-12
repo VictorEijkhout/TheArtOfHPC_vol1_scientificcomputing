@@ -1,0 +1,262 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{red-black ordering|(}
+\index{matrix ordering!red-black dissection|see{red-black ordering}}
+
+Parallelism can be achieved in sparse matrices by using graph coloring
+(section~\ref{sec:independent}). Since a `color' is defined as points
+that are only connected to other colors, they are by definition
+independent of each other, and therefore can be processed in
+parallel. This leads us to the following strategy:
+\begin{enumerate}
+\item Decompose the adjacency graph of the problem into a small number
+  of independent sets, called `colors';
+\item Solve the problem in a number of sequential steps equal to the
+  number of colors; in each step there will be large number of
+  independently processable points.
+\end{enumerate}
+
+\Level 2 {Red-black coloring}
+\label{sec:red-black}
+
+We start with a simple example, where we consider a tridiagonal
+matrix~$A$. The equation $Ax=b$ looks like
+\[ 
+\begin{pmatrix}
+  a_{11}&a_{12}&&&&\emptyset\\ a_{21}&a_{22}&a_{23}\\ 
+  &a_{32}&a_{33}&a_{34}\\ \emptyset&&\ddots&\ddots&\ddots
+\end{pmatrix}
+\begin{pmatrix}  x_1\\ x_2\\ x_3\\ \vdots\end{pmatrix} =
+\begin{pmatrix}  y_1\\ y_2\\ y_3\\ \vdots\end{pmatrix}
+\]
+We observe that $x_i$ directly depends on $x_{i-1}$ and~$x_{i+1}$, but
+not $x_{i-2}$ or~$x_{i+1}$. Thus, let us see what happens if we
+permute the indices to group every other component together.
+
+Pictorially, we take the points $1,\ldots,n$ and color them red and
+black (figure~\ref{fig:red-black-1d}), then we permute them to first
+\begin{figure}
+  \begin{quote}
+    \includegraphics[scale=.12]{red-black-1d}
+  \end{quote}
+  \caption{Red-black ordering of a the points on a line.}
+  \label{fig:red-black-1d}
+\end{figure}
+take all red points, and subsequently all black ones.
+The correspondingly permuted matrix looks as follows:
+\[ 
+\begin{pmatrix}
+  a_{11}&&&&a_{12}\\ &a_{33}&&&a_{32}&a_{34}\\ &&a_{55}&&&\ddots&\ddots\\
+  &&&\ddots\\
+  a_{21}&a_{23}&&&a_{22}\\ &a_{43}&a_{45}&&&a_{44}\\ &&\ddots&\ddots&&&\ddots
+\end{pmatrix}
+\begin{pmatrix}  x_1\\ x_3\\ x_5\\ \vdots\\ x_2\\ x_4\\ \vdots\end{pmatrix} =
+\begin{pmatrix}  y_1\\ y_3\\ y_5\\ \vdots\\ y_2\\ y_4\\ \vdots\end{pmatrix}
+\]
+With this permuted $A$, the Gauss-Seidel matrix $D_A+L_A$ looks like
+\[ 
+\begin{pmatrix}
+  a_{11}&&&&\emptyset\\ &a_{33}\\ &&a_{55}\\
+  &&&\ddots\\
+  a_{21}&a_{23}&&&a_{22}\\ &a_{43}&a_{45}&&&a_{44}\\ &&\ddots&\ddots&&&\ddots
+\end{pmatrix}
+\]
+What does this buy us? Well, let's spell out the solution of a system
+$Lx=y$.
+
+\begin{displayalgorithm}
+  \For{$i=1,3,5,\ldots$}{solve $x_i\leftarrow y_i/a_{ii}$}
+  \For{$i=2,4,6,\ldots$}{compute $t=a_{ii-1}x_{i-1}+a_{ii+1}x_{i+1}$
+    \; solve $x_i\leftarrow (y_i-t)/a_{ii}$
+  }
+\end{displayalgorithm}
+
+Apparently the algorithm has three stages that are each parallel over
+half the domain points. This is illustrated in
+figure~\ref{fig:1d-rb-solve}.
+\begin{figure}[ht]
+  \includegraphics[scale=.1]{red-black-1d-solve}
+  \caption{Red-black solution on a 1d domain.}
+  \label{fig:1d-rb-solve}
+\end{figure}
+Theoretically we could accommodate a number of processors that is half
+the number of the domain points, but in practice each processor will
+have a subdomain. Now you can see in figure~\ref{fig:1d-rb-solve-par}
+how this causes a very modest amount of communication: each processor
+sends at most the data of two red points to its neighbors.
+\begin{figure}[ht]
+  \includegraphics[scale=.1]{red-black-1d-solve-par}
+  \caption{Parallel red-black solution on a 1d domain.}
+  \label{fig:1d-rb-solve-par}
+\end{figure}
+
+\begin{exercise}
+  Argue that the adjacency graph here is a \indextermsub{bipartite}{graph}.
+  We see that such graphs (and in general, colored graphs) are associated with parallelism.
+  Can you also point out performance benefits for non-parallel processors?
+\end{exercise}
+
+Red-black ordering can be applied to two-dimensional problems too.
+Let us apply a red-black ordering to the points $(i,j)$ where $1\leq
+i,j\leq n$.
+Here we first apply a successive numbering to the odd
+points on the first line $(1,1),(3,1),(5,1),\ldots$, then the even
+points of the second line $(2,2),(4,2),(6,2),\ldots$, the odd points
+on the third line, et cetera. Having thus numbered half the points in
+the domain, we continue with the even points in the first line, the
+odd points in the second, et cetera.
+\begin{figure}[ht]
+  \begin{quote}
+    \includegraphics[scale=.12]{redblack}
+  \end{quote}
+  \caption{Red-black ordering of the variables of a two-dimensional
+    domain.}
+  \label{fig:redblack}
+\end{figure}
+As you can see in figure~\ref{fig:redblack}, now the red points are
+only connected to black points, and the other way around. In graph
+theoretical terms, you have found a \indexterm{coloring} 
+(see appendix~\ref{app:graph} for the definition
+of this concept) of the matrix graph with two colors.
+
+\begin{exercise}
+  Apply the red-black ordering to the 2D \ac{BVP} \eqref{eq:laplace}.
+  Sketch the resulting matrix structure.
+\end{exercise}
+
+The red-black ordering is a simple
+example of \indextermbus{graph}{coloring} (sometimes called
+\indexterm{multi-coloring}). In
+simple cases, such as the unit square domain we considered in
+section~\ref{sec:2dbvp} or its extension to 3D,
+the \indexterm{color number} of the adjacency graph is readily determined;
+in less regular cases it is harder.
+
+\begin{exercise}
+  You saw that a red-black ordering of unknowns
+  coupled with the regular five-point star stencil give two subsets of
+  variables that are not connected among themselves, that is, 
+  they form a two-coloring of the matrix graph. 
+  Can you find a coloring if nodes are connected by the second stencil in
+  figure~\ref{fig:stencils}?
+\end{exercise}
+
+\index{red-black ordering|)}
+
+\Level 2 {General coloring}
+
+There is a simple bound for the number of colors needed for the graph
+of a sparse matrix: the number of colors is at most $d+1$ where
+$d$~is the degree of the graph. To see that we can color a graph with
+degree~$d$ using $d+1$ colors, consider a node with
+degree~$d$. No matter how its neighbors are colored, there is always
+an unused color among the $d+1$ available ones.
+
+\begin{exercise}
+  Consider a sparse matrix, where the graph can be colored with $d$
+  colors. Permute the matrix by first enumerating the unknowns of the
+  first color,
+  then the second color, et cetera. What can you say about the
+  sparsity pattern of the resulting permuted matrix?
+\end{exercise}
+
+If you
+are looking for a direct solution of the linear system you can repeat
+the process of coloring and permuting on the matrix that remains
+after you have eliminated one color. In the case of a tridiagonal
+matrix you saw that this remaining matrix was again tridiagonal, so
+it is clear how to continue the process. This is called
+\indexterm{recursive doubling}. If the matrix is not tridiagonal but
+\indexterm{block tridiagonal}, this operation can be performed on
+blocks.
+
+\Level 2 {Multi-color parallel ILU}
+\label{sec:jones-plassman}
+\index{Incomplete LU (ILU)!parallel|(}
+
+In section~\ref{sec:redblackgreen} you saw the combination of
+\indextermbus{graph}{coloring} and permutation. Let $P$ be the
+permutation that groups like-colored variables together, then $\tilde
+A=P^tAP$ is a matrix with the following structure:
+\begin{itemize}
+\item $\tilde A$ has a block structure with the number of blocks equal
+  to the number of colors in the adjacency graph of~$A$; and
+\item each diagonal block is a diagonal matrix.
+\end{itemize}
+Now, if you are performing an iterative system solution
+and you are looking for a parallel preconditioner you can use this
+permuted matrix. Consider solving $Ly=x$ with the permuted system. We
+write the usual algorithm (section~\ref{sec:lu-solve}) as
+\begin{quotation}
+  \begin{tabbing}
+    for \=$c$ in the set of colors:\\
+    \>for \=$i$ in the variables of color $c$:\\
+    \>\>$y_i\leftarrow x_i-\sum_{j<i} \ell_{ij}y_j$
+  \end{tabbing}
+\end{quotation}
+
+\begin{exercise}
+  Show that the flop count of solving a system $LUx=y$ remains the
+  same (in the highest order term) when you from an \ac{ILU}
+  factorization in the natural ordering to one in the color-permuted
+  ordering.
+\end{exercise}
+
+\begin{figure}
+  \includegraphics[scale=.12]{pilu}
+  \caption{A partitioned domain with colored nodes.}
+  \label{fig:pilu}
+\end{figure}
+Where does all this coloring get us? Solving is still
+sequential\ldots Well, it is true that the outer loop over the colors
+is sequential, but all the points of one color are independent of
+each other, so they can be solved at the same time.
+\begin{figure}
+  \includegraphics[scale=.13]{pilu-solve}
+  \caption{Solving a parallel multicolor ILU in four steps.}
+  \label{fig:pilu-solve}
+\end{figure}
+So if we use an ordinary domain partitioning and combine that with a
+multi-coloring (see figure~\ref{fig:pilu}), the processors are all
+active during all the color stages; see
+figure~\ref{fig:pilu-solve}. Ok, if you take a close look at that
+figure you'll see that one processor is not active in the last
+color. With large numbers of nodes per processor this is unlikely to
+happen, but there may be some load imbalance.
+
+One remaining problem is how to generate the multi-coloring in
+parallel. Finding the optimal color number is NP-hard. 
+The thing that saves us is that we don't necessarily need the optimal
+number because we are making in incomplete factorization
+anyway. (There is even an argument that using a slightly larger number
+of colors decreases the number of iterations.)
+
+An elegant algorithm for finding a multi-coloring in parallel was
+found by~\cite{jopl94,Luby:parallel}:
+\begin{enumerate}
+\item Assign a random value to each variable.
+\item Find the variables that have a higher random value than all their
+  neighbors; that is color~1.
+\item Then find the variables that have a higher random value than all
+  their neighbors that are not of color~1. That is color~2.
+\item Iterate until all points are colored.
+\end{enumerate}
+
+\index{Incomplete LU (ILU)!parallel|)}
+
+% LocalWords:  Eijkhout processable Seidel subdomain BVP sparsity ILU
+% LocalWords:  LU preconditioner Ok NP

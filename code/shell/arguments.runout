@@ -1,0 +1,5 @@
+./arguments.sh the quick "brown fox" jumps
+argument: the
+argument: quick
+argument: brown fox
+argument: jumps

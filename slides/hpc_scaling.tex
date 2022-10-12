@@ -1,0 +1,106 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% hpc_scaling.tex : scaling of matrix vector product and such
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{beamer}
+
+\beamertemplatenavigationsymbolsempty
+\usepackage{beamerthemeTACC}
+\parskip=.5\baselineskip plus .5\baselineskip
+\input semester
+
+\usepackage{pslatex}
+\usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
+
+\newdimen\unitindent \unitindent=20pt
+
+\input slidemacs
+
+\input scimacs
+
+%\advance\textwidth by 1in
+%\advance\oddsidemargin by -.5in
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\includecomment{simplified}
+\excludecomment{lotsamath}
+
+\title{Scalability of operations}
+\author{\hpcteachers}
+\date{\hpcsemester}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Justification}
+  Parallel operations are supposed to be faster than their sequential
+  counterparts. In this section we will explore how to quantify this,
+  and we will see examples where the same result can be computed with
+  diferent efficiencies.
+\end{frame}
+
+\input Collectives
+
+\Level 2 {Efficiency and scaling}
+
+\begin{frame}{Speedup}
+  \begin{itemize}
+  \item Single processor time $T_1$, on $p$ processors $T_p$
+  \item speedup is $S_p=T_1/T_p$, $S_P\leq p$
+  \item efficiency is $E_p=S_p/p$, $0< E_p\leq 1$
+  \end{itemize}
+Many caveats
+\begin{itemize}
+\item Is $T_1$ based on the same algorithm? The parallel code?
+\item Sometimes superlinear speedup.
+\item Can the problem be run on a single processor?
+\item Can the problem be evenly divided?
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Limits on speedup/efficiency}
+  \begin{itemize}
+  \item $F_s$ sequential fraction, $F_p$ parallelizable fraction
+  \item $F_s+F_p=1$
+  \item $T_1 = (F_s+F_p)T_1 = F_sT_1 + F_pT_1 $
+  \item Amdahl's law: $T_p = F_sT_1 + F_pT_1/p $
+  \item $P\rightarrow\infty$: $T_P\downarrow T_1F_s$
+  \item Speedup is limited by $S_P\leq 1/F_s$,
+    efficiency is a decreasing function $E\sim 1/P$.
+  \item loglog plot: straigth line with slope~$-1$
+  \end{itemize}  
+\end{frame}
+
+\begin{frame}{Scaling}
+  \begin{itemize}
+  \item Amdahl's law: strong scaling\\
+    same problem over increasing processors
+  \item Often more realistic: weak scaling\\
+    increase problem size with number of processors,\\
+    for instance keeping memory constant
+  \item Weak scaling: $E_p>c$
+  \item example (below): dense linear algebra
+  \end{itemize}
+\end{frame}
+
+
+\input DenseMVP
+
+\input PartialDifferentialEquation-slides.tex
+
+\end{document}

@@ -1,0 +1,19 @@
+// bitprint.cxx
+void format(const std::string  &s)
+{
+  // sign bit
+  std::cout << s.substr(0,1)  << ' ';
+  // exponent
+  std::cout << s.substr(1,8);
+  // mantissa in groups of 4
+  for(int walk=9;walk<32;walk+=4)
+    std::cout << ' ' << s.substr(walk,4);
+  // newline
+  std::cout << "\n";
+}
+  uint32_t    u;
+  std::memcpy(&u,&d,sizeof(u));
+  std::bitset<32> b{u};
+  std::stringstream s;
+  s << std::hexfloat << b << '\n';
+  format(s.str());

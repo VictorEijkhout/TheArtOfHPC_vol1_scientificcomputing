@@ -1,0 +1,169 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-8
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\emph{MapReduce}\index{MapReduce|textbf}~\cite{Google:mapreduce} is a
+programming model for certain parallel operations. One of its
+distinguishing characteristics is that it is implemented using
+\indexterm{functional programming}.  The MapReduce model handles
+computations of the following form:
+\begin{itemize}
+\item For all available data, select items that satisfy a certain
+  criterion;
+\item and emit a key-value pair for them. This is the mapping stage.
+\item Optionally there can be a combine/sort stage where all pairs with the
+  same key value are grouped together.
+\item Then do a global reduction on the keys, yielding one or more of
+  the corresponding values. This is the reduction stage.
+\end{itemize}
+
+We will now give a few examples of using MapReduce, and present the
+functional programming model that underlies the MapReduce abstraction.
+
+\Level 2 {Expressive power of the MapReduce model}
+ 
+The reduce part of the MapReduce model makes it a prime candidate for
+computing global statistics on a dataset.
+One example would be to count how many times each of a set of words
+appears in some set of documents. The function being mapped knows the
+set of words, and outputs for each document a pair of document name
+and a list with the occurrence counts of the words. The reduction then
+does a componentwise sum of the occurrence counts.
+
+The combine stage of MapReduce makes it possible to transform data.
+An example is a `Reverse Web-Link Graph': the map function
+outputs target-source pairs for each link to a target URL found in
+a page named "source". The reduce function concatenates the list of
+all source URLs associated with a given target URL and emits the pair
+target-list(source).
+
+A less obvious example is computing PageRank
+(section~\ref{sec:pagerank}) with MapReduce. Here we use the fact that
+the PageRank computation relies on a distributed sparse matrix-vector
+product. Each web page corresponds to a column of the web matrix~$W$;
+given a probability $p_j$ of being on page~$j$, that page can then
+compute tuples $\langle i,w_{ij}p_j\rangle$. The combine stage of MapReduce
+then sums together $(Wp)_i=\sum_j w_{ij}p_j$.
+
+Database operations can be implemented with MapReduce but since it has
+a relatively large latency, it is unlikely to be competitive with
+standalone databases, which are optimized for fast processing of a
+single query, rather than bulk statistics.
+
+\emph{Sorting}\index{MapReduce!sorting|see{sorting, with MapReduce}}
+  with MapReduce is considered in section~\ref{sec:terasort}.
+
+For other applications see
+\url{http://horicky.blogspot.com/2010/08/designing-algorithmis-for-map-reduce.html}.
+
+\Level 2 {Mapreduce software}
+
+The implementation of MapReduce by Google was released under the name \indexterm{Hadoop}.
+While it suited the Google model of single-stage reading and processing of data,
+it had considerable disadvantages for many other users:
+\begin{itemize}
+\item Hadoop would flush all its data back to disc after each MapReduce cycle, so
+  for operations that take more than a single cycle the file system
+  and bandwidth demands are too great.
+\item In computing center environments, where a user's data is not continuously online,
+  the time required for loading data into \indexac{HDFS} would likely overwhelm the
+  actual analysis.
+\end{itemize}
+For these reasons, further projects such as Apache \indexterm{Spark}
+(\url{https://spark.apache.org/}) offer caching of data.
+
+\Level 2 {Implementation issues}
+
+Implementing MapReduce on a distributed system has an interesting
+problem: the set of keys in the key-value pairs is dynamically
+determined. For instance, in the `word count' type of applications
+above we do not \textsl{a priori} know the set of words. Therefore it
+is not clear which reducer process to send the pair to.
+
+We could for instance use a \indexterm{hash function} to determine
+this. Since every process uses the same function, there is not
+disagreement. This leaves the problem that a process does not know how
+many messages with key-value pairs to receive. The solution to this
+was described in section~\ref{sec:par-spmvp-setup}.
+
+\Level 2 {Functional programming}
+\index{functional programming|(}
+%
+The mapping and reduction operations are readily implemented on any
+type of parallel architecture, using a combination of threading and
+message passing. However, at Google where this model was developed
+traditional parallelism was not attractive for two reasons. First of
+all, processors could fail during the computation, so a traditional
+model of parallelism would have to be enhanced with \indexterm{fault
+  tolerance} mechanisms. Secondly, the computing hardware could
+already have a load, so parts of the computation may need to be
+migrated, and in general any type of synchronization between tasks
+would be very hard.
+
+MapReduce is one way to abstract from such details of parallel
+computing, namely through adopting a functional programming model. In
+such a model the only operation is the evaluation of a function,
+applied to some arguments, where the arguments are themselves the
+result of a function application, and the result of the computation is
+again used as argument for another function application. In
+particular, in a strict functional model there are no variables, so
+there is no static data.
+
+A function application, written in \indexterm{Lisp} style as \n{(f a
+  b)} (meaning that the function \n{f} is applied to arguments \n{a}
+and \n{b}) would then be executed by collecting the inputs from
+whereven they are to the processor that evaluates the
+function~\n{f}. The mapping stage of a MapReduce process is denoted
+\begin{verbatim}
+  (map f (some list of arguments))
+\end{verbatim}
+and the result is a list of the function results of applying \n{f} to
+the input list. All details of parallelism and of guaranteeing that
+the computation successfully finishes are handled by the \n{map}
+function.
+
+Now we are only missing the reduction stage, which is just as simple:
+\begin{verbatim}
+(reduce g (map f (the list of inputs)))
+\end{verbatim}
+The \n{reduce} function takes a list of inputs and performs a
+reduction on it.
+
+The attractiveness of this functional model lies in the fact that
+functions can not have \indexterm{side effects}: because they can only
+yield a single output result, they can not change
+their environment, and hence there is no coordination problem of
+multiple tasks accessing the same data. 
+
+Thus, MapReduce is a useful
+abstraction for programmers dealing with large amounts of data.
+Of course, on an implementation level the MapReduce software uses
+familiar concepts such as decomposing the data space, keeping a work
+list, assigning tasks to processors, retrying failed operations, et
+cetera.
+
+\index{functional programming|)}
+
+\endinput
+
+\paragraph{{\bf Performance characteristics}}
+
+MapReduce is sometimes mentioned as an alternative to databases: the
+map and reduce functions can be used to form certain queries in the
+data. However, MapReduce has a much higher latency than database
+queries, which are typically optimized for minimum response time.
+
+% LocalWords:  Eijkhout MapReduce textbf componentwise PageRank HDFS
+% LocalWords:  standalone Mapreduce Hadoop whereven

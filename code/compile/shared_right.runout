@@ -1,0 +1,5 @@
+clang -o libs/libfoo.so -shared foosub.o
+clang -o dynamicprogram fooprog.o -Llibs -lfoo
+-rwxr-xr-x  1 eijkhout  staff  49720 Nov 28 12:00 dynamicprogram
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./libs dynamicprogram
+hello world

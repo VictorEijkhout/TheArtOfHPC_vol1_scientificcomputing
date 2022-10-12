@@ -1,0 +1,11 @@
+// allocation.cxx
+template <typename R>
+R Cache<R>::sumstream(int repeats,size_t length,size_t byte_offset /* =0 default */ ) const {
+  R s{0};
+  size_t loc_offset = byte_offset/sizeof(R);
+  const R *start_point = thecache.data()+loc_offset;
+  for (int r=0; r<repeats; r++)
+    for (int w=0; w<length; w++)
+      s += *( start_point+w ) * r;
+  return s;
+};

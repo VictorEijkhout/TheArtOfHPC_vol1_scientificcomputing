@@ -1,0 +1,34 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-7
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+You have now seen several computing models: single core, shared memory
+multicore, distributed memory clusters, GPUs. These models all have in
+common that, if there is more than one instruction stream active, all
+streams are interchangeable. With regard to GPUs we need to refine this
+statement: all instruction stream \emph{on the GPU} are
+interchangeable. However, a GPU is not a standalone device, but can be
+considered a \indexterm{co-processor} to a \indexterm{host
+  processor}. 
+
+If we want to let the host perform useful work while the co-processor
+is active, we now have two different instruction streams or types of
+streams. This situation is known as \emph{heterogeneous computing}.
+In the GPU case, these instruction streams are even
+programmed by a slightly different mechanisms --~using
+\indexterm{CUDA} for the GPU~-- but this need not be the case: the
+\index{Intel!MIC} Intel \acf{MIC} architecture is programmed in
+ordinary~C.
+
+% LocalWords:  Eijkhout multicore GPUs GPU standalone co CUDA MIC

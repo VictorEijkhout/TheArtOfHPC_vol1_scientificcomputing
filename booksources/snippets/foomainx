@@ -1,0 +1,7 @@
+// fooprog.cxx
+extern void bar(string);
+
+int main() {
+  bar("hello world\n");
+  return 0;
+}

@@ -1,0 +1,32 @@
+# -*- makefile -*-
+################################################################
+################################################################
+####
+#### This Makefile belong with the sources
+#### for Introduction to High-Performance Scientific Computing
+#### by Victor Eijkhout
+#### copyright 2010-2021
+####
+#### make include file for public repository
+####
+################################################################
+################################################################
+
+info ::
+	@echo "make public : copy values of PUBLICFILES MOREPUBLICFILES"
+
+.PHONY: public
+PUBLICFILES = *.runout
+public :
+	@if [ -z "${DESTDIR}" ] ; then \
+	    echo "set DESTDIR variable for public rule" ; exit 1 ; fi
+	@if [ ! -d "${DESTDIR}" ] ; then \
+	    echo "inalid dir DESTDIR=${DESTDIR} for public rule" ; exit 1 ; fi
+	@for r in ` ls ${PUBLICFILES} ${MOREPUBLICFILES} 2>/dev/null ` ; do \
+	    echo " .. .. .. $$r" \
+	     && cp "$$r" "${DESTDIR}/" \
+	     && ( \
+	        cd "${DESTDIR}" \
+	         && git add "$$r" \
+	        ) \
+	done

@@ -1,0 +1,8 @@
+// minimlib.h
+class function {
+public:
+  virtual double eval( const valuevector& coordinate ) const = 0;
+  virtual valuevector grad( const valuevector& coordinate ) const = 0;
+  virtual std::shared_ptr<matrix> delta( const valuevector& coordinate ) const = 0;
+  virtual int dimension() const = 0;
+};

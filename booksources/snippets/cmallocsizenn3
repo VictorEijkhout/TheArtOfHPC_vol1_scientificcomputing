@@ -1,0 +1,2 @@
+    long row2row = (long)(numbers[1])-(long)(numbers[0]);
+    printf("row length bytes=%ld, ints=%ld\n",row2row,row2row/sizeof(int));

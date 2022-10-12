@@ -1,0 +1,9 @@
+#define INDEX(i,j,m,n) (i)*(n)+(j)
+void set_corner( float *array,int m,int n,float v ) {
+  array[ INDEX(m-1,n-1,m,n) ] = v;
+}
+  float *y;
+  y = (float*) malloc( len*len*sizeof(float) );
+  set_corner( y,len,len,5.12 );
+  printf("%e\n",y[ INDEX(len-1,len-1,len,len) ]);
+  printf("malloc2d\n");

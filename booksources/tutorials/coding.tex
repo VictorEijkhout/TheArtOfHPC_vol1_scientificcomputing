@@ -1,0 +1,452 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Sooner or later, and probably sooner than later, every programmer is
+confronted with code not behaving as intended. In this section you
+will learn some techniques of dealing with this problem. At first we
+will see a number of techniques for \emph{preventing} errors; 
+in the next chapter we will discuss debugging, the process of
+finding the inevitable errors in a program, once they have occurred.
+
+\Level 0 {Defensive programming}
+
+In this section we will discuss a number of  techniques
+that are aimed at preventing the likelihood of programming errors, or
+increasing the likelihood of them being found at runtime.
+We call this  \indextermstart{defensive programming}. 
+
+Scientific codes are often large and involved, so it
+is a good practice to code knowing that you are going to make mistakes
+and prepare for them. Another good coding practice is the use of
+tools: there is no point in reinventing the wheel if someone has
+already done it for you. Some of these tools are be described in
+other sections:
+\begin{itemize}
+\item Build systems, such as Make, Scons, Bjam; see section~\ref{tut:gnumake}.
+\item Source code management with Git; see section~\ref{tut:git}.
+\item Regression testing and designing with testing in mind (unit testing)
+\end{itemize}
+
+First we will have a look at runtime sanity checks, where you test 
+for things that can not or should not
+happen. 
+
+\Level 1 {Assertions}
+\index{assertions|(}
+
+In the things that can go wrong with a program we can distinguish between
+errors and bugs. Errors are things that legitimately happen but that should
+not. File systems are common sources of errors: a program wants to open a file but
+the file doesn't exist because the user mistyped the name, or the program
+writes to a file but the disk is full. Other errors can come from arithmetic,
+such as \indexterm{overflow} errors.
+
+On the other hand, a \indexterm{bug} in a program is an occurrence that cannot
+legitimately occur. Of course, `legitimately' here means `according to
+the programmer's intentions'. Bugs can often be described as `the computer
+always does what you ask, not necessarily what you want'.
+
+Assertions serve to detect bugs in your program: an \indextermdef{assertion}
+is a predicate that should be true at a certain point in your program.
+Thus, an assertion failing means that you didn't code what you intended to code.
+An assertion is typically a statement in your programming language,
+or a preprocessor macro; upon failure of the assertion, your program
+will stop.
+
+Some examples of assertions:
+\begin{itemize}
+\item If a subprogram has an array argument, it is a good idea to
+  test whether the actual argument is a null pointer before indexing
+  into the array.
+\item Similarly, you could test a dynamically allocated data structure
+  for not having a null pointer.
+\item If you calculate a numerical result for which certain
+  mathematical properties hold, for instance you are writing a sine function, for
+  which the result has to be in $[-1,1]$, you should test whether this
+  property indeed holds for the result.
+\end{itemize}
+
+Assertions are often disabled in a program once it's sufficiently tested.
+The reason for this is that assertions can be expensive to execute.
+For instance, 
+if you have a complicated data structure, you could write a complicated
+integrity test, and perform that test in an assertion, which you put
+after every access to the data structure.
+
+Because assertions are often disabled in the `production' version of a code,
+they should not affect any stored data . If they do, your code may
+behave differently when you're testing it with assertions, versus how you
+use it in practice without them. This is also formulated as `assertions
+should not have \indexterm{side-effects}'.
+
+
+\Level 2 {The C \protect\n{assert} macro}
+
+The C standard library has a file \n{assert.h} which provides an
+\n{assert()} macro. Inserting \n{assert(foo)} has the following
+effect: if \n{foo} is zero (false), a diagnostic message is printed
+on standard error:
+\begin{verbatim}
+Assertion failed: foo, file filename, line line-number
+\end{verbatim}
+which includes the literal text of the expression, 
+the file name, and line number; and the program is subsequently stopped.
+Here is an example:
+\begin{verbatim}
+#include<assert.h>
+
+void open_record(char *record_name)
+{
+  assert(record_name!=NULL);
+  /* Rest of code */
+}
+
+int main(void)
+{
+  open_record(NULL);
+}
+\end{verbatim}
+The \n{assert} macro can be disabled by defining the
+\n{NDEBUG} macro.
+
+\Level 2 {An assert macro for Fortran}
+
+(Thanks to Robert Mclay for this code.)
+
+\begin{verbatim}
+#if (defined( GFORTRAN ) || defined( G95 ) || defined ( PGI) )
+# define MKSTR(x) "x"
+#else
+# define MKSTR(x) #x
+#endif
+#ifndef NDEBUG
+# define ASSERT(x, msg) if (.not. (x) ) \
+                call assert( FILE , LINE ,MKSTR(x),msg)
+#else
+# define ASSERT(x, msg)
+#endif
+subroutine assert(file, ln, testStr, msgIn)
+implicit none
+character(*) :: file, testStr, msgIn
+integer :: ln
+print *, "Assert: ",trim(testStr)," Failed at ",trim(file),":",ln
+print *, "Msg:", trim(msgIn)
+stop
+end subroutine assert
+\end{verbatim}
+which is used as
+\begin{verbatim}
+ASSERT(nItemsSet.gt.arraySize,"Too many elements set")
+\end{verbatim}
+
+\index{assertions|)}
+
+\Level 1 {Use of error codes}
+
+In some software libraries (for instance MPI or PETSc) every subprogram
+returns a result, either the function value or a parameter, to
+indicate success or failure of the routine. It is good programming
+practice to check these error parameters, even if you think that
+nothing can possibly go wrong.
+
+It is also a good idea to write your own subprograms in such a way
+that they always have an error parameter. Let us consider the case of
+a function that performs some numerical computation.
+
+\begin{verbatim}
+float compute(float val)
+{
+  float result;
+  result = ... /* some computation */
+  return result;
+}
+
+float value,result;
+result = compute(value);
+\end{verbatim}
+Looks good? What if the computation can fail, for instance:
+\begin{verbatim}
+  result = ... sqrt(val) ... /* some computation */
+\end{verbatim}
+How do we handle the case where the user passes a negative number?
+\begin{verbatim}
+float compute(float val)
+{
+  float result;
+  if (val<0) { /* then what? */ 
+  } else 
+    result = ... sqrt(val) ... /* some computation */
+  return result;
+}
+\end{verbatim}
+We could print an error message and deliver some result, but the
+message may go unnoticed, and the calling environment does not really
+receive any notification that something has gone wrong.
+
+The following approach is more flexible:
+\begin{verbatim}
+int compute(float val,float *result)
+{
+  float result;
+  if (val<0) {
+    return -1;
+  } else {
+    *result = ... sqrt(val) ... /* some computation */
+  }
+  return 0;
+}
+
+float value,result; int ierr;
+ierr = compute(value,&result);
+if (ierr!=0) { /* take appropriate action */
+}
+\end{verbatim}
+You can save yourself a lot of typing by writing
+\begin{verbatim}
+#define CHECK_FOR_ERROR(ierr) \
+  if (ierr!=0) { \
+    printf("Error %d detected\n",ierr); \
+    return -1 ; }
+....
+ierr = compute(value,&result); CHECK_FOR_ERROR(ierr);
+\end{verbatim}
+Using some cpp macros you can even define
+\begin{verbatim}
+#define CHECK_FOR_ERROR(ierr) \
+  if (ierr!=0) { \
+    printf("Error %d detected in line %d of file %s\n",\
+           ierr,__LINE__,__FILE__); \
+    return -1 ; }
+\end{verbatim}
+Note that this macro not only prints an error message, but also does a
+further return. This means that, if you adopt this use of error codes
+systematically, you will get a full backtrace of the calling tree if
+an error occurs. (In the Python language this is precisely the wrong
+approach since the backtrace is built-in.)
+
+\Level 0 {Guarding against memory errors}
+
+In scientific computing it goes pretty much without saying that you
+will be working with large amounts of data.
+Some programming languages make managing data easy, others, one might
+say, make making errors with data easy. 
+
+The following are some examples of \emph{memory violations}\index{memory!violations}.
+\begin{itemize}
+\item Writing outside array bounds. If the address is outside the user
+  memory, your code may exit with an error such as
+  \indexterm{segmentation violation}, and the error is reasonably easy
+  to find. If the address is just outside an array, it will corrupt
+  data but not crash the program; such an error may go undetected for
+  a long time, as it can have no effect, or only introduce subtly
+  wrong values in your computation.
+\item Reading outside array bounds can be harder to find than errors
+  in writing, as it will often not stop your code, but only introduce
+  wrong values.
+\item The use of uninitialized memory is similar to reading outside
+  array bounds, and can go undetected for a long time. One variant of
+  this is through attaching memory to an unallocated pointer.
+
+  This particular kind of error can manifest itself in interesting
+  behavior. Let's say you notice that your program misbehaves, you
+  recompile it with debug mode to find the error, and now the error no
+  longer occurs. This is probably due to the effect that, with low
+  optimization levels, all allocated arrays are filled with
+  zeros. Therefore, your code was originally reading a random value,
+  but is now getting a zero.
+\end{itemize}
+
+This section contains some
+techniques to prevent errors in dealing with memory that you have
+reserved for your data.
+
+\Level 1 {Array bound checking and other memory techniques}
+
+In parallel codes, memory errors will often show up by a crash in an
+MPI routine. This is hardly ever an MPI problem or a problem with your
+cluster.
+
+Compilers for  Fortran often have support for array bound
+checking. Since this makes your code much slower, you would only
+enable it during the development phase of your code.
+
+\Level 1 {Memory leaks}
+
+We say that a program has a \indextermbus{memory}{leak}, if it allocates
+memory, and subsequently loses track of that memory. The operating
+system then thinks the memory is in use, while it is not, and as a
+result the computer memory can get filled up with allocated memory
+that serves no useful purpose.
+
+In this example data is allocated inside a lexical scope:
+\begin{verbatim}
+for (i=.... ) {
+  real *block = malloc( /* large number of bytes */ )
+  /* do something with that block of memory */
+  /* and forget to call "free" on that block */
+}
+\end{verbatim}
+The block of memory is allocated in each iteration, but the allocation
+of one iteration is no longer available in the next. A similar example
+can be made with allocating inside a conditional. 
+
+It should be noted
+that this problem is far less serious in Fortran, where memory is
+deallocated automatically as a variable goes out of scope.
+
+There are various tools for detecting memory errors: Valgrind,
+DMALLOC, Electric Fence. For valgrind, see section~\ref{sec:valgrind}.
+
+\Level 1 {Roll-your-own malloc}
+
+Many programming errors arise from improper use of dynamically
+allocated memory: the program writes beyond the bounds, or writes to
+memory that has not been allocated yet, or has already been
+freed. While some compilers can do bound checking at runtime, this
+slows down your program. A~better strategy is to write your own memory
+management. Some libraries such as PETSc already supply an enhanced
+malloc; if this is available you should certainly make use of
+it. (The \emph{gcc}\index{gcc!memory checking} compiler has a
+function \indextermtt{mcheck}, defined in \n{mcheck.h}, that has a
+similar function.)
+
+If you write in~C, you will probably know the \n{malloc} and \n{free} calls:
+\begin{verbatim}
+int *ip;
+ip = (int*) malloc(500*sizeof(int));
+if (ip==0) {/* could not allocate memory */}
+..... do stuff with ip .....
+free(ip);
+\end{verbatim}
+You can save yourself some typing by
+\begin{verbatim}
+#define MYMALLOC(a,b,c) \
+  a = (c*)malloc(b*sizeof(c)); \
+  if (a==0) {/* error message and appropriate action */}
+
+int *ip;
+MYMALLOC(ip,500,int);
+\end{verbatim}
+
+Runtime checks on memory usage (either by compiler-generated bounds
+checking, or through tools like
+valgrind or Rational Purify) are expensive, but you can catch many
+problems by adding some functionality to your malloc.
+What we will do here is to detect memory corruption
+after the fact. 
+
+We allocate a few integers to the left and right of the
+allocated object (line~\n{1} in the code below), 
+and put a recognizable value in them (line \n{2} and~\n{3}), as well as the
+size of the object (line~\n{2}). We then return the pointer to the
+actually requested memory area (line~\n{4}).
+\begin{verbatim}
+#define MEMCOOKIE 137
+#define MYMALLOC(a,b,c) { \
+  char *aa; int *ii; \
+  aa = malloc(b*sizeof(c)+3*sizeof(int)); /* 1 */ \
+  ii = (int*)aa; ii[0] = b*sizeof(c); \
+          ii[1] = MEMCOOKIE;              /* 2 */ \
+  aa = (char*)(ii+2); a = (c*)aa ;        /* 4 */ \
+  aa = aa+b*sizesof(c); ii = (int*)aa; \
+          ii[0] = MEMCOOKIE;              /* 3 */ \
+  }
+\end{verbatim}
+Now you can write your own \n{free}, which tests whether the bounds of
+the object have not been written over.
+\begin{verbatim}
+#define MYFREE(a) { \
+  char *aa; int *ii,; ii = (int*)a; \
+  if (*(--ii)!=MEMCOOKIE) printf("object corrupted\n"); \
+  n = *(--ii); aa = a+n; ii = (int*)aa; \
+  if (*ii!=MEMCOOKIE)  printf("object corrupted\n"); \
+  }
+\end{verbatim}
+You can extend this idea: in every allocated object, also store two
+pointers, so that the allocated memory areas become a doubly linked
+list. You can then write a macro \n{CHECKMEMORY} which tests all your
+allocated objects for corruption.
+
+Such solutions to the memory corruption problem are fairly easy to
+write, and they carry little overhead. There is a memory overhead of
+at most 5 integers per object, and there is practically no performance
+penalty.
+
+(Instead of writing a wrapper for \n{malloc}, on some systems you can
+influence the behavior of the system routine. On linux, \n{malloc}
+calls hooks that can be replaced with your own routines;
+see~\url{http://www.gnu.org/s/libc/manual/html_node/Hooks-for-Malloc.html}.)
+
+\Level 1 {Specific techniques: Fortran}
+
+Use \n{Implicit none}.
+
+Put all subprograms in modules so that the compiler can check for
+missing arguments and type mismatches. It also allows for automatic
+dependency building with \n{fdepend}.
+
+Use the C preprocessor for conditional compilation and such.
+
+\Level 0 {Testing}
+
+There are various philosophies for testing the correctness of a code.
+\begin{itemize}
+\item Correctness proving: the programmer draws up predicates that
+  describe the intended behavior of code fragments and proves by
+  mathematical techniques that these predicates
+  hold~\cite{Hoare1969axiomatic,Dijkstra1974Programming}.
+\item Unit testing: each routine is tested separately for
+  correctness. This approach is often hard to do for numerical codes,
+  since with floating point numbers there is essentially an infinity
+  of possible inputs, and it is not easy to decide what would
+  constitute a sufficient
+  set of inputs.
+\item Integration testing: test subsystems
+\item System testing: test the whole code. This is often appropriate
+  for numerical codes, since we often have model problems with known
+  solutions, or there are properties such as bounds that need to hold
+  on the global solution.
+\item Test-driven design: the program development process is driven by
+  the requirement that testing is possible at all times.
+\end{itemize}
+
+With parallel codes we run into a new category of difficulties with
+testing. Many algorithms, when executed in parallel, will execute
+operations in a slightly different order, leading to different
+roundoff behavior. For instance, the parallel computation of a vector
+sum will use partial sums. Some algorithms have an inherent damping of
+numerical errors, for instance stationary iterative methods
+(section~\HPSCref{sec:stationary}), but others have no such built-in error
+correction (nonstationary methods;
+section~\HPSCref{sec:nonstationary}). As a result, the same iterative
+process can take different numbers of iterations depending on how many
+processors are used.
+ 
+\Level 1 {Test-driven design and development}
+
+In test-driven design there is a strong emphasis on the code always
+being testable. The basic ideas are as follows.
+\begin{itemize}
+\item Both the whole code and its parts should always be testable.
+\item When extending the code, make only the smallest change that
+  allows for testing.
+\item With every change, test before and after.
+\item Assure correctness before adding new features.
+\end{itemize}
+
+
+% LocalWords:  Eijkhout Scons Bjam SVN foo NDEBUG Mclay MPI PETSc cpp
+% LocalWords:  backtrace Valgrind DMALLOC valgrind malloc gcc mcheck
+% LocalWords:  CHECKMEMORY linux fdepend nonstationary

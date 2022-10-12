@@ -1,0 +1,8 @@
+Shift matrix:
+ . x . . .
+ . . x . .
+ . . . x .
+ . . . . x
+ x . . . .
+Input :  . . 0 . .
+Output:  . . . 0 .

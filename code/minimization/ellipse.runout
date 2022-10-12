@@ -1,0 +1,16 @@
+c++ -std=c++17 -g -O2 \
+	    -I/Users/eijkhout/Installation/cli11/installation/include \
+	    -c ellipse.cxx minimlib.h vectorlib.h
+clang: warning: treating 'c-header' input as 'c++-header' when in C++ mode, this behavior is deprecated [-Wdeprecated]
+clang: warning: treating 'c-header' input as 'c++-header' when in C++ mode, this behavior is deprecated [-Wdeprecated]
+ellipse.cxx:22:18: error: constexpr function never produces a constant expression [-Winvalid-constexpr]
+constexpr double pi() { return std::atan(1)*4; };
+                 ^
+ellipse.cxx:22:32: note: non-constexpr function 'atan<int>' cannot be used in a constant expression
+constexpr double pi() { return std::atan(1)*4; };
+                               ^
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/math.h:802:1: note: declared here
+atan(_A1 __lcpp_x) _NOEXCEPT {return ::atan((double)__lcpp_x);}
+^
+1 error generated.
+make[1]: *** [ellipse.o] Error 1

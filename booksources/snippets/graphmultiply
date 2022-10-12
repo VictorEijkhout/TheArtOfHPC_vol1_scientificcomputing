@@ -1,0 +1,16 @@
+// graphmvp.cxx
+  Vector leftmultiply
+      ( const Vector& left,
+	function< vectorvalue( vectorvalue,matrixvalue ) > mult,
+	function< vectorvalue( vectorvalue,vectorvalue ) > add
+	) const {
+    const int n = size();
+    Vector result(n);
+    for ( int row=0; row<n; row++ ) {
+      Vector partial(n);
+      for ( int col=0; col<n; col++ )
+	partial[col] = mult( left[row],adjacency[row][col] );
+      result.addin(partial,add);
+    }
+    return result;
+  };

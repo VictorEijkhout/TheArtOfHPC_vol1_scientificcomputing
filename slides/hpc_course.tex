@@ -1,0 +1,209 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% hpc_course.tex : main file for the big HPC slide deck
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,headernav]{beamer}
+
+\usepackage{beamerthemeTACC}
+\parskip=.5\baselineskip plus .5\baselineskip
+\input semester
+
+\setcounter{tocdepth}{1}
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\usepackage{pslatex}
+\usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
+
+\setbeamertemplate{footline}{Eijkhout: HPC intro}
+
+\newdimen\unitindent \unitindent=20pt
+
+\usepackage{comment}
+%% \specialcomment{exercise}{
+%%   \def\CommentCutFile{exercise.cut}
+%%   \def\PrepareCutFile{%
+%%         \immediate\write\CommentStream{\noexpand\begin{frame}{Exercise}}}
+%%   \def\FinalizeCutFile{%
+%%         \immediate\write\CommentStream{\noexpand\end{frame}}}
+%%   }{}
+
+\input slidemacs
+
+\input scimacs
+
+\usepackage{makeidx}
+\makeindex
+
+\includecomment{diagonalstorage}
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{Short course on High Performance Computing}
+\author{Victor Eijkhout}
+\date{2018}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \tableofcontents
+\end{frame}
+
+\begin{frame}{Justification}
+
+High Performance Computing is a field that brings together
+algorithms, software, and hardware. This course
+conveys the basics of computer architecture,
+scientific algorithms, and how to code
+algorithms to make them efficient on current hardware.
+
+\end{frame}
+
+
+\Level 0 {Processor Architecture}
+\input ProcessorArchitecture-slides
+
+\Level 0 {Parallelism}
+
+\begin{frame}{Justification}
+  Parallelism can be approached in several different ways.
+  This session will discuss data paralellism versus instruction parallelism,
+  issues in shared memory parallelism, parallel programming systems,
+  the interconnects of distributed memory paralellism,
+  scaling measures.
+\end{frame}
+
+%% \input life-slides
+\input Parallelism-slides
+
+\Level 0 {Computer arithmetic}
+
+\begin{frame}{Justification}
+  This short session will explain the basics of floating point
+  arithmetic, mostly focusing on round-off and its influence
+  on computations.
+\end{frame}
+
+\input ComputerArithmetic-slides
+
+\Level 0 {Partial Differential Equations}
+
+\begin{frame}{Justification}
+  Partial differential equations are an important source of 
+  large-scale engineering problems. Here we take a look at
+  their computational aspects.
+\end{frame}
+
+\input PartialDifferentialEquation-slides.tex
+
+\Level 0 {Linear algebra}
+
+\begin{frame}{Justification}
+  Many algorithms are based in linear algebra, 
+  including some non-obvious ones such as graph algorithms.
+  This session will mostly discuss aspects of 
+  solving linear systems, focusing on those
+  that have computational ramifications.
+\end{frame}
+
+\newenvironment{beamdisplayeq}%
+ {\begin{equation}\small}{\end{equation}}
+
+\Level 1 {Essential aspects of LU factorization}
+
+\input LinearAlgebra-slides
+
+\Level 1 {Sparse matrices: storage and algorithms}
+
+\input SparseMatrices-slides
+
+%% \Level 1 {Direct approaches to sparse matrix factorization}
+
+%% \input DomainDecomp-slides
+
+\Level 1 {Iterative methods, basic concepts and available methods}
+
+\input IterativeMethods-slides
+
+\Level 0 {High performance linear algebra}
+
+\begin{frame}{Justification}
+  Bringing architecture-awareness to linear algebra,
+  we discuss how high performance results from
+  using the right formulation and implementation of algorithms.
+\end{frame}
+
+\input Collectives
+\input DenseMVP
+\input SparseMVP
+\input LatencyHiding
+\input IterativeComputational
+\input ParallelLU
+\input IncompleteLU
+\input ImplicitParallel
+\input MulticoreBlock
+
+\Level 0 {Applications}
+
+\begin{frame}{Justification}
+  We briefly discuss two applications that,
+  while at first glance not linear-algebra like, surprisingly 
+  can be covered by the foregoing concepts.
+\end{frame}
+
+\Level 1 {N-body problems: naive and equivalent formulations}
+%\input BH-slides
+\input Nbody-slides
+
+\Level 1 {Graph analytics, interpretation as sparse matrix problems}
+
+\input GraphAlgorithms-slides
+
+\Level 0 {Parallel programming topics}
+
+\begingroup \catcode`\_=12
+\let\indexmpishow\texttt
+\input MPI-slides
+\endgroup
+
+\Level 1 {Profiling and debugging; optimization and programming strategies.}
+
+\input ProfilingOptimization-slides
+\input Debug-slides
+
+\begin{frame}
+  \includegraphics[scale=.08]{bookcover}
+\end{frame}
+
+\newenvironment{theindex}{\begin{itemize}}{\end{itemize}}
+\let\indexspace\par
+\def\subitem{\par\indent}
+
+\begin{frame}{Index}
+\small
+\begin{multicols}{2}
+\printindex  
+\end{multicols}
+\end{frame}
+
+\end{document}

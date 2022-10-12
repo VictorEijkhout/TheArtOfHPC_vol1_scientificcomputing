@@ -1,0 +1,63 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this chapter we have so far limited ourselves to linear system
+solving. \emph{Eigenvalue problems} are another important category of
+linear algebra applications, but their interest lies more in the
+mathematics than the computations as such.
+We give a brief outline of the type of computations involved.
+
+\Level 1 {Power method}
+
+The \indextermdef{power method} is a simple iteration process:
+%
+given a matrix $A$ and an arbitrary starting vector~$v$, compute
+repeatedly
+\[ v\leftarrow Av,\quad v\leftarrow v/\|v\|. \]
+The vector $v$ quickly becomes the eigenvector corresponding to the
+eigenvalue with maximum absolute size, and so $\|Av\|/\|v\|$ becomes
+an approximation to that largest eigenvalue.
+
+Applying the power method to $A\inv$ is known as
+\indextermbusdef{inverse}{iteration}%
+\index{iteration!inverse|see{inverse, iteration}}
+and it yields the inverse of the eigenvalue that is smallest in
+absolute magnitude.
+
+Another variant of the power method is the
+\indextermsub{shift-and-inverse}{iteration}%
+\index{shift-and-inverse!see{iteration, shift-and-inverse}}
+which can be used to find interior eigenvalues. If $\sigma$ is close
+to an interior eigenvalue, then inverse iteration on $A-\sigma I$ will
+find that interior eigenvalue.
+
+\Level 1 {Orthogonal iteration schemes}
+
+The fact that eigenvectors to different eigenvalues are orthogonal can
+be exploited. For instance, after finding one eigenvector, one could
+iterate in the subspace orthogonal to that. Another option is to
+iterate on a block of vectors, and orthogonalizing this block after
+each power method iteration. This produces as many dominant eigenvalue
+as the block size. The \indextermsub{restarted}{Arnoldi}
+method~\cite{leho:95} is an example of such a scheme.
+
+\Level 1 {Full spectrum methods}
+
+The iterative schemes just discussed yield only localized eigenvalues.
+Other methods compute the full spectrum of a matrix. The most popular
+of these is the \indextermbus{QR}{method}.
+
+% LocalWords:  Eijkhout orthogonalizing Arnoldi QR Lanczos

@@ -1,0 +1,8 @@
+// binary_read.c
+  binfile = fopen("binarydata.out","rb");
+  for (int i=0; i<10; i++) {
+    int ival;
+    fread(&ival,sizeof(int),1,binfile);
+    printf("%d ",ival);
+  }
+  printf("\n");

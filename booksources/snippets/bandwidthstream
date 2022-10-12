@@ -1,0 +1,10 @@
+// bandwidth.cxx
+void sum_stream
+    (int how_many_repeats,
+     long unsigned int stream_length,double *start_point,
+     double *s) {
+  for (int r=0; r<how_many_repeats; r++)
+    for (int w=0; w<stream_length; w++)
+      *s += *( start_point+w ) * r;
+  return;
+};

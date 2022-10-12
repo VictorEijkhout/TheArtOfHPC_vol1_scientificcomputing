@@ -1,0 +1,5 @@
+clang -o libs/libfoo.so -shared foosub.o
+clang -o rpathprogram fooprog.o -Wl,-rpath=./libs -Llibs -lfoo
+ld: unknown option: -rpath=./libs
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+make[1]: *** [rpathprogram] Error 1

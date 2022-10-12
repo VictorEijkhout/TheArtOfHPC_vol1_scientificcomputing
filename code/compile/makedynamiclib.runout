@@ -1,0 +1,4 @@
+%%%%
+Demonstration: making shared library
+%%%%
+clang -o libs/libfoo.so -shared foosub.o

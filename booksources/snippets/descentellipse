@@ -1,0 +1,18 @@
+    ellipse circle( valuevector( {1.,.1} ),valuevector( {0.,0.} ) );
+    valuevector search_point( { 1.,1. } );
+    auto value = circle.eval(search_point);
+    for (int step=0; step<5 and value>.0001; step++) {
+
+      auto new_point = steepest_descent_step(circle,search_point);
+
+      auto new_value = circle.eval(new_point);
+      cout << "Starting point " << fixed
+  	 << "(" << setprecision(4) << search_point.at(0)
+         << "," << setprecision(4) << search_point.at(1) << "); "
+         << "with value: " << value << "\n"
+  	 << "  becomes "
+  	 << "(" << setprecision(4) << new_point.at(0)
+         << "," << setprecision(4) << new_point.at(1) << "); "
+  	 << "with value: " << new_value << endl;
+      search_point = new_point; value = new_value;
+    }

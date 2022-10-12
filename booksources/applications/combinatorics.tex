@@ -1,0 +1,48 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+In this chapter we will briefly consider a few combinatorial algorithms:
+sorting, and prime number finding with the Sieve of Eratosthenes.
+
+\SetBaseLevel 1
+\input applications/sorting
+\SetBaseLevel 0
+
+%\begin{notready}
+\Level 1 {Prime number finding}
+
+The \indextermsub{sieve of}{Eratosthenes} is a very old method for
+\emph{finding prime numbers}\index{prime number!finding}.
+In a way, it is still the basis of many more modern methods.
+
+Write down all natural numbers from~2 to some upper bound~$N$,
+and we are going to mark these numbers as prime or definitely not-prime.
+All numbers are initially unmarked.
+\begin{itemize}
+\item The first unmarked number is~2: mark it as prime, and mark all its
+  multiples as not-prime.
+\item The first unmarked number is~3: mark it as prime, and mark all its
+  multiples as not-prime.
+\item The next number is~4, but it has been marked already, so mark~5
+  and its multiples.
+\item The next number is~6, but it has been marked already, so mark~7
+  and its multiples.
+\item Numbers 8,9,10 have been marked, so continue with~11.
+\item Et cetera.
+\end{itemize}
+
+%\end{notready}

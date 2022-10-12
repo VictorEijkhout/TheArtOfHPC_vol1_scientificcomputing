@@ -1,0 +1,12 @@
+
+==== Use of static library ====
+
+for o in foosub.o ; do \
+	  ar cr libs/libfoo.a ${o} ; \
+	done
+clang  -o staticprogram fooprog.o -Llibs -lfoo
+-rwxr-xr-x  1 eijkhout  staff  49984 Nov 28 12:00 staticprogram
+
+.. running:
+
+hello world

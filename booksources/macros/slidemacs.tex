@@ -1,0 +1,89 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% bookmacs : macros specifically for the book version
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% Outlining
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{outliner}
+\OutlineLevelStart
+    0
+    {
+      \addcontentsline{toc}{part}{#1}
+      \begin{frame}\Huge\bf #1\relax\end{frame}
+    }
+\OutlineLevelStart 1{\section{#1}
+  \frame{\begin{shaded}\Large\bf #1\end{shaded}}}
+\def\sectionframe{\Level 0}
+\usepackage{framed}
+\colorlet{shadecolor}{blue!15}
+\OutlineLevelStart 2{\subsection{#1}
+  \frame{\begin{shaded}\large #1\end{shaded}}}
+%% \OutlineLevelCont 2{\end{frame}\begin{frame}{#1}}
+%% \OutlineLevelEnd 2{\end{frame}}
+%\OutlineTracetrue
+
+\newcommand\tocslide{
+\begin{frame}{Table of Contents}
+  \def\contentsline########1########2{\item ########2}
+  \IfFileExists{\jobname.toc}
+               {\begin{itemize}
+                   \tableofcontents
+               \end{itemize}
+               }{}
+\end{frame}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% algorithm
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[algo2e,noline,noend]{algorithm2e}
+\newenvironment{displayalgorithm}
+ {\par
+  \begin{algorithm2e}[H]\leftskip=\unitindent \parskip=0pt\relax
+  \DontPrintSemicolon
+  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+ }
+ {\end{algorithm2e}\par}
+\newenvironment{displayprocedure}[2]
+ {\everymath{\strut}
+  \begin{procedure}[H]\leftskip=\unitindent\caption{#1(#2)}}
+ {\end{procedure}}
+\def\sublocal{_{\mathrm\scriptstyle local}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% Exercises
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcounter{excounter}
+\newenvironment
+    {exercise}[1]
+    {
+      \refstepcounter{excounter}
+      \begin{frame}[containsverbatim]{Exercise \arabic{excounter}: #1}
+    }
+    {\end{frame}}
+               
+\newcounter{slidecounter}
+\newenvironment
+    {numberedframe}[1]
+    {
+      \refstepcounter{slidecounter}
+      \begin{frame}[containsverbatim]{\arabic{slidecounter}\ #1}
+    }
+    {\end{frame}}

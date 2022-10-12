@@ -1,0 +1,5 @@
+// foosub.c
+void bar(char *s) {
+  printf("%s",s);
+  return;
+}

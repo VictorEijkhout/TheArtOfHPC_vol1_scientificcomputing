@@ -1,0 +1,15 @@
+// hello.sh
+while [ $# -gt 0 ] ; do
+    if [ $1 = "-n" ] ; then
+	shift
+	HOWMANY=$1      
+	shift
+    elif [ $1 = "-u" ] ; then
+	UPPER=1
+	shift
+    else
+	echo "Unrecognized option: $1"
+	echo "Usage: $0 [ -n nnn] [ -u ]"
+	exit 1
+    fi
+done

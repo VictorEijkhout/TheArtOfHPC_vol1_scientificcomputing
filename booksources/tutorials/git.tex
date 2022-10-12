@@ -1,0 +1,987 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% git.tex : tutorial for GIT version control
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\argcomment
+    {gitstep}
+    {
+      \hbox\bgroup
+%      \begin{mdframed}[backgroundcolor=blue!10]%{quote}
+        \begin{minipage}[c]{.6\textwidth}
+          \lstinputlisting{other/git/\CommentArg}
+          \vfill
+        \end{minipage}
+ %     \end{mdframed}
+%      \begin{mdframed}[backgroundcolor=yellow!80!white!20]%{quote}
+        \begin{minipage}[t]{.35\textwidth}
+    }
+    {
+      \vfill
+      \end{minipage}
+ %     \end{mdframed}
+      \egroup
+}
+
+In this tutorial you will learn \indextermdef{git},
+the currently most popular \indexterm{version control}
+(also \emph{source code control}\index{source code control|!see{version contro}}
+or \emph{revision control}\index{revision control|see{version control}})
+systems.
+Other similar systems are \indexterm{Mercurial}
+and \indextermbus{Microsoft}{Sharepoint}\index{Sharepoint|see{Microsoft, Sharepoint}}.
+Earlier systems were \indexterm{SCCS}, \indexterm{CVS}, \indexterm{Subversion},
+\indexterm{Bitkeeper}.
+
+Version control is a system that tracks the history of a software project,
+by recording the successive versions of the files of the project.
+These versions are recorded in a \indextermdef{repository},
+either on the machine you are working on, or remotely.
+
+This has many practical advantages:
+\begin{itemize}
+\item It becomes possible to undo changes;
+\item Sharing a repository with another developer
+  makes collaboration possible, including multiple edits
+  on the same file.
+\item A repository records the history of the project.
+\item You can have multiple versions of the project,
+  for instance for exploring new features,
+  or for customization for certain users.
+\end{itemize}
+
+The use of a version control system is industry standard practice,
+and git is by far the most popular system these days.
+
+\Level 0 {Concepts and overview}
+
+Older systems were based on having one \indextermsub{central}{repository},
+that all developers coordinated with.
+These days a setup is popular where each developer (or a small group)
+has a \indextermsub{local}{repository},
+which gets synchronized to a \indexterm{remote}{repository}.
+In so-called \emph{distributed version control}\index{version control!distributed}
+systems there can even be multiple remote repositories to synchronize with.
+
+It is possible to track the changes of a single file,
+but often it makes sense to bundle a group of changes
+together in a \indexterm{commit}.
+That also makes it easy to roll back such a group of changes.
+
+If a project is in a state that constitutes some sort of a milestone,
+it is possible to attach a \indexterm{tag},
+or mark the state as a \indexterm{release}.
+
+Modern version control systems allow you to have
+multiple \indexterm{branch}es,
+even in the same local repository.
+This way you can have a main branch for the release version of the project,
+and one or more development branches for exploring new features.
+
+\Level 0 {Git}
+\lstset{style=gitsession}
+
+This lab should be done two people, to simulate a group
+of programmers working on a joint project. You can also do this on
+your own by using two clones of the repository, 
+preferably opening two windows on your computer.
+
+Best practices for distributed version control:
+\url{https://homes.cs.washington.edu/~mernst/advice/version-control.html}
+
+\Level 0 {Create and populate a repository}
+
+\begin{purpose}
+  In this section you will create a repository and make a local copy
+  to work on.
+\end{purpose}
+
+You can create a repository two different ways:
+\begin{enumerate}
+\item Create the remote repository and do a clone.
+\item Create the repository locally, and then connect it to a remote;
+  this is a lot more work.
+\end{enumerate}
+
+\Level 1 {Create a repository by cloning}
+
+If you want to work on a repository that you have found (or created!)
+on some site such as \indextermtt{github.com}, you can use
+\begin{lstlisting}
+    git clone URL [ localname ]
+\end{lstlisting}
+This gives you a directory with the contents of the repository.
+If you leave out the local name, the directory will have the name
+of the repository.
+
+\begin{gitstep}{emptyclone.runout1}
+  Clone an empty repository and check that it is indeed empty
+\end{gitstep}
+
+\Level 1 {Create a repository locally}
+
+You can also create a directory for your repository,
+  and connect it to a remote site later.
+  For this you do \lstinline{git init}
+  in the directory that is either empty,
+  or already contains the material that you want to add later.
+  Here, we start with an empty directory.
+
+\begin{gitstep}{init.runout1}
+  Create a directory, and nake it into a repository
+\end{gitstep}
+
+The disadvantage of this method,
+over cloning an empty repo,
+is that you now have to connect your directory to a remote repository.
+See section~\ref{sec:git-remote}.
+
+\Level 1 {Main vs master}
+
+It used to be that the default branch
+(yes, I~know, we haven't discussed branches yet)
+was called `master'.
+In a shift of terminology, the preferred name is now `main'.
+Sites such as \indexterm{github} and \indexterm{gitlab}
+may already create this name by default;
+the git software does not do this, as of this writing in~2022.
+
+Renaming a branch is possible.
+  Use \lstinline{git status} to see what branch you are on,
+
+\begin{gitstep}{movemaster.runout}
+  See what the main branch is
+\end{gitstep}
+
+Move the current branch with
+\begin{lstlisting}
+  git branch -m newbranchname
+\end{lstlisting}
+and for good measure check with \lstinline{git status}.
+
+\begin{gitstep}{movemaster.runout2}
+  Rename this branch.
+\end{gitstep}
+
+\Level 0 {Adding and changing files}
+\label{sec:hg-push}
+
+\Level 1 {Creating a new file}
+
+If you create a file it does not automatically become part of your repository.
+This takes a sequence of steps.
+If you create a new file, and you run \n{git status},
+you'll see that the file is listed as `untracked'.
+
+\begin{gitstep}{firstfile.runout1}
+  Create a file; it will initually be untracked
+\end{gitstep}
+
+You need to \n{git add} on your file to tell git that the file
+belongs to the repository.
+(You can add a single file, or use a wildcard to add multiple.)
+However, this does not actually add the file:
+it moves it to the \indexterm{staging area}.
+The status now says that it is a change to be committed.
+
+\begin{gitstep}{firstfile.runout2}
+  Add the file to the local repository
+\end{gitstep}
+
+Use \lstinline{git commit} to add these changes to the repository.
+
+\begin{gitstep}{firstfile.runout3}
+  Commit these changes
+\end{gitstep}
+
+\Level 1 {Changes to a file in the repository}
+
+The \n{git add} and \n{git commit} commands need to be repeated
+if you make any changes to a file in the repository:
+
+When you make changes to a file that has previous been added and committed,
+the \n{git status} command will list it as `modified'.
+
+\begin{gitstep}{changefirst.runout1}
+  Make changes to a file that is tracked.
+\end{gitstep}
+
+If you need to check what changes you have made, \n{git diff} on that file
+will tell you the differences the between the edited, but not yet added or committed,
+file and the previous commit version.
+
+\begin{gitstep}{changefirst.runout2}
+  See what the changes were wrt the previously commit version.
+\end{gitstep}
+
+You now need to repeat \lstinline{git add} and \lstinline{git commit} on that file.
+
+\begin{gitstep}{changefirst.runout3}
+  Commit the changes to the local repo.
+\end{gitstep}
+
+Doing \n{git log} will give you the history of the repository,
+listing the commit numbers, and the messages that you entered on those commits.
+
+\begin{gitstep}{changefirst.runout4}
+  Get the log of all commits so far.
+\end{gitstep}
+
+\Level 0 {Undoing changes}
+
+There are various levels of undo, depending on whether you have added or committed
+those chaqnges. Or worse; see below.
+
+\Level 1 {Undo uncommitted change}
+
+If you have made a change, and you did \n{git add} on the file,
+and you've done \n{git diff} to make sure;
+
+\begin{gitstep}{undofirst.runout1}
+  Make regrettable changes.
+\end{gitstep}
+
+Do \n{git checkout} on that file. This gets the last committed version
+and puts it back in your working directory.
+
+\begin{gitstep}{undofirst.runout2}
+  Restore previously committed version.
+\end{gitstep}
+
+\Level 0 {Restore a file from a previous commit}
+
+A more complicated scenario is where you have committed the change.
+Then you need to find the commit id.
+
+You can use \n{git log} to get the ids of all commits.
+This is useful if you want to roll back to pretty far in the past.
+However, if you only want to roll back the last commit,
+use \n{git show HEAD} to get a description of just that last commit.
+
+\begin{gitstep}{revertfirst.runout1}
+  Find the commit id that you want to roll back.
+\end{gitstep}
+
+Now do:
+\begin{lstlisting}
+git checkout sdf234987238947 -- myfile myotherfile
+\end{lstlisting}
+
+\Level 1 {Undo a commit}
+
+As above, find the commit number.
+
+Then do \n{git revert sdlksdfkl2343} (with the right id).
+This will normally open an editor for you to leave comments;
+you can prevent this with the \n{--no-edit} option.
+
+\begin{gitstep}{revertfirst.runout2}
+  Use 'git revert' to roll back.
+\end{gitstep}
+
+This will restore the file to its state before the last
+add and commit, and it will in generally leave the repository back
+in the state it was before that commit.
+
+\begin{gitstep}{revertfirst.runout3}
+  See that we have indeed undone the commit.
+\end{gitstep}
+
+However, the log will show that you have reverted a certain commit.
+
+\begin{gitstep}{revertfirst.runout4}
+  But there will be an entry in the log.
+\end{gitstep}
+
+The \n{git reset} command can also be used for various
+types of undo.
+
+\Level 0 {Remote repositories and collaboration}
+\label{sec:git-remote}
+
+The repository where you have been adding files and changes with
+\lstinline{git commit} is the \indextermsub{local}{repository}.
+This is great for tracking changes, and reverting them when needed,
+but a major reason for using source code control is collaboration
+with others.
+For this you need a \indextermsub{remote}{repository}.
+This involves a set of commands
+\begin{lstlisting}
+  git remote [ other keywords ] [ arguments ]
+\end{lstlisting}
+
+We have some changes, added to the local repository
+with \lstinline{git add} and \lstinline{git commit}
+
+\begin{gitstep}{remotefile.runout1}
+  Committed changes.
+\end{gitstep}
+
+We connect to some remote repository with
+\begin{lstlisting}
+  git remote add servername url
+\end{lstlisting}
+If you want to see what your remote is, do
+\begin{lstlisting}
+  git remote -v
+\end{lstlisting}
+
+\begin{gitstep}{remotefile.runout2}
+  Connect local repo to a remote one.
+\end{gitstep}
+
+Finally, you can \lstinline{git push} committed changes to this remote.
+Git doesn't just push everything here: since you can have multiple branches locally,
+and multiple \indexterm{upstream}s remotely, you intially specify both:
+\begin{lstlisting}
+  git push -u servername branchname
+\end{lstlisting}
+
+\begin{gitstep}{remotefile.runout3}
+  Push changes.
+\end{gitstep}
+
+\Level 1 {Multiple local repositories}
+
+Let's see how changes from one local repository
+propagate to another.
+This can be because more than one person is working on a project,
+or because one person is working from more than one machine.
+
+We make one local repository in directory \n{person1}.
+
+\begin{gitstep}{collab.runout1}
+  Person 1 makes a clone.
+\end{gitstep}
+
+Create another clone in \n{person2}.
+Normally the cloned repositories would be two user accounts,
+or the accounts of one user on two machines.
+
+\begin{gitstep}{collab.runout2}
+  Person 2 makes a clone.
+\end{gitstep}
+
+Now the first user creates a file, adds, commits, and pushes it.
+(This of course requires an upstream to be set,
+but since we did a \lstinline{git clone},
+this is automatically done.)
+
+\begin{gitstep}{collab.runout3}
+  Person 1 adds a file and pushes it.
+\end{gitstep}
+
+The second user now does
+\begin{lstlisting}
+  git pull
+\end{lstlisting}
+to get these changes.
+Again, because we create the local repository by \lstinline{git clone}
+it is clear where the pull is coming from.
+The pull message will tell us what new files are created,
+or how many other files were changes.
+
+\begin{gitstep}{collab.runout4}
+  Person 2 pulls, getting the new file.
+\end{gitstep}
+
+\Level 1 {Merging changes}
+
+If you work with someone else, or even if you work solo on a project,
+but from more than one machine, it may happen that there will be multiple
+changes on a single file. That is, two local repositories have changes committed,
+and are now pushing to the same remote.
+
+In the following script we start with the same situation of the previous example,
+where we have two local repositories, as a stand-in for two users,
+or two different machines.
+
+We have a file of four lines.
+
+\begin{gitstep}{merge.runout1}
+  We have a four line file.
+\end{gitstep}
+
+The first user makes an edit on the first line; we confirm the state of the file;
+
+\begin{gitstep}{merge.runout2}
+  Person 1 makes a change.
+\end{gitstep}
+
+This user pushes the change.
+
+\begin{gitstep}{merge.runout3}
+  Person 1 pushes the change.
+\end{gitstep}
+
+The other user also makes a change, but on line~4, so that there is no conflict;
+
+\begin{gitstep}{merge.runout4}
+  Person 2 makes a different change to the same file.
+\end{gitstep}
+
+This change is added with \lstinline{git add} and \lstinline{git commit},
+but we proceed more cautiously in pushing: first we pull any changes made by others with
+\begin{lstlisting}
+  git pull --no-edit
+  git push
+\end{lstlisting}
+
+\begin{gitstep}{merge.runout5}
+  This change does not conflict, we can pull/push.
+\end{gitstep}
+
+Now if the first user does a pull, they see all the merged changes.
+
+\begin{gitstep}{merge.runout6}
+  Person 1 pulls to get all the changes.
+\end{gitstep}
+
+\Level 1 {Conflicting changes}
+\label{sec:git-conflict}
+
+There can be various reasons for git to report a conflict.
+\begin{itemize}
+\item You are trying to pull changes from another developer, but you have changes
+  yourself that you haven't yet committed.
+  If you don't want to commit your changes
+  (maybe you're still busy editing)
+  you can use \lstinline{git stash} to set your edits aside.
+  You can later retrieve them with \lstinline{git stash pop},
+  or decide to forget all about them with \lstinline{git stash drop}.
+\item There is a conflict between your changes, and those you are trying to pull
+  from another developer, or from yourself on another machine.
+  This is the case we will look at here.
+\item Very similar, there can also be conflicts between two branches you try to merge.
+  We will look at that in section~\ref{sec:git-branch-merge}.
+\end{itemize}
+
+As before, we have directories \n{person1} and \n{person2}
+containing independent clones of a repository.
+We have a file of four lines long, but contrary to above,
+we now make edits that are too close together for git's
+auto-merge to deal with them.
+
+\begin{gitstep}{conflict.runout1}
+  The original file.
+\end{gitstep}
+
+Now developer~1 makes a change on line~1.
+
+\begin{gitstep}{conflict.runout2}
+  With apologies for some scripting trickery,
+  we use an edit by \indextermunix{sed}, changing \n{1} on line~1 to \n{one}.
+  We add, commit, and push this change.
+\end{gitstep}
+
+In the meantime, developer~2 makes another change, to the original file.
+This change can be added and committed to the local repository
+without any problem.
+
+\begin{gitstep}{conflict.runout3}
+  Change the \n{2} on line two to \n{two}.
+  We add and commit this to the local repository.
+\end{gitstep}
+
+However, if we try to \n{git push} this change to the remote repository,
+we get an error that the remote is ahead of the local repository.
+So we first pull the state of the remote repository.
+In the previous section this led to an automatic merge;
+not so here.
+
+\begin{gitstep}{conflict.runout4}
+  The \n{git pull} call results in a message that the automatic mere failed,
+  indicating what file was the problem.
+\end{gitstep}
+
+You can now edit the file by hand, or using some merge tool.
+
+\begin{gitstep}{conflict.runout5}
+  In between the chevron'ed lines you first get the \n{HEAD},
+  that is the local state, followed by the pulled remote state.
+  Edit this file, commit the merge and push.
+\end{gitstep}
+
+\Level 0 {Branching}
+
+With a \indexterm{branch} you can keep a completely
+separate version of all the files in your project.
+
+Initially we have a file on the \lstinline{main} branch.
+
+\begin{gitstep}{devbranch.runout1}
+  We have a file, committed and all.
+\end{gitstep}
+
+We create a new branch, named \n{dev}
+and check it out
+\begin{lstlisting}
+  git branch dev
+  git checkout dev
+\end{lstlisting}
+This initially has the same content.
+
+\begin{gitstep}{devbranch.runout2}
+  Make a development branch.
+\end{gitstep}
+
+We make changes, and commit them to the current branch.
+
+\begin{gitstep}{devbranch.runout3}
+  Make changes and commit them to the dev branch.
+\end{gitstep}
+
+If we switch back to the \n{main} branch,
+everything is as before when we made the \n{dev} branch.
+
+\begin{gitstep}{devbranch.runout4}
+  The other branch is still unchanged.
+\end{gitstep}
+
+We can inspect differences between branches with 
+\begin{lstlisting}
+  git diff branch1 branch2
+\end{lstlisting}
+
+\begin{gitstep}{devbranch.runout5}
+  We can check differences between branches.
+\end{gitstep}
+
+\Level 1 {Branch merging}
+\label{sec:git-branch-merge}
+
+One of the points of having branches is to merge
+them after you have done some development in one branch.
+
+We start with the four line file from before.
+
+\begin{gitstep}{devmerge.runout1}
+  The main branch is up to date.
+\end{gitstep}
+
+Also as before, we have a \n{dev} branch that contains
+these contents.
+
+%% \begin{gitstep}{devmerge.runout2}
+%%   Make a development branch.
+%% \end{gitstep}
+
+We switch back to the \n{main} branch and make a change.
+This will not be visible in the \n{dev} branch.
+
+\begin{gitstep}{devmerge.runout3}
+  On line~1, change \n{1} to~\n{one}.
+\end{gitstep}
+
+We switch to the \n{dev} branch and make another file.
+The change in the main branch is indeed not here.
+
+\begin{gitstep}{devmerge.runout4}
+  On line~4, change \n{4} to~\n{four}.
+  This change is far enough away from the other change,
+  that there should be no conflict.
+\end{gitstep}
+
+Switching back to the \n{main} branch, we use
+\begin{lstlisting}
+  git merge dev
+\end{lstlisting}
+to merge the \n{dev} changes into \n{main}.
+
+\begin{gitstep}{devmerge.runout5}
+  Merge the dev branch into the main one with \n{git merge}.
+  Note the `auto-merge' message,
+  and confirm that both changes to the file are there.
+\end{gitstep}
+
+If two developers make changes on the same line, or on adjacent lines,
+git will not be able to merge
+and you have to edit the file as in section~\ref{sec:git-conflict}.
+
+\begin{figure}[ht]
+  \includegraphics[scale=.4]{git-push}
+  \caption{Add local changes to the remote repository.}
+  \label{fig:git-push}
+\end{figure}
+
+\begin{figure}[ht]
+  \includegraphics[scale=.4]{git-pull}
+  \caption{Get changes that were made to the remote repository.}
+  \label{fig:git-pull}
+\end{figure}
+
+\Level 0 {Conflicts}
+
+\begin{purpose}
+  In this section you will learn about how do deal with conflicting
+  edits by two users of the same repository.
+\end{purpose}
+
+Now let's see what happens when two people edit the same file.
+Let both students make an edit to \verb+firstfile+, but one to the
+top, the other to the bottom. After one student commits the edit, the
+other can commit changes, after all, these only affect the local repository.
+However, trying to push that change gives an error:
+\begin{verbatim}
+%% emacs firstfile # make some change
+%% hg commit -m ``first again''
+%% hg push test
+abort: push creates new remote head b0d31ea209b3!
+(you should pull and merge or use push -f to force)
+\end{verbatim}
+The solution is to get the other edit, and commit again. This takes a 
+couple of commands:
+{\small
+\begin{verbatim}
+%% hg pull myproject
+searching for changes
+adding changesets
+adding manifests
+adding file changes
+added 1 changesets with 1 changes to 1 files (+1 heads)
+(run 'hg heads' to see heads, 'hg merge' to merge)
+
+%% hg merge
+merging firstfile
+0 files updated, 1 files merged, 0 files removed, 0 files unresolved
+(branch merge, don't forget to commit)
+
+%% hg status
+M firstfile
+%% hg commit -m ``my edit again''
+%% hg push test
+pushing to https://VictorEijkhout:***@bitbucket.org/
+                       VictorEijkhout/my-project
+searching for changes
+remote: adding changesets
+remote: adding manifests
+remote: adding file changes
+remote: added 2 changesets with 2 changes to 1 files
+remote: bb/acl: VictorEijkhout is allowed. accepted payload.
+\end{verbatim}
+}
+
+This may seem complicated, but you see that Mercurial prompts you 
+for what commands to execute, and the workflow is clear, if you refer
+to figure~\ref{fig:hg}.
+
+\practical{Do a \n{cat} on the file that both of you have been editing.
+You should find that both edits are incorporated. That is the `merge'
+that Mercurial referred to.}{}{}
+
+If both students make edits on the same part of the file, version
+control can no
+longer resolve the conflicts. For instance, let one student insert a
+line between the first and the second, and let the second student edit
+the second line. Whoever tries to push second, will get messages
+like this:
+{\small
+\begin{verbatim}
+%% hg pull test
+added 3 changesets with 3 changes to 1 files (+1 heads)
+(run 'hg heads' to see heads, 'hg merge' to merge)
+%% hg merge
+merging firstfile
+warning: conflicts during merge.
+merging firstfile incomplete! 
+    (edit conflicts, then use 'hg resolve --mark')
+0 files updated, 0 files merged, 0 files removed, 1 files unresolved
+use 'hg resolve' to retry unresolved file merges 
+    or 'hg update -C .' to abandon
+\end{verbatim}
+}
+
+For git:
+\begin{verbatim}
+CONFLICT (content): Merge conflict in <name of some file>
+Automatic merge failed; fix conflicts and then commit the result.
+[solutions-mpi-c:955] emacs <name of some file>
+[solutions-mpi-c:956] git add !$ && git commit -m "fix conflict" && git pull && git push
+\end{verbatim}
+
+There are now the following options:
+\begin{enumerate}
+\item There is usually a way to indicate whether to use the local or
+  the remote version.
+\item There are graphical programs to resolve conflicts. They will
+  typically show you 3 colums, for the two versions, and for your
+  resolution. You can then indicate `take this from the local version,
+  and this from the remote'.
+\item You can also edit the file to resolve the conflicts yourself. We
+  will discuss that shortly.
+\end{enumerate}
+
+Both  will give you several options. It is easiest to resolve the
+conflict with a text editor. If you open the file that has the conflict
+you'll see something like:
+\begin{verbatim}
+<<<<<<< local
+aa
+bbbb
+=======
+aaa
+a2
+b
+>>>>>>> other
+c
+\end{verbatim}
+indicating the difference between the local version (`mine') and the
+other, that is the version that you pulled and tried to merge.
+You need to edit the file to resolve the conflict.
+
+After this, you tell hg that the conflict was resolved:
+\begin{verbatim}
+ hg resolve --mark
+%% hg status
+M firstfile
+? firstfile.orig
+\end{verbatim}
+or
+\begin{verbatim}
+git add <name of that file>
+git commit -m "fixed conflict in <name of that file>"
+\end{verbatim}
+After this you can commit and push again.
+The other student then needs to do another update to get the
+correction.
+
+For conflicts in binary files, git has a flag where you can indicate
+which version to use:
+\begin{verbatim}
+git checkout --ours path/to/file
+git checkout --theirs path/to/file
+\end{verbatim}
+
+Not all files can be merged: for binary files Mercurial will ask you:
+\begin{verbatim}
+%% hg merge
+merging proposal.tex
+merging summary.tex
+merking references.tex
+ no tool found to merge proposal.pdf
+keep (l)ocal or take (o)ther? o
+\end{verbatim}
+This means that the only choices are to keep your local version
+(type~\n{l} and hit return) or take the other version (type~\n{o} and
+hit return). In the case of a binary file that was obvious generated
+automatically, some people argue that they should not be in the
+repository to begin with.
+
+\Level 0 {Inspecting the history}
+
+\begin{purpose}
+  In this section, you will learn how to view and compare files in the
+  repository.
+\end{purpose}
+
+If you want to know where you cloned a repository from, look in the
+file \n{.hg/hgrc}.
+
+The main sources of information about the repository are \n{hg log}
+and \n{hg id}. The latter gives you global information, depending
+on what option you use. For instance, \n{hg id -n} gives the local revision
+number.
+\begin{itemize}
+\item [\texttt{hg log}] gives you a list of all changesets so far,
+  with the comments you entered.
+\item [\texttt{hg log -v}] tells you what files were affected in each changeset.
+\item [\texttt{hg log -r 5}] or \n{hg log -r 6:8} gives information on
+  one or more changesets.
+\end{itemize}
+
+To see differences in various revisions of individual files, use
+\n{hg diff}. First 
+make sure you are up to date. Now do \n{hg diff firstfile}. No
+output, right? Now make an edit in \n{firstfile} and do \n{hg diff
+  firstfile} again. This gives you the difference between the last
+commited version and the working copy.
+
+\begin{tabular}{|l|l|}
+  \midrule
+  mercurial&git\\
+  \midrule
+  \n{hg diff <file>}&
+  \n{git diff HEAD <file>}\\
+  \n{hg diff -r A -r B <file>}&
+  \n{git diff A..B <file>}\\
+  \midrule
+\end{tabular}
+
+For example:
+\begin{verbatim}
+[src:1151] git pull
+[...]
+From github.com:Username/Reponame
+   c5aaa43..2f5ce0b  main       -> origin/main
+Updating c5aaa43..2f5ce0b
+Fast-forward
+ src/net.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+[src:1156] git diff c5aaa43..2f5ce0b net.cpp
+\end{verbatim}
+\begin{itemize}
+\item The \n{pull} command tells you what the previous and current
+  commit identifiers are; and
+\item With \n{diff}, specifying these identifiers, you get the changes
+  in \indextermunix{diff} format.
+\end{itemize}
+%% To github.com:ZhanweiDU/TACC-COVID-19.git
+%%    987cc99..ae0396a  Demo-vec -> Demo-vec
+
+Check for yourself what happens when you do a commit but no push, and 
+you issue the above diff command.
+
+You can also ask for differences between committed versions with
+\n{hg diff -r 4:6 firstfile}.
+
+The output of this diff command is a bit cryptic, but you can
+understand it without too much trouble. There are also fancy GUI
+implementations of hg for every platform that show you differences in
+a much nicer way.
+
+If you simply want to see what a file used to look like, do \n{hg
+  cat -r 2 firstfile}. To get a copy of a certain revision of the
+repository, do \n{hg export -r 3 . ../rev3}, which exports the
+repository at the current directory (`dot') to the directory \n{../rev3}.
+
+If you save the output of \n{hg diff}, it is possible to apply it
+with the Unix \n{patch} command. This is a quick way to send patches
+to someone without them needing to check out the repository.
+
+\Level 0 {Branching}
+
+Create branch:
+
+\n{git checkout -b newbranch}
+
+List available:
+
+\n{git branch}
+
+After that switch:
+
+\n{git checkout branchname}
+
+\n{git push --set-upstream origin newbranch}
+
+
+See what branches there are: \n{hg brances}
+
+See what branch you are working on: \n{hg branch}
+
+Switch to a branch (this undoes local changes): \n{hg update -C branchname}
+
+\Level 0 {Pull requests and forks}
+
+Suppose you want to contribute changes to a repository,
+but you don't have write permissions on a repository.
+(Of course, you need to have read permissions to the repository
+in order to make the changes.)
+Lack of write permission means that you can not create a branch,
+and push and merge it.
+A \indexterm{pull request} is then a way to communicate
+your changes so that they can be pulled, rather
+than you pushing them.
+
+\begin{enumerate}
+\item
+  In github, creating a fork is made with a press of the `Fork' button.
+\item
+  Clone your fork.
+\begin{verbatim}
+git clone <original-url> repo-fork
+cd repo-fork
+\end{verbatim}
+\item
+  Make your edits in the cloned fork.
+\item You need to keep your fork up to date with the original repo.
+  First you connect the original repo as `upstream' to your fork:
+\begin{verbatim}
+git remote add upstream <original-url>
+git remote -v # check on the state of things
+\end{verbatim}
+(the name `upstream' is the conventional name; it is not a keyword.)
+\item
+  Optionally, check out a branch. If you \texttt{git status}, you should see
+\begin{verbatim}
+On branch YourBranch
+Your branch is up to date with 'origin/YourBranch.
+\end{verbatim}
+\item Keep your fork updated:
+\begin{verbatim}
+git fetch upstream
+git merge upstream/master master # or specific branch
+\end{verbatim}
+\end{enumerate}
+
+To make pull request:
+\begin{enumerate}
+\item Create a new branch
+\begin{verbatim}
+git checkout -b YourChangesBranch
+\end{verbatim}
+\item 
+  Make your changes and commit them:
+\begin{verbatim}
+git add file1 file2
+git commit -m "changes summary"
+\end{verbatim}
+\item Push your changes to the origin, that is,
+  your repo on github:
+\begin{verbatim}
+git push --set-upstream origin YourChangesBranch
+\end{verbatim}
+(remember that you didn't have write permission to the original repo!)
+\item You probably now get a message with URL to visit for creating
+  a pull request.
+\end{enumerate}
+
+
+\Level 0 {Other issues}
+
+\Level 1 {Transport}
+
+Mercurial and git can use either \texttt{ssh} or \texttt{http} as
+\indexterm{transport}%
+\index{ssh!as transport}%
+\index{http!as transport}.
+With Git you may need to redefine the transport for a \texttt{push}:
+\begin{verbatim}
+git remote rm origin
+git remote add origin git@github.com:TACC/pylauncher.git
+\end{verbatim}
+
+You can change the transport with \n{git remote set-url}:
+\begin{verbatim}
+git remote -v # check current transport
+git remote set-url origin git@hostname:USERNAME/REPOSITORY.git
+git remote -v # verify changes
+\end{verbatim}
+
+\endinput
+
+$ git config --global user.name "Vlad Dracula"
+$ git config --global user.email "vlad@tran.sylvan.ia"
+
+git config --global init.defaultBranch main
+
+
+
+
+% LocalWords:  Eijkhout hg url localdir init Bitbucket projectrepo cp
+% LocalWords:  cleartext mde changeset mv rm repo yourfile workflow
+% LocalWords:  colums hgrc changesets diff firstfile commited vec rev
+% LocalWords:  newbranch branchname brances github ssh http
+

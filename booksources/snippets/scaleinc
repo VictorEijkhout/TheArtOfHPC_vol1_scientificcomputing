@@ -1,0 +1,10 @@
+// example2.F90
+  integer :: inc=2
+  call dscal(n/inc,scale,xarray,inc)
+  do i=1,n
+     if (mod(i,inc)==1) then
+        if (.not.assert_equal( xarray(i),scale )) print *,"Error in index",i
+     else
+        if (.not.assert_equal( xarray(i),1.d0 )) print *,"Error in index",i
+     end if
+  end do

@@ -1,0 +1,8 @@
+// rotate_common.cxx
+void rotate(double *x,double *y,double alpha) {
+  double x0 = *x, y0 = *y;
+  double c = cos(alpha), s = sin(alpha);
+  *x = c * x0 - s * y0;
+  *y = s * x0 + c * y0;
+  return;
+}

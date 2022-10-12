@@ -1,0 +1,117 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% application/montecarlo.tex
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{Monte Carlo simulation|(}
+
+Monte Carlo simulation is a broad term for methods that use random
+numbers and statistical sampling to solve problems, rather than exact
+modeling. From the nature of this sampling, the result will have some
+uncertainty, but the statistical `law of large numbers' will ensure
+that the uncertainty goes down as the number of samples grows.
+
+An important tool for statistical sampling is a random number generator.
+See appendix~\ref{app:random} for random number generation.
+
+\Level 0 {Motivation}
+
+Let's start with a simple example: measuring an
+area, for instance, $\pi$~is the area of a circle inscribed
+in a square with sides~2. If you picked a random point in the square,
+the chance of it falling in the circle is~$\pi/4$, so you could
+estimate this ratio by taking many random points $(x,y)$ and seeing
+in what proportion their length $\sqrt{x^2+y^2}$ is less than~1.
+
+You could even do this as a physical experiment:
+suppose you have a pond of an irregular shape in your backyard,
+and that the yard itself is rectangular with known dimensions. If you
+would now throw pebbles into your yard so that they are equally likely
+to land at any given spot, then the ratio of pebbles falling in the
+pond to those falling outside equals the ratio of the areas. 
+
+Less
+fanciful and more mathematically, we need to formalize the idea of
+falling inside or outside the shape you are measuring.
+Therefore, let $\Omega\in[0,1]^2$ be the shape, and let 
+a function $f(\bar x)$ describe
+the boundary of~$\Omega$, that is
+\[ 
+\begin{cases}
+  f(\bar x)<0&x\not\in\Omega\\
+  f(\bar x)>0&x\in\Omega\\
+\end{cases}
+\]
+Now take random points $\bar x_0,\bar x_1,\bar x_2\in[0,1]^2$, then we
+can estimate the area of $\Omega$ by counting how often $f(\bar x_i)$
+is positive or negative.
+
+We can extend this idea to integration. The average value of a
+function on an interval $(a,b)$ is defined as
+\[ \langle f\rangle = \frac1{b-a}\int_a^bf(x)dx \]
+On the other hand, we can also estimate the average as
+\[ \langle f\rangle \approx \frac 1N\sum_{i=1}^nf(x_i) \]
+if the points $x_i$ are reasonably distributed and the function $f$ is
+not too wild. This leads us to
+\[ \int_a^bf(x)dx  \approx (b-a) \frac 1N\sum_{i=1}^nf(x_i) \]
+Statistical theory, that we will not go into,
+tells us that the uncertainty $\sigma_I$ in the integral is related to
+the standard deviation $\sigma_f$ by
+\[ \sigma_I\sim \frac1{\sqrt N}\sigma_f \]
+for normal distributions.
+
+\Level 1 {What is the attraction?}
+
+So far, Monte Carlo integration does not look much different from
+classical integration by \indexterm{Riemann sums}.
+The difference appears when we go to higher
+dimensions. In that case, for classical integration we would need $N$
+points in each dimension, leading to $N^d$ points in $d$
+dimensions. In the Monte Carlo method, on the other hand, the points
+are taken at random from the $d$-dimensional space, and a much lower
+number of points suffices.
+
+Computationally, Monte Carlo methods are attractive since all function
+evaluations can be performed in parallel.
+
+The
+statistical law that underlies this is as follows: if $N$ independent
+observations are made of a quantity with standard deviation~$\sigma$,
+then the standard deviation of the mean is~$\sigma/\sqrt N$. This
+means that more observations will lead to more accuracy; what makes
+Monte Carlo methods interesting is that this gain in accuracy is not
+related to dimensionality of the original problem.
+
+Monte Carlo techniques are of course natural candidatates for simulating
+phenomena that are statistical in nature, such as radioactive decay,
+or Brownian motion.
+Other problems where Monte Carlo
+simulation is attractive are outside the realm of scientific
+computing. For instance, the \indexterm{Black-Scholes model} for stock
+\indexterm{option pricing}~\cite{BlackScholes} uses Monte Carlo simulation.
+
+Some problems that you have seen before, such as solving a linear
+system of equations, can be tackled with Monte Carlo
+techniques. However, this is not a typical application. Below we will
+discuss two applications where exact methods
+would take far too much time to compute and where statistical sampling
+can quickly give a reasonably accurate answer.
+
+\index{Monte Carlo simulation|)}
+
+\Level 0 {Examples}
+
+\Level 1 {Monte Carlo simulation of the Ising model}
+\label{sec:ising}
+\index{Ising model|(}
+\input applications/ising
+\index{Ising model|)}
+
