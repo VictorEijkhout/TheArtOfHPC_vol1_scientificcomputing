@@ -145,7 +145,7 @@ dealing with that. For instance, shared variables commonly occur in
 \lstset{language=C}
 \begin{lstlisting}
   s = 0;
-#pragma omp parallel for reduction(+:sum)
+#pragma omp parallel for reduction(+:s)
   for (i=0; i<ProblemSize; i++) {
     s = s + a[i]*b[i];
   }
