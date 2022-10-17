@@ -31,6 +31,8 @@ diagnostics ::
 	        || echo 0 >/dev/null \
 	 && ( grep "LaTeX Warning: Reference" ${FILE}.log ) \
 	        || echo 0 >/dev/null \
+	 && ( grep "missing snippet" ${FILE}.log \
+	        || echo >/dev/null ) \
 	 && echo "----------------" \
 	 && ( grep undefined ${FILE}.log | grep -v def: | grep -v although \
 	        || echo >/dev/null ) \

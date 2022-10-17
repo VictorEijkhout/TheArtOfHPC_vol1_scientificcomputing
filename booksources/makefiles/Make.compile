@@ -42,21 +42,24 @@ else
 
   ## non-TAU compilation
   CSTANDARD = 99
-  C_COMPILER_intel = icc
-  C_COMPILER_gcc   = gcc
+  C_COMPILER_intel   = icc
+  C_COMPILER_gcc     = gcc
   C_COMPILER_clang   = clang
+  C_COMPILER_oneapi  = icx
   CFLAGS = -g -O${OPTLEVEL} -std=c${CSTANDARD}
   MPI_C_COMPILER = mpicc
 
-  CXX_COMPILER_intel = icpc
-  CXX_COMPILER_gcc   = g++
+  CXX_COMPILER_intel   = icpc
+  CXX_COMPILER_gcc     = g++
   CXX_COMPILER_clang   = clang++
+  CXX_COMPILER_oneapi  = icpx
   CXXFLAGS = -g -O${OPTLEVEL} -std=c++17
   MPI_CXX_COMPILER = mpicxx
 
-  F_COMPILER_intel = ifort
-  F_COMPILER_gcc   = gfortran
+  F_COMPILER_intel   = ifort
+  F_COMPILER_gcc     = gfortran
   F_COMPILER_clang   = gfortran
+  F_COMPILER_oneapi  = gfortran
   FFLAGS = -g -O${OPTLEVEL}
   MPI_F_COMPILER = mpif90
 

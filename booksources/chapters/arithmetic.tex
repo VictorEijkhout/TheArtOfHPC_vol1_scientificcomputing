@@ -76,7 +76,9 @@ At the lowest level, computer storage and computer numbers
 are organized in \indextermdef{bit}s.
 A~bit, short for `binary digit', can have the values zero and one.
 Using bits we can then express numbers in \indextermdef{binary} notation:
-\[ \mathtt{10010}_2 \equiv \mathtt{18}_{10} \]
+\begin{equation}
+  \mathtt{10010}_2 \equiv \mathtt{18}_{10}
+\end{equation}
 where the subscript indicates the base of the number system,
 and in both cases the rightmost digit is the least significant one.
 
@@ -126,7 +128,7 @@ consider 32 bits the standard) bits to store the
 absolute magnitude. By comparison, we will call the straightforward
 interpretation of bitstrings as \indexterm{unsigned} integers.
 
-\[
+\begin{equation}
 \begin{array}{crrrrrr}
   \toprule
   \hbox{bitstring}&
@@ -140,7 +142,7 @@ interpretation of bitstrings as \indexterm{unsigned} integers.
   -0&\cdots&-(2^{31}-1)\\
   \bottomrule
 \end{array}
-\]
+\end{equation}
 
 This scheme has some disadvantages, one being that
 there is both a positive and negative number zero. This means that a test
@@ -156,7 +158,7 @@ positive number.
 Another solution would be to let an unsigned number $n$ be interpreted
 as $n-B$ where $B$ is some plausible bias, for instance~$2^{31}$.
 
-\[
+\begin{equation}
 \begin{array}{crrrrrr}
   \toprule
   \hbox{bitstring}&
@@ -169,7 +171,7 @@ as $n-B$ where $B$ is some plausible bias, for instance~$2^{31}$.
   -2^{31}&\ldots&-1&
   0&\ldots&2^{31}-1\\ \bottomrule
 \end{array}
-\]
+\end{equation}
 
 This shifted scheme does not suffer from the $\pm0$ problem, and
 numbers are consistently ordered. However, if we compute $n-n$
@@ -189,10 +191,14 @@ formally defined as follows.
   \begin{itemize}
   \item If $0\leq n\leq 2^{31}-1$, the normal bit pattern for $n$ is
     used, that is
-    \[ 0\leq n\leq 2^{31}-1 \Rightarrow \beta(n) = n. \]
+    \begin{equation}
+      0\leq n\leq 2^{31}-1 \Rightarrow \beta(n) = n.
+    \end{equation}
   \item For $-2^{31}\leq n\leq -1$, $n$ is represented by the bit
     pattern for $2^{32}-|n|$:
-    \[ -2^{31}\leq n\leq -1 \Rightarrow \beta(n) = 2^{32}-|n|. \]
+    \begin{equation}
+      -2^{31}\leq n\leq -1 \Rightarrow \beta(n) = 2^{32}-|n|.
+    \end{equation}
   \end{itemize}
   We denote the inverse function that takes a bit pattern and
   interprets as integer with~$\eta=\beta\inv$.
@@ -200,7 +206,7 @@ formally defined as follows.
 
 The following diagram shows the correspondence between bitstrings and
 their interpretation as 2's complement integer:
-\[
+\begin{equation}
 \begin{array}{crrrrrr}
   \toprule
   \hbox{bitstring $n$}&
@@ -214,7 +220,7 @@ their interpretation as 2's complement integer:
   -2^{31}&\cdots&-1\\
   \bottomrule
 \end{array}
-\]
+\end{equation}
 
 Some observations:
 \begin{itemize}
@@ -268,7 +274,9 @@ on signed integers, as represented in 2's complement.
 
 We consider the computation of $m+n$, where $m,n$ are representable
 numbers:
-\[ 0\leq |m|,|n|<2^{31}. \]
+\begin{equation}
+  0\leq |m|,|n|<2^{31}.
+\end{equation}
 We distinguish different cases.
 \begin{itemize}
 \item The easy case is $0<m,n$. In that case we perform the normal
@@ -285,7 +293,9 @@ We distinguish different cases.
 \item Case $m>0$, $n<0$, and $m+n>0$. 
   Then $\beta(m)=m$ and
   $\beta(n)=2^{32}-|n|$, so the unsigned addition becomes
-  \[ \beta(m)+\beta(n)=m+(2^{32}-|n|)=2^{32}+m-|n|. \]
+  \begin{equation}
+    \beta(m)+\beta(n)=m+(2^{32}-|n|)=2^{32}+m-|n|.
+  \end{equation}
   Since $m-|n|>0$, this result is~$>2^{32}$.
   %
   (See figure~\ref{fig:mminusn1}.)
@@ -294,10 +304,13 @@ We distinguish different cases.
   this is basically $m+n$ with the 33rd bit set. If we ignore this
   overflowing bit, we then have the correct result.
 \item Case $m>0$, $n<0$, but $m+n<0$. Then
-  \[ \beta(m)+\beta(n) = m+ (2^{32}-|n|) = 2^{32}-(|n|-m). \]
+  \begin{equation}
+    \beta(m)+\beta(n) = m+ (2^{32}-|n|) = 2^{32}-(|n|-m).
+  \end{equation}
   Since $|n|-m>0$ we get
-  \[ \eta\bigl(2^{32}-(|n|-m)\bigr) = -\left| (|n|-m) \right| = m-|n|=m+n.
-  \]
+  \begin{equation}
+    \eta\bigl(2^{32}-(|n|-m)\bigr) = -\left| (|n|-m) \right| = m-|n|=m+n.
+  \end{equation}
 \end{itemize}
 
 \Level 1 {Subtraction in two's complement}
@@ -315,16 +328,19 @@ unsigned addition $m+(2^{32}-n)$.
 \begin{itemize}
 \item Case: $m<|n|$. In this case, $m-n$ is negative and
   $1\leq |m-n|\leq 2^{31}$, so the bit pattern for $m-n$ is
-  \[ \beta(m-n) = 2^{32}-(n-m). \]
+  \begin{equation}
+    \beta(m-n) = 2^{32}-(n-m).
+  \end{equation}
   Now, $2^{32}-(n-m)=m+(2^{32}-n)$, so we can compute
   $m-n$ in 2's complement by adding the bit patterns of $m$ and $-n$ as
   unsigned integers:
-  \[ \eta\bigl( \beta(m)+\beta(-n) \bigr) =
+  \begin{equation}
+    \eta\bigl( \beta(m)+\beta(-n) \bigr) =
   \eta\bigl( m+(2^{32}-|n|) \bigr) =
   \eta\bigl( 2^{32} + (m-|n|) \bigr) = 
   \eta\left( 2^{32} - \bigl|m-|n|\bigr| \right) = m-|n| = m+n
   .
-  \]
+  \end{equation}
 \item Case: $m>n$. Here we observe that
   $m+(2^{32}-n)=2^{32}+m-n$. Since $m-n>0$, this is a number $>2^{32}$
   and therefore not a legitimate
@@ -429,10 +445,11 @@ known as `scientific notation', where a number is represented as a
 instance~$6.022\cdot 10^{23}$, which has a significand \n{6022} with a
 \indexterm{radix point} after the first digit, and an exponent~\n{23}.
 This number stands for
-\[ 6.022\cdot 10^{23}= \left[
+\begin{equation}
+  6.022\cdot 10^{23}= \left[
     6\times 10^0+0\times 10^{-1}+2\times10^{-2}+2\times10^{-3}
     \right] \cdot 10^{23}. 
-\]
+\end{equation}
 For a general approach,
 we introduce a \indexterm{base}~$\beta$, which is
 a small integer number, 10~in the preceding example, and 2~in computer
@@ -475,7 +492,7 @@ consumption, but computers are binary, so base~2 predominates
 there. Old IBM\index{IBM} mainframes grouped bits to make for a base~16
 representation.
 
-\[
+\begin{equation}
 \begin{array}{rrrrr}
   &\beta&t&L&U\\ \midrule
   \hbox{IEEE single precision (32 bit)}&2&23&-126&127\\
@@ -484,7 +501,7 @@ representation.
   \hbox{IBM mainframe 32 bit}&16&6&-64&63\\
   \hbox{Packed decimal}&10&50&-999&999\\
 \end{array}
-\]
+\end{equation}
 
 Of these, the single and double precision formats are by far the most
 common. We will discuss these in section~\ref{sec:ieee754} and
@@ -508,7 +525,9 @@ A practical implication in the case of binary numbers is that the
 first digit is always~1, so we do not need to store it explicitly.
 In the \indexterm{IEEE 754} standard, this means that every floating point number
 is of the form
-\[ 1.d_1d_2\ldots d_t\times 2^e\]
+\begin{equation}
+  1.d_1d_2\ldots d_t\times 2^e
+\end{equation}
 and only the digits $d_1d_2\ldots d_t$ are stored.
 
 \Level 1 {Limitations: overflow and underflow}
@@ -531,7 +550,7 @@ too large or too small in the following ways.
 
 The largest number we can store has every digit equal to~$\beta$:
 
-\[
+\begin{equation}
 \begin{array}{rccccc}
   \toprule
   &\textrm{unit}&\multicolumn{3}{c}{\textrm{fractional}}&\textrm{exponent}\\
@@ -541,12 +560,13 @@ The largest number we can store has every digit equal to~$\beta$:
   \textrm{value}&1&\beta^{-1}&\cdots&\beta^{-(t-1)}&U \\
   \bottomrule
 \end{array}
-\]
+\end{equation}
 
 which adds up to
-\[ (\beta-1)\cdot1+(\beta-1)\cdot\beta\inv+\cdots
+\begin{equation}
+  (\beta-1)\cdot1+(\beta-1)\cdot\beta\inv+\cdots
 +(\beta-1)\cdot\beta^{-(t-1)}=\beta-\beta^{-(t-1)},
-\]
+\end{equation}
 and the smallest number
 (that is, the most negative)
 is
@@ -558,8 +578,7 @@ former or smaller than the latter causes a condition called
 \Level 2 {Underflow}
 
 The number closest to zero is $\beta^{-(t-1)}\cdot \beta^L$.
-
-\[
+\begin{equation}
 \begin{array}{rccccc}
   \toprule
   &\textrm{unit}&\multicolumn{3}{c}{\textrm{fractional}}&\textrm{exponent}\\
@@ -569,7 +588,7 @@ The number closest to zero is $\beta^{-(t-1)}\cdot \beta^L$.
   \textrm{value}&0&0&\cdots&0,\beta^{-(t-1)}&L\\
   \bottomrule
 \end{array}
-\]
+\end{equation}
 
 A computation that has a result less than that
 (in absolute value) causes a condition called \indextermdef{underflow}. 
@@ -582,7 +601,7 @@ Therefore, we also need to look at `gradual underflow'.
 
 The normalized number closest to zero is $1\cdot \beta^L$.
 
-\[
+\begin{equation}
 \begin{array}{rccccc}
   \toprule
   &\textrm{unit}&\multicolumn{3}{c}{\textrm{fractional}}&\textrm{exponent}\\
@@ -592,7 +611,7 @@ The normalized number closest to zero is $1\cdot \beta^L$.
   \textrm{value}& 1& 0&\cdots&0&L\\
   \bottomrule
 \end{array}
-\]
+\end{equation}
 
 Trying
 to compute a number less than that in absolute value is sometimes
@@ -632,7 +651,9 @@ overflow is represented as \indextermtt{Inf}, short for `infinite'.
 
 \begin{exercise}
 For real numbers $x,y$, the quantity $g=\sqrt{(x^2+y^2)/2}$ satisfies
-\[ g\leq \max\{|x|,|y|\} \]
+\begin{equation}
+  g\leq \max\{|x|,|y|\}
+\end{equation}
 so it is representable if $x$ and~$y$ are.
 What can go wrong if you compute $g$ using the above formula?
 Can you think of a better way?
@@ -668,13 +689,13 @@ all~$x$ in an interval around it.  With $t$ digits in the
 mantissa\index{mantissa}, this is the interval of numbers that differ
 from~$\bar x$ in the $t+1$st digit. For the mantissa\index{mantissa}
 part we get:
-\[
+\begin{equation}
 \begin{cases}
   x\in \left[\tilde x,\tilde x+\beta^{-t+1}\right)&\hbox{truncation}\\
   x\in \left[\tilde x-\frac12 \beta^{-t+1},\tilde x+\frac12 \beta^{-t+1}\right)
     &\hbox{rounding}
 \end{cases}
-\]
+\end{equation}
 
 If $x$ is a number and $\tilde x$ its representation in the computer,
 we call $x-\tilde x$ the \emph{representation error} or
@@ -686,14 +707,16 @@ respectively.
 
 Often we are only interested in bounds on the error. If $\epsilon$ is
 a bound on the error, we will write
-\[ \tilde x = x\pm\epsilon \defined
+\begin{equation}
+  \tilde x = x\pm\epsilon \defined
     |x-\tilde x|\leq\epsilon 
     \Leftrightarrow \tilde x\in[x-\epsilon,x+\epsilon]
-\]
+\end{equation}
 For the relative error we note that
-\[ \tilde x =x(1+\epsilon) \Leftrightarrow
+\begin{equation}
+  \tilde x =x(1+\epsilon) \Leftrightarrow
     \left|\frac{\tilde x-x}{x}\right|\leq \epsilon
-\]
+\end{equation}
 
 Let us consider an example in decimal arithmetic, that is, $\beta=10$,
 and with a 3-digit mantissa: $t=3$.  The number $x=1.256$ has a
@@ -723,12 +746,12 @@ This maximum relative representation error is called the
 or sometimes
 \emph{machine epsilon}\index{machine epsilon|see{machine precision}}.
 Typical values are:
-\[
+\begin{equation} 
 \begin{cases}
   \epsilon\approx10^{-7}&\hbox{32-bit single precision}\\
   \epsilon\approx10^{-16}&\hbox{64-bit double precision}
 \end{cases}
-\]
+\end{equation}
 (After you have studied the section on the IEEE 754 standard,
 can you derive these values?)
 
@@ -737,7 +760,7 @@ smallest number that can be added to~$1$ so that $1+\epsilon$ has a
 different representation than~$1$. A~small example shows how aligning
 exponents can shift a too small operand so that it is effectively ignored in
 the addition operation:
-\[
+\begin{equation}
 \begin{array}{cll}
    &1.0000&\times 10^0\\
   +&1.0000&\times 10^{-5}\\ \midrule
@@ -748,7 +771,7 @@ the addition operation:
   +&0.00001&\times 10^0\\ \midrule
   =&1.0000&\times 10^0
 \end{array}
-\]
+\end{equation}
 Yet another way of looking at this
 is to observe that, in the addition $x+y$, if the ratio of $x$ and~$y$
 is too large, the result will be identical to~$x$.
@@ -769,7 +792,9 @@ digits accuracy in single precision, or 15 in double.
 \begin{exercise}
   The number $e\approx 2.72$, the base for the natural logarithm, has
   various definitions. One of them is 
-  \[ e=\lim_{n\rightarrow\infty} (1+1/n)^n. \]
+  \begin{equation}
+    e=\lim_{n\rightarrow\infty} (1+1/n)^n.
+  \end{equation}
   Write a single precision program that tries to compute~$e$ in this
   manner. (Do not use the \texttt{pow} function: code the power explicitly.)
   Evaluate the expression for an upper bound $n=10^k$ for some~$k$.
@@ -780,7 +805,9 @@ digits accuracy in single precision, or 15 in double.
 
 \begin{exercise}
   The exponential function~$e^x$ can be computed as
-  \[ e=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\cdots \]
+  \begin{equation}
+    e=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\cdots
+  \end{equation}
   Code this and try it for some positive~$x$,
   for instance $x=1,3,10,50$.
   How many terms do you compute?
@@ -804,7 +831,7 @@ could differ between computer manufacturers, and even between models
 from one manufacturer. This was obviously a bad situation from a point
 of portability of codes and reproducibility of results.
 \begin{figure}[ht]
-  \[
+  \begin{equation}
   \begin{array}{ l l l }
     \toprule
     \hbox{sign}&\hbox{exponent}&\hbox{mantissa}\\
@@ -829,7 +856,7 @@ of portability of codes and reproducibility of results.
     & \hbox{(except $e=0,2047$)} & \\
     \bottomrule
   \end{array}
-  \]
+  \end{equation}
   \caption{Single and double precision definition.}
   \label{fig:single-double}
 \end{figure}
@@ -879,7 +906,7 @@ rounded version of the exact result.
 See section~\ref{sec:correct-round}.
 
 \begin{figure}[ht]
-  \[
+  \begin{equation}
   \begin{array}{rrl}
     \toprule
     \hbox{exponent}&\hbox{numerical value}&\hbox{range}\\
@@ -910,7 +937,7 @@ See section~\ref{sec:correct-round}.
                    & s_1\cdots s_{23}\not=0 \Rightarrow \n{NaN} &\\
     \bottomrule
   \end{array}
-  \]
+  \end{equation}
   \caption{Interpretation of single precision numbers depending on the exponent bit pattern.}
   \label{fig:single-precision}
 \end{figure}
@@ -1095,11 +1122,11 @@ result is the exact rounded version of the exact result.
 If this statement sounds trivial or self-evident, consider subtraction
 as an example. In a decimal number system with two digits in the
 mantissa, the computation
-\[ 
+\begin{equation}
 \begin{array}{rl}
   1.0-\fp{9.4}{-1}=\\ 1.0-0.94&=0.06\\&=\fp{0.6}{-2}\\
 \end{array}
-\]
+\end{equation}
 Note that in an
 intermediate step the mantissa $.094$ appears, which has one more
 digit than the two we declared for our number system. The extra digit
@@ -1121,7 +1148,9 @@ are needed~\cite{Goldberg:arithmetic}.
 
 In 2008, the IEEE~754 standard was revised to include the behavior
 of \indexacf{FMA} operations, that is, operations of the
-form \[ c \leftarrow a*b+c. \]
+form \begin{equation}
+  c \leftarrow a*b+c.
+\end{equation}
 This operation has a twofold motivation.
 
 First, the \ac{FMA} is potentially more accurate than a separate
@@ -1194,14 +1223,14 @@ Formally, let us consider the computation of
 $s=x_1+x_2$, and we assume that the numbers~$x_i$ are represented
 as $\tilde x_i=x_i(1+\epsilon_i)$.
 Then the sum~$s$ is represented as
-\[ 
+\begin{equation}
 \begin{array}{rl}
 \tilde s&=(\tilde x_1+\tilde x_2)(1+\epsilon_3)\\
 &=x_1(1+\epsilon_1)(1+\epsilon_3)+x_2(1+\epsilon_2)(1+\epsilon_3)\\
 &\approx x_1(1+\epsilon_1+\epsilon_3)+x_2(1+\epsilon_2+\epsilon_3)\\
 &\approx s(1+2\epsilon)
 \end{array}
-\]
+\end{equation}
 under the assumptions that all~$\epsilon_i$ are small and of roughly
 equal size, and that both $x_i>0$.
 We see that the relative errors are added under addition.
@@ -1244,13 +1273,13 @@ it has only one significant digit\footnote
 To see this, consider
 the case where the first operand~$1.24$ is actually the rounded result
 of a computation that should have resulted in~$1.235$:
-\[
+\begin{equation}
 \begin{array}{rll}
   .5\times 2.47-1.23&=1.235-1.23&=0.005\quad\hbox{exact}\\
   \downarrow&&=5.0\cdot 10^{-3}\\
   1.24-1.23&=0.01=1.\cdot 10^{-2}\hbox to 0pt{compute\hss}\\
 \end{array}
-\]
+\end{equation}
 Now, there is a 100\% error, even though the relative error of the
 inputs was as small as could be expected. Clearly, subsequent
 operations involving the result of this subtraction will also be
@@ -1273,12 +1302,13 @@ alternating signs?
 
 \begin{exercise}
   Consider the iteration
-  \[ x_{n+1}=f(x_n) = \
+  \begin{equation}
+    x_{n+1}=f(x_n) = \
   \begin{cases}
     2x_n&\hbox{if $2x_n<1$}\\
     2x_n-1&\hbox{if $2x_n\>1$}\\
   \end{cases}
-  \]
+  \end{equation}
   Does this function have a fixed point, $x_0\equiv f(x_0)$, or is there a cycle
   $x_1=f(x_0),\,x_0\equiv x_2=f(x_1)$ et cetera?
 
@@ -1304,7 +1334,7 @@ Let floating point numbers be stored as a single digit for the mantissa,
 one digit for the exponent, and one guard digit;
 now consider the computation of $4+6+7$.
 Evaluation left-to-right gives:
-\[ 
+\begin{equation}
 \begin{array}{l@{{}\Rightarrow{}}lp{3in}}
 (4\cdot10^0 + 6\cdot10^0)+7\cdot10^0&10\cdot10^0+7\cdot10^0&addition\\
 &1\cdot 10^1 + 7\cdot10^0&rounding\\
@@ -1312,9 +1342,9 @@ Evaluation left-to-right gives:
 &1.7\cdot 10^1\\
 &2\cdot10^1&rounding
 \end{array}
-\]
+\end{equation}
 On the other hand, evaluation right-to-left gives:
-\[ 
+\begin{equation}
 \begin{array}{l@{{}\Rightarrow{}}lp{3in}}
 4\cdot10^0 + (6\cdot10^0 + 7\cdot10^0)&4\cdot 10^0 + 13\cdot10^0&addition\\
 &4\cdot 10^0 + 1\cdot10^1&rounding\\
@@ -1322,7 +1352,7 @@ On the other hand, evaluation right-to-left gives:
 &1.4\cdot 10^1\\
 &1\cdot10^1&rounding
 \end{array}
-\]
+\end{equation}
 The conclusion is that the sequence in which rounding and truncation is applied to
 intermediate results makes a difference.
 
@@ -1374,7 +1404,10 @@ to compute $x_-=\frac{-b-\sqrt{b^2-4ac}}{2a}$ and use $x_+\cdot x_-=c/a$.
 %% \end{exercise}
 
 \begin{exercise}
-  Explore computing the roots of \[ \epsilon x^2 -(1+\epsilon^2)x + \epsilon \]
+  Explore computing the roots of
+  \begin{equation}
+    \epsilon x^2 -(1+\epsilon^2)x + \epsilon
+  \end{equation}
   by the `textbook' method and as described above.
   \begin{itemize}
   \item What are the roots?
@@ -1397,19 +1430,21 @@ to compute $x_-=\frac{-b-\sqrt{b^2-4ac}}{2a}$ and use $x_+\cdot x_-=c/a$.
   Now suppose that you don't care much about the actual value of the root:
   you want to make sure the residual~$f(x)$ is small in the computed root.
   Let $x^*$~be the exact root, then
-  \[ f(x^*+h)\approx f(x^*)+hf'(x^*) = hf'(x^*). \]
+  \begin{equation}
+    f(x^*+h)\approx f(x^*)+hf'(x^*) = hf'(x^*).
+  \end{equation}
   Now investigate separately the cases $a\downarrow 0,c=-1$ and $a=-1,c\downarrow0$.
   Can you explain the difference?
 \end{exercise}
 
 \begin{exercise}
   Consider the functions
-  \[ 
+  \begin{equation}
   \begin{cases}
     f(x) = \sqrt{x+1}-\sqrt{x}\\
     g(x) = 1/\bigl(\sqrt{x+1}+\sqrt{x}\bigr)
   \end{cases}
-  \]
+  \end{equation}
   \begin{itemize}
   \item Show that they are the same in exact arithmetic; however:
   \item Show that $f$ can exhibit cancellation and that $g$ has no such problem.
@@ -1421,7 +1456,9 @@ to compute $x_-=\frac{-b-\sqrt{b^2-4ac}}{2a}$ and use $x_+\cdot x_-=c/a$.
     analysis, when are they $\sqrt\epsilon$ apart, and how does that
     manifest itself?)
   \item The inverse function of $y=f(x)$ is
-    \[ x = (y^2-1)^2 / (4y^2) \]
+    \begin{equation}
+      x = (y^2-1)^2 / (4y^2)
+    \end{equation}
     Add this to your code. Does this give any indication of the
     accuracy of the calculations?
   \end{itemize}
@@ -1457,9 +1494,10 @@ small quantities to larger ones, but now the ratio will never be as
 bad as one-to-$\epsilon$, so the smaller number is never ignored.
 To see this,
 consider the ratio of two terms subsequent terms:
-\[ \frac{n^2}{(n-1)^2}=\frac{n^2}{n^2-2n+1}=\frac1{1-2/n+1/n^2}
+\begin{equation}
+  \frac{n^2}{(n-1)^2}=\frac{n^2}{n^2-2n+1}=\frac1{1-2/n+1/n^2}
     \approx 1+\frac2n
-\]
+\end{equation}
 Since we only sum $10^5$ terms and the machine precision is $10^{-7}$, 
 in the addition $1/n^2+1/(n-1)^2$ the second term will not be wholly
 ignored as it is when we sum from large to small.
@@ -1490,12 +1528,12 @@ negative, it may pay off to rearrange the algorithm accordingly.
 \begin{exercise}
   \label{ex:sine-power}
   The sine function is defined as
-  \[ 
+  \begin{equation}
   \begin{array}{rcl}
     \sin(x) &=& x-\frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \cdots\\
     &=& \sum_{i\geq 0}^\infty (-1)^{i}\frac{x^{2i+1}}{(2i+1)!}.
   \end{array}
-  \]
+  \end{equation}
   Here are two code fragments that compute this sum (assuming that \n{x}
   and \n{nterms} are given):
   \begin{multicols}{2}
@@ -1560,9 +1598,13 @@ We see that the computed results are quickly not just inaccurate, but
 actually nonsensical. We can analyze why this is the case.
 
 If we define the error $\epsilon_n$ in the $n$-th step as
-\[ \tilde y_n-y_n=\epsilon_n,\] then
-\[ \tilde y_n=1/n-5\tilde y_{n-1}=1/n+5n_{n-1}+5\epsilon_{n-1}
-    = y_n+5\epsilon_{n-1} \]
+\begin{equation}
+  \tilde y_n-y_n=\epsilon_n,
+\end{equation}then
+\begin{equation}
+  \tilde y_n=1/n-5\tilde y_{n-1}=1/n+5n_{n-1}+5\epsilon_{n-1}
+  = y_n+5\epsilon_{n-1}
+\end{equation}
 so $\epsilon_n\geq 5\epsilon_{n-1}$. The error made by this
 computation shows exponential growth.
 %\marginpar{Show stability of backwards computation}
@@ -1577,7 +1619,9 @@ such that $Ax=b$. (We will actually considering algorithms for this in
 chapter~\ref{ch:linear}.) Since the vector~$b$ will the result of some
 computation or measurement, we are actually dealing with a
 vector~$\tilde b$, which is some perturbation of the ideal~$b$:
-\[ \tilde b =  b+\Delta b. \]
+\begin{equation}
+  \tilde b =  b+\Delta b.
+\end{equation}
 The perturbation vector~$\Delta b$ can be of the order of the machine
 precision if it only arises from representation error, or it can be
 larger, depending on the calculations that produced~$\tilde b$.
@@ -1590,7 +1634,13 @@ and~$\tilde b$. (In this discussion we will assume that $A$ itself is
 exact, but this is a simplification.)
 
 Writing $\tilde x= x+\Delta x$, the result of our computation is now
-\[ A\tilde x = \tilde b \] or \[ A(x+\Delta x)=b+\Delta b. \]
+\begin{equation}
+  A\tilde x = \tilde b
+\end{equation}
+or 
+\begin{equation}
+  A(x+\Delta x)=b+\Delta b.
+\end{equation}
 Since $Ax=b$, we get $A\Delta x=\Delta b$. From this, we get
 (see appendix~\ref{app:norms} for details)
 \begin{equation}
@@ -1648,11 +1698,15 @@ influences the result.
 
 As a very simple example, consider computing the sum of four numbers $a+b+c+d$.
 On a single processor, ordinary execution corresponds to the following associativity:
-\[ ((a+b)+c)+d. \]
+\begin{equation}
+  ((a+b)+c)+d.
+\end{equation}
 On the other hand, spreading this computation over two processors, 
 where processor~0 has $a,b$ and processor~1 has~$c,d$,
 corresponds to
-\[ ((a+b)+(c+d)). \]
+\begin{equation}
+  ((a+b)+(c+d)).
+\end{equation}
 Generalizing this, we see that reduction operations will most likely
 give a different result on different numbers of processors. (The MPI
 standard declares that two program runs on the same set of processors
@@ -2007,7 +2061,9 @@ with a certain type in the other language.
 From the above discussion it should be clear that some simple statements
 that hold for mathematical real numbers do not hold for floating-point numbers.
 For instance, in floating-point arithmetic 
-\[ (a+b)+c\not=a+(b+c).\]
+\begin{equation}
+  (a+b)+c\not=a+(b+c).
+\end{equation}
 This implies that a compiler can not perform certain optimizations
 without it having an effect on round-off behavior
 \begin{footnoteenv}

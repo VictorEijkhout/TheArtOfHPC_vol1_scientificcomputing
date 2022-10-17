@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2018-2021
+%%%% by Victor Eijkhout, copyright 2018-2022
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -144,10 +144,10 @@ dealing with that. For instance, shared variables commonly occur in
 \indexterm{reduction operations}:
 \lstset{language=C}
 \begin{lstlisting}
-  s = 0;
+  sum = 0;
 #pragma omp parallel for reduction(+:sum)
   for (i=0; i<ProblemSize; i++) {
-    s = s + a[i]*b[i];
+    sum = sum + a[i]*b[i];
   }
 \end{lstlisting}
 As you see, a sequential code can be parallelized with minimal effort.

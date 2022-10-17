@@ -197,16 +197,7 @@ If the size parameter allows the array to fit in cache, the operation
 will be relatively fast. As the size of the dataset grows, parts of it
 will evict other parts from the L1 cache, so the speed of the
 operation will be determined by the latency and bandwidth of the L2
-cache. This can be seen in figure~\ref{fig:cache-overflow}.
-\begin{figure}[ht]
-  \begin{quote}
-  \includegraphics[scale=.45]{cacheoverflow}
-  \end{quote}
-  \caption{Average cycle count per operation as function of the
-    dataset size.}
-  \label{fig:cache-overflow}
-\end{figure}
-%% The full code is given in section~\ref{sec:cachesize-code}.
+cache.
 
 \begin{exercise}
   Argue that with a large enough problem and an \ac{LRU} replacement policy
@@ -231,30 +222,6 @@ assuming that the L1 size divides evenly in the dataset size.
 This strategy is called \indextermbus{cache}{blocking} or
 \indexterm{blocking for cache reuse}.
 
-\begin{exercise}
-  Measure the number of memory accesses per cycle in the following loop,
-  for various values of the cache size.
-  If you observe that the time is independent of the cachesize,
-  let your compiler generate an
-  \emph{optimization report}\index{compiler!optimization!report}.
-  For the \indextermbus{Intel}{compiler} use \n{-qopt-report}.
-\begin{lstlisting}
-for (int irepeat=0; irepeat<how_many_repeats; irepeat++) {
-  for (int iword=0; iword<cachesize_in_words; iword++)
-    memory[iword] += 1.1;
-}    
-\end{lstlisting}
-Argue what happened. Can you find a way to prevent the loop exchange?
-\end{exercise}
-
-\begin{exercise}
-  To arrive at the blocked code, the loop over \n{j} was split into a
-  loop over blocks and an inner loop over the elements of the block;
-  the outer loop over \n{i} was then exchanged with the loop over the
-  blocks. In this particular example you could also simply exchange
-  the \n{i} and \n{j} loops. Why may this not be optimal for performance?
-\end{exercise}
-
 \begin{remark}
   Like unrolling, blocking code may change the order of evaluation of
   expressions. Since floating point arithmetic is not
@@ -262,6 +229,94 @@ Argue what happened. Can you find a way to prevent the loop exchange?
   \index{floating point arithmetic!associativity of},
   blocking is not a transformation that compilers are allowed to make.
 \end{remark}
+
+\Level 2 {Measuring cache performance at user level}
+
+You can try to write a loop over a small array as above, and
+execute it many times,
+hoping to observe performance degradation when the
+array gets larger than the cache size.
+The number of iterations should be chosen so that the measured time
+is well over the resolution of your clock.
+
+This runs into a couple of unforesoon problems.
+The timing for a simple loop nest
+\begin{lstlisting}
+for (int irepeat=0; irepeat<how_many_repeats; irepeat++) {
+  for (int iword=0; iword<cachesize_in_words; iword++)
+    memory[iword] += 1.1;
+}    
+\end{lstlisting}
+may seem to be independent of the array size.
+
+To see what the compiler does with this fragment,
+let your compiler generate an
+\emph{optimization report}\index{compiler!optimization!report}.
+For the \indextermbus{Intel}{compiler} use \n{-qopt-report}.
+In this report you see that the compiler has decided to exchange the loops:
+Each element of the array is then loaded only once.
+\begin{verbatim}
+remark #25444: Loopnest Interchanged: ( 1 2 ) --> ( 2 1 )
+remark #15542: loop was not vectorized: inner loop was already vectorized
+\end{verbatim}
+Now it is going over the array just once, executing an accumulation loop
+on each element. Here the cache size is indeed irrelevant.
+
+In an attempt to prevent this loop exchange,
+you can try to make the inner loop more too complicated
+for the compiler to analyze.
+You could for instance turn the array into a sort of \indexterm{linked list}
+that you traverse:
+\begin{lstlisting}
+// setup
+for (int iword=0; iword<cachesize_in_words; iword++)
+    memory[iword] = (iword+1) % cachesize_in_words
+
+// use:
+ptr = 0
+for (int iword=0; iword<cachesize_in_words; iword++)
+    ptr = memory[ptr];
+\end{lstlisting}
+Now the compiler will not exchange the loops, but you will still not
+observe the cache size threshold.
+The reason for this is that with regular access the \indextermsub{memory}{prefetcher}
+kicks in:
+some component of the CPU predicts what address(es) you will be requesting next,
+and fetches it/them in advance.
+
+To stymie this bit of cleverness you need to make the linked list more random:
+\begin{lstlisting}
+for (int iword=0; iword<cachesize_in_words; iword++)
+    memory[iword] = random() % cachesize_in_words
+\end{lstlisting}
+Given a sufficiently large cachesize this will be a cycle
+that touches all array locations,
+or you can explicitly ensure this by generating a permutation of all index locations.
+
+The code for this is given in section~\ref{sec:cachesize-code}.
+
+\begin{exercise}
+  While the strategy just sketched will demonstrate the existence of cache sizes,
+  it will not report the maximal bandwidth that the cache supports.
+  What is the problem and how would you fix it?
+\end{exercise}
+
+\Level 2 {Detailed timing}
+
+If we have access to a cycle-accurate timer or the hardware counters,
+we can actually plot the number of cycles per access.
+
+Such a plot is given in figure~\ref{fig:cache-overflow}.
+\begin{figure}[ht]
+  \begin{quote}
+  \includegraphics[scale=.45]{cacheoverflow}
+  \end{quote}
+  \caption{Average cycle count per operation as function of the
+    dataset size.}
+  \label{fig:cache-overflow}
+\end{figure}
+The full code is given in section~\ref{sec:cachesize-code}.
+
 
 \Level 1 {Cache lines and striding}
 \label{sec:coding-cacheline}

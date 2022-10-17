@@ -71,7 +71,9 @@ of interest itself. For instance, Newton's second law
 \end{equation}
 is a
 statement about the change in position of a point mass: expressed as
-\[ a(t)=\frac{d^2}{dt^2}x(t)=F/m \]
+\begin{equation}
+  a(t)=\frac{d^2}{dt^2}x(t)=F/m
+\end{equation}
 it states that acceleration depends linearly on the force exerted on
 the mass. A~closed form description $x(t)=\ldots$ for the location of
 the mass can sometimes be
@@ -91,16 +93,19 @@ velocity~$x'$, where
 we use the
   prime symbol to indicate differentiation in case of functions of a
   single variable:
-\[ u(t)=(x(t),x'(t))^t,\]
+  \begin{equation}
+    u(t)=(x(t),x'(t))^t,
+  \end{equation}
 Newton's equation expressed in $u$ then becomes:
-\[ u'=Au+B,\qquad A=
+\begin{equation}
+  u'=Au+B,\qquad A=
 \begin{pmatrix}
   0&1\\ 0& 0
 \end{pmatrix},\quad B=
 \begin{pmatrix}
   0\\ F/a
 \end{pmatrix}
-\]
+\end{equation}
 
 For simplicity, in this course we will only consider first-order scalar equations;
 our reference equation is then
@@ -158,11 +163,12 @@ as~$t\rightarrow\nobreak\infty$.
 
 \begin{theorem}
   A~sufficient criterion for stability is:
-  \[ \frac\partial{\partial u}f(u)=
+  \begin{equation}
+    \frac\partial{\partial u}f(u)=
   \begin{cases}
     >0&\mbox{unstable}\\ =0&\mbox{neutrally stable}\\ <0&\mbox{stable}
   \end{cases}
-  \]
+  \end{equation}
 \end{theorem}
 
 \begin{proof}
@@ -171,14 +177,16 @@ as~$t\rightarrow\nobreak\infty$.
   a~so-called `equilibrium' solution. We will now consider how small
   perturbations from the equilibrium behave. Let $u$ be a solution of
   the PDE, and write $u(t)=u^*+\eta(t)$, then we have
-  \[
+  \begin{equation}
   \begin{array}{r@{{}={}}l}
     \eta'&u'=f(u)=f(u^*+\eta)=f(u^*)+\eta f'(u^*)+O(\eta^2)\\
     &\eta f'(u^*)+O(\eta^2)
   \end{array}
-  \]
+  \end{equation}
   Ignoring the second order terms, this has the solution
-  \[ \eta(t)=e^{f'(x^*)t} \]
+  \begin{equation}
+    \eta(t)=e^{f'(x^*)t}
+  \end{equation}
   which means that the perturbation will damp out if $f'(x^*)<0$,
   and amplify if~$f'(x^*)>0$.
 \end{proof}
@@ -200,8 +208,10 @@ Assuming all functions are sufficiently smooth, a straightforward
 (see appendix~\ref{app:taylor})
 %
 gives:
-\[ u(t+\Delta t)=u(t)+u'(t)\Delta t+u''(t)\frac{\Delta t^2}{2!}
-+ u'''(t)\frac{\Delta t^3}{3!}+\cdots \]
+\begin{equation}
+  u(t+\Delta t)=u(t)+u'(t)\Delta t+u''(t)\frac{\Delta t^2}{2!}
+  + u'''(t)\frac{\Delta t^3}{3!}+\cdots
+\end{equation}
 This gives for $u'$:
 \begin{equation}
   \begin{array}{r@{{}={}}l}
@@ -211,7 +221,8 @@ This gives for $u'$:
         & \frac{u(t+\Delta t)-u(t)}{\Delta t}+\frac1{\Delta t}O(\Delta t^2)\\
         & \frac{u(t+\Delta t)-u(t)}{\Delta t}+O(\Delta t)    
   \end{array}
-  \label{eq:forwarddifference}\end{equation}
+  \label{eq:forwarddifference}
+\end{equation}
 We can approximate the infinite sum of higher derivatives by a single
 $O(\Delta t^2)$ if all derivatives are bounded; alternatively,
 you can show that this sum is equal to $\Delta
@@ -223,7 +234,9 @@ order of magnitude as a function of the time step.
 
 Substituting this in $u'=f(t,u)$ transforms equation~\ref{eq:ode} into
 
-\[ \frac{u(t+\Delta t)-u(t)}{\Delta t} = f(t,u(t)) +O(\Delta t)\]
+\begin{equation}
+  \frac{u(t+\Delta t)-u(t)}{\Delta t} = f(t,u(t)) +O(\Delta t)
+\end{equation}
 or 
 \begin{equation}
   u(t+\Delta t) = u(t) + \Delta t\,f(t,u(t)) +O(\Delta t^2)
@@ -243,7 +256,9 @@ or
 We now use equation~\eqref{eq:uplusdt-exact} to derive a numerical scheme:
 with $t_0=0$, $t_{k+1}=t_k+\Delta t=\cdots=(k+1)\Delta t$,
 we get a difference equation
-\[ u_{k+1}=u_k+\Delta t\,f(t_k,u_k) \]
+\begin{equation}
+  u_{k+1}=u_k+\Delta t\,f(t_k,u_k)
+\end{equation}
 for $u_k$ quantities, and we hope that $u_k$ will be a good
 approximation to~$u(t_k)$.
 This is known as the \indexterm{Explicit Euler method},
@@ -268,29 +283,30 @@ to the true solution. For that some more analysis is needed.
 We start by analyzing the `local error': if we assume the computed
 solution is exact at step~$k$, that is, $u_k=u(t_k)$, how wrong will
 we be at step~$k+1$? We have
-\[
+\begin{equation}
   \begin{array}{r@{{}={}}l}
     u(t_{k+1})&u(t_k)+u'(t_k)\Delta t+u''(t_k)\frac{\Delta t^2}{2!}+\cdots\\
     &u(t_k)+f(t_k,u(t_k))\Delta t+u''(t_k)\frac{\Delta
       t^2}{2!}+\cdots\\
   \end{array}
-\]
+\end{equation}
 and
-\[
+\begin{equation}
     u_{k+1}=u_k+f(t_ku_k)\Delta t    
-\]
+\end{equation}
   So 
-\[
+  \begin{equation}
   \begin{array}{r@{{}={}}l}
   L_{k+1}&u_{k+1}-u(t_{k+1})=u_k-u(t_k)+f(t_k,u_k)-f(t_k,u(t_k))
   -u''(t_k)\frac{\Delta t^2}{2!}+\cdots\\
   &-u''(t_k)\frac{\Delta t^2}{2!}+\cdots
   \end{array}
-\]
+  \end{equation}
 This shows that in each step we make an error of $O(\Delta t^2)$. If
 we assume that these errors can be added, we find a global error of
-\[ E_k\approx\Sigma_k L_k=k\Delta t\frac{\Delta t^2}{2!}  =O(\Delta t)
-\] 
+\begin{equation}
+  E_k\approx\Sigma_k L_k=k\Delta t\frac{\Delta t^2}{2!}  =O(\Delta t)
+\end{equation}
 %
 Since the global error is of first order in~$\Delta t$, we call
 this a `first order method'. Note that this error, which measures the
@@ -313,10 +329,11 @@ whether numerical solutions also converge
 to zero.
 
 The Euler forward, or explicit Euler, scheme for this problem is
-\[ u_{k+1}=u_k-\Delta t \lambda u_k=(1-\lambda \Delta t)u_k
+\begin{equation}
+  u_{k+1}=u_k-\Delta t \lambda u_k=(1-\lambda \Delta t)u_k
   \Rightarrow
   u_k=(1-\lambda\Delta t)^ku_0.
-\]
+\end{equation}
 For stability, we require that
 $u_k\rightarrow 0$ as $k\rightarrow\infty$. This is equivalent to
   \begin{eqnarray*}
@@ -357,18 +374,24 @@ from the same objection.
 
 Instead of expanding $u(t+\Delta t)$, consider the following expansion
 of $u(t-\Delta t)$:
-\[ u(t-\Delta t)=u(t)-u'(t)\Delta t+u''(t)\frac{\Delta t^2}{2!}+\cdots \]
+\begin{equation}
+  u(t-\Delta t)=u(t)-u'(t)\Delta t+u''(t)\frac{\Delta t^2}{2!}+\cdots
+\end{equation}
 which implies
-\[ u'(t)=\frac{u(t)-u(t-\Delta t)}{\Delta t}+u''(t)\Delta t/2+\cdots
-\]
+\begin{equation}
+  u'(t)=\frac{u(t)-u(t-\Delta t)}{\Delta t}+u''(t)\Delta t/2+\cdots
+\end{equation}
 As before, we take the equation $u'(t)=f(t,u(t))$ and
 approximate $u'(t)$ by a difference formula:
-\[ \frac{u(t)-u(t-\Delta t)}{\Delta t}=f(t,u(t)) +O(\Delta t)
+\begin{equation}
+  \frac{u(t)-u(t-\Delta t)}{\Delta t}=f(t,u(t)) +O(\Delta t)
    \Rightarrow u(t)=u(t-\Delta t)+\Delta t f(t,u(t))+O(\Delta t^2)
-\]
+\end{equation}
 Again we define fixed points $t_k=kt$,
 and we define a numerical scheme:
-\[ u_{k+1}=u_k+\Delta tf(t_{k+1},u_{k+1}) \]
+\begin{equation}
+  u_{k+1}=u_k+\Delta tf(t_{k+1},u_{k+1})
+\end{equation}
 where $u_k$ is an approximation of~$u(t_k)$.
 
 An important difference with the explicit scheme is that $u_{k+1}$ now
@@ -383,14 +406,15 @@ typically can be solved using the Newton method.
 
 Let us take another look at the example $f(t,u)=-\lambda
 u$. Formulating the implicit method gives
-\[    u_{k+1}=u_k-\lambda \Delta t u_{k+1} \Leftrightarrow
+\begin{equation}
+  u_{k+1}=u_k-\lambda \Delta t u_{k+1} \Leftrightarrow
     (1+\lambda\Delta t)u_{k+1}=u_k
-\]
+\end{equation}
 so
-\[
+\begin{equation}
     u_{k+1}=\left (\frac1{1+\lambda\Delta t}\right)u_k \Rightarrow
     u_k=\left (\frac1{1+\lambda\Delta t}\right)^ku_0.
-\]
+\end{equation}
 If $\lambda>0$, which is the condition for a stable equation, we find
 that $u_k\rightarrow0$ for all values of $\lambda$ and~$\Delta
 t$. This method is called \indexterm{unconditionally stable}.  One
@@ -411,7 +435,9 @@ equations.
 \begin{exercise}
   Analyze the accuracy and computational aspects of the following
 scheme for the IVP $u'(x)=f(x)$:
-\[ u_{i+1}=u_i+h(f(x_i)+f(x_{i+1}))/2 \] which corresponds to adding
+\begin{equation}
+  u_{i+1}=u_i+h(f(x_i)+f(x_{i+1}))/2
+\end{equation}which corresponds to adding
 the Euler explicit and implicit schemes together. You do not have
 to analyze the stability of this scheme.
 \end{exercise}
@@ -422,19 +448,29 @@ Observe that $y\equiv 0$ and $y\equiv 1$ are solutions. These are called `equili
 \begin{enumerate}
 \item A solution is stable, if perturbations `converge back to the
   solution', meaning that for $\epsilon$ small enough,
-  \[ \hbox{if  $y(t)=\epsilon$ for some~$t$, then
-    $\lim_{t\rightarrow\infty}y(t)=0$} \]
+  \begin{equation}
+    \hbox{if  $y(t)=\epsilon$ for some~$t$, then
+      $\lim_{t\rightarrow\infty}y(t)=0$}
+  \end{equation}
   and
-  \[ \hbox{if  $y(t)=1+\epsilon$ for some~$t$, then
-    $\lim_{t\rightarrow\infty}y(t)=1$} \]
-  This requires for instance that \[ y(t)=\epsilon\Rightarrow y'(t)<0. \]
+  \begin{equation}
+    \hbox{if  $y(t)=1+\epsilon$ for some~$t$, then
+      $\lim_{t\rightarrow\infty}y(t)=1$}
+  \end{equation}
+  This requires for instance that \begin{equation}
+    y(t)=\epsilon\Rightarrow y'(t)<0.
+  \end{equation}
   Investigate this behavior. Is zero a stable solution? Is one?
 \item Consider the explicit method 
-  \[ y_{k+1}=y_k+\Delta t y_k(1-y_k) \]
+  \begin{equation}
+    y_{k+1}=y_k+\Delta t y_k(1-y_k)
+  \end{equation}
   for computing a numerical solution
   to the differential equation. Show that
-  \[ y_k\in(0,1)\Rightarrow y_{k+1}>y_k,\qquad
-     y_k>1\Rightarrow y_{k+1}<y_k \]
+  \begin{equation}
+    y_k\in(0,1)\Rightarrow y_{k+1}>y_k,\qquad
+    y_k>1\Rightarrow y_{k+1}<y_k
+  \end{equation}
 \item Write a small program to investigate the behavior of the
   numerical solution under various choices for $\Delta t$. Include
   program listing and a couple of runs in your homework submission.
@@ -443,7 +479,9 @@ Observe that $y\equiv 0$ and $y\equiv 1$ are solutions. These are called `equili
   numerical solution monotone. It is enough to show that
   $y_k<1\Rightarrow y_{k+1}<1$, and $y_k>1\Rightarrow y_{k+1}>1$.
 \item Now consider the implicit method
-  \[ y_{k+1}-\Delta t y_{k+1}(1-y_{k+1})=y_k \]
+  \begin{equation}
+    y_{k+1}-\Delta t y_{k+1}(1-y_{k+1})=y_k
+  \end{equation}
   and show that $y_{k+1}$ can be computed from~$y_k$. Write a program, and investigate the
   behavior of the numerical solution under various choices
   for~$\Delta t$.
@@ -470,8 +508,10 @@ of a bridge under a load, or the heat distribution in a window pane,
 as the temperature outside differs from the one inside.
 
 The general form of a (second order, one-dimensional) \ac{BVP} is
-\[ \hbox{$u''(x)=f(x,u,u')$ for $x\in[a,b]$ where $u(a)=u_a$,
-  $u(b)=u_b$} \]
+\begin{equation}
+  \hbox{$u''(x)=f(x,u,u')$ for $x\in[a,b]$ where $u(a)=u_a$,
+    $u(b)=u_b$}
+\end{equation}
 but here we will only consider the simple form
 (see appendix~\ref{app:pde})
 \begin{equation}
@@ -510,7 +550,9 @@ changes in one point, what other points will be affected.
 \Level 2 {Hyperbolic equations}
 
 \acp{PDE}\index{Hyperbolic PDEs} are of the form
-\[ Au_{xx}+Bu_{yy}+\hbox{lower order terms} =0 \]
+\begin{equation}
+  Au_{xx}+Bu_{yy}+\hbox{lower order terms} =0
+\end{equation}
 with $A,B$ of opposite sign. Such equations describe waves,
 or more general convective phenomena, that are conservative,
 and do not tend to a steady state.
@@ -524,7 +566,9 @@ not be discussed in this book.
 \Level 2 {Parabolic equations}
 
 \acp{PDE}\index{Parabolic PDEs} are of the form
-\[ Au_x+Bu_{yy}+\hbox{no higher order terms in $x$}=0 \]
+\begin{equation}
+  Au_x+Bu_{yy}+\hbox{no higher order terms in $x$}=0
+\end{equation}
 and they describe diffusion-like phenomena; these often tend to a
 \indexterm{steady state}. The best way to
 characterize them is to consider that the solution in each point in
@@ -547,7 +591,9 @@ The \indexterm{heat equation}
 \Level 2 {Elliptic equations}
 
 \acp{PDE}\index{Elliptic PDEs} have the form 
-\[ Au_{xx}+Bu_{yy}+\hbox{lower order terms} =0 \]
+\begin{equation}
+  Au_{xx}+Bu_{yy}+\hbox{lower order terms} =0
+\end{equation}
 where $A,B>0$; they typically describe processes that have reached a
 \indexterm{steady state}, for instance as $t\rightarrow\infty$ in a parabolic
 problem. They are characterized by the fact that all points influence
@@ -564,7 +610,9 @@ this type.
 \label{sec:1dbvp}
 
 We call the operator $\Delta$, defined by
-\[ \Delta u = u_{xx}+u_{yy}, \]
+\begin{equation}
+  \Delta u = u_{xx}+u_{yy},
+\end{equation}
 a second order \indextermdef{differential operator}, and equation
 \eqref{eq:2nd-order-bvp-2D} a second-order
 \ac{PDE}. Specifically, the problem
@@ -581,32 +629,40 @@ fluid and heat flow and structural mechanics.
 
 At first, for simplicity, we consider the one-dimensional Poisson
 equation
-\[ -u_{xx}=f(x). 
-\]
+\begin{equation}
+  -u_{xx}=f(x). 
+\end{equation}
 We will consider the two-dimensional case below; the extension to three
 dimensions will then be clear.
 
 In order to find a numerical scheme we use Taylor series as before,
 expressing $u(x+h)$ and $u(x-h)$ in terms of $u$ and its derivatives
 at~$x$. Let $h>0$, then
-\[ u(x+h)=u(x)+u'(x)h+u''(x)\frac{h^2}{2!}+u'''(x)\frac{h^3}{3!}
-+u^{(4)}(x)\frac{h^4}{4!}+u^{(5)}(x)\frac{h^5}{5!}+\cdots \]
+\begin{equation}
+  u(x+h)=u(x)+u'(x)h+u''(x)\frac{h^2}{2!}+u'''(x)\frac{h^3}{3!}
+  +u^{(4)}(x)\frac{h^4}{4!}+u^{(5)}(x)\frac{h^5}{5!}+\cdots
+\end{equation}
 and
-\[ u(x-h)=u(x)-u'(x)h+u''(x)\frac{h^2}{2!}-u'''(x)\frac{h^3}{3!}
-+u^{(4)}(x)\frac{h^4}{4!}-u^{(5)}(x)\frac{h^5}{5!}+\cdots \]
+\begin{equation}
+  u(x-h)=u(x)-u'(x)h+u''(x)\frac{h^2}{2!}-u'''(x)\frac{h^3}{3!}
+  +u^{(4)}(x)\frac{h^4}{4!}-u^{(5)}(x)\frac{h^5}{5!}+\cdots
+\end{equation}
 Our aim is now to approximate~$u''(x)$.
 We see that the $u'$ terms in these equations would cancel out under
 addition, leaving $2u(x)$:
-\[
+\begin{equation}
   u(x+h)+u(x-h)=2u(x)+u''(x)h^2+u^{(4)}(x)\frac{h^4}{12}+\cdots
-\]
+\end{equation}
 so
 \begin{equation}
  -u''(x)=\frac{2u(x)-u(x+h)-u(x-h)}{h^2}+u^{(4)}(x)\frac{h^2}{12}+\cdots
-    \label{eq:2nd-order-num}\end{equation}
+ \label{eq:2nd-order-num}
+\end{equation}
 The basis for a numerical scheme for~\eqref{eq:2nd-order-bvp} is then
 the observation
-\[ \frac{2u(x)-u(x+h)-u(x-h)}{h^2}=f(x,u(x),u'(x))+O(h^2), \]
+\begin{equation}
+  \frac{2u(x)-u(x+h)-u(x-h)}{h^2}=f(x,u(x),u'(x))+O(h^2),
+\end{equation}
 which shows that we can approximate the differential operator by a
 difference operator, with an $O(h^2)$ \indexterm{truncation error}
 as $h\downarrow0$.
@@ -631,13 +687,13 @@ $k=n$. In that case we recall that $u_0$ and $u_{n+1}$ are known
 boundary conditions,
 and we write the equations with unknowns on the left and known
 quantities on the right as
-\[
+\begin{equation}
 \begin{cases}
   -u_{i-1} + 2u_i - u_{i+1} = h^2f(x_i)\\
   2u_1-u_2=h^2f(x_1)+u_0\\
   2u_n-u_{n-1}=h^2f(x_{n})+u_{n+1}.
 \end{cases}
-\]
+\end{equation}
 We can now summarize these equations for $u_k,k=1\ldots n-1$
 as a matrix equation:
 \begin{equation}
@@ -678,7 +734,9 @@ vector $f$ changes.
   \indexterm{Neumann boundary condition}\index{Neumann|seealso{von Neumann}}.
 
   A Neumann boundary condition $u'(0)=u'_0$ can be modeled by stating
-  \[ \frac{u_0-u_1}h=u'_0. \]
+  \begin{equation}
+    \frac{u_0-u_1}h=u'_0.
+  \end{equation}
   Show that, unlike in the case of the Dirichlet boundary condition,
   this affects the matrix of the linear system. 
 
@@ -777,12 +835,12 @@ The two-dimensional problem we are interested is then
 where the values on the boundaries are given. We get our discrete
 equation by applying equation~\eqref{eq:2nd-order-num} in $x$ and~$y$
 directions:
-\[
+\begin{equation}
 \begin{array}{l}
   -u_{xx}(x,y)=\frac{2u(x,y)-u(x+h,y)-u(x-h,y)}{h^2}+u^{(4)}(x,y)\frac{h^2}{12}+\cdots\\
   -u_{yy}(x,y)=\frac{2u(x,y)-u(x,y+h)-u(x,y-h)}{h^2}+u^{(4)}(x,y)\frac{h^2}{12}+\cdots
 \end{array}
-\]
+\end{equation}
 or, taken together:
 \begin{equation}
   4u(x,y)-u(x+h,y)-u(x-h,y)-u(x,y+h)-u(x,y-h)=1/h^2\,f(x,y)+O(h^2)
@@ -926,11 +984,11 @@ applying the
 \index{difference stencil|see{stencil, finite difference}}%
 \index{stencil!finite difference}
 %
-\[
+\begin{equation}
 \begin{matrix}
   \cdot&-1&\cdot\\ -1&4&-1\\ \cdot&-1&\cdot
 \end{matrix}
-\]
+\end{equation}
 to the function~$u$. Given a physical domain, we apply the stencil to
 each point in that domain to derive the equation for that
 point. Figure~\ref{fig:laplacedomain} illustrates that for a square domain
@@ -1018,10 +1076,10 @@ $T(x,t)$ describes the temperature in location~$x$ at time~$t$, for
 $x\in[a,b]$, $t>0$. The so-called \indexterm{heat equation}
 (see section~\ref{sec:derive-heat} for a short derivation)
 is:
-\[
+\begin{equation}
   \frac\partial{\partial t}T(x,t)-\alpha\frac{\partial^2}{\partial x^2}T(x,t)
   =q(x,t) 
-\]
+\end{equation}
 where
 \begin{itemize}
 \item The initial condition $T(x,0)=T_0(x)$ describes the initial
@@ -1057,11 +1115,11 @@ solution $T(x_j,t_k)$.
 
 For the space discretization we use the central difference formula
 \eqref{eq:2nddiff-formula}:
-\[ 
+\begin{equation}
   \left.\frac{\partial^2}{\partial x^2}T(x,t_k)\right|_{x=x_j} 
   \Rightarrow
   \frac{T_{j-1}^k-2T_j^k+T_{j+1}^k}{\Delta x^2}.
-\]
+\end{equation}
 For the time discretization we can use any of the schemes in
 section~\ref{sec:fd-ode}. We will investigate again the explicit and
 implicit schemes, with similar conclusions about the
@@ -1088,10 +1146,10 @@ With explicit time stepping we approximate the time derivative as
   \label{eq:disc-time-explicit}
 \end{equation}
 Taking this together with the central differences in space, we now have
-\[
+\begin{equation}
   \frac{T_j^{k+1}-T_j^k}{\Delta t}-\alpha
   \frac{T_{j-1}^k-2T_j^k+T_{j+1}^k}{\Delta x^2}=q_j^k 
-\]
+\end{equation}
 which we rewrite as
 \begin{equation}
   \label{eq:bivp-explicit}
@@ -1112,7 +1170,7 @@ in vector form as
    T^k+\Delta t q^k 
 \end{equation}
 where
-\[
+\begin{equation}
   K=
   \begin{pmatrix}
     2&-1\\ -1&2&-1\\ &\ddots&\ddots&\ddots
@@ -1121,11 +1179,13 @@ where
   \begin{pmatrix}
     T^k_1\\ \vdots \\ T^k_n
   \end{pmatrix}.
-\]
+\end{equation}
 The important observation here is that the dominant computation for
 deriving the vector $T^{k+1}$ 
 from $ T^k$ is a simple matrix-vector multiplication:
-\[ T^{k+1}\leftarrow AT^k+\Delta tq^k \]
+\begin{equation}
+  T^{k+1}\leftarrow AT^k+\Delta tq^k
+\end{equation}
 where $A=I-\dtdxx K$. This is a first indication that the sparse
 matrix-vector product is an important operation; see sections
 \ref{sec:sparse} and~\ref{sec:pspmvp}.
@@ -1167,10 +1227,10 @@ the time discretization this gives
 %
 The implicit time step discretization of the whole heat equation,
 evaluated in~$t_{k+1}$, now becomes:
-\[
+\begin{equation}
   \frac{T_j^{k+1}-T_j^k}{\Delta t}-\alpha
   \frac{T_{j-1}^{k+1}-2T_j^{k+1}+T_{j+1}^{k+1}}{\Delta x^2}=q_j^{k+1} 
-\]
+\end{equation}
 or
 \begin{equation}
   \label{eq:bivp-implicit}
@@ -1191,7 +1251,9 @@ multiplication sufficed, the derivation of the vector $ T^{k+1}$
 from $ T^k$ now involves a
 \emph{linear system solution}%
 \index{linear system!solving!in implicit methods}:
-\[ T^{k+1}\leftarrow A\inv (T^k+\Delta tq^{k+1}) \]
+\begin{equation}
+  T^{k+1}\leftarrow A\inv (T^k+\Delta tq^{k+1})
+\end{equation}
 where $A=I+\dtdxx K$, a harder operation than the matrix-vector
 multiplication.  In this case, it is not possible, as above, to
 evaluate the equation~\eqref{eq:bivp-implicit} directly. Codes using an
@@ -1235,19 +1297,23 @@ defensible: since the differential equation does not `mix' the $x$ and
 $t$ coordinates, we surmise that the solution will be a product
 $T(x,t)=v(x)\cdot w(t)$ of the
 separate solutions of
-\[
+\begin{equation}
 \begin{cases}
   v_{xx}=c_1 v,&v(0)=0,\,v(1)=0\\
   w_t=c_2 w & w(0)=1\\
 \end{cases}
-\]
+\end{equation}
 The only meaningful solution occurs with $c_1,c_2<0$, in which case we
 find:
-\[ v_{xx}=-c^2v \Rightarrow v(x)=e^{-icx}=e^{-i\ell\pi x} \]
+\begin{equation}
+  v_{xx}=-c^2v \Rightarrow v(x)=e^{-icx}=e^{-i\ell\pi x}
+\end{equation}
 where we substitute $c=\ell\pi$ to take boundary conditions into
 account,
 and 
-\[ w(t) = e^{-ct} = e^{-ck\Delta t} = \beta^k,\quad \beta=e^{-ck}. \]
+\begin{equation}
+  w(t) = e^{-ct} = e^{-ck\Delta t} = \beta^k,\quad \beta=e^{-ck}.
+\end{equation}
 If the assumption on this form of the solution holds up, we need
 $|\beta|<1$ for stability.
 
@@ -1268,7 +1334,9 @@ For stability we need $|\beta|<1$:
     true for any $\ell$ and any choice of $\Delta x,\Delta t$.
   \item $\beta>-1\Leftrightarrow 2\dtdxx(\cos(\ell\Delta x)-1)>-2$: this
     is true for all~$\ell$ only if $2\dtdxx<1$, that is
-    \[ \Delta t<\frac{\Delta x^2}{2\alpha} \]
+    \begin{equation}
+      \Delta t<\frac{\Delta x^2}{2\alpha}
+    \end{equation}
   \end{itemize}
 The latter condition poses a big restriction on the allowable size of
 the time steps: time steps have to be small enough for the method to

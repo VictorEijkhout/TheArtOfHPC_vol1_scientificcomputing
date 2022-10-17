@@ -896,6 +896,9 @@ shortly after it was first needed, it will still be in cache, and
 therefore it can be accessed much faster than if it had to be
 brought in from memory.
 
+This section discusses the idea behind caches;
+for cache-aware programming, see section{sec:coding-cachesize}.
+
 On a historical note, the notion of levels of memory hierarchy was
 already discussed in 1946~\cite{Burks:discussion}, motivated
 by the slowness of the memory technology at the time.
@@ -1020,6 +1023,10 @@ of this chapter.
   the L2 is smaller than the L3. Give a practical and a theoretical
   reason why this is so.  
 \end{exercise}
+
+Experimental exploration of cache sizes and their relation to
+performance is explored in sections~\ref{sec:coding-cachesize}
+and~\ref{sec:cachesize-code}.
 
 \Level 2 {Types of cache misses}
 \label{sec:cache-miss}

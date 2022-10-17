@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -121,10 +121,19 @@ data is found in L1 cache, than in L2, L3, or main memory. To make
 sure we do not measure any unintended data movement, we perform one
 iteration to bring data in the cache before we start the timers.
 
-\ListStrippedSource{code/papi/size.c}
+\ListNamedSource[C]{size.c}{code/papi/size.c}
 %%\begingroup\small
 %%\verbatiminput{papi/size.c}
 %%\endgroup
+
+We also measure performance by repeatedly traversing a linked list array.
+This is created as:
+%
+\cxxverbatimsnippet{linkedcache}
+
+and traversed as:
+%
+\cxxverbatimsnippet{linkedcachetraverse}
 
 \Level 1 {Cachelines}
 \label{sec:cacheline-code}
@@ -143,7 +152,7 @@ result, the array is guaranteed not to be in cache.
 %% \begingroup\small
 %% \verbatiminput{papi/line.c}
 %% \endgroup
-\ListStrippedSource{code/papi/line.c}
+\ListNamedSource[C]{line.c}{code/papi/line.c}
 
 Note that figure~\ref{fig:cacheline} in
 section~\ref{sec:coding-cacheline} only plots up to stride~8, while
@@ -168,7 +177,7 @@ enough, cache associativity will resolve these conflicts; for higher
 values of~\n{m} the runtime will quickly increase. By allocating the
 vectors with a larger size, the cache conflicts go away.
 
-\ListStrippedSource{code/papi/assoc.c}
+\ListNamedSource[C]{assoc.c}{code/papi/assoc.c}
 
 \Level 1 {TLB}
 \label{sec:tlb-code}
@@ -184,5 +193,5 @@ size. Striding through the array by the $j$ coordinate will have each
 next element hitting a new page, so TLB misses will ensue when the
 number of columns is larger than the number of TLB entries.
 
-\ListStrippedSource{code/papi/tlb.c}
+\ListNamedSource[C]{tlb.c}{code/papi/tlb.c}
 
