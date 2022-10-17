@@ -1,0 +1,181 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% hpc_git.tex : git source control
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,headernav]{beamer}
+
+\usepackage{beamerthemeTACC}
+\parskip=.5\baselineskip plus .5\baselineskip
+\input semester
+
+\setcounter{tocdepth}{1}
+\AtBeginSection[]
+{
+  \begin{numberedframe}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{numberedframe}
+}
+
+\usepackage{pslatex}
+\usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
+
+\setbeamertemplate{footline}{Eijkhout: programming}
+
+\newdimen\unitindent \unitindent=20pt
+
+\usepackage{comment}
+
+\input slidemacs
+\input snippetmacs
+\input scimacs
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{Source Code Control through Git}
+\author{Victor Eijkhout}
+\date{2022}
+
+\begin{frame}{}
+  \titlepage
+\end{frame}
+
+\begin{numberedframe}{Justification}
+  Source code control packages, such as Git,
+  are essential for synchronizing software between
+  developers, or multiple accounts for a single developer.
+  They also allow you to keep a history of changes,
+  and roll them back when needed.
+\end{numberedframe}
+
+\begin{numberedframe}{Preliminaries}
+  Create an account on \n{github.com}
+
+  Pick a good name, not referring to this class,
+  so that you can keep it for a while.
+
+  Authentication setup:
+  \begin{itemize}
+  \item Find the \n{id_rsa.pub} file (your `public key') in your \n{.ssh} directory;
+    copy the contents.
+  \item
+    Go to personal settings, section `SSH keys' and add a key
+    for the cluster. You may need one that is specific to the login node!
+  \end{itemize}
+
+\end{numberedframe}
+
+\begin{numberedframe}{Creating a repository}
+  \begin{enumerate}
+  \item If you have a directory with material,
+    you can declare it to be(come) a repository:\\
+    \n{git init}
+  \item Easier:
+    \begin{enumerate}
+    \item Make a new repository on \n{github.com}
+    \item Do \n{git clone} with it.
+    \end{enumerate}
+  \end{enumerate}
+  Github notes:
+  \begin{itemize}
+  \item On TACC machines, use \n{ssh} to clone a repo, not \n{https}
+  \item See the point about ssh keys above.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Adding files}
+  \begin{itemize}
+  \item Create a file
+  \item Do \n{git status}
+  \item Do \n{git add yourfile}
+  \item Enter message: \n{git commit -m "this is what I did"}
+  \item do \n{git push}
+  \item Check the \n{github.com} page for your repository.
+  \end{itemize}  
+\end{numberedframe}
+
+\begin{numberedframe}{Changes to files}
+  \begin{itemize}
+  \item Edit the file that was added to the repo
+  \item Explore \n{git status} and \n{git diff}
+  \item Add and commit and push again.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Collaboration}
+  \begin{itemize}
+  \item Clone a repository from someone else
+  \item (make sure you have permission to push to it)
+  \item create a file and add/commit/push it
+  \item The original owner can pull it.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Merging changes}
+  \begin{itemize}
+  \item Start with a file that is longer than a couple of lines
+  \item Two people edit the same file, one at the top, the other at the bottom.
+  \item Both add/commit/push
+  \item Do you get an error message? Pull before push.
+  \item Are both changes visible in the file?
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Merging conflicting changes}
+  \begin{itemize}
+  \item Make changes on two adjacent lines
+  \item Merging should fail
+  \item Do a manual edit to resolve the conflict
+  \item (Did you get some full-screen tool?)
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Branches}
+  Branches are good for experiments
+  \begin{itemize}
+  \item Create a branch\\ \n{git branch dev}\\ \n{git checkout dev}
+  \item which branches do you have?\\ \n{git branch -a}\\
+    which one are you currently on?
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{working with branches}
+  \begin{itemize}
+  \item While on the \n{dev} branch, make an edit to a file
+  \item Check that the file is not edited no the main branch
+  \item Go to the main branch, make a non-conflicting change 
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Merging}
+  \begin{itemize}
+  \item See the difference between branches\\
+    \n{git diff main dev}
+  \item Merge while on the main branch:\\
+    \n{git merge dev}
+  \item Inspect.
+  \end{itemize}
+\end{numberedframe}
+
+\end{document}
+
+\begin{numberedframe}{}
+  \label{sl-tut:}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{numberedframe}
+

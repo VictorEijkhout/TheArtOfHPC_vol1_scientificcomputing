@@ -27,24 +27,27 @@ no irrational numbers (even some rational numbers).
 \Level 1 {First we dig into bits}
 
 \begin{numberedframe}{Bit operations}
-\begin{tabular}{|r|lll|}
+\begin{tabular}{rllll}
   \toprule
-  &boolean&bitwise (C)&bitwise (Py)\\
-  and&\verb+&&+ & \verb+&+ & \verb+&+ \\
-  or &\verb+||+ & \verb+|+ & \verb+|+ \\
-  not&\verb+!+  &          & \verb+~+ \\
-  xor&          & \verb+^+ &          \\
+  &boolean&bitwise (C)&bitwise (F)&bitwise (Py)\\
+  and&\verb+&&+ & \verb+&+ & \n{iand} & \verb+&+ \\
+  or &\verb+||+ & \verb+|+ & \n{ior}  & \verb+|+ \\
+  not&\verb+!+  &          &          & \verb+~+ \\
+  xor&          & \verb+^+ & \n{ieor} &          \\
   \bottomrule
 \end{tabular}
 
-Bit string operations:
+Bit shift operations in~C:
 
-\begin{tabular}{|r|l|}
+\begin{tabular}{rl}
   \toprule
   left  shift& \verb+<<+ \\
   right shift& \verb+>>+ \\
   \bottomrule
 \end{tabular}
+
+Fortran: \n{mvbits}
+
 \end{numberedframe}
 
 \begin{numberedframe}{Arithmetic with bit ops}
@@ -82,7 +85,7 @@ We look at
 \end{enumerate}
 \end{numberedframe}
 
-\begin{numberedframe}{In C and Fortran}
+\begin{numberedframe}{In C/C++ and Fortran}
   C:
 \begin{itemize}
 \item A short int is at least 16 bits;
@@ -91,7 +94,7 @@ We look at
 \item A \indextermttdef{long long} integer is at least 64 bits.
 \end{itemize}
 
-Fortran:
+Fortran uses kinds, not necessarily equal to number of bytes:
 \lstset{language=Fortran}
 \begin{lstlisting}
   integer(2) :: i2
@@ -269,7 +272,7 @@ Subtraction $m-n$:
   does your compiler say if you try to write down a nonrepresentible
   number explicitly, for instance in a declaration or assignment statement?
 
-  Language lawyer remark: signed integer overflow is undefined in C/C++.
+  Language lawyer remark: signed integer overflow is Undefined Behavior in C/C++.
 \end{exercise}
 
 \Level 1 {Floating point numbers}
@@ -298,13 +301,16 @@ Analogous to scientific notation $x=6.022\cdot 10^{23}$:
 
 \begin{numberedframe}{Examples of floating point systems}
 
-  \begin{tabular}{r|r|r|r|r}
-    &$\beta$&$t$&$L$&$U$\\ \midrule
+  \begin{tabular}{rrrrr}
+    \toprule
+    &$\beta$&$t$&$L$&$U$\\
+    \midrule
     IEEE single (32 bit)&2&23&-126&127\\
     IEEE double (64 bit)&2&53&-1022&1023\\
     Old Cray 64bit&2&48&-16383&16384\\
     IBM mainframe 32 bit&16&6&-64&63\\
     packed decimal&10&50&-999&999
+    \bottomrule
   \end{tabular}
   
   BCD is tricky: 3 decimal digits in 10 bits
@@ -668,7 +674,7 @@ Why? Consider ratio of two terms:
     \approx 1+\frac2n
 \]
 with aligned exponents:\\
-\begin{tabular}{rr|cl}
+\begin{tabular}{rrcl}
   $n-1$:&$.00\cdots0$&$10\cdots00$\\
   $n$:&  $.00\cdots0$&$10\cdots01$&$0\cdots0$\\
       &             &\multicolumn{2}{l}{$k=\log(n/2)$ positions}
@@ -730,9 +736,9 @@ Since $Ax=b$, we get $A\Delta x=\Delta b$. From this,
 Multiplication and addition are not associative:\\
 problems for parallel computations.
 
-\begin{tabular}{|c|c|}
+\begin{tabular}{cc}
   \midrule
-  \multicolumn{2}{|c|}{compute $a+b+c+d$}\\
+  \multicolumn{2}{c}{compute $a+b+c+d$}\\
   sequential&parallel\\
   \midrule
   $((a+b)+c)+d$&(a+b)+(c+d)\\

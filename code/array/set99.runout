@@ -1,1 +1,2 @@
-make[1]: *** No rule to make target `c99', needed by `run_set99'.  Stop.
+echo 5 | ./c99
+3

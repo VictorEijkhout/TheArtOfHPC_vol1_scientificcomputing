@@ -3,43 +3,30 @@
  **** This code is part of the book
  **** Introduction to High Performance Scientific Programming
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
- **** copyright 2010-2020
+ **** copyright 2010-2022
  ****
  **** allocation.cxx : general allocation stuff. not used?
  ****
  ****************************************************************/
 
 #include <iostream>
-using std::cout;
-using std::cin;
-using std::endl;
+using std::cout, std::cin, std::endl;
 #include <iomanip>
 using std::setw;
 
 #include <sstream>
 using std::stringstream;
+#include <iterator>
+using std::ostream_iterator;
 
 #include <vector>
 using std::vector;
 
+#include <numeric>
+#include <random>
+#include <algorithm>
+
 #include "allocation.hpp"
-
-#include <cstdlib>
-#include <new>
-void* operator new(std::size_t size ) {
-  std::align_val_t align{ static_cast<std::align_val_t>(4096) };
-#if defined(_WIN32) || defined(__CYGWIN__)
-    auto ptr = _aligned_malloc(size, static_cast<std::size_t>(align));
-#else
-    void *ptr;
-    posix_memalign( &ptr,static_cast<size_t>( align ),size );
-    // auto ptr = std::aligned_alloc /*aligned_alloc*/ (static_cast<std::size_t>(align), size);
-#endif
-
-    if (!ptr)
-        throw std::bad_alloc{};
-    return ptr;
-}
 
 template <typename R>
 Cache<R>::Cache( std::vector<R> c,bool trace ) : thecache(c) {};
@@ -124,11 +111,29 @@ R Cache<R>::sumstream(int repeats,size_t length,size_t byte_offset /* =0 default
 //codesnippet end
 
 template <typename R>
-void Cache<R>::make_linked_list( size_t length ) {
-  auto data = thecache.data();
-  for (size_t i=0; i<length-1; i++)
-    data[i] = i+1;
-  data[length-1] = 0;
+void Cache<R>::make_linked_list( size_t length,bool random_traversal,bool tracing ) {
+  if (random_traversal) {
+    vector<R> indices(length);
+    //codesnippet linkedcache
+    std::iota(indices.begin(),indices.end(),0);
+    std::random_device r;
+    std::mt19937 g(r());
+    std::shuffle(indices.begin(), indices.end(), g);
+    auto data = thecache.data();
+    for (size_t i=0; i<indices.size(); i++)
+      data[i] = indices[i];
+    //codesnippet end
+    if (tracing) {
+      cout << "Pointer chasing: ";
+      std::copy(indices.begin(), indices.end(),
+		ostream_iterator<R>(std::cout, " "));
+      cout << "\n";
+    }
+  } else {
+    auto data = thecache.data();
+    for (size_t i=0; i<length; i++)
+      data[i] = (i+1) % length;
+  }
 }
 
 template <typename R>
@@ -137,12 +142,16 @@ R Cache<R>::traversal( size_t n_accesses,R res,bool tracing ) const {
 };
 template <>
 int Cache<int>::traversal( size_t n_accesses,int res,bool tracing ) const {
+  //codesnippet linkedcachetraverse
   auto data = thecache.data();
   for (size_t i=0; i<n_accesses; i++) {
     res = data[res];
+    //codesnippet end
     if (tracing)
       cout << res << " ";
+  //codesnippet linkedcachetraverse
   }
+  //codesnippet end
   if (tracing) cout << "\n";
   return res;
 };

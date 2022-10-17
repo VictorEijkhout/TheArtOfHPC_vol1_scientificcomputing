@@ -1,1 +1,9 @@
-make[1]: *** No rule to make target `cmalloc2d', needed by `run_cmalloc2d'.  Stop.
+( echo 5 && echo 6 ) | ./cmalloc2d
+rowsize / columnsize=5,6
+filling with numbers 0--29
+Check: [r-1][c-1]: 29
+ROWLEN
+row length bytes=24, ints=6
+rowlen
+[2,2,0]: 98 / 98
+[2,2,0]: 98 / 98

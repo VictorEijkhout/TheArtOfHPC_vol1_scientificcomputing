@@ -21,8 +21,8 @@ algebra operations.
 
 Dense linear algebra, that is linear algebra on matrices that are
 stored as two-dimensional arrays (as opposed to sparse linear algebra;
-see section~\HPSCref{sec:sparse}, as well as the
-tutorial on PETSc~\PCSEref{part:petsc}) has been standardized for a
+see~\HPSCref{sec:sparse}, as well as the
+tutorial on PETSc~\PCSEref[part]{part:petsc}) has been standardized for a
 considerable time. The basic operations are defined by the three
 levels of \indexac{BLAS}:
 \begin{itemize}
@@ -39,7 +39,7 @@ original authors were clear~\cite{Lawson:blas} that these subprograms
 only covered dense linear algebra. Attempts to standardize sparse
 operations have never met with equal success.
 
-Based on these building blocks libraries have been built that tackle
+Based on these building blocks, libraries have been built that tackle
 the more sophisticated problems such as solving linear systems, or
 computing eigenvalues or singular values.
 \indexterm{Linpack}\footnote{The linear system solver from this
@@ -49,10 +49,15 @@ these operations involved, using Blas Level~1 and Blas Level~2
 respectively.  A~later development, \indexterm{Lapack} uses the
 blocked operations of Blas Level~3. As you saw in
 section~\HPSCref{sec:reuse}, this is needed to get high performance on
-cache-based CPUs. (Note: the reference implementation of the
-BLAS~\cite{reference-blas} will not give good performance with any
-compiler; most platforms have vendor-optimized implementations, such
-as the \indexterm{MKL} library from Intel.)
+cache-based CPUs.
+
+\begin{remark}
+  The reference implementation \url{https://netlib.org/blas/index.html}
+  of the
+  BLAS~\cite{reference-blas} will not give good performance with any
+  compiler; most platforms have vendor-optimized implementations, such
+  as the \indexterm{MKL} library from Intel.
+\end{remark}
 
 With the advent of parallel computers, several projects arose that
 extended the Lapack functionality to distributed computing, most
@@ -64,9 +69,9 @@ two-dimensional cyclic distribution; sections
 \HPSCref{sec:densescaling} and~\HPSCref{sec:LUscaling}. We will not go into
 the details here.
 
-\Level 1 {Some general remarks}
+\Level 0 {Some general remarks}
 
-\Level 2 {The Fortran heritage}
+\Level 1 {The Fortran heritage}
 
 The original BLAS routines were written in Fortran, and the reference implementation
 is still in Fortran. For this reason you will see the routine definitions first in Fortran
@@ -91,7 +96,7 @@ There are also C/C++ interfaces:
   indices.
 \end{itemize}
 
-\Level 2 {Routine naming}
+\Level 1 {Routine naming}
 
 Routines conform to a general naming scheme: \n{XYYZZZ} where
 \begin{description}
@@ -101,7 +106,7 @@ Routines conform to a general naming scheme: \n{XYYZZZ} where
 \item[ZZZ] operation. See the manual for a list.
 \end{description}
 
-\Level 2 {Data formats}
+\Level 1 {Data formats}
 
 Lapack and Blas use a number of data formats, including
 \begin{description}
@@ -115,7 +120,7 @@ Lapack and Blas use a number of data formats, including
   overallocation in \n{SPDTRF}
 \end{description}
 
-\Level 2 {Lapack operations}
+\Level 1 {Lapack operations}
 \index{Lapack!routines|(}
 
 For Lapack, we can further divide the routines into an organization with three levels:
@@ -123,9 +128,9 @@ For Lapack, we can further divide the routines into an organization with three l
 \item Drivers. These are powerful top level routine for problems such
   as solving linear systems or computing an SVD. There are simple and
   expert drivers; the expert ones have more numerical sophistication.
-\item Computational routines. These are the routines that drivers are
-  built up out of\footnote{Ha! Take that, Winston.}. A~user may have
-  occasion to call them by themselves.
+\item Computational routines.
+  These are the routines that drivers are built up out of.
+  A~user may have occasion to call them by themselves.
 \item Auxiliary routines.
 \end{itemize}
 Expert driver names end on 'X'.
@@ -179,7 +184,7 @@ svd: \n{GGSVD}
 \end{itemize}
 \index{Lapack!routines|)}
 
-\Level 2 {BLAS matrix storage}
+\Level 0 {BLAS matrix storage}
 \label{tut:blas-storage}
 \index{BLAS!data format|(}
 
@@ -187,14 +192,14 @@ There are a few points to bear in mind about the way matrices are
 stored in the BLAS and LAPACK\footnote{We are not going into band
   storage here.}:
 
-\Level 3 {Array indexing}
+\Level 1 {Array indexing}
 
 Since these libraries originated in a Fortran environment, they
   use 1-based indexing. Users of languages such as C/C++ are only
   affected by this when routines use index arrays, such as the
   location of pivots in LU factorizations.
 
-\Level 3 {Fortran column-major ordering}
+\Level 1 {Fortran column-major ordering}
 
 Since computer memory is one-dimensional, some conversion is needed
 from two-dimensional matrix coordinates to memory locations. The
@@ -213,7 +218,7 @@ Arrays in~C, on the other hand, are laid out in \indexterm{row-major} order.
 How to create a C array that can be handled by Blas routines
 is discussed in section~\ref{sec:CFarrays}.
 
-\Level 2 {Submatrices and the {\tt LDA} parameter}
+\Level 1 {Submatrices and the {\tt LDA} parameter}
 
 Using the storage scheme described above, it is clear how to store an
 $m\times n$ matrix in $mn$ memory locations. However, there are many
@@ -241,7 +246,7 @@ call routine( A(3,2), /* M= */ 2, /* N= */ 3, /* LDA= */ Mbig, ... )
 
 \index{BLAS!data format|)}
 
-\Level 1 {Performance issues}
+\Level 0 {Performance issues}
 
 The collection of BLAS and LAPACK routines are a \emph{de facto}
 standard: the \ac{API} is fixed, but the implementation is not.
@@ -262,7 +267,7 @@ this, you should use an optimized version, such as
   extension project.
 \end{itemize}
 
-\Level 1 {Some simple examples}
+\Level 0 {Some simple examples}
 
 Let's look at some simple examples.
 

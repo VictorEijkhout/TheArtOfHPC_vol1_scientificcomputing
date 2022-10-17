@@ -16,6 +16,7 @@
 
 \index{GNU!Make|see{Make}}
 \index{Make|(}
+\lstset{language=bash}
 
 The \emph{Make} utility helps you manage the building of
 projects: its main task is to facilitate rebuilding only those parts 
@@ -58,22 +59,22 @@ The files for this section can be found in the repository.
 
 Make the following files:
 
-\ListNamedSource{foo.c}{tutorials/makefiles/1x/foo.cxx}
-\ListNamedSource{bar.c}{tutorials/makefiles/1x/bar.cxx}
-\ListNamedSource{bar.h}{tutorials/makefiles/1x/bar.h}
+\ListNamedSource[C++]{foo.c}{tutorials/makefiles/1x/foo.cxx}
+\ListNamedSource[C++]{bar.c}{tutorials/makefiles/1x/bar.cxx}
+\ListNamedSource[C++]{bar.h}{tutorials/makefiles/1x/bar.h}
 and a makefile:
 \ListNamedSource{Makefile}{tutorials/makefiles/1x/Makefile}
 
 The makefile has a number of rules like
-\begin{verbatim}
+\begin{lstlisting}
 foo.o : foo.cxx
 <TAB>icpc -c foo.cxx
-\end{verbatim}
+\end{lstlisting}
 which have the general form
-\begin{verbatim}
+\begin{lstlisting}
 target : prerequisite(s)
 <TAB>rule(s)
-\end{verbatim}
+\end{lstlisting}
 where the rule lines are indented by a \n{TAB} character.
 
 A rule, such as above, states that a `target' file \n{foo.o} is made
@@ -141,13 +142,13 @@ The way out of this problem is to tie the header file to the source files
 in the makefile.
 
 In the makefile, change the line
-\begin{verbatim}
+\begin{lstlisting}
 foo.o : foo.cxx
-\end{verbatim}
+\end{lstlisting}
 to
-\begin{verbatim}
+\begin{lstlisting}
 foo.o : foo.cxx bar.h
-\end{verbatim}
+\end{lstlisting}
 which adds \n{bar.h} as a prerequisite for \n{foo.o}. This means that,
 in this case where \n{foo.o} already exists, \emph{Make} will check
 that \n{foo.o} is not older than any of its prerequisites. Since
@@ -166,22 +167,22 @@ needs to be reconstructed.
 
 Make the following files:
 
-\srclisting{foo.c}{tutorials/makefiles/1c/foo.c}
-\srclisting{bar.c}{tutorials/makefiles/1c/bar.c}
-\srclisting{bar.h}{tutorials/makefiles/1c/bar.h}
+\ListNamedSource[C]{foo.c}{tutorials/makefiles/1c/foo.c}
+\ListNamedSource[C]{bar.c}{tutorials/makefiles/1c/bar.c}
+\ListNamedSource[C]{bar.h}{tutorials/makefiles/1c/bar.h}
 and a makefile:
-\srclisting{Makefile}{tutorials/makefiles/1c/Makefile}
+\ListNamedSource{Makefile}{tutorials/makefiles/1c/Makefile}
 
 The makefile has a number of rules like
-\begin{verbatim}
+\begin{lstlisting}
 foo.o : foo.c
 <TAB>cc -c foo.c
-\end{verbatim}
+\end{lstlisting}
 which have the general form
-\begin{verbatim}
+\begin{lstlisting}
 target : prerequisite(s)
 <TAB>rule(s)
-\end{verbatim}
+\end{lstlisting}
 where the rule lines are indented by a \n{TAB} character.
 
 A rule, such as above, states that a `target' file \n{foo.o} is made
@@ -231,13 +232,13 @@ the resulting error.
   rule that forced it.}{}
 
 In the makefile, change the line
-\begin{verbatim}
+\begin{lstlisting}
 foo.o : foo.c
-\end{verbatim}
+\end{lstlisting}
 to
-\begin{verbatim}
+\begin{lstlisting}
 foo.o : foo.c bar.h
-\end{verbatim}
+\end{lstlisting}
 which adds \n{bar.h} as a prerequisite for \n{foo.o}. This means that,
 in this case where \n{foo.o} already exists, \emph{Make} will check
 that \n{foo.o} is not older than any of its prerequisites. Since
@@ -252,10 +253,10 @@ needs to be reconstructed.
 
 Make the following files:
 
-\srclisting{foomain.F}{tutorials/makefiles/1f/foomain.F}
-\srclisting{foomod.F}{tutorials/makefiles/1f/foomod.F}
+\ListNamedSource[Fortran]{foomain.F}{tutorials/makefiles/1f/foomain.F}
+\ListNamedSource[Fortran]{foomod.F}{tutorials/makefiles/1f/foomod.F}
 and a makefile:
-\srclisting{Makefile}{tutorials/makefiles/1f/Makefile}
+\ListNamedSource{Makefile}{tutorials/makefiles/1f/Makefile}
 If you call \n{make}, the first rule in the makefile is executed. Do
 this, and explain what happens.
 
@@ -289,13 +290,13 @@ parameter to \n{func} in \n{foomod.F} and recompile.
   rule that forced it.}{}
 
 Change the line
-\begin{verbatim}
+\begin{lstlisting}
 foomain.o : foomain.F
-\end{verbatim}
+\end{lstlisting}
 to
-\begin{verbatim}
+\begin{lstlisting}
 foomain.o : foomain.F foomod.o
-\end{verbatim}
+\end{lstlisting}
 which adds \n{foomod.o} as a prerequisite for \n{foomain.o}. This
 means that, in this case where \n{foomain.o} already exists,
 \emph{Make} will check that \n{foomain.o} is not older than any of its
@@ -354,17 +355,17 @@ It is convenient to introduce variables in your makefile.
 For instance, 
 instead of spelling out the compiler explicitly every time, introduce a
 variable in the makefile:
-\begin{verbatim}
+\begin{lstlisting}
 CC = gcc
 FC = gfortran
-\end{verbatim}
+\end{lstlisting}
 and use \verb+${CC}+ or \verb+${FC}+ on the compile lines:
-\begin{verbatim}
+\begin{lstlisting}
 foo.o : foo.c
         ${CC} -c foo.c
 foomain.o : foomain.F
         ${FC} -c foomain.F
-\end{verbatim}
+\end{lstlisting}
 \practical{Edit your makefile as indicated. First do \n{make clean},
   then \n{make foo} (C) or \n{make fooprog} (Fortran).}
   {You should see the exact same compile and link lines as before.}
@@ -376,10 +377,10 @@ foomain.o : foomain.F
 One
 advantage of using variables is that you can now change the compiler
 from the commandline:
-\begin{verbatim}
+\begin{lstlisting}
 make CC="icc -O2"
 make FC="gfortran -g"
-\end{verbatim}
+\end{lstlisting}
 
 \practical{Invoke \emph{Make} as suggested (after \n{make clean}). Do
   you see the difference in your screen output?}
@@ -399,20 +400,20 @@ make FC="gfortran -g"
   the part corresponding to the~\n{\char37}.
 \end{itemize}
 Using these variables, the rule for \n{fooprog} becomes
-\begin{verbatim}
+\begin{lstlisting}
 fooprog : foo.o bar.o
         ${CC} -o $@ $^
-\end{verbatim}
+\end{lstlisting}
 and a typical compile line becomes
-\begin{verbatim}
+\begin{lstlisting}
 foo.o : foo.c bar.h
         ${CC} -c $<
-\end{verbatim}
+\end{lstlisting}
 
 You can also declare a variable
-\begin{verbatim}
+\begin{lstlisting}
 THEPROGRAM = fooprog
-\end{verbatim}
+\end{lstlisting}
 and use this variable instead of the program name in your
 makefile. This makes it easier to change your mind about the name of
 the executable later. 
@@ -441,10 +442,10 @@ files are very similar:
   are even character-for-character the
   same, now that you are using \emph{Make}'s built-in variables;
 \item the only rule with a difference is 
-\begin{verbatim}
+\begin{lstlisting}
 foo.o : foo.c bar.h
         ${CC} -c $<
-\end{verbatim}
+\end{lstlisting}
   where the object file depends on the source file and another file.
 \end{itemize}
 We can take the commonalities and summarize them in one 
@@ -453,12 +454,12 @@ We can take the commonalities and summarize them in one
   GNU make, though in this particular case there is a similar
   mechanism in standard make. That will not be the case for the
   wildcard mechanism in the next section.}:
-\begin{verbatim}
+\begin{lstlisting}
 %.o : %.c
         ${CC} -c $<
 %.o : %.F
         ${FC} -c $<
-\end{verbatim}
+\end{lstlisting}
 This states that any object file depends on the C or Fortran file with
 the same base name. To regenerate the object file, invoke the C or
 Fortran compiler with the \n{-c} flag.
@@ -467,12 +468,12 @@ specific targets in the makefiles above, except for the rule for \n{foo.o}.
 
 The dependence of \n{foo.o} on \n{bar.h}, or \n{foomain.o} on
 \n{foomod.o}, can be handled by adding a rule
-\begin{verbatim}
+\begin{lstlisting}
 # C
 foo.o : bar.h
 # Fortran
 foomain.o : foomod.o
-\end{verbatim}
+\end{lstlisting}
 with no further instructions. This rule states, `if file
 \n{bar.h} or \n{foomod.o} changed, file \n{foo.o} or \n{foomain.o}
 needs updating' too. \emph{Make} will
@@ -522,23 +523,24 @@ template rule.
   \begin{multicols}{2}
     \footnotesize
     Changing a source file only recompiles that files:
-\begin{verbatim}
+\begin{lstlisting}
 clang++ -c libf.cxx
-clang++ -o main libmain.o libf.o libg.o
-\end{verbatim}
+clang++ -o main \
+    libmain.o libf.o libg.o
+\end{lstlisting}
 Changing the implementation header only recompiles the library:
-\begin{verbatim}
+\begin{lstlisting}
 clang++ -c libf.cxx
 clang++ -c libg.cxx
 clang++ -o main libmain.o libf.o libg.o  
-\end{verbatim}
+\end{lstlisting}
 Changing the \n{libapi.h} recompiles everything:
-\begin{verbatim}
+\begin{lstlisting}
 clang++ -c libmain.cxx
 clang++ -c libf.cxx
 clang++ -c libg.cxx
 clang++ -o main libmain.o libf.o libg.o
-\end{verbatim}
+\end{lstlisting}
   \end{multicols}
 \end{exercise}
 
@@ -586,7 +588,7 @@ to your makefile, and use the variable \n{COBJECTS} or \n{FOBJECTS}
 wherever appropriate.
 The command \indextermtt{wildcard} gives the result of \n{ls},
 and you can manipulate file names with \indextermtt{patsubst}.
-\begin{verbatim}
+\begin{lstlisting}
 # wildcard: find all files that match a pattern
 CSOURCES := ${wildcard *.c}
 # pattern substitution: replace one pattern string by another
@@ -594,25 +596,25 @@ COBJECTS := ${patsubst %.c,%.o,${SRC}}
 
 FSOURCES := ${wildcard *.F}
 FOBJECTS := ${patsubst %.F,%.o,${SRC}}
-\end{verbatim}
+\end{lstlisting}
 
 \Level 1 {More functions}
 
 GNU make has more function that you can call inside the makefile.
 Some examples:
-\begin{verbatim}
+\begin{lstlisting}
 HOSTNAME := $(shell hostname -f)
 SOURCES  := $(wildcard *.c)
 OBJECTS  := $(patsubst %.c,%.o,${SOURCES})
 RECURSIVE := $(foreach d,${DIRECTORIES},$(wildcard ${d}/*.c))
-\end{verbatim}
+\end{lstlisting}
 File name manipulation:
-\begin{verbatim}
+\begin{lstlisting}
 $(dir a/b/c.x)    # gives `a/b'
 $(dir c.x)        # gives `./'
 $(notdir a/b/c.x) # gives `c.x'
 $(suffix a/b/c.x) # gives `.x'
-\end{verbatim}
+\end{lstlisting}
 For the full list see \url{https://www.gnu.org/software/make/manual/html_node/Functions.html}.
 
   
@@ -625,7 +627,7 @@ makefile conditionals. There are two types of conditionals: tests on string
 equality, and tests on environment variables.
 
 The first type looks like
-\begin{verbatim}
+\begin{lstlisting}
 ifeq "${HOME}" "/home/thisisme"
   # case where the executing user is me
 else ifeq "${HOME}" "/home/buddyofmine"
@@ -633,11 +635,11 @@ else ifeq "${HOME}" "/home/buddyofmine"
 else
   # case where it's someone else
 endif
-\end{verbatim}
+\end{lstlisting}
 and in the second case the test looks like
-\begin{verbatim}
+\begin{lstlisting}
 ifdef SOME_VARIABLE
-\end{verbatim}
+\end{lstlisting}
 The text in the true and false part can be most any part of a
 makefile. For instance, it is possible to let one of the action lines
 in a rule be conditionally included. However, most of the times you
@@ -664,9 +666,9 @@ again will make the same instructions being executed.
 
 To indicate that this rule does not actually make the target, you use
 the \indextermtt{.PHONY} keyword:
-\begin{verbatim}
+\begin{lstlisting}
 .PHONY : clean
-\end{verbatim}
+\end{lstlisting}
 Most of the time, the makefile will actually work fine without this
 declaration, but the main benefit of declaring a target to be phony is
 that the \emph{Make} rule will still work, even if you have a file (or folder)
@@ -676,30 +678,30 @@ named \n{clean}.
 
 It's a common strategy to have a directory for temporary material
 such as object files. So you would have a rule
-\begin{verbatim}
+\begin{lstlisting}
 obj/%.o : %.c
     ${CC} -c $< -o $@
-\end{verbatim}
+\end{lstlisting}
 and to remove the temporaries:
-\begin{verbatim}
+\begin{lstlisting}
 clean ::
     rm -rf obj
-\end{verbatim}
+\end{lstlisting}
 This raises the question how the \n{obj} directory is created.
 You could do:
-\begin{verbatim}
+\begin{lstlisting}
 obj/%.o : %.c
     mkdir -p obj
     ${CC} -c $< -o $@
-\end{verbatim}
+\end{lstlisting}
 but a better solution is to use
 \indextermsub{order-only}{prerequisite}s exist.
-\begin{verbatim}
+\begin{lstlisting}
 obj :
     mkdir -p obj
 obj/%.o : %.c | obj
     ${CC} -c $< -o $@
-\end{verbatim}
+\end{lstlisting}
 This only tests for the existence of the object directory,
 but not its timestamp.
 
@@ -707,26 +709,26 @@ but not its timestamp.
 
 Suppose you have two different targets that are treated largely the
 same. You would want to write:
-\begin{verbatim}
+\begin{lstlisting}
 PROGS = myfoo other
 ${PROGS} : $@.o # this is wrong!!
         ${CC} -o $@ $@.o ${list of libraries goes here}
-\end{verbatim}
+\end{lstlisting}
 and saying \n{make myfoo} would cause 
-\begin{verbatim}
+\begin{lstlisting}
 cc -c myfoo.c
 cc -o myfoo myfoo.o ${list of libraries}
-\end{verbatim}
+\end{lstlisting}
 and likewise for \n{make other}. What goes wrong here is the use of
 \verb+$@.o+ as prerequisite. In Gnu Make, you can repair this as
 follows\footnote{Technical explanation: Make will now look at lines
   twice: the first time \n{\$\$} gets converted to a single~\n{\$},
   and in the second pass \n{\$@} becomes the name of the target.}:
-\begin{verbatim}
+\begin{lstlisting}
 .SECONDEXPANSION:
 ${PROGS} : $$@.o
         ${CC} -o $@ $@.o ${list of libraries goes here}
-\end{verbatim}
+\end{lstlisting}
 
 \practical{Write a second main program \n{foosecond.c} or
   \n{foosecond.F}, and change your makefile so that the calls
@@ -752,6 +754,7 @@ legitimate names for the default makefile. It is not a good idea to
 have both \n{makefile} and \n{Makefile} in your directory.
 
 \Level 0 {Shell scripting in a Makefile}
+\label{sec:make-shell}
 
 \begin{purpose}
   In this section you will see an example of a longer shell script
@@ -765,33 +768,37 @@ are building.
 
 Add a \n{backup}  rule to your makefile. The first thing it needs to
 do is make a backup directory:
-\begin{verbatim}
+\begin{lstlisting}
 .PHONY : backup
 backup :
         if [ ! -d backup ] ; then 
           mkdir backup
         fi
-\end{verbatim}
+\end{lstlisting}
 Did you type this? Unfortunately it does not work: every line in the
 command part of a makefile rule gets executed as a single
 program. Therefore, you need to write the whole command on one line:
-\begin{verbatim}
+\begin{lstlisting}
 backup :
         if [ ! -d backup ] ; then mkdir backup ; fi
-\end{verbatim}
+\end{lstlisting}
 or if the line gets too long:
-\begin{verbatim}
+\begin{lstlisting}
 backup :
         if [ ! -d backup ] ; then \
           mkdir backup ; \
         fi
-\end{verbatim}
+\end{lstlisting}
+(Writing a long command on a single is only possible
+in the \indextermunix{bash} shell, not in the \indextermunix{csh} shell.
+This is one reason for not using the latter.)
+
 Next we do the actual copy:
-\begin{verbatim}
+\begin{lstlisting}
 backup :
         if [ ! -d backup ] ; then mkdir backup ; fi
         cp myprog backup/myprog
-\end{verbatim}
+\end{lstlisting}
 But this backup scheme only saves one version. Let us make a version
 that has the date in the name of the saved program. 
 
@@ -810,7 +817,7 @@ This can be used in the makefile.
 If you are defining shell variables in the command section of a
 makefile rule, you need to be aware of the following. Extend your
 \n{backup} rule with a loop to copy the object files:
-\begin{verbatim}
+\begin{lstlisting}
 #### This Script Has An ERROR!
 backup :
         if [ ! -d backup ] ; then mkdir backup ; fi
@@ -818,19 +825,19 @@ backup :
         for f in ${OBJS} ; do \
           cp $f backup ; \
         done
-\end{verbatim}
+\end{lstlisting}
 (This is not the best way to copy, but we use it for the purpose of
 demonstration.) This leads to an error message, caused by the fact
 that \emph{Make} interprets \verb+$f+ as an environment variable of
 the outer process. What works is:
-\begin{verbatim}
+\begin{lstlisting}
 backup :
         if [ ! -d backup ] ; then mkdir backup ; fi
         cp myprog backup/myprog
         for f in ${OBJS} ; do \
           cp $$f backup ; \
         done
-\end{verbatim}
+\end{lstlisting}
 (In this case \emph{Make} replaces the double dollar by a single one
 when it scans the commandline. During the execution of the
 commandline, \n{\$f} then expands to the proper filename.)
@@ -848,15 +855,15 @@ Here are a couple of practical tips.
   commands from the \indextermbus{shell}{command history} by using the
   up arrow key. Still, this may get tiresome, so you may be tempted to
   write
-\begin{verbatim}
+\begin{lstlisting}
 make myprogram ; ./myprogram -options
-\end{verbatim}
+\end{lstlisting}
 and keep repeating this.
 There is a danger in this: if the make fails, for instance because of
 compilation problems, your program will still be executed. Instead, write
-\begin{verbatim}
+\begin{lstlisting}
 make myprogram && ./myprogram -options
-\end{verbatim}
+\end{lstlisting}
 which executes the program conditional upon make concluding successfully.
 \end{itemize}
 
@@ -873,12 +880,12 @@ find out what possible actions a makefile allows is to read the
 makefile itself, or the --~usually insufficient~-- documentation.
 
 A better idea is to start the makefile with a target
-\begin{verbatim}
+\begin{lstlisting}
 info :
         @echo "The following are possible:"
         @echo "  make"
         @echo "  make clean"
-\end{verbatim}
+\end{lstlisting}
 Now \n{make} without explicit targets informs you of the capabilities
 of the makefile.
 
@@ -886,7 +893,7 @@ If your makefile gets longer, you might want to document each section
 like this. This runs into a problem: you can not have two rules with the same
 target, \n{info} in this case. However, if you use a double colon
 it \emph{is} possible. Your makefile would have the following structure:
-\begin{verbatim}
+\begin{lstlisting}
 info ::
         @echo "The following target are available:"
         @echo "  make install"
@@ -896,7 +903,7 @@ info ::
        @echo "  make clean"
 clean :
        # ..... instructions for cleaning
-\end{verbatim}
+\end{lstlisting}
 
 \Level 0 {A Makefile for \LaTeX}
 \label{sec:latex-make}
@@ -907,17 +914,17 @@ other uses are possible too. In this section, we will discuss a
 makefile for \LaTeX\ documents.
 
 We start with a very basic makefile:
-\verbatiminput{tutorials/makefiles/tex/M0}
+\lstinputlisting{tutorials/makefiles/tex/M0}
 The command \n{make myfile.pdf} will invoke \n{pdflatex myfile.tex},
 if needed, once. Next we repeat invoking \n{pdflatex} until the log file no
 longer reports that further runs are needed:
-\verbatiminput{tutorials/makefiles/tex/M1}
+\lstinputlisting{tutorials/makefiles/tex/M1}
 We use the \verb+${basename fn}+ macro to extract the base name
 without extension from the target name.
 
 In case the document has a bibliography or index, we run \n{bibtex}
 and \n{makeindex}. 
-\verbatiminput{tutorials/makefiles/tex/M2}
+\lstinputlisting{tutorials/makefiles/tex/M2}
 The minus sign at the start of the line means that
 \emph{Make} should not exit if these commands fail.
 
@@ -925,18 +932,18 @@ Finally, we would like to use \emph{Make}'s facility for taking
 dependencies into account. 
 We could write a makefile that has
 the usual rules
-\begin{verbatim}
+\begin{lstlisting}
 mainfile.pdf : mainfile.tex includefile.tex
-\end{verbatim}
+\end{lstlisting}
 but we can also discover the include files explicitly. The following
 makefile is invoked with 
-\begin{verbatim}
+\begin{lstlisting}
   make pdf TEXTFILE=mainfile
-\end{verbatim}
+\end{lstlisting}
 The \n{pdf} rule then uses some shell scripting to discover the
 include files (but not recursively), and it calls \emph{Make} again,
 invoking another rule, and passing the dependencies explicitly.
-\verbatiminput{tutorials/makefiles/tex/Makefile}
+\lstinputlisting{tutorials/makefiles/tex/Makefile}
 This shell scripting can also be done outside the makefile, generating
 the makefile dynamically.
 
@@ -958,7 +965,7 @@ Here are the main components:
 \item The source directory has a file \indextermtt{CMakeLists.txt}
   that describes the structure of the application.
 \item Generated files can be kept separate from the source:
-\begin{verbatim}
+\begin{lstlisting}
 sourcedir=.... # source location
 builddir=....  # place for temporaries
 installdir=... # here goes the finished stuff
@@ -968,7 +975,7 @@ cmake \
   ${sourcedir} # do the setup
 make           # compile
 make install   # move finished stuff in place
-\end{verbatim}
+\end{lstlisting}
 \end{itemize}
 
 \Level 1 {Dependency analysis}
@@ -976,17 +983,17 @@ make install   # move finished stuff in place
 Above you learned how \n{Make} can be used for projects with
 complicated dependencies. You can tell \n{Cmake} about this using
 clauses
-\begin{verbatim}
+\begin{lstlisting}
 include_directories(include)
 file(GLOB SOURCES "*/*.c")
 file(GLOB HEADERS "*/*.h")
 add_executable(hello_world hello.c ${SOURCES} )
-\end{verbatim}
+\end{lstlisting}
 %%%% VLE this seems to be old style. should not use `include_directories'
 When invoked, \n{Cmake} will then report
-\begin{verbatim}
+\begin{lstlisting}
 Scanning dependencies of target hello_world
-\end{verbatim}
+\end{lstlisting}
 and generate makefiles accordingly.
 
 One advantage of this setup is that the \n{cmake} stage only needs to
@@ -998,7 +1005,7 @@ part.
 Example. Consider a main file \n{hello.c} that uses two auxiliary
 files \n{compute.c} and \n{output.c}. After cmake, the \n{make; make
   install} gives as output:
-\begin{verbatim}
+\begin{lstlisting}
 Scanning dependencies of target hello_world
 [ 25%] Building C object CMakeFiles/hello_world.dir/hello.c.o
 [ 50%] Building C object
@@ -1008,10 +1015,10 @@ Scanning dependencies of target hello_world
 [100%] Built target hello_world
 [100%] Built target hello_world
 Install the project...
-\end{verbatim}
+\end{lstlisting}
 After editing the \n{compute.c} file only that is recompiled, and the
 project is relinked:
-\begin{verbatim}
+\begin{lstlisting}
 Scanning dependencies of target hello_world
 [ 25%] Building C object
                 
@@ -1019,7 +1026,7 @@ CMakeFiles/hello_world.dir/compute/compute.c.o
 [100%] Built target hello_world
 [100%] Built target hello_world
 Install the project...
-\end{verbatim}
+\end{lstlisting}
 Clearly, cmake has generated makefiles with the right structure.
 The disadvantage of using \n{cmake} is that the automatically
 generated makefiles are close to unreadable.
@@ -1036,25 +1043,25 @@ the file \indextermtt{CMakeCache.txt}, which is in the build directory.
 You can give \n{Cmake} options that find their way into the makefile
 structure. For instance, on the Apple laptop where this book was
 written, a straight invocation make \n{Cmake} discover the C~compiler of the system:
-\begin{verbatim}
+\begin{lstlisting}
 -- The C compiler identification is AppleClang 9.1.0.9020039
-\end{verbatim}
+\end{lstlisting}
 However, specifying
-\begin{verbatim}
+\begin{lstlisting}
 cmake -DCMAKE_C_COMPILER=gcc
-\end{verbatim}
+\end{lstlisting}
 gives:
-\begin{verbatim}
+\begin{lstlisting}
 -- The C compiler identification is GNU 7.4.0
-\end{verbatim}
+\end{lstlisting}
 
 \Level 1 {Details}
 
 CMake has variables:
-\begin{verbatim}
+\begin{lstlisting}
 set(myvar myvalue)
 message(STATUS "my variable has value ${myvar}")
-\end{verbatim}
+\end{lstlisting}
 \index{Cmake|)}
 
 

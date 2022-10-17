@@ -9,20 +9,27 @@
 %%%% Unported (CC BY 3.0) license and made possible by funding from
 %%%% The Saylor Foundation \url{http://www.saylor.org}.
 %%%%
+%%%% common macros for book and slides
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage{array,booktabs,arydshln,multirow,multicol}
 
-\newcounter{lesson} % for lesson tables
-\newcommand\furtherreading{\Level 0 {Further Reading}\label{sec:furtherreading-\chapshortname}}
+% plotting with tikz
+%%\usepackage{tikz}
+%%\usetikzlibrary{external}
+\usepackage{pgfplots}  
+\usepgfplotslibrary{external}
+\tikzexternalize
+\tikzsetexternalprefix{plot/}
+\pgfplotsset{width=5in,compat=1.7}  
 
 {\catcode`\^^I=13 \globaldefs=1
 \newcommand\srclisting[2]{\begingroup\small\par\vspace{1ex}
   \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
-  \noindent\fbox{#1}
-  \verbatiminput{#2}\endgroup
+  \noindent \textbf{File:} \texttt{#1}\par %\fbox{#1}
+  \lstinputlisting{#2}\endgroup
   }
 \newcommand\codelisting[1]{\begingroup\small\par\vspace{1ex}
   \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
@@ -153,6 +160,7 @@
 \acroitem{SGD}{Stochastic Gradient Descent}
 \acroitem{SIMD}{Single Instruction Multiple Data}
 \acroitem{SIMT}{Single Instruction Multiple Thread}
+\acroitem{SLURM}{Simple Linux Utility for Resource Management}
 \acroitem{SM}{Streaming Multiprocessor}
 \acroitem{SMP}{Symmetric Multi Processing}
 \acroitem{SMT}{Symmetric Multi Threading}
@@ -165,6 +173,7 @@
 \acroitem{SRAM}{Static Random-Access Memory}
 \acroitem{SSE}{SIMD Streaming Extensions}
 \acroitem{STL}{Standard Template Library}
+\acroitem{TDD}{Test-Drive Development}
 \acroitem{TLB}{Translation Look-aside Buffer}
 \acroitem{UMA}{Uniform Memory Access}
 \acroitem{UPC}{Unified Parallel C}
@@ -175,6 +184,7 @@
 \newcommand{\indexterm}[1]{\emph{#1}\index{#1}}
 \newcommand{\indextermtt}% begin term with underscore
            {\bgroup\catcode`\_=12 \indextermtteg}
+\let\indexmpishow\indextermtt
 \newcommand{\indextermtteg}[1]%end term with underscore
            {{\ttfamily\slshape #1}%
             \index{#1@\makeusletter\texttt{#1}\makeusother}\egroup
@@ -200,7 +210,7 @@
            {\bgroup\catcode`\_=12 \indextermunixeg}
 \newcommand{\indextermunixeg}[1]%end term with underscore
            {{\ttfamily\slshape #1}%
-            \index{#1@\makeusletter\texttt{#1}\makeusother!(unix command)}\egroup
+            \index{#1@\makeusletter\texttt{#1}\makeusother\ (unix command)}\egroup
            }
 \newcommand{\indextermunixdef}[1]
            {{\ttfamily\slshape #1}\index{#1@\texttt{#1}!(unix command)|textbf}}
@@ -208,14 +218,14 @@
            {\bgroup\catcode`\_=12 \indextermunixdefeg}
 \newcommand{\indextermunixdefeg}[1]%end term with underscore
            {{\ttfamily\slshape #1}%
-            \index{#1@\makeusletter\texttt{#1}\makeusother!(unix command)|textbf}\egroup
+            \index{#1@\makeusletter\texttt{#1}\makeusother\ (unix command)|textbf}\egroup
            }
 
 \newcommand{\indextermcmake}% begin term with underscore
            {\bgroup\catcode`\_=12 \indextermcmakeeg}
 \newcommand{\indextermcmakeeg}[1]%end term with underscore
            {{\ttfamily\slshape #1}%
-            \index{#1@\makeusletter\texttt{#1}\makeusother!(cmake command)}\egroup
+            \index{#1@\makeusletter\texttt{#1}\makeusother\ (cmake command)}\egroup
            }
 
 \newcommand{\indextermdef}[1]{\emph{#1}\index{#1|textbf}}
@@ -224,6 +234,7 @@
 \newcommand{\indextermsubdef}[2]{\emph{#1 #2}\index{#2!#1|textbf}}
 \newcommand{\indextermsubp}[2]{\emph{#1 #2s}\index{#2!#1}}
 \newcommand{\indextermbus}[2]{\emph{#1 #2}\index{#1!#2}}
+\let\indextermbusp\indextermbus
 \newcommand{\indextermbusdef}[2]{\emph{#1 #2}\index{#1!#2|textbf}}
 \newcommand{\indextermstart}[1]{\emph{#1}\index{#1|(}}
 \newcommand{\indextermend}[1]{\index{#1|)}}

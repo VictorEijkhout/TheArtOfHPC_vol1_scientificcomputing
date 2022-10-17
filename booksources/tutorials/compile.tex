@@ -63,14 +63,14 @@ In figure~\ref{fig:file-types} you find a brief summary of file types.
 We will now discuss them in more detail.
 
 \begin{figure}[ht]
-  \begin{tabular}{|l|l|}
-    \midrule
-    \multicolumn{2}{|c|}{Text files}\\
+  \begin{tabular}{ll}
+    \toprule
+    \multicolumn{2}{c}{Text files}\\
     \midrule
     Source&Program text that you write\\
     Header&also written by you, but not really program text.\\
     \midrule
-    \multicolumn{2}{|c|}{Binary files}\\
+    \multicolumn{2}{c}{Binary files}\\
     \midrule
     Object file&The compiled result of a single source file\\
     Library&Multiple object files bundled together\\
@@ -205,7 +205,7 @@ efficient code on their processors.
 Let's start with a simple program that has the whole source in one
 file.
 
-\srclisting{One file: \n{hello.c}}{compile/c/hello.c}
+\srclisting{One file: \n{hello.c}}{code/compilec/hello.c}
 
 Compile this program with your favorite compiler; we will use \n{gcc}
 in this tutorial, but substitute your own as desired.
@@ -319,6 +319,10 @@ indicate routines that are used but not define in this file. In this
 case, \n{printf} is a system routine that will be supplied in the
 linker stage.
 
+(With C++ the function names will look a little strange
+because of \indexterm{name mangling}. However, you'll still
+be able to recognize them.)
+
 Sometimes you will come across \indextermsub{stripped}{binary} file,
 and \indextermunix{nm} will report \n{No symbols}.
 In that case \n{nm -D} may help, which displays `dynamic symbols'.
@@ -383,10 +387,13 @@ Done after 6.787777e-04
 Many compilers can generate a report of what optimizations they perform.
 
 \begin{tabular}{ll}
+  \toprule
   compiler&reporting option\\
+  \midrule
   clang& \texttt{-Rpass=.*}\\
   gcc&   \texttt{-fopt-info}\\
   intel& \texttt{-qopt-report}\\
+  \bottomrule
 \end{tabular}
 
 Generally, optimizations leave the semantics of your code
@@ -435,8 +442,11 @@ Create a directory to contain your library (depending on what your
 library is for this can be a
 system directory such as \n{/usr/bin}), and create the library file
 there. 
+The library can be linked into your executable by explicitly giving
+its name, or by specifying a library path:
 
-\snippetmakeoutput{code/compile}{staticprogram}
+
+\snippetmakeoutput{code/compilecxx}{staticprogram}
 
 The \indextermunix{nm} command tells you what's in the library, just
 like it did with object files, but now it also tells you what object
@@ -449,10 +459,7 @@ files are in the library:
          U _printf
 \end{verbatim}
 
-The library can be linked into your executable by explicitly giving
-its name, or by specifying a library path:
-
-\snippetmakeoutput{code/compile}{staticprogram}
+%% \snippetmakeoutput{code/compilecxx}{staticprogram}
 
 \Level 1 {Shared libraries}
 

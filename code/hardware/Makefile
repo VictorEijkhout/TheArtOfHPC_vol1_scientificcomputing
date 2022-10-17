@@ -33,7 +33,8 @@ else
   CXXOPTS = ${TACC_CXXOPTS_INC}
 endif
 EXTRA_OPTIONS_intel = -qopt-report=5
-EXTRA_OPTIONS += -I${CXXOPTS}/include ${EXTRA_OPTIONS_${TACC_FAMILY_COMPILER}}
+EXTRA_OPTIONS += -I${CXXOPTS} ${EXTRA_OPTIONS_${TACC_FAMILY_COMPILER}}
+EXTRALIBS = -lpthread
 info ::
 	@echo "note: EXTRA_OPTIONS set to: ${EXTRA_OPTIONS}, use EXTRA_EXTRA_OPTIONS"
 
@@ -47,9 +48,20 @@ RUNS =
 include ../../makefiles/Make.omp_run
 
 RUNS += run_cachesize
-.PHONY: run_cachesize
+.PHONY: run_cachesize run_cachesizes cachesizes_postprocess
 run_cachesize : cachesize
 	@./cachesize
+run_cachesizes : cachesize
+	@make --no-print-directory omp_scaling \
+	    OMPTHREADS=1 \
+	    PROGRAM=cachesize RUN_OPTIONS="-W 1000"
+	@make --no-print-directory cachesize_postprocess
+## \addplot coordinates { (1, 5.42) (18, 9.69) (37, 3.97) (56, 2.07) };
+cachesizes_postprocess :
+	@cat cachesizes.runout \
+	    | awk '{s = "(" $$4 "," $$15 ")" s } END {print s}' \
+	    > caches.tkz \
+	 && git add caches.tkz
 
 RUNS += run_stride run_strides
 .PHONY: run_stride run_strides

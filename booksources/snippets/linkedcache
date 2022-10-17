@@ -1,0 +1,7 @@
+    std::iota(indices.begin(),indices.end(),0);
+    std::random_device r;
+    std::mt19937 g(r());
+    std::shuffle(indices.begin(), indices.end(), g);
+    auto data = thecache.data();
+    for (size_t i=0; i<indices.size(); i++)
+      data[i] = indices[i];

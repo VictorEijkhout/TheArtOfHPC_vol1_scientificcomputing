@@ -21,7 +21,7 @@
       \hbox\bgroup
 %      \begin{mdframed}[backgroundcolor=blue!10]%{quote}
         \begin{minipage}[c]{.6\textwidth}
-          \lstinputlisting{other/git/\CommentArg}
+          \lstinputlisting{tutorials/git/\CommentArg}
           \vfill
         \end{minipage}
  %     \end{mdframed}
@@ -242,25 +242,28 @@ listing the commit numbers, and the messages that you entered on those commits.
 \Level 0 {Undoing changes}
 
 There are various levels of undo, depending on whether you have added or committed
-those chaqnges. Or worse; see below.
+those changes.
 
 \Level 1 {Undo uncommitted change}
 
-If you have made a change, and you did \n{git add} on the file,
-and you've done \n{git diff} to make sure;
+Scenario: you have edited a file that is in the repo,
+you want to undo that change,
+and you have not yet committed the change.
+
+First of all, do \n{git diff} to confirm:
 
 \begin{gitstep}{undofirst.runout1}
   Make regrettable changes.
 \end{gitstep}
 
-Do \n{git checkout} on that file. This gets the last committed version
+Doing \n{git checkout} on that file gets the last committed version
 and puts it back in your working directory.
 
 \begin{gitstep}{undofirst.runout2}
   Restore previously committed version.
 \end{gitstep}
 
-\Level 0 {Restore a file from a previous commit}
+\Level 1 {Restore a file from a previous commit}
 
 A more complicated scenario is where you have committed the change.
 Then you need to find the commit id.
@@ -353,10 +356,10 @@ and multiple \indexterm{upstream}s remotely, you intially specify both:
   Push changes.
 \end{gitstep}
 
-\Level 1 {Multiple local repositories}
+\Level 1 {Collaboration on the same repository}
 
-Let's see how changes from one local repository
-propagate to another.
+Let's see how changes from one clone of a repository
+can propagate to another clone.
 This can be because more than one person is working on a project,
 or because one person is working from more than one machine.
 
@@ -611,16 +614,17 @@ git will not be able to merge
 and you have to edit the file as in section~\ref{sec:git-conflict}.
 
 \begin{figure}[ht]
+  \hbox{
   \includegraphics[scale=.4]{git-push}
-  \caption{Add local changes to the remote repository.}
-  \label{fig:git-push}
-\end{figure}
-
-\begin{figure}[ht]
   \includegraphics[scale=.4]{git-pull}
-  \caption{Get changes that were made to the remote repository.}
+  }
+  \caption{Add local changes to the remote repository (left);
+    Get changes that were made to the remote repository (right).}
+  \label{fig:git-push}
   \label{fig:git-pull}
 \end{figure}
+
+\endinput
 
 \Level 0 {Conflicts}
 

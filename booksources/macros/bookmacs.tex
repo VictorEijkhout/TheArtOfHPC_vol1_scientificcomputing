@@ -21,16 +21,16 @@
 %%
 \usepackage{xr-hyper}
 % only in tutorials \externaldocument[HPSC-]{scicompbook}
-\newcommand\HPSCref[1]{HPC book, section-\ref{HPSC-#1}}
+\newcommand\HPSCref[2][section]{HPC book, #1~\ref{HPSC-#2}}
 % only in book \externaldocument[CARP-]{scicomptutorials}
 \newcommand\CARPref[1]{%
-        \textsl{Tutorials book, section-\ref{CARP-#1}}}
+        \textsl{Tutorials book, section~\ref{CARP-#1}}}
 \externaldocument[PCSE-]{parcompbook}
-\newcommand\PCSEref[1]{%
-        \textsl{Parallel Programming book, section-\ref{PCSE-#1}}}
+\newcommand\PCSEref[2][section]{%
+        \textsl{Parallel Programming book, #1~\ref{PCSE-#2}}}
 \externaldocument[ISP-]{ispbook}
 \newcommand\ISPref[1]{%
-        \textsl{Introduction to Scientific Programming book, section-\ref{ISP-#1}}}
+        \textsl{Introduction to Scientific Programming book, section~\ref{ISP-#1}}}
 \begin{notlulu}
   \usepackage[xetex,colorlinks,pagebackref=true]{hyperref}
   \hypersetup{bookmarksopen=true}
@@ -53,14 +53,14 @@
 \renewcommand\topfraction{.9}
 \usepackage{graphicx,wrapfig}
 \usepackage{makeidx}
-% plotting with tikz
-%%\usepackage{tikz}
-%%\usetikzlibrary{external}
-\usepackage{pgfplots}  
-\usepgfplotslibrary{external}
-\tikzexternalize
-\tikzsetexternalprefix{plot/}
-\pgfplotsset{width=5in,compat=1.7}  
+
+\newcounter{lesson} % for lesson tables
+\newcommand\furtherreading{\Level 0 {Further Reading}\label{sec:furtherreading-\chapshortname}}
+
+\newenvironment{fntable}[1]
+{\par\hbox\bgroup\kern\unitindent
+\begin{tabular}{#1}\toprule}
+{\bottomrule\end{tabular}\egroup\par}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -102,6 +102,12 @@
 \newenvironment{zshnote}
   {\begin{specialnote}{Zsh note}}
   {\end{specialnote}}
+\newenvironment{fortrannote}
+  {\begin{specialnote}{Fortran note}}
+  {\end{specialnote}}
+\newenvironment{pythonnote}
+  {\begin{specialnote}{Python note}}
+  {\end{specialnote}}
 
 \newcommand\ListStrippedSource[1]{
   \begingroup \footnotesize
@@ -109,9 +115,16 @@
   \verbatiminput{input.cut}
   \endgroup
 }
-\newcommand\ListNamedSource[2]{
+%%
+%% #1 optional language
+%% #2 caption
+%% #3 full path
+%%
+\newcommand\ListNamedSource[3][bash]{
+  \message{Using language #1}
   \begingroup \footnotesize
-  \immediate \write 18 { ./stripsource #2 }
-  \srclisting{#1}{input.cut}
+  \immediate \write 18 { ./stripsource #3 }
+  \lstset{language=#1}
+  \srclisting{#2}{input.cut}
   \endgroup
 }

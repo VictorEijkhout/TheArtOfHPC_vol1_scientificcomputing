@@ -208,14 +208,8 @@ allows you to define your own timers and events.
 
 \Level 1 {MPI profiling}
 
-The MPI library has been designed to make it easy to profile. Each
-function such as \n{MPI_Send} does no more than calling
-\n{PMPI_Send}. This means that a profiling library can redefine
-\n{MPI_Send} to
-\begin{itemize}
-\item initialize a profiling stage,\item call \n{PMPI_Send}, \item
-  finish the profiling stage.
-\end{itemize}
+The MPI library has been designed to make it easy to profile.
+See \PCSEref{sec:mpi-performance}.
 
 \Level 0 {Tracing}
 
@@ -233,58 +227,6 @@ figure~\ref{fig:vampyr}.
   \caption{A Vampyr timeline diagram of a parallel process.}
   \label{fig:vampyr}
 \end{figure}
-
-\Level 1 {TAU}
-\label{sec:tau}
-\index{TAU|(}
-
-The TAU tool~\cite{TAU:ijhpca}
-(see \url{http://www.cs.uoregon.edu/research/tau/home.php} for the official documentation)
-uses \indexterm{instrumentation} to profile and trace your code. That is, it adds 
-profiling and trace calls to your code. You can then inspect
-the output after the run.
-
-There are two ways to instrument your code:
-\begin{itemize}
-\item You can use \indextermsub{dynamic}{instrumentation}, where TAU adds the measurement facility at runtime:
-\begin{verbatim}
-# original commandline:
-% mpicxx wave2d.cpp -o wave2d
-# with TAU dynamic instrumentation:
-% mpirun -np 12 tau_exec ./wave2d 500 500 3 4 5
-\end{verbatim}
-\item You can have the instrumentation added at compile time. For
-  this, you need to let TAU take over the compilation in some sense.
-  \begin{enumerate}
-  \item TAU has its own makefiles. The names and locations depend on
-    your installation, but typically it will be something like
-\begin{verbatim}
-export TAU_MAKEFILE=$TAU_HOME/lib/Makefile.tau-mpi-pdt
-\end{verbatim}
-  \item Now you can invoke the TAU compilers \n{tau_cc,sh}, \n{tau_cxx.sh}, \n{tau_f90.sh}.
-  \end{enumerate}
-\end{itemize}
-
-When you run your program you need to tell TAU what to do:
-\begin{verbatim}
-export TAU_TRACE=1
-export TAU_PROFILE=1
-export TRACEDIR=/some/dir
-export PROFILEDIR=/some/dir
-\end{verbatim}
-
-In order to generate trace plots you need to convert TAU output:
-\begin{verbatim}
-cd /some/dir # where the trace and profile output went
-tau_treemerge.pl
-tau2slog2 tau.trc tau.edf -o yourrun.slog2
-\end{verbatim}
-
-The \texttt{slog2}\index{slog2 file format} file can be displayed with \indexterm{jumpshot}.
-
-% http://wiki.mpich.org/mpich/index.php/TAU_by_example
-
-\index{TAU|)}
 
 % LocalWords:  Eijkhout systemclock chrono unix getrusage wallclock
 % LocalWords:  gettimeofday RDTSC ReaD PAPI MPI OpenMP gprof PETSc cc

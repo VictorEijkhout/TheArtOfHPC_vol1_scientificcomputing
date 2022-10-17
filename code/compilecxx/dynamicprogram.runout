@@ -1,0 +1,35 @@
+
+Linking to shared library
+
+clang++ -o libs/libfoo.so -shared foosub.o
+clang++ -o dynamicprogram fooprog.o -Llibs -lfoo
+-rwxr-xr-x  1 eijkhout  staff  50136 Sep 27 05:01 dynamicprogram
+
+.. note the size of the program
+
+-rwxr-xr-x  1 eijkhout  staff  50136 Sep 27 05:01 dynamicprogram
+
+.. note unresolved link to a library
+
+otool -L dynamicprogram | grep libfoo
+	libs/libfoo.so (compatibility version 0.0.0, current version 0.0.0)
+
+.. running by itself:
+
+clang++ -o libs/libfoo.so -shared foosub.o
+clang++ -o dynamicprogram fooprog.o -Llibs -lfoo
+-rwxr-xr-x  1 eijkhout  staff  50136 Sep 27 05:02 dynamicprogram
+hello world
+
+.. note resolved with LD_LIBRARY_PATH
+
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./libs otool -L dynamicprogram | grep libfoo
+	libs/libfoo.so (compatibility version 0.0.0, current version 0.0.0)
+
+.. running with updated library path:
+
+clang++ -o libs/libfoo.so -shared foosub.o
+clang++ -o dynamicprogram fooprog.o -Llibs -lfoo
+-rwxr-xr-x  1 eijkhout  staff  50136 Sep 27 05:02 dynamicprogram
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./libs dynamicprogram
+hello world

@@ -6,13 +6,10 @@
  **** copyright 2010-2019
  ****
  ****************************************************************/
-
 /*
   This is a demo of a few loop optimization techniques in C
   one can use to improve numerical throughput on modern CPUs.
 */
-
-
 /* 
  * Copyright (c) 2013 Jarek Siembida <jarek.siembida@gmail.com>
  * Copyright (c) 2013 LShift Ltd. <query@lshift.net>
@@ -39,18 +36,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-
 // Compilation for SSE:
 //
 // gcc -Wall -O9 -std=c99 -march=native -mno-avx -o ve ve.c
-
-
 // Compilation for AVX:
 //
 // gcc -Wall -O9 -std=c99 -march=native -mavx -o ve ve.c
-
-
 /* Bash script for testing:
 for algo in naive horizontal unrolled cached final
 do

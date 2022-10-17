@@ -1,0 +1,142 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of slides for
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2020
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\lstset{language=bash}
+
+\begin{numberedframe}{Building software the old way}
+  Using `GNU Autotools':
+\begin{verbatim}
+./configure
+make
+make install
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{User vs system packages}
+  The \n{make install} often tries to copy
+  to a system directory. If you're not the admin, do:
+\begin{verbatim}
+./configure --prefix=/home/yourname/mypackages
+\end{verbatim}
+with a location of your choice.
+\end{numberedframe}
+
+\begin{numberedframe}{Building with CMake}
+  \begin{itemize}
+  \item Either replace only the configure stage
+\begin{lstlisting}
+cmake ## argments
+make
+make install
+\end{lstlisting}
+or
+  \item do everything with CMake:
+\begin{lstlisting}
+cmake ## argments
+cmake --build ## stuff
+cmake --install ## stuff
+\end{lstlisting}
+  \end{itemize}
+(The second one is portable to non-Unix environments.)
+\end{numberedframe}
+
+\begin{numberedframe}{Directory structure}
+  \hbox to \textwidth\bgroup
+  \begin{minipage}{.45\textwidth}
+    \tikzsetnextfilename{cmake-insource}
+    \begin{tikzpicture}[dirtree]
+      \node{dir}
+      child { node {src} child { node {build} }
+      }
+      child { node {install} }
+      ;
+    \end{tikzpicture}
+  \end{minipage}
+  \hss
+  \begin{minipage}{.45\textwidth}
+    \tikzsetnextfilename{cmake-outsource}
+    \begin{tikzpicture}[dirtree]
+      \node{dir}
+      child { node {src} }
+      child { node {build} }
+      child { node {install} }
+      ;
+    \end{tikzpicture}
+  \end{minipage}
+  \egroup
+  \begin{itemize}
+  \item In-source build: pretty common
+  \item Out-of-source build: cleaner because never touches the source tree
+  \end{itemize}
+\begin{lstlisting}
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Out-of-source build}
+  \begin{itemize}
+  \item Work from a build directory
+  \item Specify prefix and location of \n{CMakeLists.txt}
+  \end{itemize}
+\begin{lstlisting}
+ls some_package_1.0.0 # we are outside the source
+ls some_package_1.0.0/CMakeLists.txt # source contains cmake file
+mkdir builddir && cd builddir # goto build location
+cmake -D CMAKE_INSTALL_PREFIX=../installdir \
+      ../some_package_1.0.0
+make
+make install
+\end{lstlisting}
+\end{numberedframe}
+
+\lstset{language=CMake}
+
+\begin{numberedframe}{The CMakeLists file}
+  \begin{itemize}
+  \item Which cmake version is needed for this file?\\
+    (CMake has undergone quite some evolution!)
+  \item Give a name to your project.
+  \end{itemize}
+\begin{lstlisting}
+cmake_minimum_required( VERSION 3.12 )
+project( myproject VERSION 1.0 )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Target philosoph}
+  \begin{itemize}
+  \item Declare a target: something that needs to be built
+  \item specify what is needed for it
+  \end{itemize}
+\begin{lstlisting}
+add_executable( myprogram program.cxx )
+install( TARGETS myprogram DESTINATION . )
+\end{lstlisting}
+Use of macros:
+\begin{lstlisting}
+add_executable( ${PROJECT_NAME} program.cxx )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\begin{lstlisting}
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\begin{lstlisting}
+\end{lstlisting}
+\end{numberedframe}
+

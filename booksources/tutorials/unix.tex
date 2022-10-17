@@ -48,8 +48,9 @@ available
 \begin{itemize}
 \item Most of this tutorial is focused on the
   \indexterm{sh} or \indexterm{bash} shell.
-\item For a variety of reasons, \n{bash}-like shells are to be preferred over the
-  \indexterm{csh} or \indexterm{tcsh} shell. These will not be covered
+\item For a variety of reasons (see for instance section~\ref{sec:make-shell}),
+  \n{bash}-like shells are to be preferred over the
+  \indexterm{csh} or \indexterm{tcsh} shell. These latter ones will not be covered
   in this tutorial.
 \item Recent versions of the \indextermbus{Apple}{Mac OS}
   have the \indexterm{zsh} as default.
@@ -72,8 +73,7 @@ displaying data files.
 In this section you will learn commands for displaying file contents.
 \end{purpose}
 
-\begin{tabular}{ll}
-  \toprule
+\begin{fntable}{ll}
   command&function\\
   \midrule
   \texttt{ls} & list files or directories\\
@@ -86,8 +86,7 @@ In this section you will learn commands for displaying file contents.
   \texttt{cat filename} & display file\\
   \texttt{head,tail} & display part of a file\\
   \texttt{less,more} & incrementally display a file\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 \Level 2 {\texttt{ls}}
 
@@ -282,16 +281,14 @@ At this point it is advisable to learn to use a text
   it and how to move around in it.
 \end{purpose}
 
-\begin{tabular}{ll}
-  \toprule
+\begin{fntable}{ll}
   command&function\\
   \midrule
   \texttt{ls} & list the contents of directories\\
   \texttt{mkdir} & make new directory\\
   \texttt{cd} & change directory\\
   \texttt{pwd} & display present working directory\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 A unix file system is a tree of directories, where a directory is a
 container for files or more directories. We will display directories
@@ -489,10 +486,11 @@ classes too:
 \item other \n{o}: everyone else.
 \end{itemize}
 These nine permissions are rendered in sequence
-\[ \begin{array}{ccc}
-  \toprule user&group&other\\ \midrule rwx&rwx&rwx \\ \bottomrule
-\end{array}
-\]
+
+\begin{fntable}{ccc}
+  user&group&other\\ \midrule rwx&rwx&rwx \\
+\end{fntable}
+
 For instance
 \n{rw-r--r--} means that the owner can read and write a file, the owner's
 group and everyone else can only read. 
@@ -500,10 +498,11 @@ group and everyone else can only read.
 Permissions are also rendered
 numerically in groups of three bits, by letting
 $\mathtt{r}=4$, $\mathtt{w}=2$, $\mathtt{x}=1$:
-\[ \begin{array}{c}
-  \toprule rwx\\ \midrule 421 \\ \bottomrule
-\end{array}
-\]
+
+\begin{fntable}{c}
+ rwx\\ \midrule 421 \\ 
+\end{fntable}
+
 Common codes are $7=\mathtt{rwx}$ and $6=\mathtt{rw}$. You will find
 many files that have permissions $755$ which stands for an executable
 that everyone can run, but only the owner can change, or $644$ which
@@ -581,12 +580,10 @@ one file, and \n{ls} gives you all files in the current directory. To
 see files with certain conditions on their names, the
 \indexterm{wildcard} mechanism exists. The following wildcards exist:
 
-\begin{tabular}{ll}
-  \toprule
+\begin{fntable}{ll}
   \verb+*+& any number of characters\\
   \verb+?+& any character.\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 Example:
 \begin{verbatim}
@@ -647,15 +644,13 @@ file.
 In addition to searching for literal strings, you can look for more
 general expressions.
 
-\begin{tabular}{ll} 
-  \toprule
+\begin{fntable}{ll} 
   \verb+^+&the beginning of the line\\
   \verb+$+&the end of the line\\
   \verb+.+&any character\\
   \verb+*+&any number of repetitions \\
   \verb+[xyz]+&any of the characters \n{xyz}\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 This looks like the wildcard mechanism you just saw
 (section~\ref{sec:shell-wildcard}) but it's subtly different. Compare
@@ -998,8 +993,7 @@ Problem creating file: myfile
 
 \Level 1 {Processes and jobs}
 
-\begin{tabular}{ll}
-  \toprule
+\begin{fntable}{ll}
   \n{ps}&list (all) processes\\
   \n{kill}&kill a process\\
   \verb+CTRL-c+&kill the foreground job\\
@@ -1008,8 +1002,7 @@ Problem creating file: myfile
   \n{fg}&bring the last suspended job to the foreground\\
   \verb+fg %3+&bring a specific job to the foreground\\
   \n{bg}&run the last suspended job in the background\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 The Unix operating system can run many programs at the same time, by
 rotating through
@@ -1148,15 +1141,13 @@ less-than sign means that the input will come from the named file,
 
 Unix has three standard files that handle input and output:
 
-\begin{tabular}{ll}
-  \toprule
+\begin{fntable}{ll}
   Standard file&Purpose\\
   \midrule
   \texttt{stdin}& is the file that provides input for processes.\\
   \texttt{stdout}& is the file where the output of a process is  written.\\
   \texttt{stderr}& is the file where error output is written.\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 In an interactive session, all three files are connected to the user
 terminal. Using input or output redirection then means that the input
@@ -1195,16 +1186,14 @@ yourprogram >/dev/null
 \end{verbatim}
 Here are some useful idioms:
 
-\begin{tabular}{ll}
-  \toprule
+\begin{fntable}{ll}
   Idiom&Meaning\\
   \midrule
   \n{program 2>/dev/null}&send only errors to the null device\\
   \n{program >/dev/null 2>&1}&send output to dev-null, and errors to output\\
   &Note the counterintuitive sequence of specifications!\\
   \n{program 2>&1 | less}& send output and errors to \n{less}\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 \index{redirection|)}
 
@@ -1487,7 +1476,7 @@ Make the file executable and try again.
 In order write scripts that you want to invoke from anywhere, people
 typically put them in a directory \n{bin} in their home directory.
 You would then add this directory to your \indexterm{search path},
-contained in \indextermtt{PATH}; see section~\ref{sec:PATH}.
+contained in \indextermunix{PATH}; see section~\ref{sec:PATH}.
 
 \Level 1 {Script arguments}
 
@@ -1509,16 +1498,14 @@ echo "There were $# arguments in all"
 \end{verbatim}
 
 Formally:\\
-\begin{tabular}{ll}
-  \toprule
+\begin{fntable}{ll}
   variable&meaning\\
   \midrule
   \verb+$#+&number of arguments\\
   \verb+$0+&the name of the script\\
   \verb+$1,$2,...+&the arguments\\
   \verb+$*,$@+&the list of all arguments\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 \begin{exercise}
   Write a script that takes as input a file name argument, and reports how many
@@ -1844,7 +1831,7 @@ sudo su -
 \end{verbatim}
 \end{itemize}
 
-\Level 0 {Other systems: {\tt ssh} and {\tt scp}}
+\Level 0 {Connecting to other machines: {\tt ssh} and {\tt scp}}
 
 No man is an island, and no computer is either. Sometimes you want to
 use one computer, for instance your laptop, to connect to another, for

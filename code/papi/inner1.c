@@ -6,7 +6,6 @@
  **** copyright 2010-2019
  ****
  ****************************************************************/
-
 /*
  * File:    inner1.c
  * Author:  Victor Eijkhout <eijkhout@tacc.utexas.edu>

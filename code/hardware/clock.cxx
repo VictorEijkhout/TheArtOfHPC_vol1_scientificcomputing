@@ -69,9 +69,9 @@ std::pair<string,float> report_time_per_word
 
   float
     nanosec_duration = 1000. * static_cast<float>( microsec_duration ),
-    nanosec_per_word = nanosec_duration / number_of_accesses; 
+    nanosec_per_word = nanosec_duration / number_of_accesses;
   report << "; nsec per access: "
-	 << fixed << setprecision(3) << nanosec_per_word;
+	 << fixed << setprecision(3) << setw(8) << nanosec_per_word;
   return {report.str(),nanosec_per_word};
 };
 

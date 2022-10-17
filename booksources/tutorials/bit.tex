@@ -23,6 +23,7 @@ the actual representation of such numbers in terms of bits.
 
 Various programming languages have support for bit operations.
 We will explore the various options.
+For details on C++ and Fortran, see \ISPref{sec:bitc} and \ISPref{sec:bitf} respectively.
 
 \Level 0 {Construction and display}
 
@@ -75,23 +76,23 @@ Boolean operations are usually applied to the boolean datatype of the
 programming language. Some languages allow you to apply them to actual
 bits.
 
-\begin{tabular}{|r|lll|}
-  \midrule
+\begin{tabular}{rlll}
+  \toprule
   &boolean&bitwise (C)&bitwise (Py)\\
   and&\verb+&&+ & \verb+&+ & \verb+&+ \\
   or &\verb+||+ & \verb+|+ & \verb+|+ \\
   not&\verb+!+  &          & \verb+~+ \\
   xor&          & \verb+^+ &          \\
-  \midrule
+  \bottomrule
 \end{tabular}
 
 Additionally, there are operations on the bit string as such:
 
-\begin{tabular}{|r|l|}
-  \midrule
+\begin{tabular}{rl}
+  \toprule
   left  shift& \verb+<<+ \\
   right shift& \verb+>>+ \\
-  \midrule
+  \bottomrule
 \end{tabular}
 
 \begin{exercise}

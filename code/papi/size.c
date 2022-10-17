@@ -6,7 +6,6 @@
  **** copyright 2010-2019
  ****
  ****************************************************************/
-
 /*
  * File:    size.c
  * Author:  Victor Eijkhout <eijkhout@tacc.utexas.edu>

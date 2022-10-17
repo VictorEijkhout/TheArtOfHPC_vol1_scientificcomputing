@@ -572,11 +572,19 @@ The following sequence of commands
   pdflatex demo
   pdflatex demo
 \end{verbatim}
-gives 
+gives the output of figures \ref{fig:latex-page1},~\ref{fig:latex-page2}.
 
-\includegraphics[scale=.75]{code/latexdemo/demopage1}
+\begin{figure}[p]
+  \includegraphics[scale=.75]{code/latexdemo/demopage1}
+  \caption{First page of \LaTeX\ demo output}
+  \label{fig:latex-page1}
+\end{figure}
 
+\begin{figure}[p]
 \includegraphics[scale=.75]{code/latexdemo/demopage2}
+  \caption{First page of \LaTeX\ demo output}
+  \label{fig:latex-page2}
+\end{figure}
 
 \Level 1 {Listings}
 
@@ -588,9 +596,13 @@ with coloring and indentation automatically taken care of.
 \strippedinput{code/latexdemo}{listing.tex}
 \end{multicols}
 
-Output:
+\begin{figure}[ht]
+  \includegraphics[scale=.75]{code/latexdemo/listing}
+  \caption{Output of the listings demo}
+  \label{fig:latex-listing}
+\end{figure}
 
-\includegraphics[scale=.75]{code/latexdemo/listing}
+See the output in figure~\ref{fig:latex-listing}.
 
 \Level 1 {Native graphing}
 

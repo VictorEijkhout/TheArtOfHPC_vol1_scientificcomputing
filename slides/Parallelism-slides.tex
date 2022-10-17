@@ -687,11 +687,11 @@ for (i=0; i<NTHREADS; i++)
   process 2: \texttt{I=I+3}
 \end{tabbing}
 \footnotesize
-\begin{tabular}{|rr|rr|rr|}
+\begin{tabular}{rrrrrr}
   \toprule
-  \multicolumn{2}{|c|}{scenario 1.}& \multicolumn{2}{|c|}{scenario 2.}&
-  \multicolumn{2}{|c|}{scenario 3.}\\ \midrule
-  \multicolumn{6}{|c|}{$\n{I}=0$}\\ \midrule
+  \multicolumn{2}{c}{scenario 1.}& \multicolumn{2}{|c|}{scenario 2.}&
+  \multicolumn{2}{c}{scenario 3.}\\ \midrule
+  \multicolumn{6}{c}{$\n{I}=0$}\\ \midrule
   read $\n{I}=0$&read $\n{I}=0$&
     read $\n{I}=0$&read $\n{I}=0$&
       read $\n{I}=0$& \\
@@ -703,8 +703,9 @@ for (i=0; i<NTHREADS; i++)
   &&&&&do $\n{I}=5$\\
   &&&&&write $\n{I}=5$\\
   \midrule
-  \multicolumn{2}{|c|}{$\n{I}=3$}& \multicolumn{2}{|c|}{$\n{I}=2$}&
-  \multicolumn{2}{|c|}{$\n{I}=5$}\\ \bottomrule
+  \multicolumn{2}{c}{$\n{I}=3$}& \multicolumn{2}{c}{$\n{I}=2$}&
+  \multicolumn{2}{c}{$\n{I}=5$}\\ 
+  \bottomrule
 \end{tabular}
 \end{numberedframe}
 

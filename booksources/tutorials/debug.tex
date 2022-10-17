@@ -107,16 +107,14 @@ There are three ways of using gdb: using it to start a program,
 attaching it to an already running program, or using it to inspect a
 \indexterm{core dump}. We will only consider the first possibility.
 
-\begin{tabular}{cc}
-  \toprule
+\begin{fntable}{cc}
   \multicolumn{2}{c}{Starting a debugger run} \\
   \midrule
   gdb & lldb\\
   \midrule
   \n{\$ gdb program}&\n{\$ lldb program}\\
   \n{(gdb) run}&\n{(lldb) run}\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 Here is an example of how to start gdb with program that has no
 arguments (Fortran users, use \n{hello.F}):
@@ -198,7 +196,7 @@ Let us now consider some programs with errors.
 The following code has several errors.
 We will use the debugger to uncover them.
 
-\verbatimsnippet{gdb-square}
+\cverbatimsnippet{gdb-square}
 \begin{verbatim}
 %% cc -g -o square square.c
 %% ./square
@@ -225,15 +223,13 @@ not one of ours, but a system function. Using the \n{backtrace}
 display the \indexterm{call stack}. This usually allows us to find out
 where the error lies:
 
-\begin{tabular}{cc}
-  \toprule
+\begin{fntable}{cc}
   \multicolumn{2}{c}{Displaying a stack trace} \\
   \midrule
   gdb & lldb\\
   \midrule
   \n{(gdb) where}&\n{(lldb) thread backtrace}\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 {\small
 \begin{verbatim}
@@ -246,14 +242,12 @@ where the error lies:
 
 We inspect the actual problem:
 
-  \begin{tabular}{ll}
-    \toprule
+  \begin{fntable}{ll}
     \multicolumn{2}{c}{Investigate a specific frame}\\
     \midrule
     gdb&clang\\
     \n{frame 2}&\n{frame select 2}\\
-    \bottomrule
-  \end{tabular}
+  \end{fntable}
 
 We take a close look at line~7, and see that we need to
 change \n{nmax} to~\n{&nmax}.
@@ -285,7 +279,7 @@ Memory errors can also occur if we have a legitimate array, but we access it
 outside its bounds.
 The following program fills an array, forward, and reads it out, backward.
 However, there is an indexing error in the second loop.
-\verbatimsnippet{gdb-up}
+\cverbatimsnippet{gdb-up}
 \begin{verbatim}
 Program received signal EXC_BAD_ACCESS, Could not access memory.
 Reason: KERN_INVALID_ADDRESS at address: 0x0000000100200000
@@ -310,7 +304,8 @@ that spots any out-of-bound indexing.
 \Level 1 {Fortran programs}
 
 Compile and run the following program:
-\codelisting{tutorials/gdb/f/square.F}
+%%\codelisting{tutorials/gdb/f/square.F}
+\fverbatimsnippet{gdb-squaref}
 It should end prematurely with a message such as `Illegal instruction'.
 Running the program in gdb quickly tells you where the problem lies:
 \begin{verbatim}
@@ -328,8 +323,7 @@ We take a close look at the code and see that we did not allocate
 
 \Level 0 {Stepping through a program}
 
-\begin{tabular}{lll}
-  \toprule
+\begin{fntable}{lll}
   \multicolumn{3}{c}{Stepping through a program}\\
   \midrule
   gdb&lldb&meaning\\
@@ -337,13 +331,13 @@ We take a close look at the code and see that we did not allocate
   \n{cont}&&continue from breakpoint\\
   \n{next}&&next statement on same level\\
   \n{step}&&next statement, this level or next\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 Often the error in a program is sufficiently obscure that you need to
 investigate the program run in detail. Compile the following program
 %
-\codelisting{tutorials/gdb/c/roots.c}
+%%\codelisting{tutorials/gdb/c/roots.c}
+\cverbatimsnippet{gdbrootsc}
 %
 and run it:
 \begin{verbatim}
@@ -376,14 +370,12 @@ Breakpoint 1, main () at roots.c:14
 
 Most of the time you will set a breakpoint at a specific line:
 
-\begin{tabular}{ll}
-  \toprule
+\begin{fntable}{ll}
   \multicolumn{2}{c}{Set a breakpoint at a line}\\
   \midrule
   gdb&lldb\\
   \n{break foo.c:12}&\n{breakpoint set [ -f foo.c ] -l 12}\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 If execution is stopped at a breakpoint, you can do various things,
 such as issuing the \n{step} command:
@@ -440,16 +432,14 @@ break 8 if (n<0)
 means that breakpoint~8 becomes (unconditionally) active after
 the condition \texttt{n<0} is encountered.
 
-\begin{tabular}{cc}
-  \toprule
+\begin{fntable}{cc}
   \multicolumn{2}{c}{Set a breakpoint} \\
   \midrule
   gdb & lldb\\
   \midrule
     \n{break foo.c:12}&\n{breakpoint set [ -f foo.c ] -l 12}\\
     \n{break foo.c:12 if n>0}&\\
-  \bottomrule
-\end{tabular}
+\end{fntable}
 
 
 \begin{remark}
@@ -490,13 +480,11 @@ Information about breakpoints:
 \item In languages with \emph{exceptions}, such
   as~\emph{C++}\index{C++!exception}, you can set a \indexterm{catchpoint}:
 
-  \begin{tabular}{ll}
-    \toprule
+  \begin{fntable}{ll}
     \multicolumn{2}{c}{Set a breakpoint for exceptions}\\
     \midrule
     gdb&clang\\   \n{catch throw}&\n{break set -E C++}\\
-    \bottomrule
-  \end{tabular}
+  \end{fntable}
 
 \end{itemize}
 
@@ -566,9 +554,7 @@ Memory leaks will only surface in that your program runs out of
   fail. It is a good idea to always check the return result of your
   \indextermtt{malloc} or \indextermtt{allocate} statement!
 
-\Level 1 {Memory tools}
-
-\Level 2 {Valgrind}
+\Level 0 {Memory debugging with Valgrind}
 \label{sec:valgrind}
 
 Insert the following allocation of \n{squares} in your program:
@@ -584,8 +570,9 @@ To find such subtle memory errors you need a different tool: a memory
 debugging tool. A~popular (because open source) one is
 \emph{valgrind}; a~common commercial tool is \indexterm{purify}.
 
-\codelisting{tutorials/gdb/c/square1.c}
-%
+%%\codelisting{tutorials/gdb/c/square1.c}
+\cverbatimsnippet{gdbsquare1c}
+
 Compile this program with \n{cc -o square1 square1.c} and run it with
 \n{valgrind square1} (you need to type the input value). You will lots
 of output, starting with:
@@ -642,7 +629,7 @@ uninitialized all the same?
 
 \index{valgrind|)}
 
-\Level 2 {Electric fence}
+\Level 1 {Electric fence}
 
 The \indexterm{electric fence} library is one of a number of tools
 that supplies a new \indextermtt{malloc} with debugging support.

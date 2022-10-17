@@ -16,8 +16,8 @@ info ::
 
 MODE = seq
 LANGUAGE = C
-include ../../makefiles/Make.compile
 PROGRAMS = cansi c99 cmalloc cmalloc2d
+include ../../makefiles/Make.compile
 
 RUNS += run_set1d run_set2d run_pass2d run_setstar
 .PHONY: run_set1d run_set2d run_pass2d run_setstar
