@@ -14,6 +14,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\lstset{language=bash}
+
 Unix is an \indexacf{OS}, that is, a layer of software
 between the user or a user program and the hardware. It takes care of
 files and screen output, and it makes sure that many processes can exist
@@ -47,13 +49,13 @@ makes the actual \ac{OS} calls. There are a few possible Unix shells
 available
 \begin{itemize}
 \item Most of this tutorial is focused on the
-  \indexterm{sh} or \indexterm{bash} shell.
+  \indexunix{sh} or \indexunix{bash} shell.
 \item For a variety of reasons (see for instance section~\ref{sec:make-shell}),
   \n{bash}-like shells are to be preferred over the
-  \indexterm{csh} or \indexterm{tcsh} shell. These latter ones will not be covered
+  \indexunix{csh} or \indexunix{tcsh} shell. These latter ones will not be covered
   in this tutorial.
 \item Recent versions of the \indextermbus{Apple}{Mac OS}
-  have the \indexterm{zsh} as default.
+  have the \indexunix{zsh} as default.
   While this shell has many things in common with \n{bash},
   we will point out differences explicitly.
 \end{itemize}
@@ -73,9 +75,7 @@ displaying data files.
 In this section you will learn commands for displaying file contents.
 \end{purpose}
 
-\begin{fntable}{ll}
-  command&function\\
-  \midrule
+\begin{stufflearned}
   \texttt{ls} & list files or directories\\
   \texttt{touch} & create new/empty file or update existing file\\
   \verb+cat > filename+ & enter text into file\\
@@ -86,16 +86,16 @@ In this section you will learn commands for displaying file contents.
   \texttt{cat filename} & display file\\
   \texttt{head,tail} & display part of a file\\
   \texttt{less,more} & incrementally display a file\\
-\end{fntable}
+\end{stufflearned}
 
 \Level 2 {\texttt{ls}}
 
-Without any argument, the \indextermunix{ls} command gives you a
+Without any argument, the \indexunix{ls} command gives you a
 listing of files that are in your present location.
 
 %\practical
 \begin{exercise}
-  Type \indextermunix{ls}. Does anything show up?
+  Type \indexunix{ls}. Does anything show up?
 \end{exercise}
 \begin{outcome}
   If there are files in your directory, they will be \n{l}i\n{s}ted;
@@ -106,7 +106,7 @@ listing of files that are in your present location.
 
 %\practical
 \begin{exercise}
-  If the \indextermunix{ls} command shows that there are files, do
+  If the \indexunix{ls} command shows that there are files, do
   \n{ls name} on one of those.
   By using an option, for instance \n{ls -s name}
   you can get more information about \n{name}.
@@ -117,7 +117,7 @@ listing of files that are in your present location.
   non-existing file, you'll get an error message.
 \end{caution}
 
-The \indextermunix{ls} command can give you all sorts of information.
+The \indexunix{ls} command can give you all sorts of information.
 In addition to the above \n{ls -s} for the size, there is
 \n{ls -l} for the `long' listing.
 It shows (things we will get to later such as) ownership and permissions,
@@ -126,12 +126,12 @@ as well as the size and creation date.
 \begin{remark}
   There are several dates associated with a file, corresponding to
   changes in content, changes in permissions, and access of any
-  sort. The \indextermunix{stat} command gives all of them.
+  sort. The \indexunix{stat} command gives all of them.
 \end{remark}
 
 \Level 2 {\texttt{cat}}
 
-The \indextermunix{cat} command (short for `concatenate')
+The \indexunix{cat} command (short for `concatenate')
 is often used to display files, but it can also be
 used to create some simple content. 
 
@@ -140,11 +140,11 @@ used to create some simple content.
   Type \n{cat > newfilename} (where you can pick any filename) and
   type some text. Conclude with \n{Control-d} on a line by
   itself: press the \texttt{Control} key and hold it while you
-  press the \texttt{d} key.  Now use \indextermunix{cat} to view the
+  press the \texttt{d} key.  Now use \indexunix{cat} to view the
   contents of that file: \n{cat newfilename}.
 \end{exercise}
 \begin{outcome}
-  In the first use of \indextermunix{cat}, text was appended
+  In the first use of \indexunix{cat}, text was appended
   from the terminal to a file; in the second the file was cat'ed to
   the terminal output. You should see on your screen precisely what
   you typed into the file.
@@ -165,7 +165,7 @@ used to create some simple content.
 \Level 2 {\texttt{man}}
 
 The primary (though not always the most easily understood) source for unix commands
-is the \indextermunixdef{man} command, for `manual'.
+is the \indexunixdef{man} command, for `manual'.
 The descriptions available this way are referred to as the \indexterm{manual page}s.
 
 \begin{exercise}
@@ -181,10 +181,10 @@ The descriptions available this way are referred to as the \indexterm{manual pag
   learn about later.
 \end{outcome}
 
-The \indextermunix{man} command
+The \indexunix{man} command
     puts you in a mode where you can view long text documents. This
-    viewer is common on Unix systems (it is available as the \indextermunix{more} or
-    \indextermunix{less} system command), so memorize the following ways of navigating: Use
+    viewer is common on Unix systems (it is available as the \indexunix{more} or
+    \indexunix{less} system command), so memorize the following ways of navigating: Use
     the space bar to go forward and the \n{u} key to go back up. Use
     \n{g} to go to the beginning fo the text, and \n{G} for the end. Use
     \n{q} to exit the viewer. If you really get stuck, \n{Control-c} will
@@ -193,17 +193,17 @@ The \indextermunix{man} command
 \begin{remark}
   If you already know what command you're looking for, you can use man
   to get online information about it. If you forget the name of a
-  command, \indextermunix{man}~\n{-k keyword} can help you find it.
+  command, \indexunix{man}~\n{-k keyword} can help you find it.
 \end{remark}
 
 \Level 2 {\texttt{touch}}
 
-The \indextermunix{touch} command creates an empty file, or updates the timestamp of
+The \indexunix{touch} command creates an empty file, or updates the timestamp of
 a file if it already exists. Use \n{ls -l} to confirm this behavior.
 
 \Level 2 {\texttt{cp, mv, rm}}
 
-The \indextermunix{cp} can be used for copying a file (or directories,
+The \indexunix{cp} can be used for copying a file (or directories,
 see below): \n{cp file1 file2} makes a copy of \n{file1} and names it
 \n{file2}.
 
@@ -222,7 +222,7 @@ see below): \n{cp file1 file2} makes a copy of \n{file1} and names it
   will get an error message.
 \end{caution}
 
-A file can be renamed with \indextermunix{mv}, for `move'.
+A file can be renamed with \indexunix{mv}, for `move'.
 
 %\practical
 \begin{exercise}
@@ -250,15 +250,15 @@ information about a file.
   that file.
 \end{exercise}
 \begin{outcome}
-  \indextermunix{head} displays the first couple of lines of a file,
-  \indextermunix{tail} the last, and \indextermunix{more} uses the
+  \indexunix{head} displays the first couple of lines of a file,
+  \indexunix{tail} the last, and \indexunix{more} uses the
   same viewer that is used for man pages. Read the man pages for these
   commands and experiment with increasing and decreasing the amount of
-  output.  The \indextermunix{wc} (`word count') command reports the
+  output.  The \indexunix{wc} (`word count') command reports the
   number of words, characters, and lines in a file.
 \end{outcome}
 
-Another useful command is \indextermunix{file}: it tells you what
+Another useful command is \indexunix{file}: it tells you what
 type of file you are dealing with.
 
 %\practical
@@ -281,14 +281,12 @@ At this point it is advisable to learn to use a text
   it and how to move around in it.
 \end{purpose}
 
-\begin{fntable}{ll}
-  command&function\\
-  \midrule
+\begin{stufflearned}
   \texttt{ls} & list the contents of directories\\
   \texttt{mkdir} & make new directory\\
   \texttt{cd} & change directory\\
   \texttt{pwd} & display present working directory\\
-\end{fntable}
+\end{stufflearned}
 
 A unix file system is a tree of directories, where a directory is a
 container for files or more directories. We will display directories
@@ -318,7 +316,7 @@ reboot your personal machine, or when you log in to a server.
 %\practical
 \begin{exercise}
   The command to find out your current working directory is
-  \indextermunix{pwd}. Your home directory is your working directory
+  \indexunix{pwd}. Your home directory is your working directory
   immediately when you log in. Find out your home directory.
 \end{exercise}
 \begin{outcome}
@@ -335,11 +333,11 @@ session. Example:
 
 \dirdisplay{.1 /home/you/. .2 adirectory/. .2 afile. }
 
-The command for making a new directory is \indextermunix{mkdir}.
+The command for making a new directory is \indexunix{mkdir}.
 
 %\practical
 \begin{exercise}
-  Make a new directory with \indextermunix{mkdir}~\n{newdir} and view
+  Make a new directory with \indexunix{mkdir}~\n{newdir} and view
   the current directory with \n{ls}.
 \end{exercise}
 \begin{outcome}
@@ -348,7 +346,7 @@ The command for making a new directory is \indextermunix{mkdir}.
 \end{outcome}
 
 The command for going into another directory, that is, making it your
-working directory, is \indextermunix{cd} (`change directory'). It can be used in
+working directory, is \indexunix{cd} (`change directory'). It can be used in
 the following ways:
 \begin{itemize}
 \item \n{cd} Without any arguments, \n{cd} takes you to your home directory.
@@ -374,7 +372,7 @@ the following ways:
 
 %\practical
 \begin{exercise}
-  Let's quickly create a file in this directory: \indextermunix{touch}
+  Let's quickly create a file in this directory: \indexunix{touch}
   \n{onefile}, and another directory: \n{mkdir otherdir}.  Do \n{ls}
   and confirm that there are a new file and directory.
 \end{exercise}
@@ -507,7 +505,7 @@ Common codes are $7=\mathtt{rwx}$ and $6=\mathtt{rw}$. You will find
 many files that have permissions $755$ which stands for an executable
 that everyone can run, but only the owner can change, or $644$ which
 stands for a data file that everyone can see but again only the owner
-can alter. You can set permissions by the \indextermunix{chmod} command:
+can alter. You can set permissions by the \indexunix{chmod} command:
 \begin{verbatim}
   chmod <permissions> file         # just one file
   chmod -R <permissions> directory # directory, recursively
@@ -561,7 +559,7 @@ refer to. How about `group'? We'll go into that in section~\ref{sec:users}.
 
 \begin{remark}
   There are more obscure permissions. For instance the
-  \indexterm{setuid} bit declares that the program should run with the
+  \indexunix{setuid} bit declares that the program should run with the
   permissions of the creator, rather than the user executing it. This
   is useful for system utilities such \n{passwd} or \n{mkdir}, which
   alter the password file and the directory structure, for which
@@ -569,7 +567,7 @@ refer to. How about `group'? We'll go into that in section~\ref{sec:users}.
   bit, a user can run these programs, which are then so designed that
   a user can only make changes to their own password entry, and their
   own directories, respectively. The setuid bit is set with
-  \indextermunix{chmod}: \n{chmod 4ugo file}.
+  \indexunix{chmod}: \n{chmod 4ugo file}.
 \end{remark}
 
 \Level 1 {Wildcards}
@@ -621,7 +619,7 @@ For this section you need at least one file that contains some amount
 of text. You can for instance get random text from
 \url{http://www.lipsum.com/feed/html}. 
 
-The \indextermunix{grep} command can be used to search for a text expression in a
+The \indexunix{grep} command can be used to search for a text expression in a
 file.
 
 %\practical
@@ -717,7 +715,7 @@ to search that actual character, you have to \indexterm{escape} it.
 
 \Level 1 {Cutting up lines with \protect\texttt{cut}}
 
-Another tool for editing lines is \indextermunix{cut}, which will cut up a line
+Another tool for editing lines is \indexunix{cut}, which will cut up a line
 and display certain parts of it. For instance,
 \begin{verbatim}
 cut -c 2-5 myfile
@@ -749,9 +747,9 @@ This tells \n{cut} to use the colon as delimiter, and to print fields
 
 \Level 0 {Other useful commands: \protect\texttt{tar}}
 
-The \indextermunix{tar} command stands for `tape archive',
+The \indexunix{tar} command stands for `tape archive',
 that is, it was originally meant to package files on a tape.
-(The `archive' part derives from the \indextermunix{ar} command.)
+(The `archive' part derives from the \indexunix{ar} command.)
 These days, it's used to package files together for distribution
 on web sites and such: if you want to publish a library of hundreds of files
 this bundles them into a single file.
@@ -771,7 +769,7 @@ tar fx package.tar
 pronounced `tar file extract'.
 \end{enumerate}
 Text files can often be compressed to a large extent, so
-adding the \n{z} compressiong for \indextermunix{gzip}
+adding the \n{z} compressiong for \indexunix{gzip}
 is a good idea:
 \begin{verbatim}
 tar fcz package.tar.gz directory_with_stuff
@@ -782,8 +780,31 @@ is also common.
 
 \Level 0 {Command execution}
 
+If you type something in the shell,
+you are actually asking the underlying interpreter to execute a command.
+Some commands are built-ins, others can be names of programs that
+are stored somewhere, in a system location or in your own account.
+This section will go into the mechanisms.
+
+\begin{remark}
+  Like any good programming language, the shell language as comments.
+  Any line starting with a hash character~\n{#} is ignored.
+\end{remark}
+\begin{zshnote}
+  In Apple's zsh, the comment character is disabled. Do
+\begin{verbatim}
+  setopt interactivecomments
+\end{verbatim}
+to enable it.
+\end{zshnote}
+
 \Level 1 {Search paths}
 \label{sec:PATH}
+
+\begin{stufflearned}
+  \lstinline+which+&location of executable command\\
+  \lstinline+type+&description of commands, functions,~\ldots\\
+\end{stufflearned}
 
 \begin{purpose}
   In this section you will learn how Unix determines what to do when
@@ -799,7 +820,7 @@ is found first.
 %\practical
 \begin{exercise}
   What you may think of as `Unix commands' are often just executable
-  files in a system directory. Do \indextermunix{which}~\n{ls}, and do
+  files in a system directory. Do \indexunix{which}~\n{ls}, and do
   an \n{ls -l} on the result.
 \end{exercise}
 \begin{outcome}
@@ -811,7 +832,7 @@ is found first.
 The locations where unix searches for commands is the
 \indextermdef{search path},
 which is stored in the \indexterm{environment variable} (for more
-details see below) \indextermunixdef{PATH}.
+details see below) \indexunixdef{PATH}.
 
 %\practical
 \begin{exercise}
@@ -851,6 +872,22 @@ commands.
   that needs to be emptied explicitly (as on Windows or the Mac OS),
   this can be a good idea.
 \end{outcome}
+
+\begin{remark}
+  Not all Unix commands correspond to executables. The
+  \indexunixdef{type} command gives more information than \indexunix{which}:
+\begin{lstlisting}
+$ type echo
+echo is a shell builtin
+$ type \ls
+ls is an alias for ls -F
+$ unalias ls
+$ type ls
+ls is /bin/ls
+$ type module
+module is a shell function from /usr/local/Cellar/lmod/8.7.2/init/zsh
+\end{lstlisting}
+\end{remark}
 
 \Level 1 {Command sequencing}
 \label{tut:unix-bq}
@@ -993,7 +1030,7 @@ Problem creating file: myfile
 
 \Level 1 {Processes and jobs}
 
-\begin{fntable}{ll}
+\begin{stufflearned}
   \n{ps}&list (all) processes\\
   \n{kill}&kill a process\\
   \verb+CTRL-c+&kill the foreground job\\
@@ -1002,12 +1039,12 @@ Problem creating file: myfile
   \n{fg}&bring the last suspended job to the foreground\\
   \verb+fg %3+&bring a specific job to the foreground\\
   \n{bg}&run the last suspended job in the background\\
-\end{fntable}
+\end{stufflearned}
 
 The Unix operating system can run many programs at the same time, by
 rotating through
 the list and giving each only a  fraction of a second to run each time.
-The command \indextermunix{ps} can tell you everything that is currently running.
+The command \indexunix{ps} can tell you everything that is currently running.
 
 %\practical
 \begin{exercise}
@@ -1025,7 +1062,7 @@ The command \indextermunix{ps} can tell you everything that is currently running
 In this long listing of \n{ps}, the second column contains the
 \emph{process numbers}\index{process!numbers}.
 Sometimes it is useful to have those: if a program misbehaves you can
-\indextermunix{kill} it with
+\indexunix{kill} it with
 \begin{verbatim}
 kill 123456
 \end{verbatim}
@@ -1045,8 +1082,8 @@ In addition to the process number, they have a job number.
 We will now explore manipulating jobs.
 
 When you type a command and hit return, that command becomes, for
-the duration of its run, the \indexterm{foreground
-  process}. Everything else that is running at the same time is a
+the duration of its run, the \indexterm{foreground process}.
+Everything else that is running at the same time is a
 \indexterm{background process}.
 
 Make an executable file \n{hello} with the following contents:
@@ -1141,13 +1178,11 @@ less-than sign means that the input will come from the named file,
 
 Unix has three standard files that handle input and output:
 
-\begin{fntable}{ll}
-  Standard file&Purpose\\
-  \midrule
+\begin{stufflearned}[Standard file]
   \texttt{stdin}& is the file that provides input for processes.\\
   \texttt{stdout}& is the file where the output of a process is  written.\\
   \texttt{stderr}& is the file where error output is written.\\
-\end{fntable}
+\end{stufflearned}
 
 In an interactive session, all three files are connected to the user
 terminal. Using input or output redirection then means that the input
@@ -1186,14 +1221,12 @@ yourprogram >/dev/null
 \end{verbatim}
 Here are some useful idioms:
 
-\begin{fntable}{ll}
-  Idiom&Meaning\\
-  \midrule
+\begin{stufflearned}[Idiom]
   \n{program 2>/dev/null}&send only errors to the null device\\
   \n{program >/dev/null 2>&1}&send output to dev-null, and errors to output\\
   &Note the counterintuitive sequence of specifications!\\
   \n{program 2>&1 | less}& send output and errors to \n{less}\\
-\end{fntable}
+\end{stufflearned}
 
 \index{redirection|)}
 
@@ -1212,14 +1245,14 @@ Shell variables are roughly divided in the following categories:
 \item Variables that are specific to the shell, such as \n{HOME} or \n{PATH}.
 \item Variables that are specific to some program, such as \n{TEXINPUTS} for \TeX/\LaTeX.
 \item Variables that you define yourself; see next.
-\item Variables that are defined by control structures such as \indextermunix{for};
+\item Variables that are defined by control structures such as \indexunix{for};
   see below.
 \end{itemize}
 
 You can see the
-full list of all variables known to the shell by typing \indextermunixdef{env}.
+full list of all variables known to the shell by typing \indexunixdef{env}.
 \begin{remark}
-  This does not include variables you define yourself, unless you \indextermunix{export} them;
+  This does not include variables you define yourself, unless you \indexunix{export} them;
   see below.
 \end{remark}
 
@@ -1279,7 +1312,7 @@ it is good to bear in mind that the shell is a text based language.
 
 A variable set this way will be known to all subsequent commands
 you issue in this shell, but not to commands in new shells you start up.
-For that you need the \indextermunix{export} command.
+For that you need the \indexunix{export} command.
 Reproduce the following session (the square brackets form the command prompt):
 \begin{verbatim}
 [] a=20
@@ -1333,7 +1366,7 @@ also defines a variable; section~\ref{sec:shell-scripting}
 shows some more built-in variables that apply in shell scripts.
 
 If you want to un-set an environment variable,
-there is the \indextermunix{unset} command.
+there is the \indexunix{unset} command.
 
 \index{environment variable|)}
 
@@ -1348,7 +1381,7 @@ bash shell.
 \Level 1 {Conditionals}
 
 The \emph{conditional} of the bash shell is predictably called
-\indextermunixdef{if}, and it can be written over several
+\indexunixdef{if}, and it can be written over several
 lines:
 \begin{verbatim}
 if [ $PATH = "" ] ; then
@@ -1366,16 +1399,16 @@ report \n{-1} if the file does not exist.
 
 The syntax of this is finicky:
 \begin{itemize}
-\item \indextermunix{if} and \indextermunix{elif} are followed by a
+\item \indexunix{if} and \indexunix{elif} are followed by a
   conditional, followed by a semicolon.
 \item The brackets of the conditional need to have spaces surrounding
   them.
-\item There is no semicolon after \indextermunix{then} of \indextermunix{else}:
+\item There is no semicolon after \indexunix{then} of \indexunix{else}:
   they are immediately followed by some command.
 \end{itemize}
 
 \begin{exercise}
-  Bash conditionals have an \indextermunix{elif} keyword.
+  Bash conditionals have an \indexunix{elif} keyword.
   Can you predict the error you get from this:
 \begin{verbatim}
 if [ something ] ; then
@@ -1430,7 +1463,7 @@ With this as a hint, write a loop that renames all your \n{.c} files
 to~\n{.x} files.
 
 The above construct loops over words, such as the output of
-\n{ls}. To do a numeric loop, use the command \indextermunixdef{seq}:
+\n{ls}. To do a numeric loop, use the command \indexunixdef{seq}:
 \begin{verbatim}
 [shell:474] seq 1 5
 1
@@ -1476,7 +1509,7 @@ Make the file executable and try again.
 In order write scripts that you want to invoke from anywhere, people
 typically put them in a directory \n{bin} in their home directory.
 You would then add this directory to your \indexterm{search path},
-contained in \indextermunix{PATH}; see section~\ref{sec:PATH}.
+contained in \indexunix{PATH}; see section~\ref{sec:PATH}.
 
 \Level 1 {Script arguments}
 
@@ -1520,7 +1553,7 @@ Formally:\\
   it without any arguments.
 \end{exercise}
 
-The standard way to parse argument is using the \indextermunixdef{shift}
+The standard way to parse argument is using the \indexunixdef{shift}
 command, which pops the first argument off the list of arguments.
 Parsing the arguments in sequence then involves looking at \verb+$1+,
 shifting, and looking at the new \verb+$1+.
@@ -1677,7 +1710,7 @@ introduce for your own purposes. Many of these customizations will
 need to apply to every sessions, so you can have 
 \emph{shell startup files} that will be read at the start of any session.
 
-Popular things to do in a startup file are defining \indextermunix{alias}es:
+Popular things to do in a startup file are defining \indexunix{alias}es:
 \begin{verbatim}
 alias grep='grep -i'
 alias ls='ls -F'
@@ -1761,15 +1794,15 @@ in. On university machines or other servers, there will often be other
 users. Here are some commands relating to them.
 
 \begin{itemize}
-\item [\indextermunix{whoami}] show your login name.
-\item [\indextermunix{who}] show the other users currently logged in.
-\item [\indextermunix{finger} {\tt otheruser}] get information about another user;
+\item [\indexunix{whoami}] show your login name.
+\item [\indexunix{who}] show the other users currently logged in.
+\item [\indexunix{finger} {\tt otheruser}] get information about another user;
   you can specify a user's login name here, or their real name,
   or other identifying information the system knows about.
-\item [\indextermunix{top}] which processes are running on the system; use
+\item [\indexunix{top}] which processes are running on the system; use
   \n{top -u} to get this sorted the amount of cpu time they are
   currently taking. (On Linux, try also the \n{vmstat} command.)
-\item [\indextermunix{uptime}] how long has it been since your last reboot?
+\item [\indexunix{uptime}] how long has it been since your last reboot?
 \end{itemize}
 
 \Level 1 {Groups}
@@ -1783,10 +1816,10 @@ When your account is created, your system administrator will have
 assigned you to one or more groups. (If you admin your own machine,
 you'll be in some default group; read on for adding yourself to more groups.)
 
-The command \indextermunix{groups}
+The command \indexunix{groups}
 tells you all the groups you are in, and \n{ls -l} tells you
 what group a file belongs to. Analogous to \n{chmod},
-you can use \indextermunix{chgrp} to change the group to
+you can use \indexunix{chgrp} to change the group to
 which a file belongs, to share it with a user who is also in that group.
 
 Creating a new group, or
@@ -1810,7 +1843,7 @@ as possible from a regular user account, and use
 %
 If you have root privileges, you can also use that to `become another
 user' and do things with their privileges, with the
-\indextermunixdef{sudo} (`superuser do') command.
+\indexunixdef{sudo} (`superuser do') command.
 
 \begin{itemize}
 \item To execute a command as another user:
@@ -1838,8 +1871,8 @@ use one computer, for instance your laptop, to connect to another, for
 instance a supercomputer.
 
 If you are already on a Unix computer, you can log into another with
-the `secure shell' command~\indextermunixdef{ssh}, a~more secure variant
-of the old `remote shell' command~\indextermunixdef{rsh}:
+the `secure shell' command~\indexunixdef{ssh}, a~more secure variant
+of the old `remote shell' command~\indexunixdef{rsh}:
 \begin{verbatim}
 ssh yourname@othermachine.otheruniversity.edu
 \end{verbatim}
@@ -1847,8 +1880,8 @@ where the \n{yourname} can be omitted if you have the same name on
 both machines.
 
 To only copy a file from one machine to another you can use the
-`secure copy' \indextermunixdef{scp}, a~secure variant of `remote
-copy'~\indextermunixdef{rcp}. The \n{scp} command is much like \n{cp} in syntax,
+`secure copy' \indexunixdef{scp}, a~secure variant of `remote
+copy'~\indexunixdef{rcp}. The \n{scp} command is much like \n{cp} in syntax,
 except that the source or destination can have a machine prefix.
 
 To copy a file from the current machine to
@@ -1889,7 +1922,7 @@ see~\cite{AWK:awk,OReilly:sedawk}.
 
 Unix has various tools for processing text files on a line-by-line
 basis.
-The stream editor \indextermunix{sed} is one example. If you have used the
+The stream editor \indexunix{sed} is one example. If you have used the
 \n{vi} editor, you are probably used to a syntax like
 \verb+s/foo/bar/+ for making changes.
 With \n{sed}, you can do this on the commandline.
@@ -1941,7 +1974,7 @@ sed -e 's/ab/cd/' -e 's/ef/gh/' -i thefile
 
 \Level 1 {\tt awk}
 
-The \indextermunixdef{awk} utility also operates on each line, but it can be
+The \indexunixdef{awk} utility also operates on each line, but it can be
 described as having a memory. An awk program consists of a sequence of
 pairs, where each pair consists of a match string and an action. The
 simplest awk program is
@@ -2017,7 +2050,7 @@ submit_homework student2.txt
   helpful message if you use it the wrong way.
 
   Try to detect if a student is cheating. Explore the
-  \indextermunix{diff} command to see if the submitted file is
+  \indexunix{diff} command to see if the submitted file is
   identical to something already submitted:
   loop over all submitted files and
   \begin{enumerate}
@@ -2029,9 +2062,11 @@ submit_homework student2.txt
   inserted some spaces.
 
   For a harder test: try to detect whether the cheating student
-  inserted newlines. This can not be done with \indextermunix{diff}, but you could
-  try \indextermunix{tr} to remove the newlines.
+  inserted newlines. This can not be done with \indexunix{diff}, but you could
+  try \indexunix{tr} to remove the newlines.
 \end{exercise}
+
+\lstset{language=C}
 
 %\Level 0 {Unix tools}
 

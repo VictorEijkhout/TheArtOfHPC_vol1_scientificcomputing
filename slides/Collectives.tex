@@ -89,33 +89,6 @@ Actual complexity:
 Good enough for short vectors.
 \end{frame}
 
-\begin{frame}{Reduce}
-\small
-Optimal complexity:
-    \[ \lceil\log_2 p\rceil \alpha+n\beta +\frac{p-1}p \gamma n. \]
-Spanning tree algorithm:
-\[ \kern-.2in
-\begin{array}{|c|ccc|}
-\hline
-  &t=1&t=2&t=3\\ \hline
-p_0&x_0^{(0)},x_1^{(0)},x_2^{(0)},x_3^{(0)}
-   &x_0^{(0:1)},x_1^{(0:1)},x_2^{(0:1)},x_3^{(0:1)}
-   &x_0^{(0:3)},x_1^{(0:3)},x_2^{(0:3)},x_3^{(0:3)}\\
-p_1&x_0^{(1)}\uparrow,x_1^{(1)}\uparrow,x_2^{(1)}\uparrow,x_3^{(1)}\uparrow
-   &&\\
-p_2&x_0^{(2)},x_1^{(2)},x_2^{(2)},x_3^{(2)}
-   &x_0^{(2:3)}\uparrow,x_1^{(2:3)}\uparrow,x_2^{(2:3)}\uparrow,x_3^{(2:3)}\uparrow
-   &\\
-p_3&x_0^{(3)}\uparrow,x_1^{(3)}\uparrow,x_2^{(3)}\uparrow,x_3^{(3)}\uparrow
-   &&\\
-\hline
-\end{array}
-\]
-Running time
-    \[ \lceil\log_2 p\rceil (\alpha+n\beta +\frac{p-1}p \gamma n). \]
-Good enough for short vectors.
-\end{frame}
-
 \begin{frame}{Long vector broadcast}
   Start with a scatter:
 \[
@@ -173,6 +146,51 @@ complexity of
 (p-1)\cdot\frac{N}{p}\cdot \beta.
 \]
   Better if $N$ large.
+\end{frame}
+
+\begin{frame}{Reduce}
+\small
+Optimal complexity:
+    \[ \lceil\log_2 p\rceil \alpha+n\beta +\frac{p-1}p \gamma n. \]
+Spanning tree algorithm:
+\[ \kern-.2in
+\begin{array}{|c|ccc|}
+\hline
+  &t=1&t=2&t=3\\ \hline
+p_0&x_0^{(0)},x_1^{(0)},x_2^{(0)},x_3^{(0)}
+   &x_0^{(0:1)},x_1^{(0:1)},x_2^{(0:1)},x_3^{(0:1)}
+   &x_0^{(0:3)},x_1^{(0:3)},x_2^{(0:3)},x_3^{(0:3)}\\
+p_1&x_0^{(1)}\uparrow,x_1^{(1)}\uparrow,x_2^{(1)}\uparrow,x_3^{(1)}\uparrow
+   &&\\
+p_2&x_0^{(2)},x_1^{(2)},x_2^{(2)},x_3^{(2)}
+   &x_0^{(2:3)}\uparrow,x_1^{(2:3)}\uparrow,x_2^{(2:3)}\uparrow,x_3^{(2:3)}\uparrow
+   &\\
+p_3&x_0^{(3)}\uparrow,x_1^{(3)}\uparrow,x_2^{(3)}\uparrow,x_3^{(3)}\uparrow
+   &&\\
+\hline
+\end{array}
+\]
+Running time
+    \[ \lceil\log_2 p\rceil (\alpha+n\beta +\frac{p-1}p \gamma n). \]
+Good enough for short vectors.
+\end{frame}
+
+\begin{frame}{Allreduce}
+  Allreduce~$\equiv$ Reduce$+$Broadcast
+
+\[
+\begin{array}{|c|ccc|}
+\hline
+  &t=1&t=2&t=3\\ \hline
+p_0&x_0\downarrow&x_0x_1\downarrow&x_0x_1x_2x_3\\
+p_1&x_1\uparrow&x_0x_1\downarrow&x_0x_1x_2x_3\\
+p_2&x_2\downarrow&x_2x_3\uparrow&x_0x_1x_2x_3\\
+p_3&x_3\uparrow&x_2x_3\uparrow&x_0x_1x_2x_3\\
+\hline
+\end{array}
+\]
+
+Same running time as regular reduce!
 \end{frame}
 
 \begin{frame}{Allgather}

@@ -407,16 +407,6 @@ influence the behavior of the system routine. On linux, \n{malloc}
 calls hooks that can be replaced with your own routines;
 see~\url{http://www.gnu.org/s/libc/manual/html_node/Hooks-for-Malloc.html}.)
 
-\Level 1 {Specific techniques: Fortran}
-
-Use \n{Implicit none}.
-
-Put all subprograms in modules so that the compiler can check for
-missing arguments and type mismatches. It also allows for automatic
-dependency building with \n{fdepend}.
-
-Use the C preprocessor for conditional compilation and such.
-
 \Level 0 {Testing}
 
 There are various philosophies for testing the correctness of a code.
@@ -467,7 +457,7 @@ being testable. The basic ideas are as follows.
 \Level 1 {Further reading}
 
 Volume~3 of this series discusses \ac{TDD} and Unit Testing, using the
-\indexterm{Catch2} framework. See~\ISPref{ch:tdd}.
+\indexterm{Catch2} framework. See~\ISPref[chapter]{ch:tdd}.
 
 % LocalWords:  Eijkhout Scons Bjam SVN foo NDEBUG Mclay MPI PETSc cpp
 % LocalWords:  backtrace Valgrind DMALLOC valgrind malloc gcc mcheck

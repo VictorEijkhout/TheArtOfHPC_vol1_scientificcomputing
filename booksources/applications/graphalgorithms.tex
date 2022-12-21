@@ -10,6 +10,7 @@
 %%%% Unported (CC BY 3.0) license and made possible by funding from
 %%%% The Saylor Foundation \url{http://www.saylor.org}.
 %%%%
+%%%% graphalgorithms.tex : application chapter; there is also a tutorial
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -54,6 +55,7 @@ a \emph{sparse matrix-vector
 multiplication}\index{sparse!matrix-vector product!in graph theory}.
 
 \Level 1 {Shortest path algorithms}
+\label{sec:sssp}
 
 There are several types of shortest path algorithms. For instance,
 in the \indextermsub{single source}{shortest path} algorithm
@@ -165,6 +167,7 @@ path between $i$ and~$j$.
 \index{Floyd-Warshall algorithm|)}
 
 \Level 1 {Spanning trees}
+\label{sec:dijkstra}
 
 In an undirected graph $G=\langle V,E\rangle$, we call $T\subset E$ a~`tree'
 if it is connected and acyclic. It is called a \indexterm{spanning tree}
@@ -267,6 +270,15 @@ to be small.
 The \indextermbus{graph}{Laplacian} (section~\ref{sec:graph-laplace})
 is a popular algorithm for this.
 
+The graph Laplacian algorithm has the advantage over
+traditional graph partitioning algorithms~\cite{LiTa:separator}
+that it is easier parallelizable.
+Another popular computational method uses a multi-level approach:
+\begin{enumerate}
+\item Partition a coarsened version of the graph;
+\item Gradually uncoarsen the graph, adapting the partitioning.
+\end{enumerate}
+
 Another example of graph cutting is the case of a
 \indextermsub{bipartite}{graph}: a~graph with two classes of nodes,
 and only edges from the one class to the other. Such a graph can for
@@ -339,31 +351,12 @@ two-dimensional distribution.
 %% For more pointers,
 %% see~\url{http://en.wikipedia.org/wiki/Floyd\%E2\%80\%93Warshall_algorithm}.
 
-\Level 2 {Partitioning}
-
-Traditional graph partitioning algorithms~\cite{LiTa:separator} are
-not simply parallelizable. Instead, two possible approaches are:
-\begin{itemize}
-\item Using the graph Laplacian; section~\ref{sec:graph-laplace}.
-\item Using a multi-level approach:
-  \begin{enumerate}
-  \item Partition a coarsened version of the graph;
-  \item Gradually uncoarsen the graph, adapting the partitioning.
-  \end{enumerate}
-\end{itemize}
-
 \Level 0 {Linear algebra on the adjacency matrix}
 
 A graph is often conveniently described through its
 \indextermbus{adjacency}{matrix}; see section~\ref{sec:adj-matrix}.
 In this section we discuss algorithms that operate on this
-matrix as a linear algebra object;
-in section~\ref{app:graph-mult} we will generalize this approach
-and show how the adjacency matrix can be used to describe graph
-algorithms that do not involve linear operators.
-
-\Level 1 {State transitions and Markov chains}
-\label{sec:markov-matrix}
+matrix as a linear algebra object.
 
 In many cases we actually need the left product, that is, multiplying
 the adjacency matrix from the left by a row vector. Let for example $e_i$~be 
@@ -376,6 +369,13 @@ More general, if we compute $x^tG=y^t$ for a unit basis vector~$x$, we have
 \wedge G_{ij}\not=0 \Rightarrow y_j\not=0.
 \]
 Informally we can say that $G$ makes a transition from state~$i$ to state~$j$.
+
+Another way of looking at this, is that
+if $x_i\not=0$, then $y_j\not=0$ for those~$j$
+for which $(i,j)\in E$.
+
+\Level 1 {State transitions and Markov chains}
+\label{sec:markov-matrix}
 
 Often we have vectors with only nonnegative elements, which case
 \[ 
@@ -411,36 +411,22 @@ Show that, with a matrix as just described,
 the elements of~$y$ again sum to~1.
 \end{exercise}
 
-\Level 1 {Parallelization aspects}
-
-In section~\ref{sec:pspmvp} we discussed the parallel evaluation
-of the sparse matrix-vector product. Because of the sparsity, 
-only a partitioning by block rows or columns made sense.
-In effect, we let the partitioning be determined by one of the problem
-variables. This is also the only strategy that makes sense for
-single-source shortest path algorithms.
-
-\begin{exercise}
-  Can you make an \textit{a priori} argument for basing the
-  parallelization on a distribution of the vector? How much data is
-  involved in this operation, how much work, and how many sequential
-  steps?
-\end{exercise}
-
-\Level 0 {Computational form of graph algorithms}
+\Level 1 {Computational form of graph algorithms}
 \label{app:graph-mult}
 
 Let's introduce two abstract operators $\bigoplus,\otimes$
 for graph operations.
 For instance, computing a shortest distance, can be expressed
-as the iterative applicatino of a basic step
+as the iterative application of a basic step:
 \begin{quote}
   The distance to node $y_i$ is the minimum of the already known distance,
   and the distance to a node $x_j$ plus the value of the arc $a_{ij}$.
 \end{quote}
-We write this step as
+We write this step more abstractly as
 \[ y_i \bigoplus a_{ij}\otimes x_j \]
-with the definitions
+by analogy with the matrix-vector multiplication
+\[ y_i \leftarrow y_i + a_{ij}x_j \]
+but with the definitions
 \[ y_i\bigoplus \xi_j \equiv y_i\leftarrow \min\{y_i,\xi_j\} \]
 and
 \[ a_{ij}\otimes x_j \equiv
@@ -463,9 +449,12 @@ products, and indeed, with the ordinary $+,\times$ operators
 that's what this algorithm would compute.
 We will continue to explore the similarity between graph algorithm
 and linear algebra, though we point out that the above $\bigoplus,\otimes$
-operators are not linear.
+operators are not linear, or even associative.
 
-\Level 1 {Algorithm transformations}
+This formalism will be used in several algorithms below;
+for other applications see~\cite{Kung:pegasus2009}.
+
+\Level 2 {Algorithm transformations}
 
 Analogous to transformations of the matrix-vector product,
 we now explore different variants of this graph algorithm
@@ -506,7 +495,7 @@ until \=$D=E$, that is, distances known for all edges\\
 \>\>\>add $i$ to $D$, with distance $d_j+e_{j\rightarrow i}$\\
 \end{tabbing}
 
-\Level 1 {The `push model'}
+\Level 2 {The `push model'}
 
 \begin{figure}[ht]
   \includegraphics[scale=.5]{mvp-push}
@@ -529,7 +518,7 @@ While the algorithm is intuitive, as regards performance it is not great.
   or somesuch. A~distributed memory code is even harder to write.
 \end{itemize}
 
-\Level 1 {The `pull' model}
+\Level 2 {The `pull' model}
 
 \begin{figure}[ht]
   \includegraphics[scale=.5]{mvp-pull}
@@ -563,36 +552,8 @@ Regarding performance we can now state that:
   with many updates of each $y_j$ component.
 \end{itemize}
 
-\Level 1 {General matrix-vector product}
-
-The examples above showed that sometimes we perform an operation
-on an adjacency matrix that has the structure of a matrix-vector product,
-but may not necessarily use addition and multiplication. (Many more examples 
-of this can be found in section~\ref{sec:graph-alg}.)
-
-For instance, suppose we use a vector to denote a set~$V$ of vertices:
-$v_i=1$~for $i\in V$.
-Then $w^t=v^tG$ describes the set of neighbors of the vertices in~$V$.
-However, if we use our regular matrix-vector product,
-some elements of $w^t$ may no longer be zero or one.
-(When does this happen, in graph terms?)
-To get that, we replace the addition in
-\[ w_j = \sum_i v_i G_{ij} \]
-by a more general reduction
-\[ w_j = \bigoplus_i v_i G_{ij} \]
-with taking a maximum as the reduction operator.
-
-Motivated by such reasoning, we define a general product
-\[ y = G \mathop{\oplus\cdot_\otimes} x \]
-where $\otimes$ is a binary operator, and $\oplus$~a~reduction operator,
-as
-\[ y_i = \bigoplus_j (g_{ij} \otimes x_j ). \]
-In this notation, finding the largest weight would be
-\[ w= G\mathop{\max\cdot_\times} e. \]
-
-This will be used in several algorithms below;
-for other applications see~\cite{Kung:pegasus2009}.
-
+\begin{comment}
+%%%% move this to the ISP book as a project
 \Level 1 {Sample implementation}
 
 We assume that we have types \lstinline{vectorvalue} and \lstinline{matrixvalue}:
@@ -636,6 +597,7 @@ We now apply the matrix-vector multiplication
 until we have found the distance to each vertex:
 %
 \snippetwithoutput{graphdistloop}{code/graph}{graph2}
+\end{comment}
 
 \Level 0 {`Real world' graphs}
 
@@ -659,6 +621,22 @@ authoratative nodes.
 For now, we will call such graphs \indextermsubp{random}{graph},
 although this term has a technical meaning
 too~\cite{Erdos:randomgraph}.
+
+\Level 1 {Parallelization aspects}
+
+In section~\ref{sec:pspmvp} we discussed the parallel evaluation
+of the sparse matrix-vector product. Because of the sparsity, 
+only a partitioning by block rows or columns made sense.
+In effect, we let the partitioning be determined by one of the problem
+variables. This is also the only strategy that makes sense for
+single-source shortest path algorithms.
+
+\begin{exercise}
+  Can you make an \textit{a priori} argument for basing the
+  parallelization on a distribution of the vector? How much data is
+  involved in this operation, how much work, and how many sequential
+  steps?
+\end{exercise}
 
 \Level 1 {Properties of random graphs}
 

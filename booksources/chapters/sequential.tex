@@ -1346,7 +1346,13 @@ very costly to build, and much slower in use than a direct mapped cache.
 
 For this reason, the most common solution is to have a
 $k$-way \indextermsub{associative}{cache}, where $k$~is at least two. In
-this case, a data item can go to any of $k$ cache locations. Code
+this case, a data item can go to any of $k$ cache locations.
+
+In this section we explore the idea of associativity;
+practical aspects of cache associativity are explored
+in section~\ref{sec:assoc-coding}.
+
+Code
 would have to have a $k+1$-way conflict before data would be flushed
 prematurely as in the above example. In that example, a value of $k=2$
 would suffice, but in practice higher values are often encountered.
@@ -1907,7 +1913,16 @@ and what cache it is in specifically. For processors with large
 numbers of cores (such as the \indextermbus{Intel}{Xeon Phi}) the
 directory can be distributed over the cores.
 
-\Level 2 {False sharing}
+\Level 2 {Tag directories}
+
+In multicore processors with distributed, but coherent, caches
+(such as the \indextermbus{Intel}{Xeon Phi})
+the
+%
+\emph{tag directories}\index{cache!tag directory}
+can themselves be distributed. This increases the latency of cache lookup.
+
+\Level 1 {False sharing}
 \label{sec:falseshare}
 
 The cache coherence problem can even appear if the cores access
@@ -1966,15 +1981,6 @@ for instance with an \indextermbus{OpenMP}{atomic} directive:
 \lstinputlisting[basicstyle=\ttfamily\scriptsize]{code/hardware/falsesharing-atomic.runout}
 
 (Of course, this has a considerable performance penalty by itself.)
-
-\Level 2 {Tag directories}
-
-In multicore processors with distributed, but coherent, caches
-(such as the \indextermbus{Intel}{Xeon Phi})
-the
-%
-\emph{tag directories}\index{cache!tag directory}
-can themselves be distributed. This increases the latency of cache lookup.
 
 \index{cache!coherence|)}
 
@@ -2549,20 +2555,34 @@ properties of programs, although hardware properties such as cacheline
 length and cache size play a role in analyzing the amount of
 locality. There is a third type of locality that is more intimately
 tied to hardware: \indextermsub{core}{locality}.
+This comes into play with multicore, multi-threaded programs.
 
 A code's execution is said to exhibit core locality if write accesses
 that are spatially or temporally close are performed on the same core
-or processing unit. The issue here is that of
-\indextermbus{cache}{coherence} (section~\ref{sec:coherence}) where two
-cores both have a copy of a certain cacheline in their local stores.
-If they both read from it there is no problem. However, if one of them
-writes to it, the coherence protocol will copy the cacheline to the
-other core's local store. This takes up precious memory bandwidth, so
-it is to be avoided.
-
+or processing unit.
 Core locality is not just a property of a program, but also to a large
-extent of how
-the program is executed in parallel.
+extent of how the program is executed in parallel.
+
+The following issues are at play here.
+\begin{itemize}
+\item
+  There are performance implications to \indextermbus{cache}{coherence}
+  (section~\ref{sec:coherence})
+  if two cores both have a copy of a certain cacheline in their local stores.
+  If they both read from it there is no problem. However, if one of them
+  writes to it, the coherence protocol will copy the cacheline to the
+  other core's local store. This takes up precious memory bandwidth, so
+  it is to be avoided.
+\item Core locality will be affected if the \ac{OS} is allowed do
+  \indextermbus{thread}{migration}, thereby invalidating cache contents.
+  Matters of fixing \indextermbus{thread}{affinity} are discussed in
+  \PCSEref[chapter]{ch:omp-affinity} and \PCSEref[chapter]{ch:hybrid}.
+\item In multi-\indexterm{socket} systems, there is also the phenomenon of
+  \indextermdef{first touch}: data gets allocated on the socket where
+  it is first initialized.
+  This means that access from the other socket(s) may be considerably slower.
+  See \PCSEref{sec:first-touch}.
+\end{itemize}
 
 \Level 0 {Programming strategies for high performance}
 \label{sec:performance-programming}

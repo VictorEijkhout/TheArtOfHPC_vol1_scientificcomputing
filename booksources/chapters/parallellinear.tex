@@ -34,11 +34,22 @@ bandwidth and finite connectivity.
 \index{collective operation|(}
 \label{sec:collective-cost}
 
-Collective operations play an important part in linear algebra
-operations. In fact, the scalability of the operations can depend on
-the cost of these collectives as you will see below.  Here we give a
-short discussion of the essential ideas; see~\cite{Chan2007Collective}
-for details.
+Collective operations are an artifact of distributed memory parallelism;
+see section~\ref{sec:mem-access} for a discussion.
+Mathematically they describe extremely simple operations
+such as summing an array of numbers.
+However, since these numbers can be on different processors,
+each with their own memory space,
+this operation becomes computationally non-trivial
+and worthy of study.
+
+Collective operations play an important part in linear algebra operations.
+In fact, the scalability of even simple operations such as a matrix-vector product
+can depend on the cost of these collectives as you will see below.
+We start with a short discussion of the essential ideas behind collectives;
+see~\cite{Chan2007Collective} for details.
+We will then see an important application in section~\ref{sec:parallel-dense-mvp},
+and various other places.
 
 \index{3@$\alpha$|see{latency}}
 \index{3@$\beta$|see{bandwidth}}
@@ -51,8 +62,10 @@ sending data (see section~\ref{sec:latencybandwidth}), and $\gamma$,
 the inverse of the \indexterm{computation rate}, the
 time for performing an arithmetic operation. Sending $n$ data
 items then takes time $\alpha +\beta n$. We further assume that a
-processor can only send one message at a time. We make no assumptions
-about the connectivity of the processors; thus, the lower bounds
+processor can only send one message at a time.
+We make no assumptions about the connectivity of the processors
+(see section~\ref{sec:parallel-topology} for this);
+thus, the lower bounds
 derived here will hold for a wide range of architectures.
 
 The main implication of the architectural model above is that the
@@ -68,9 +81,9 @@ cost associated with the accumulated latencies.
 \index{broadcast|(}
 
 In a \emph{broadcast} operation, a single processor has $n$ data elements
-that is needs to send to all others: the other processors need a full
-copy of all $n$ elements.  By
-the above doubling argument, we conclude that a broadcast to $p$
+that it needs to send to all others: the other processors need a full
+copy of all $n$ elements.
+By the above doubling argument, we conclude that a broadcast to $p$
 processors takes time at least $\lceil\log_2 p\rceil$ steps with a
 total latency of $\lceil\log_2 p\rceil \alpha$. Since $n$ elements are
 sent, this adds at least a time $n\beta$ for all elements to leave the
@@ -528,7 +541,7 @@ decomposition. We start with a discussion of collectives.
 \label{sec:densescaling}
 
 %pyskipbegin
-\input chapters/robertmacros
+\input robertmacros
 %pyskipend
 
 In this section, we will give a full analysis of the parallel
@@ -569,17 +582,35 @@ is needed after that.
 An algorithm with cost computation
 for $ y = A x $ in parallel is then given by
 
+%pyskipbegin
 \[ \vcenter{\hskip\unitindent
-\begin{tabular}{ p{2in}  l }\toprule
-Step & Cost (lower bound) \\ \midrule
-Allgather $ x_i $ so that $ x $ is available on all nodes & 
-$ \lceil \log_2(p)\rceil \alpha + \frac{p-1}{p} n \beta
-  \approx \log_2(p) \alpha + n \beta $ \\
-Locally compute $ y_i = A_i x $ &
-$ \approx 2 \frac{n^2}{p} \gamma $ \\ \bottomrule
-\end{tabular}
+  \begin{tabular}{ p{2in}  l }
+    \toprule
+    \hbox{Step} & \hbox{Cost (lower bound)} \\
+    \midrule
+    \hbox{Allgather $ x_i $ so that $ x $ is available on all nodes} & 
+    $ \lceil \log_2(p)\rceil \alpha + \frac{p-1}{p} n \beta
+        \approx \log_2(p) \alpha + n \beta $ \\
+    \hbox{Locally compute $ y_i = A_i x $} &
+    $ \approx 2 \frac{n^2}{p} \gamma $ \\
+    \bottomrule
+  \end{tabular}
 }
 \]
+%pyskipend
+\begin{htmlequation}
+  \begin{array}{ p{2in}  l }
+    \toprule
+    \hbox{Step} & \hbox{Cost (lower bound)} \\
+    \midrule
+    \hbox{Allgather } x_i \hbox{ so that } x \hbox{ is available on all nodes} & 
+    \lceil \log_2(p)\rceil \alpha + \frac{p-1}{p} n \beta
+    \approx \log_2(p) \alpha + n \beta \\
+    \hbox{Locally compute } y_i = A_i x $ &
+    \approx 2 \frac{n^2}{p} \gamma \\
+    \bottomrule
+  \end{array}
+\end{htmlequation}
 
 \paragraph*{Cost analysis}
 
@@ -780,6 +811,7 @@ processors then perform a reduction, adding all these fragments:
 
 The algorithm with costs is then given by:
 
+%pyskipbegin
 \[ \vcenter{\hskip\unitindent
 \setbox0=\hbox{Reduce-scatter the $ y^{(j)} $s so that $ y_i = \sum_{j=0}^{p-1}
 y_i^{(j)} $ is on $ {\cal P}_i $ }
@@ -800,6 +832,22 @@ $ \lceil \log_2(p)\rceil \alpha + \frac{p-1}{p} n \beta
 \end{tabular}
 }
 \]
+%pyskipend
+\begin{htmlequation}
+  \begin{array}{ p{2in} p{2in} }
+    \toprule
+    Step & Cost (lower bound) \\
+    \midrule
+    \hbox{Locally compute } y^{(j)} = A_j x_j  &
+        \approx 2 \frac{n^2}{p} \gamma \\ 
+    \hbox{ Reduce-scatter the } y^{(j)} \hbox{ s so that }  y_i = \sum_{j=0}^{p-1}
+            y_i^{(j)} \hbox{ is on } {\cal P}_i  & 
+        \lceil \log_2(p)\rceil \alpha + \frac{p-1}{p} n \beta
+            + \frac{p-1}{p} n \gamma \\
+    & \approx \log_2(p) \alpha + n ( \beta + \gamma ) \\
+    \bottomrule
+  \end{array}
+\end{htmlequation}
 
 \Level 3 {Cost analysis}
 

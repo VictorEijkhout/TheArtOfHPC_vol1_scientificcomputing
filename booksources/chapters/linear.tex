@@ -37,10 +37,11 @@ systems have important applications too in a corner of numerical
 analysis known as optimization theory. However, we will not cover
 that in this book.
 
-The standard work on numerical linear algebra is Golub and Van Loan's
-{\it Matrix Computations}~\cite{GoVL:matcomp}.  It covers algorithms,
+The standard work on numerical linear algebra computations
+is Golub and Van Loan's \textit{Matrix Computations}~\cite{GoVL:matcomp}.
+It covers algorithms,
 error analysis, and computational details.
-Heath's {\it Scientific Computing}~\cite{Heath:scicomp}
+Heath's \textit{Scientific Computing}~\cite{Heath:scicomp}
 covers the most common types of computations that arise
 in scientific computing; this book has many excellent exercises and
 practical projects.
@@ -590,19 +591,22 @@ formal code.
   \>\>$a_{ij}\leftarrow a_{ij}-a_{ik}*a_{kj}$
 \end{tabbing}
 
-Or, putting everything together:
+Or, putting everything together in figure~\ref{eq:LU-algorithm}.
 
-\begin{equation}\vcenter{% %pyskip
-\begin{tabbing}
-  \kern20pt\=\kern10pt\=\kern10pt\=\kern10pt\=\kill
-  \macro{$LU$ factorization}:\\
-  \>for\={} $k=1,n-1$:\\
-  \>\>for\={} $i=k+1$ to $n$:\\
-  \>\>\> $a_{ik}\leftarrow a_{ik}/a_{kk}$\\
-  \>\>\>for\={} $j=k+1$ to $n$:\\
-  \>\>\>\>$a_{ij}\leftarrow a_{ij}-a_{ik}*a_{kj}$
-\end{tabbing}
-}\label{eq:LU-algorithm}\end{equation} %pyskip
+\begin{figure}[ht]
+  \begin{tabbing}
+    \kern20pt\=\kern10pt\=\kern10pt\=\kern10pt\=\kill
+    \macro{$LU$ factorization}:\\
+    \>for\={} $k=1,n-1$:\\
+    \>\>for\={} $i=k+1$ to $n$:\\
+    \>\>\> $a_{ik}\leftarrow a_{ik}/a_{kk}$\\
+    \>\>\>for\={} $j=k+1$ to $n$:\\
+    \>\>\>\>$a_{ij}\leftarrow a_{ij}-a_{ik}*a_{kj}$
+  \end{tabbing}
+    \label{eq:LU-algorithm}
+    \caption{LU factorization algorithm}
+\end{figure}
+  
 
 This is the most common way of presenting the LU
 factorization. However, other ways of computing the same result

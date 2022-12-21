@@ -77,8 +77,8 @@ statement about the change in position of a point mass: expressed as
 it states that acceleration depends linearly on the force exerted on
 the mass. A~closed form description $x(t)=\ldots$ for the location of
 the mass can sometimes be
-derived analytically, but in many cases some approximation of
-numerical computation is needed.
+derived analytically, but in many cases some approximation,
+usually by numerical computation, is needed.
 This is also known as `numerical integration'.
 
 Newton's second law \eqref{eq:f=ma} is an \ac{ODE} since it describes a function of one
@@ -94,7 +94,7 @@ we use the
   prime symbol to indicate differentiation in case of functions of a
   single variable:
   \begin{equation}
-    u(t)=(x(t),x'(t))^t,
+    u(t)=(x(t),x'(t))^t.
   \end{equation}
 Newton's equation expressed in $u$ then becomes:
 \begin{equation}
@@ -104,7 +104,7 @@ Newton's equation expressed in $u$ then becomes:
 \end{pmatrix},\quad B=
 \begin{pmatrix}
   0\\ F/a
-\end{pmatrix}
+\end{pmatrix}.
 \end{equation}
 
 For simplicity, in this course we will only consider first-order scalar equations;
@@ -129,14 +129,14 @@ Non-autonomous \ac{ODE}s can be transformed to autonomous
   ones, so this is no limitation. If $u=u(t)$ is a scalar function and
   $f=f(t,u)$, we define $u_2(t)=t$ and consider the equivalent
   autonomous system
-  $\big({u'\atop u'_2}\bigr)=\bigl({f(u_2,u)\atop 1}\bigr)$
+  $\big({u'\atop u'_2}\bigr)=\bigl({f(u_2,u)\atop 1}\bigr)$.
 \end{remark}
 
 Typically, the initial value in some starting point (often
 chosen as $t=0$) is given: $u(0)=u_0$ for some value~$u_0$, and we are
 interested in the behavior of~$u$ as $t\rightarrow\infty$.
 As an example, $f(x)=x$
-reduces equation~\ref{eq:ode-nonauton} to $u'(t)=u(t)$.
+reduces equation~\eqref{eq:ode-nonauton} to $u'(t)=u(t)$.
 This is a
 simple model for population growth: the equation states that the rate
 of growth is equal to the size of the population.
@@ -158,6 +158,7 @@ situation where a small perturbation in the initial value leads to
 large perturbations in the solution. Therefore, we
 will call a
 differential equation `stable' if solutions corresponding to different
+(but close enough)
 initial values~$u_0$ converge to one another
 as~$t\rightarrow\nobreak\infty$. 
 
@@ -195,7 +196,7 @@ We will often refer to the simple example
 $f(u)=-\lambda u$, with solution $u(t)=u_0e^{-\lambda t}$. This
 problem is stable if~$\lambda>0$.
 
-\Level 1 {Finite difference approximation: Euler explicit and implicit methods}
+\Level 1 {Finite difference approximation: explicit and implicit Euler methods}
 \label{sec:fd-ode}
 \index{Euler!explicit|(}
 \index{Euler!forward|see{Euler!explicit}}
@@ -239,7 +240,7 @@ Substituting this in $u'=f(t,u)$ transforms equation~\ref{eq:ode} into
 \end{equation}
 or 
 \begin{equation}
-  u(t+\Delta t) = u(t) + \Delta t\,f(t,u(t)) +O(\Delta t^2)
+  u(t+\Delta t) = u(t) + \Delta t\,f(t,u(t)) +O(\Delta t^2).
   \label{eq:uplusdt-exact}
 \end{equation}
 
@@ -270,9 +271,9 @@ compute function values only in a discrete set of points. The values
 computed themselves are still real valued. Another way of phrasing
 this: the numerical solution is found in the finite dimensional
 space~$\bbR^k$ if we compute $k$ time steps. The solution to the original
-problem is found in the space of functions $\bbR\rightarrow\bbR$.
+problem is in the infnite-dimensional space of functions $\bbR\rightarrow\bbR$.
 
-In \eqref{eq:forwarddifference} we approximated one operator by
+In equation~\eqref{eq:forwarddifference} we approximated one operator by
 another, and in doing so made a \indexterm{truncation error} of order
 $O(\Delta t)$ as $\Delta t\downarrow 0$ (see
 appendix~\ref{app:complexity} for a more formal introduction to this
@@ -316,6 +317,7 @@ as the truncation error, which is the error in approximating the
 operator.
 
 \Level 2 {Stability of the  Explicit Euler method}
+\label{sec:stability-e-expl}
 
 Consider the \ac{IVP} $u'=f(t,u)$ for $t\geq0$, 
 where $f(t,u)=-\lambda u$ and an initial value $u(0)=u_0$ is given.
@@ -403,6 +405,7 @@ equation $\Delta t x^3+x=u_k$. This is a nonlinear equation, which
 typically can be solved using the Newton method.
 
 \Level 2 {Stability of the implicit Euler method}
+\label{sec:stability-e-impl}
 
 Let us take another look at the example $f(t,u)=-\lambda
 u$. Formulating the implicit method gives
@@ -532,10 +535,11 @@ such a problem is called a \acf{BVP}.
 \begin{remark}
   The boundary conditions can be more general, involving 
   derivatives on the interval end points. Here we only look at
-  \emph{Dirichlet boundary conditions}%
-  \index{Dirichlet boundary condition}
+  \indextermp{Dirichlet boundary condition}
   which prescribe function values on the boundary of the
   domain.
+  The difference with \indextermp{Neumann boundary condition}
+  are more mathematical than computational.
 \end{remark}
 
 
@@ -600,10 +604,10 @@ problem. They are characterized by the fact that all points influence
 each other. These equations often describe phenomena in structural
 mechanics, such as a beam or a membrane. It is intuitively clear that
 pressing down on any point of a membrane will change the elevation of
-every other point, no matter how little. The \indexterm{Poisson
-  equation} (section~\ref{sec:poisson}) is the standard example of
+every other point, no matter how little.
+The \indexterm{Poisson equation}
+(section~\ref{sec:poisson}) is the standard example of
 this type.
-
 
 \Level 1 {The Poisson equation in one space dimension}
 \label{sec:poisson}
@@ -908,6 +912,7 @@ and how
 equation~\eqref{eq:5-point-star-ij} relates them through a
 %
 \indextermsub{finite difference}{stencil}.
+(See section~\ref{sec:diff-stencil} for more on stencils.)
 From now on, when
 making such a picture of the domain, we will
 just use the indices of the variables, and omit the `$u$' identifier.
@@ -929,8 +934,6 @@ so we call this a
 \indexterm{block tridiagonal} matrix. Note that the diagonal blocks
 themselves are tridiagonal; the off-diagonal blocks are
 minus the identity matrix.
-
-%\Level 2 {Non-square domains}
 
 This matrix, like the one-dimensional example above, has constant
 diagonals, but this is again due to the simple nature of the
@@ -965,6 +968,16 @@ possible. One common way of ordering the unknowns is the
 \indexterm{red-black ordering} or \indexterm{checkerboard
   ordering} which has advantages for parallel computation. This will
 be discussed in section~\ref{sec:parallel-prec}.
+
+\begin{remark}
+  For this simple matrix it is possible to determine
+  eigenvalue and eigenvectors by a \indextermbus{Fourier}{analysis}.
+  In more complicated cases, such as an operator $\nabla a(x,y)\nabla x$,
+  this is not possible, but the \indexterm{Gershgorin theorem}
+  will still tell us that the matrix is positive definite,
+  or at least semi-definite. This corresponds to the
+  continuous problem being \indexterm{coercive}.
+\end{remark}
 
 There is more to say about analytical aspects of the \ac{BVP} (for
 instance, how smooth is the solution and how does that depend on the
@@ -1068,8 +1081,9 @@ section~\ref{sec:fem-assembly}.
 \indexacstart{IBVP}
 
 We will now go on to discuss an \acf{IBVP}, which, as you may deduce
-from the name, combines aspects of \ac{IVP}s and \ac{BVP}s. Here we
-will limit ourselves to one space dimension.
+from the name, combines aspects of \ac{IVP}s and \ac{BVP}s:
+they combine both a space and a time derivative.
+Here we will limit ourselves to one space dimension.
 
 The problem we are considering is that of  heat conduction in a rod, where
 $T(x,t)$ describes the temperature in location~$x$ at time~$t$, for
@@ -1253,12 +1267,15 @@ from $ T^k$ now involves a
 \index{linear system!solving!in implicit methods}:
 \begin{equation}
   T^{k+1}\leftarrow A\inv (T^k+\Delta tq^{k+1})
+  \label{eq:ibvp-explicit-inverse}
 \end{equation}
-where $A=I+\dtdxx K$, a harder operation than the matrix-vector
-multiplication.  In this case, it is not possible, as above, to
-evaluate the equation~\eqref{eq:bivp-implicit} directly. Codes using an
-implicit method actually form the coefficient matrix, and solve the
-system~\eqref{eq:bivp-implicit-vector} as such. Solving linear systems
+where $A=I+\dtdxx K$.
+Solving this linear system is a harder operation than the matrix-vector
+multiplication.
+Unlike what equation~\eqref{eq:ibvp-explicit-inverse} suggests,
+codes using an implicit method do not actually form the inverse matrix,
+but rather solve the system~\eqref{eq:bivp-implicit-vector} as such.
+Solving linear systems
 will be the focus of much of chapters \ref{ch:linear}
 and~\ref{ch:parallellinear}.
 
@@ -1284,7 +1301,12 @@ too. Alternatively, see exercise~\ref{ex:crank}.
 \Level 1 {Stability analysis}
 
 We now analyze the stability of the explicit and implicit
-schemes in a simple case. Let $q\equiv0$, and assume
+schemes for the \ac{IBVP} in a simple case.
+The discussion will partly mirror that of
+sections \ref{sec:stability-e-expl} and~\ref{sec:stability-e-impl},
+but with some complexity added because of the space component.
+
+Let $q\equiv0$, and assume
 $T_j^k=\beta^ke^{i\ell x_j}$ for some~$\ell$
 \begin{footnoteenv}
   {Actually,

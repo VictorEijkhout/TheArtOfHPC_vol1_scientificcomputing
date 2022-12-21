@@ -317,7 +317,6 @@ Such a plot is given in figure~\ref{fig:cache-overflow}.
 \end{figure}
 The full code is given in section~\ref{sec:cachesize-code}.
 
-
 \Level 1 {Cache lines and striding}
 \label{sec:coding-cacheline}
 
@@ -345,7 +344,18 @@ The graph also shows a decreasing reuse of cachelines, defined as the
 number of vector elements divided by the number of L1 misses (on
 stall; see section~\ref{sec:prefetch}). 
 
-%The full code is given in section~\ref{sec:cacheline-code}.
+%% \begin{figure}[ht]
+%%   \includegraphics[scale=.5]{cacheline16}
+%%   \caption{Run time in kcycles and L1 reuse as a function of stride.}
+%%   \label{fig:cacheline16}
+%% \end{figure}
+
+%% Note that figure~\ref{fig:cacheline} only plots up to stride~8, while
+%% the code computes to~16. In fact, at stride~12 the prefetch behaviour
+%% of the Opteron changes, leading to peculiarities in the timing, as
+%% shown in figure~\ref{fig:cacheline16}.
+
+The full code is given in section~\ref{sec:cacheline-code}.
 
 The effects of striding can be mitigated by the bandwidth
 and cache behavior of a processor.

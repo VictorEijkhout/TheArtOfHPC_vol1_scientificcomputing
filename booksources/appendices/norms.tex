@@ -25,8 +25,7 @@ course in linear algebra.
 A \indexterm{norm} is a way to generalize the concept of absolute
 value to multi-dimensional objects such as vectors and matrices. There
 are many ways of defining a norm, and there is theory of how different
-norms relate. Here we only give the basic definitions; for more detail
-see any linear algebra textbook, for instance~\cite{golo83}.
+norms relate. Here we only give the basic concepts.
 
 \Level 1 {Vector norms}
 \index{vector!norms|(}
@@ -41,12 +40,21 @@ following properties:
 \end{itemize}
 For any $p\geq1$, the following defines a vector norm:
 \[ |x|_p = \sqrt[p]{\sum_i|x_i|^p}. \]
-Common norms are $\|\cdot\|_1$ (`sum of absolute values') and
-$\|\cdot\|_2$ (`square root of sum of squares'); the
-$\|\cdot\|_\infty$ norm is defined as
-$\lim_{p\rightarrow\infty}\|\cdot\|_p$, and it is not hard to see that
-this equals
-\[ \|x\|_\infty=\max_i |x_i|. \]
+Common norms are the 1-norm, 2-norm, and infinity norm:
+\begin{itemize}
+\item
+  The 1-norm
+  $\|\cdot\|_1$ is the sum of absolute values:
+  \[ \| x\|_1 = \sum |x_i|. \]
+\item The 2-norm
+  $\|\cdot\|_2$ is the root of the sum of squares:
+  \[ \| x\|_2 = \sqrt{ \sum x^2}. \]
+\item The infinity-norm
+  $\|\cdot\|_\infty$ norm is defined as
+  $\lim_{p\rightarrow\infty}\|\cdot\|_p$, and it is not hard to see that
+  this equals
+  \[ \|x\|_\infty=\max_i |x_i|. \]
+\end{itemize}
 
 \index{vector!norms|)}
 
@@ -67,12 +75,14 @@ for associated norms.
 
 The following are easy to derive:
 \begin{itemize}
-\item $\|A\|_1=\max_j\sum_i|a_{ij}|$,
-\item $\|A\|_\infty=\max_i\sum_j|a_{ij}|$.
+\item $\|A\|_1=\max_j\sum_i|a_{ij}|$, the maximum column-absolute sum;
+\item $\|A\|_\infty=\max_i\sum_j|a_{ij}|$, the maximum row-absolute sum.
 \end{itemize}
 By observing that $\|A\|_2=\sup_{\|x\|_2=1} x^tA^tAx$, it is not hard
-to derive that $\|A\|_2$ is the maximal singular value of~$A$, which
-is the root of the maximal eigenvalue of~$A^tA$.
+to derive that $\|A\|_2$ is the maximal singular value of~$A$,
+which
+is the root of the maximal eigenvalue of~$A^tA$,
+which is the largest eigenvalue of~$A$ is $A$ is symmetric.
 
 The matrix \indextermdef{condition number} is defined as
 \[ \kappa(A)=\|A\|\,\|A\inv\|. \]
@@ -95,8 +105,10 @@ property to have.
 
 The basic principle of the \ac{GS} algorithm
 can be demonstrated with two
-vectors~$u,v$. Suppose we want a vector $v'$ so that $u,v$ and $u,v'$
-span the same space, but $v'\perp u$. For this we let
+vectors~$u,v$. Suppose we want a vector $v'$
+so that $u,v$ spans the same space as $u,v'$,
+but $v'\perp u$.
+For this we let
 \[ v'\leftarrow v-\frac{u^tv}{u^tu}u. \]
 It is easy to see that this satisfies the requirements.
 
@@ -121,8 +133,9 @@ Often the vector $v$ in the algorithm above is normalized; this adds a line
   \end{tabbing}
 \end{quote}
 to the algorithm.
-\ac{GS} orthogonalization with this normalization, applied to a
-matrix, is also known as the \indexterm{QR factorization}.
+\ac{GS} orthogonalization with this normalization,
+applied to the columns of a matrix,
+is also known as the \indexterm{QR factorization}.
 
 \begin{exercise}
   Suppose that we apply the \ac{GS} algorithm to the columns of a
@@ -278,9 +291,12 @@ If we write this as
     \right],
 \]
 we see that, numerically, $A^ix$ will get progressively closer
-to a multiple of~$u_0$, the \indextermsub{dominant}{eigenvector}. Hence,
+to a multiple of~$u_0$, the \indextermsub{dominant}{eigenvector}.
+Hence,
 any calculation that uses independence of the $A^ix$ vectors is likely
 to be inaccurate.
+Section~\ref{sec:fom} discusses iterative methods that can be considered
+as building an orthogonal basis for the span of the power method vectors.
 
 \Level 0 {Nonnegative matrices; Perron vectors}
 \label{app:perron}
@@ -300,6 +316,8 @@ property that its eigenvector is nonnegative: this is the the
   \end{itemize}
 \end{theorem}
 
+The best known application of this theorem is the
+Googe \indexterm{PageRank} algorithm; section~\ref{sec:pagerank}.
 
 \Level 0 {The Gershgorin theorem}
 \label{app:gershgorin}
@@ -326,7 +344,8 @@ This statement can be interpreted as follows:
 \end{quotation}
 Since we do not know for which value of~$i$ $|x_i|$ is maximal, we can
 only say that there is \emph{some} value of~$i$ such that $\lambda$
-lies in such a circle. This is the Gershgorin theorem.
+lies in such a circle.
+This is the \indextermdef{Gershgorin theorem}.
 
 \begin{theorem}
   Let $A$ be a square matrix, and let $D_i$ be the circle with center
@@ -352,7 +371,7 @@ Now for the original problem of mapping one space into another. Let the original
 by a vector~$x$ and the resulting by~$y$, then note that 
 \[ 
 \begin{cases}
-x = (x+y)/2 + (x-y)/2\\ y = (x+y)/2 - (x-y)/2
+x = (x+y)/2 + (x-y)/2\\ y = (x+y)/2 - (x-y)/2.
 \end{cases}
 \]
 \begin{figure}[ht]

@@ -101,6 +101,25 @@ in the directory \n{code/gdb}.
   \end{tabular}
 \end{table}
 
+\Level 0 {Compiling for debug}
+
+You often need to recompile your code before you can debug it.
+A~first reason for this is that the binary code typically knows
+nothing about what variable names corresponded to what memory locations,
+or what lines in the source to what instructions. In order to make
+the binary executable know this, you have to include the \indexterm{symbol table}
+in it, which is done by adding the \n{-g} option to the compiler line.
+
+Usually, you also need to lower
+the \indextermbus{compiler}{optimization level}: a production code
+will often be compiled with flags such as \n{-O2} or \n{-Xhost} that
+try to make the code as fast as possible, but for debugging you need
+to replace this by~\n{-O0} (`oh-zero').  The reason is that higher
+levels will reorganize your code, making it hard to relate the
+execution to the source\footnote{Typically, actual code motion is done
+by \n{-O3}, but at level \n{-O2} the compiler will inline functions
+and make other simplifications.}.
+
 \Level 0 {Invoking the debugger}
 
 There are three ways of using gdb: using it to start a program,
@@ -275,6 +294,17 @@ $2 = (float *) 0x0
 \end{verbatim}
 and we quickly see that we forgot to allocate \n{squares}.
 
+By the way, we were lucky here: this sort of memory errors is not always
+detected. Starting our programm with a smaller input does not lead to
+an error:
+\begin{verbatim}
+(gdb) run
+50
+Sum: 1.625133e+00
+
+Program exited normally.
+\end{verbatim}
+
 Memory errors can also occur if we have a legitimate array, but we access it
 outside its bounds.
 The following program fills an array, forward, and reads it out, backward.
@@ -400,6 +430,18 @@ Set another breakpoint: \n{break 17} and do \n{cont}. What happens?
 Rerun the program after you set a breakpoint on the line with the
 \n{sqrt} call. When the execution stops there do \n{where} and
 \n{list}.
+
+\begin{itemize}
+\item If you set many breakpoints, you can find out what they are with
+  \n{info breakpoints}. 
+\item You can remove breakpoints with \n{delete n} where \n{n} is the
+  number of the breakpoint.
+\item If you restart your program with \n{run} without leaving gdb,
+  the breakpoints stay in effect.
+\item If you leave gdb, the breakpoints are cleared but you can save
+  them: \n{save breakpoints <file>}. Use \n{source <file>} to read
+  them in on the next gdb run.
+\end{itemize}
 
 \Level 0 {Inspecting values}
 
@@ -645,75 +687,6 @@ this error may only become apparent if the bounds are exceeded by a
 large amount. On the other hand, if the code is linked with
 \indextermtt{libefence}, the debugger will stop at the very first time
 the bounds are exceeded.
-
-\Level 0 {Parallel debugging}
-\index{debugging!in parallel|(}
-
-\begin{figure}[ht]
-\includegraphics[scale=.4]{ddt2}
-\caption{Display of 16 processes in the DDT debugger.}
-\label{fig:ddt2}
-\end{figure}
-
-Debugging in parallel is harder than sequentially, because you will run
-errors that are only due to interaction of processes such as \indexterm{deadlock};
-see section~\HPSCref{sec:nonblocking}.
-
-As an example, consider this segment of MPI code:
-\begin{verbatim}
-MPI_Init(0,0);
-// set comm, ntids, mytid
-for (int it=0; ; it++) {
-  double randomnumber = ntids * ( rand() / (double)RAND_MAX );
-  printf("[%d] iteration %d, random %e\n",mytid,it,randomnumber);
-  if (randomnumber>mytid && randomnumber<mytid+1./(ntids+1))  
-    MPI_Finalize();
-}
-MPI_Finalize();
-\end{verbatim}
-Each process computes random numbers until a certain condition is satisfied, then exits.
-However, consider introducing a barrier (or something that acts like it, such as a reduction):
-\begin{verbatim}
-for (int it=0; ; it++) {
-  double randomnumber = ntids * ( rand() / (double)RAND_MAX );
-  printf("[%d] iteration %d, random %e\n",mytid,it,randomnumber);
-  if (randomnumber>mytid && randomnumber<mytid+1./(ntids+1))  
-    MPI_Finalize();
-  MPI_Barrier(comm);
-}
-MPI_Finalize();
-\end{verbatim}
-Now the execution will hang, and this is not due to any particular process:
-each process has a code path from init to finalize that does not develop
-any memory errors or other runtime errors.
-However as soon as one process reaches the finalize call in the conditional
-it will stop, and all other processes will be waiting at the barrier.
-
-Figure~\ref{fig:ddt2} shows the main display of the Allinea \indextermdef{DDT}
-debugger (\url{http://www.allinea.com/products/ddt}) at the point where this code stops.
-Above the source panel you see that there are 16 processes, and that the status is given
-for process~1.
-In the bottom display you see that out of 16 processes 15~are calling \n{MPI_Barrier} on line~19,
-while one is at line~18. In the right display you see a listing of the local variables:
-the value specific to process~1. A~rudimentary graph displays the values over the processors:
-the value of \n{ntids} is constant, that of \n{mytid} is linearly increasing, and \n{it}
-is constant except for one process.
-
-\begin{exercise}
-  Make and run \n{ring_1a}. The program does not terminate and does not crash.
-  In the debugger you can interrupt the execution, and see that all processes
-  are executing a receive statement. This is probably a case of deadlock.
-  Diagnose and fix the error.
-\end{exercise}
-
-\begin{exercise}
-  The author of \n{ring_1c} was very confused about how MPI works. Run the program.
-  While it terminates without a problem, the output is wrong. Set a breakpoint
-  at the send and receive statements to figure out what is happening.
-\end{exercise}
-
-
-\index{debugging!in parallel|)}
 
 \Level 0 {Further reading}
 

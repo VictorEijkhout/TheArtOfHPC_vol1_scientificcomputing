@@ -18,7 +18,7 @@ info ::
 	@echo "make basic_clean clean recursive_clean"
 
 .PHONY: localclean basic_clean clean recursive_clean
-localclean basic_clean :
+localclean basic_clean ::
 	@/bin/rm -f \
 	  *~ \#* \
 	  *.{aux,blg,idx,ilg,log,mtc,maf,nav,out,snm,svn,toc,vrb} \

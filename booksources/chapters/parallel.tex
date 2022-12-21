@@ -1057,17 +1057,19 @@ The following four types result (see also figure~\ref{fig:flynn}):
 
 We will now discuss SIMD and MIMD architectures in more detail.
 
+\begin{lulu}
+  \newpage
+\end{lulu}
+
 \Level 1 {SIMD}
 \label{sec:simd}
 
-\begin{lulu}
-  \begin{wrapfigure}{r}{2in}
+\begin{wrapfigure}{r}{2in}
     \includegraphics[scale=.3]{maspar2}
     \caption{Architecture of the MasPar 2 array processors.}
     \label{fig:maspar}
     %\vskip-1.5in
-  \end{wrapfigure}
-\end{lulu}
+\end{wrapfigure}
 %
 Parallel computers of the SIMD type apply the same operation
 simultaneously to a number of data items. The design of the CPUs of
@@ -1103,15 +1105,6 @@ The programming model where identical operations are applied to a
 number of data items simultaneously, is known as
 \indextermsub{data}{parallelism}.
 
-\begin{notlulu}
-  \begin{wrapfigure}{r}{2in}
-    \includegraphics[scale=.3]{maspar2}
-    \caption{Architecture of the MasPar 2 array processors.}
-    \label{fig:maspar}
-    %\vskip-1.5in
-  \end{wrapfigure}
-\end{notlulu}
-  %
 Such array operations can occur in the context of physics simulations,
 but another important source is graphics applications. For this
 application, the processors in an array processor can be much weaker
@@ -1305,6 +1298,7 @@ available on the consumer market. Others use IBM Power Series or other
 this history since 1993.
 
 \Level 0 {Different types of memory access}
+\label{sec:mem-access}
 
 In the introduction we defined a parallel computer as a setup where
 multiple processors work together on the same problem. In all but the
@@ -1474,6 +1468,7 @@ memory network between nodes.
 \input chapters/parallelprogramming
 
 \Level 0 {Topologies}
+\label{sec:parallel-topology}
 
 If a number of processors are working together on a single task, most
 likely they need to communicate data. For this reason there needs to
@@ -1846,6 +1841,7 @@ connections that they can simply pretend to be a mesh by ignoring
 certain connections. 
 
 \begin{lulu}
+\newpage
 \graycodepicture  
 \end{lulu}
 %

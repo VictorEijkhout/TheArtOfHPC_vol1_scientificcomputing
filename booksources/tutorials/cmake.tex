@@ -198,9 +198,12 @@ which need not correspond to any file names:
 project( myproject VERSION 1.0 )
 \end{lstlisting}
 
+\newpage
 \Level 0 {Examples cases}
 
 \Level 1 {Executable from sources}
+
+(The files for this examples are in \n{tutorials/cmake/single}.
 
 \begin{tabular}{lp{3in}}
   \toprule
@@ -226,7 +229,7 @@ project( myproject VERSION 1.0 )
         child { node {myprogram} }
         child { node {lots more} } }
       child { node {install}
-        child { node {(empty)} } }
+        child { node {myprogram} } }
       ;
     \end{tikzpicture}
   \end{minipage}
@@ -250,7 +253,7 @@ install( TARGETS myprogram DESTINATION . )
 \end{lstlisting}
 Without the \indexcmake{DESTINATION} clause, a default \n{bin} directory
 will be created; specifying \indexcmake{DESTINATION foo} will put the
-program in a \n{foo} directory.
+program in a \n{foo} sub-directory of the installation directory.
 
 \begin{floatingfigure}[r]{2.5in}\vskip3in\end{floatingfigure}
 %
@@ -267,6 +270,8 @@ Here is the full \n{CMakeLists.txt}:
 
 \newpage
 \Level 1 {Making a library during build}
+
+(The files for this examples are in \n{tutorials/cmake/multiple}.
 
 \begin{tabular}{lp{3in}}
   \toprule
@@ -335,8 +340,65 @@ needs to be recompiled too:
 %
 \verbatiminput{tutorials/cmake/multiple-touch1.txt}
 
+\Level 2 {Making a library for release}
+\label{sec:cmake-public-lib}
+
+(The files for this example are in \n{tutorials/cmake/withlib}.
+
+\begin{tabular}{lp{3in}}
+  \toprule
+  Commands learned in this section\\
+  \midrule
+  \lstinline+add_library+&declare a library and its sources\\
+  \lstinline+target_link_libraries+&declare a library to link into the target\\
+  \lstinline+SHARED+&indicated to make shared libraries\\
+  \bottomrule
+\end{tabular}
+
+\begin{floatingfigure}[r]{2.5in}
+  \begin{minipage}{2.5in}
+    \tikzsetnextfilename{cmake-withlib}
+    \begin{tikzpicture}[dirtree]
+      \node{dir}
+      child { node {src}
+        child { node {CMakeLists.txt} }
+        child { node {program.cxx} }
+        child { node {aux.cxx} }
+        child { node {aux.h} }
+      }
+      child { node {install}
+        child { node {program} }
+        child { node {libauxlib.a} }
+      }
+      ;
+    \end{tikzpicture}
+%%       [dir [src [CMakeLists.txt] [program.cxx] [aux.cxx] [aux.h] ]
+%%         [install [program] [libauxlib.a] ] ]
+  \end{minipage}
+\end{floatingfigure}
+%
+In order to create a library we use \indexcmake{add_library},
+and we link it into the target program with \indexcmake{target_link_libraries}.
+
+By default the library is build as a static \texttt{.a} file,
+but adding
+\begin{lstlisting}
+add_library( auxlib SHARED aux.cxx aux.h )
+\end{lstlisting}
+or adding a runtime flag
+\begin{verbatim}
+cmake -D BUILD_SHARED_LIBS=TRUE
+\end{verbatim}
+changes that to a shared \texttt{.so} type.
+
+The full cmake file:
+%
+\lstinputlisting{tutorials/cmake/withlib/CMakeLists.txt}
+
 \newpage
 \Level 1 {Finding subdirectories for the build}
+
+(The files for this examples are in \n{tutorials/cmake/includedir}.
 
 \begin{tabular}{lp{3in}}
   \toprule
@@ -413,63 +475,11 @@ Complete cmake file:
 \lstinputlisting{tutorials/cmake/includedir/CMakeLists.txt}
 
 \newpage
-\Level 1 {Making a library for release}
-\label{sec:cmake-public-lib}
-
-\begin{tabular}{lp{3in}}
-  \toprule
-  Commands learned in this section\\
-  \midrule
-  \lstinline+add_library+&declare a library and its sources\\
-  \lstinline+target_link_libraries+&declare a library to link into the target\\
-  \lstinline+SHARED+&indicated to make shared libraries\\
-  \bottomrule
-\end{tabular}
-
-\begin{floatingfigure}[r]{2.5in}
-  \begin{minipage}{2.5in}
-    \tikzsetnextfilename{cmake-withlib}
-    \begin{tikzpicture}[dirtree]
-      \node{dir}
-      child { node {src}
-        child { node {CMakeLists.txt} }
-        child { node {program.cxx} }
-        child { node {aux.cxx} }
-        child { node {aux.h} }
-      }
-      child { node {install}
-        child { node {program} }
-        child { node {libauxlib.a} }
-      }
-      ;
-    \end{tikzpicture}
-%%       [dir [src [CMakeLists.txt] [program.cxx] [aux.cxx] [aux.h] ]
-%%         [install [program] [libauxlib.a] ] ]
-  \end{minipage}
-\end{floatingfigure}
-%
-In order to create a library we use \indexcmake{add_library},
-and we link it into the target program with \indexcmake{target_link_libraries}.
-
-By default the library is build as a static \texttt{.a} file,
-but adding
-\begin{lstlisting}
-add_library( auxlib SHARED aux.cxx aux.h )
-\end{lstlisting}
-or adding a runtime flag
-\begin{verbatim}
-cmake -D BUILD_SHARED_LIBS=TRUE
-\end{verbatim}
-changes that to a shared \texttt{.so} type.
-
-The full cmake file:
-%
-\lstinputlisting{tutorials/cmake/withlib/CMakeLists.txt}
-
-\newpage
-\Level 1 {Sub directories in the installation}
+\Level 1 {Subdirectories in the installation}
 \label{sec:cmake-install-dirs}
 \label{sec:cmake-rpath}
+
+(The files for this examples are in \n{tutorials/cmake/publiclib}.
 
 \begin{tabular}{lp{3in}}
   \toprule
@@ -551,15 +561,20 @@ The whole file:
 %
 \lstinputlisting{tutorials/cmake/publiclib/CMakeLists.txt}
 
-\Level 1 {Finding and using external packages}
+\Level 1 {Header-only libraries}
+
+Use the \indexcmake{INTERFACE} keyword.
+
+\Level 0 {Finding and using external packages}
 
 If your program depends on other libraries, there is a variety of ways
 to let cmake find them.
 
-\Level 2 {Cmake commandline options}
+\Level 1 {Cmake commandline options}
 
-You can indicate the location of your external library explicitly on the commandline;
-see section~\ref{sec:cmake-doption} for the basics.
+(The files for this example are in \n{tutorials/cmake/usepubliclib}.
+
+You can indicate the location of your external library explicitly on the commandline.
 
 \begin{lstlisting}
 cmake -D OTHERLIB_INC_DIR=/some/where/include
@@ -570,7 +585,7 @@ Example cmake file:
 %
 \lstinputlisting{tutorials/cmake/usepubliclib/CMakeLists.txt}
 
-\Level 2 {Package finding through `find library' and `find package'}
+\Level 1 {Package finding through `find library' and `find package'}
 
 %% https://izzys.casa/2020/12/how-to-find-packages-with-cmake-the-basics/
 
@@ -614,7 +629,7 @@ else()
 endif()
 \end{lstlisting}
 
-\Level 2 {OpenMP}
+\Level 2 {Example: OpenMP}
 \index{OpenMP!cake integration|(}
 
 \begin{lstlisting}
@@ -638,8 +653,10 @@ target_link_libraries( ${program} PUBLIC OpenMP::OpenMP_Fortran )
 
 \index{OpenMP!cake integration|)}
 
-\Level 2 {MKL}
+\Level 2 {Example: MKL}
 \index{MKL!cake integration|(}
+
+(The files for this example are in \n{tutorials/cmake/mklcmake}.
 
 Intel compiler installations come with cmake support:
 there is a file \n{MKLConfig.cmake}.
@@ -678,40 +695,64 @@ MYLIBRARY_LIBRARIES
 which you can then use in the \indexcmake{target_include_directories}
 command.
 
-\Level 2 {MPI}
-\index{MPI!cake integration|(}
+\Level 2 {Example: MPI}
+\index{MPI!cmake integration|(}
+
+(The files for this example are in \n{tutorials/cmake/mpiprog}.
 
 This cmake setup searches for \n{mpich.pc}:
 %
 \lstinputlisting{tutorials/cmake/mpiprog/CMakeLists.txt}
 
-\index{MPI!cake integration|)}
+\index{MPI!cmake integration|)}
 
-\Level 2 {PETSc}
-\index{PETSc!cake integration|(}
+\Level 2 {Example: PETSc}
+\index{PETSc!cmake integration|(}
+
+(The files for this example are in \n{tutorials/cmake/petscprog}.
 
 This cmake setup searches for \n{petsc.pc},
 which is located in \verb+$PETSC_DIR/$PETSC_ARCH/lib/pkgconfig+:
 %
 \lstinputlisting{tutorials/cmake/petscprog/CMakeLists.txt}
 
-\index{PETSc!cake integration|)}
+\index{PETSc!cmake integration|)}
 
+\Level 2 {Example: Eigen}
+\index{Eigen!cake integration|(}
 
-\Level 2 {cxxopts}
-\index{cxxopts!cake integration|(}
+(The files for this example are in \n{tutorials/cmake/eigen}.
+
+The \indexterm{eigen} package uses \indextermunix{pkgconfig}.
+
+\lstinputlisting{tutorials/cmake/eigen/CMakeLists.txt}
+
+\index{Eigen!cake integration|)}
+
+\Level 2 {Example: cxxopts}
+\index{cxxopts!cmake integration|(}
+
+(The files for this example are in \n{tutorials/cmake/cxxopts}.
 
 The \indexterm{cxxopts} package uses \indextermunix{pkgconfig}.
 
 \lstinputlisting{tutorials/cmake/cxxopts/CMakeLists.txt}
 
-\Level 2 {Example with pkg config: fmtlib}
-\index{fmtlib!cake integration|(}
+\index{cxxopts!cmake integration|)}
+
+\Level 2 {Example: fmtlib}
+\index{fmtlib!cmke integration|(}
+
+(The files for this example are in \n{tutorials/cmake/fmtlib}.
 
 In the following example, we use the \indexterm{fmtlib}.
 The main cmake file:
 %
 \lstinputlisting{tutorials/cmake/fmtlib/CMakeLists.txt}
+
+\Level 2 {Example: fmtlib used in library}
+
+(The files for this example are in \n{tutorials/cmake/fmtliblib}.
 
 We continue using the \indexterm{fmtlib} library,
 but now the generated library also has references to this library,
@@ -725,11 +766,7 @@ Library file:
 %
 \lstinputlisting{tutorials/cmake/fmtliblib/prolib/CMakeLists.txt}
 
-\index{fmtlib!cake integration|)}
-
-\Level 1 {Header-only libraries}
-
-Use the \indexcmake{INTERFACE} keyword.
+\index{fmtlib!cmake integration|)}
 
 \Level 0 {Customizing the compilation process}
 
@@ -740,7 +777,6 @@ Use the \indexcmake{INTERFACE} keyword.
   \lstinline+add_compile_options+&global compiler options\\
   \lstinline+target_compile_features+&compiler-independent specification of compile flags\\
   \lstinline+target_compile_definitions+&pre-processor flags\\
-  \lstinline+option+&query commandline option\\
   \bottomrule
 \end{tabular}
 
@@ -756,7 +792,7 @@ Use the variables \indexcmake{CMAKE_CXX_COMPILER}, \indexcmake{CMAKE_C_COMPILER}
 Most of the time, compile options should be associated with a target.
 For instance, some file could need a higher or lower optimization level,
 or a specific C++ standard.
-In that case, use \indexcmake{target_compiler_features}.
+In that case, use \indexcmake{target_compile_features}.
 
 Certain options may need to be global, in which case you use
 \indexcmake{add_compile_options}. Example:
@@ -774,7 +810,7 @@ endif()
 Certain flags have a universal meaning, but compiler-dependent realization.
 For instance, to specify the C++ standard:
 \begin{lstlisting}
-target_compile_features(arias_demo PRIVATE cxx_std_17)
+target_compile_features( mydemo PRIVATE cxx_std_17 )
 \end{lstlisting}
 The variable \indexcmake{CMAKE_CXX_COMPILE_FEATURES}
 contains the list of all features you can set.
@@ -822,19 +858,6 @@ and your source could test these:
 #endif
 \end{lstlisting}
 \lstset{language=CMake}
-
-\Level 1 {Commandline options}
-\label{sec:cmake-doption}
-
-Commandline options to cmake:
-\begin{verbatim}
-cmake -DSOME_FLAG=somevalue
-\end{verbatim}
-(with an optional space after the \n{-D})
-can be queried by the cmake script by the \indexcmake{option} command:
-\begin{lstlisting}
-option( SOME_FLAG "A flag that has some function" defaultvalue )
-\end{lstlisting}
 
 \Level 0 {CMake scripting}
 \label{sec:cmake-script}
@@ -914,6 +937,8 @@ or can be given on the commandline:
 \begin{lstlisting}
 cmake -D MYVAR=myvalue
 \end{lstlisting}
+where the space after \n{-D} is optional.
+
 Using the variable by itself gives the value,
 except in strings, where a shell-like notation is needed:
 \begin{lstlisting}
@@ -921,6 +946,11 @@ set(SOME_ERROR "An error has occurred")
 message(STATUS "${SOME_ERROR}")
 set(MY_VARIABLE "This is a variable")
 message(STATUS "Variable MY_VARIABLE has value ${MY_VARIABLE}")
+\end{lstlisting}
+
+Variables can also be queried by the cmake script using the \indexcmake{option} command:
+\begin{lstlisting}
+option( SOME_FLAG "A flag that has some function" defaultvalue )
 \end{lstlisting}
 
 Some variables are set by other commands.
@@ -995,3 +1025,4 @@ that should be found through some of the above mechanisms.
 \end{enumerate}
 % LocalWords:  Eijkhout CMake workflow CMakeLists txt cmake mylibrary
 % LocalWords:  programmain libsource libheader lib hellolibdir
+

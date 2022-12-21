@@ -215,8 +215,8 @@ This is also described informally as `the leftmost index varies
 quickest'.
 
 Arrays in~C, on the other hand, are laid out in \indexterm{row-major} order.
-How to create a C array that can be handled by Blas routines
-is discussed in section~\ref{sec:CFarrays}.
+%% How to create a C array that can be handled by Blas routines
+%% is discussed in section~\ref{sec:CFarrays}.
 
 \Level 1 {Submatrices and the {\tt LDA} parameter}
 
@@ -272,32 +272,34 @@ this, you should use an optimized version, such as
 Let's look at some simple examples.
 
 The routine \n{xscal} scales a vector in place.
-\begin{verbatim}
+\lstset{language=Fortran}
+\begin{lstlisting}
 ! Fortran
 subroutine dscal(integer N, double precision DA,
     double precision, dimension(*) DX, integer INCX )  
 // C
 void cblas_dscal (const MKL_INT n, const double a, 
     double *x, const MKL_INT incx);
-\end{verbatim}
+\end{lstlisting}
 A simple example:
 %
-\verbatimsnippet{scale}
+\fverbatimsnippet{scale}
 
 The same in~C:
 %
-\verbatimsnippet{scalecb}
+\cverbatimsnippet{scalecb}
 
 Many routines have an increment parameter. For \n{xscale} that's the final parameter:
 %
-\verbatimsnippet{scaleinc}
+\fverbatimsnippet{scaleinc}
 
 The matrix-vector product \n{xgemv} computes $y\leftarrow \alpha Ax+\beta y$,
 rather than $y\leftarrow Ax$.
 The specification of the matrix takes the \n{M,N} size parameters,
 and a character argument \n{'N'} to indicate that the matrix is not transposed.
 Both of the vectors have an increment argument.
-\begin{verbatim}
+\lstset{language=Fortran}
+\begin{lstlisting}
 subroutine dgemv(character TRANS,
     integer M,integer N,
     double precision ALPHA,
@@ -305,15 +307,15 @@ subroutine dgemv(character TRANS,
     double precision, dimension(*) X,integer INCX,
     double precision BETA,double precision, dimension(*) Y,integer INCY
     )
-\end{verbatim}
+\end{lstlisting}
 An example of the use of this routine:
 %
-\verbatimsnippet{mvp}
+\fverbatimsnippet{mvp}
 
 The same example in~C has an extra parameter to indicate whether the matrix
 is stored in row or column major storage:
 %
-\verbatimsnippet{mvpc}
+\cverbatimsnippet{mvpc}
 
 
 

@@ -81,7 +81,7 @@ which puts the data on cacheline boundaries.
 
 To put dynamically aligned data on cacheline boundaries, the
 following code does the tric:
-\begin{verbatim}
+\begin{lstlisting}
 double *a;
 a = malloc( /* some number of bytes */ +8 );
 if ( (int)a % 8 != 0 ) { /* it is not 8-byte aligned */
@@ -91,21 +91,21 @@ if ( (int)a % 8 != 0 ) { /* it is not 8-byte aligned */
   /* or: */
   a = 8 * ( ( (int)a )/8 );
 }
-\end{verbatim}
+\end{lstlisting}
 This code allocates a block of memory, and, if necessary, shifts it
 right to have a starting address that is a multiple of~8.
 
 However, a better solution is to use \indextermttdef{posix_memalign}:
-\begin{verbatim}
+\begin{lstlisting}
 int posix_memalign(
   void **memptr, size_t alignment, size_t size);
-\end{verbatim}
+\end{lstlisting}
 which allocates \n{size} bytes, aligned to a multiple of \n{alignment} bytes.
 For example:
-\begin{verbatim}
+\begin{lstlisting}
 double x;
 posix_memalign( (void**)&x,64,N*sizeof(double) );
-\end{verbatim}
+\end{lstlisting}
 will allocate 64~doubles for~\n{x}, and align the array
 to cacheline boundaries if there are 8 words per cacheline.
 
@@ -153,17 +153,6 @@ result, the array is guaranteed not to be in cache.
 %% \verbatiminput{papi/line.c}
 %% \endgroup
 \ListNamedSource[C]{line.c}{code/papi/line.c}
-
-Note that figure~\ref{fig:cacheline} in
-section~\ref{sec:coding-cacheline} only plots up to stride~8, while
-the code computes to~16. In fact, at stride~12 the prefetch behaviour
-of the Opteron changes, leading to peculiarities in the timing, as
-shown in figure~\ref{fig:cacheline16}.
-\begin{figure}[ht]
-  \includegraphics[scale=.5]{cacheline16}
-  \caption{Run time in kcycles and L1 reuse as a function of stride.}
-  \label{fig:cacheline16}
-\end{figure}
 
 \Level 1 {Cache associativity}
 \label{sec:assoc-code}

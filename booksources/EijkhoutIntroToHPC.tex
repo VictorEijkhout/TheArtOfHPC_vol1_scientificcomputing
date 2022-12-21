@@ -13,6 +13,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% for LaTeX newer than 2022-06-01:
+%% \DocumentMetadata
+%%     {
+%%       testphase = phase-I
+%%       }
 \documentclass[11pt,fleqn,letterpaper,twoside,openany]{boek3}
 
 %pyskipbegin
@@ -191,9 +196,7 @@
 
 \def\publicdraft{{\bf\normalsize \\Evolving Copy - open for comments}}
 \def\revdate{3rd edition 2022, formatted \today\\
-  Book and slides download: \url{https://tinyurl.com/vle394course}\\
-  Public repository: \url{https://bitbucket.org/VictorEijkhout/scientific-computing-public/}\\
-  HTML version: \url{https://theartofhpc.com/istc/}\\ [20pt]
+  Series reference: \url{https://theartofhpc.com}
   This book is published under the CC-BY 4.0 license.
 }
 \begin{lulu}
@@ -237,18 +240,23 @@
 \part{Applications}
 
 \APPLICATION{Molecular dynamics}{md}
+
 \begin{lulu}
   \APPLICATION{Sorting}{sorting}
 \end{lulu}
 \begin{notlulu}
   \APPLICATION{Combinatorial algorithms}{combinatorics}
 \end{notlulu}
+
 \APPLICATION{Graph analytics}{graphalgorithms}
 \APPLICATION{N-body problems}{discrete}
+
 \begin{montecarlo}
 \APPLICATION{Monte Carlo Methods}{montecarlo}
 \end{montecarlo}
+
 \APPLICATION{Machine learning}{learning}
+
 \begin{notready}
 \APPLICATION{Computational biology}{bio}
 \APPLICATION{Big data}{analytics}

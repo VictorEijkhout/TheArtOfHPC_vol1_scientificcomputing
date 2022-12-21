@@ -58,11 +58,11 @@ Local and remote parts:
 \frame{\frametitle{Cost computation 1.}
 Algorithm:
 \begin{center}
-\begin{tabular}{| p{2in} |  p{2in} |}\midrule
+\begin{tabular}{ p{2in}  p{2in}}\toprule
 Step & Cost (lower bound) \\ \midrule
 Allgather $ x_i $ so that $ x $ is available on all nodes & \\
 Locally compute $ y_i = A_i x $ &
-$ \approx 2 \frac{n^2}{P} \gamma $ \\ \midrule
+$ \approx 2 \frac{n^2}{P} \gamma $ \\ \bottomrule
 \end{tabular}
 \end{center}
 
@@ -79,13 +79,15 @@ Assume that data arrives over a binary tree:
 \frame{\frametitle{}
 Algorithm with cost:
 \begin{center}
-\begin{tabular}{| p{2in} |  p{2in} |}\midrule
+  \begin{tabular}{ p{2in} p{2in} }
+    \toprule
 Step & Cost (lower bound) \\ \midrule
 Allgather $ x_i $ so that $ x $ is available on all nodes & 
 $ \lceil \log_2(P)\rceil \alpha + \frac{P-1}{P} n \beta \approx
 \log_2(P) \alpha + n \beta $ \\
 Locally compute $ y_i = A_i x $ &
-$ \approx 2 \frac{n^2}{P} \gamma $ \\ \midrule
+$ \approx 2 \frac{n^2}{P} \gamma $ \\
+\bottomrule
 \end{tabular}
 \end{center}
 
@@ -277,6 +279,8 @@ a_{11,9} & a_{11,10} & a_{11,11} & y_{11} \\
 }
 
 \frame{\frametitle{Two-dimensional partitioning}
+Processor grid $p=r\times c$, assume $r,c\approx\sqrt p$.
+
 {\tiny
 \[ \kern-.25in
 \begin{array}{| c | c | c | c |} \hline
@@ -414,14 +418,15 @@ x_9\\
 }
 
 \frame{\frametitle{Analysis 1.}
-\begin{tabular}{| p{2in} |  p{2in} |}\midrule
+  \begin{tabular}{ p{2in} p{2in} }
+    \toprule
 Step & Cost (lower bound) \\ \midrule
 Allgather $ x_i $'s  within columns & 
 $ \lceil \log_2(r)\rceil \alpha + \frac{r-1}{p} n \beta $ \\
 & $\approx \log_2(r) \alpha + \frac{n}{c} \beta $ \\
 Perform local matrix-vector multiply &
 $ \approx 2 \frac{n^2}{p} \gamma $ \\ 
-Reduce-scatter $ y_i $'s  within rows & \\ \midrule
+Reduce-scatter $ y_i $'s  within rows & \\ \bottomrule
 \end{tabular}
 }
 
@@ -460,7 +465,8 @@ Time:
 }
 
 \frame{\frametitle{}
-\begin{tabular}{| p{2in} |  p{2in} |}\midrule
+  \begin{tabular}{ p{2in} p{2in} }
+    \toprule
 Step & Cost (lower bound) \\ \midrule
 Allgather $ x_i $'s  within columns & 
 $ \lceil \log_2(r)\rceil \alpha + \frac{r-1}{p} n \beta $ \\
@@ -469,7 +475,8 @@ Perform local matrix-vector multiply &
 $ \approx 2 \frac{n^2}{p} \gamma $ \\ 
 Reduce-scatter $ y_i $'s  within rows & 
 $ \lceil \log_2(c)\rceil \alpha + \frac{c-1}{p} n \beta + \frac{c-1}{p} n \gamma $\\
-& $ \approx \log_2(r) \alpha + \frac{n}{r} \beta + \frac{n}{r} \gamma $ \\ \midrule
+& $ \approx \log_2(c) \alpha + \frac{n}{r} \beta + \frac{n}{r} \gamma $ \\
+\bottomrule
 \end{tabular}
 }
 
@@ -525,7 +532,7 @@ E_p^{\sqrt{p} \times \sqrt{p}}(n) =
 \]}
 \only<3>{
 Weak scaling:\\
-for $p\rightarrow\infty$ this is $\approx 1/\log_2P$:\\
+for $p\rightarrow\infty$ this is $\approx 1/\log_2 p$:\\
 only slowly decreasing. }
 }
 

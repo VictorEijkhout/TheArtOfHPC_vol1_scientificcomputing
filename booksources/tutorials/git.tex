@@ -356,6 +356,22 @@ and multiple \indexterm{upstream}s remotely, you intially specify both:
   Push changes.
 \end{gitstep}
 
+\Level 1 {Changing the transport}
+
+You may have made your clone with
+\begin{verbatim}
+git clone https://....
+\end{verbatim}
+but when you \lstinline{git push} for the first time
+you get some permission-related errors.
+
+Do
+\begin{verbatim}
+git remote -v
+# output: origin  https://username@bitbucket.org/username/reponame.git
+git remote set-url origin git@bitbucket.org:username/reponame.git
+\end{verbatim}
+
 \Level 1 {Collaboration on the same repository}
 
 Let's see how changes from one clone of a repository
@@ -516,6 +532,23 @@ You can now edit the file by hand, or using some merge tool.
   that is the local state, followed by the pulled remote state.
   Edit this file, commit the merge and push.
 \end{gitstep}
+
+\Level 1 {Pull requests}
+
+The previous sections described collaboration on a repository
+that you have write permission for.
+For large projects you may not have this:
+the owner of the project may want a safer mechanism
+where you submit changes for approval
+in the form of a \indexterm{pull request}, and
+they will do the merge of your changes into the repository.
+
+This involves the following steps:
+\begin{enumerate}
+\item You make a \indexterm{fork} of the repository;
+\item you clone this fork;
+\item make a branch with your changes;
+\end{enumerate}
 
 \Level 0 {Branching}
 

@@ -39,5 +39,7 @@ diagnostics ::
 	 && echo "----------------" \
 	 && ( grep "is not defined on" ${FILE}.log || echo >/dev/null ) \
 	 && echo "----------------" \
+	 && ( grep "no file" ${FILE}.log || echo >/dev/null ) \
+	 && echo "----------------" \
 	 && ( grep "not strip file" ${FILE}.log || echo >/dev/null ) \
 	 && echo "---------------- end of diagnostics --------"

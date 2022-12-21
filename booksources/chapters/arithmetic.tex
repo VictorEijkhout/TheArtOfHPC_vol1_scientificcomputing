@@ -430,7 +430,7 @@ of how this was realized in computer hardware.
 \begin{exercise}
   \label{ex:fraction-code}
   Above, it was mentioned that many fractions are not
-  representible in binary. Illustrate that by dividing a
+  representable in binary. Illustrate that by dividing a
   number first by~7, then multiplying it by~7 and dividing
   by~49. Try as inputs $3.5$ and~$3.6$.
 \end{exercise}
@@ -790,6 +790,7 @@ digits accuracy in single precision, or 15 in double.
 \end{exercise}
 
 \begin{exercise}
+  \label{ex:e-compute}
   The number $e\approx 2.72$, the base for the natural logarithm, has
   various definitions. One of them is 
   \begin{equation}
@@ -949,7 +950,7 @@ that for normalized numbers the first nonzero digit is a~1, which
 is not stored, so the bit pattern $d_1d_2\ldots d_t$ is interpreted as
 $1.d_1d_2\ldots d_t$.
 
-The highest exponent is used to accomodate \indextermtt{Inf} and \indextermtt{Nan};
+The highest exponent is used to accommodate \indextermtt{Inf} and \indextermtt{Nan};
 see section~\ref{sec:754nan}.
 
 \begin{exercise}
@@ -1277,7 +1278,7 @@ of a computation that should have resulted in~$1.235$:
 \begin{array}{rll}
   .5\times 2.47-1.23&=1.235-1.23&=0.005\quad\hbox{exact}\\
   \downarrow&&=5.0\cdot 10^{-3}\\
-  1.24-1.23&=0.01=1.\cdot 10^{-2}\hbox to 0pt{compute\hss}\\
+  1.24-1.23&=0.01=1.\cdot 10^{-2}\quad\hbox{compute}\\
 \end{array}
 \end{equation}
 Now, there is a 100\% error, even though the relative error of the
@@ -1537,7 +1538,7 @@ negative, it may pay off to rearrange the algorithm accordingly.
   Here are two code fragments that compute this sum (assuming that \n{x}
   and \n{nterms} are given):
   \begin{multicols}{2}
-\unitindent=0pt \scriptsize
+\unitindent=0pt \scriptsize %pyskip
 \begin{verbatim}
 double term = x, sum = term;
 for (int i=1; i<=nterms; i+=2) {
@@ -1734,6 +1735,7 @@ Different languages have different approaches to declaring integers and
 floating point numbers. Here we study some of the issues.
 
 \Level 1 {C/C++ data models}
+\label{sec:data-model}
 
 The C/C++ language has \lstinline{short}, \lstinline{int}, \lstinline{float},
 \lstinline{double} types
@@ -1776,6 +1778,8 @@ for the actual sizes of these.
   This only existed on some early Unix systems such as
   \indextermbus{Cray}{UNICOS}.
 \end{itemize}
+
+Also, see \url{https://en.cppreference.com/w/cpp/language/types}.
 
 \Level 1 {C/C++}
 
@@ -1885,24 +1889,51 @@ In C++
 you can still use the C~header \n{limits.h} or
 \indextermtt{climits}, but it's better to use
 \indextermtt{std::numeric_limits}, which is templated over the types.
+(See \ISPref{sec:limits} for details.)
+
 For instance
 \lstset{language=C++}
 \begin{lstlisting}
 std::numerical_limits<int>.max();
 \end{lstlisting}
 
-The following functions are available:
+\lstset{language=C}
+
+\Level 1 {Exceptions}
+\label{sec:catch-exp}
+
+Both the IEEE 754 standard and the C++ language define a concept
+\emph{exception}\index{C++!exception|textbf} which differ from each
+other.
 \begin{itemize}
-\item \lstinline+std::numeric_limits<T>::max()+ for the largest number.
-\item \lstinline+std::numeric_limits<T>::min()+ for the smallest normalized positive number.
-\item \lstinline+std::numeric_limits<T>::lowest()+ for the most negative number.
-\item \lstinline+std::numeric_limits<T>::epsilon()+ for machine epsilon.
-\item \lstinline+std::numeric_limits<T>::denorm_min()+ for smallest subnormal.
-  (See also \lstinline+std::numeric_limits<T>::has_denorm+.)
-\item \lstinline+std::nextafter(x,y)+
+\item Floating point exceptions are the occurrence of `invalid numbers',
+  such as through overflow or divide-by-zero (see section~\ref{sec:754nan}).
+  Technically they denote the occurrence of an operation that has `no outcome
+suitable for every reasonable application'. 
+\item Programming languages can `throw an exception', that is, interrupt regular
+  program control flow, if any type of unexpected event occurs.
 \end{itemize}
 
-\Level 2 {Exceptions}
+\Level 2 {Enabling}
+
+Sometimes it is possible to generate a language exception
+on a floating point exception.
+
+\index{NaN!programming language support|(}
+
+The behavior on \indexterm{overflow} can be set to generate an
+\indexterm{exception}.
+In~C, you specify this with a library call:
+\begin{verbatim}
+#include <fenv.h>
+int main() { 
+ ...
+ feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+\end{verbatim}
+
+\index{NaN!programming language support|)}
+
+\Level 2 {Exceptions defined}
 
 Exceptions defined:
 \begin{itemize}
@@ -1939,37 +1970,6 @@ The same module also has \n{infinity()} and \n{signaling_NaN()}.
 For checking whether a value is \n{NaN}, use \n{std::isnan()} from \n{cmath} in~C++.
 
 See further \url{http://en.cppreference.com/w/cpp/numeric/math/nan}.
-
-\index{NaN!programming language support|)}
-\lstset{language=C}
-
-\Level 1 {Exceptions}
-\label{sec:catch-exp}
-
-Both the IEEE 754 standard and the C++ language define a concept
-\emph{exception}\index{C++!exception|textbf} which differ from each
-other.
-\begin{itemize}
-\item Floating point exceptions are the occurrence of `invalid numbers',
-  such as through overflow or divide-by-zero (see section~\ref{sec:754nan}).
-  Technically they denote the occurrence of an operation that has `no outcome
-suitable for every reasonable application'. 
-\item Programming languages can `throw an exception', that is, interrupt regular
-  program control flow, if any type of unexpected event occurs.
-\end{itemize}
-
-Sometimes it is possible to generate a language exception
-on a floating point exception.
-
-The behavior on \indexterm{overflow} can be set to generate an
-\indexterm{exception}.
-In~C, you specify this with a library call:
-\begin{verbatim}
-#include <fenv.h>
-int main() { 
- ...
- feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-\end{verbatim}
 
 \Level 2 {Compiler-specific behavior}
 
@@ -2192,7 +2192,7 @@ of identical numbers.
 The left column shows that the \indextermbus{Intel}{i5} of a MacBook Air
 does not have hardware support for denormals.
 The next two columns shows the \indextermbus{Intel}{Cascade Lake}
-buth with two different compiler settings:
+but with two different compiler settings:
 First we use the default behavior of
 \emph{flush-to-zero}\index{floating point numbers!subnormal!flush to zero}:
 any subnormal number is set to zero;
@@ -2475,7 +2475,7 @@ various observations hold:
 Thus it
 becomes imperative to analyze computer algorithms with regard to their
 roundoff behavior: does roundoff increase as a slowly growing
-function of problem parameters, such as the number of terms evalauted,
+function of problem parameters, such as the number of terms evaluated,
 or is worse behavior possible? We will not address such questions in
 further detail in this book.
 

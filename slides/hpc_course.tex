@@ -36,22 +36,13 @@
 
 \newdimen\unitindent \unitindent=20pt
 
-\usepackage{comment}
-%% \specialcomment{exercise}{
-%%   \def\CommentCutFile{exercise.cut}
-%%   \def\PrepareCutFile{%
-%%         \immediate\write\CommentStream{\noexpand\begin{frame}{Exercise}}}
-%%   \def\FinalizeCutFile{%
-%%         \immediate\write\CommentStream{\noexpand\end{frame}}}
-%%   }{}
-
 \input slidemacs
-
+\input snippetmacs
 \input scimacs
 
-\usepackage{makeidx}
-\makeindex
-
+\excludecomment{answer}
+\excludecomment{simplified}
+\includecomment{lotsamath}
 \includecomment{diagonalstorage}
 
 \begin{document}
@@ -191,19 +182,19 @@ algorithms to make them efficient on current hardware.
 \input ProfilingOptimization-slides
 \input Debug-slides
 
-\begin{frame}
-  \includegraphics[scale=.08]{bookcover}
-\end{frame}
+%% \begin{frame}
+%%   \includegraphics[scale=.08]{bookcover}
+%% \end{frame}
 
 \newenvironment{theindex}{\begin{itemize}}{\end{itemize}}
 \let\indexspace\par
 \def\subitem{\par\indent}
 
-\begin{frame}{Index}
-\small
-\begin{multicols}{2}
-\printindex  
-\end{multicols}
-\end{frame}
+%% \begin{frame}{Index}
+%% \small
+%% \begin{multicols}{2}
+%% \printindex  
+%% \end{multicols}
+%% \end{frame}
 
 \end{document}

@@ -45,6 +45,13 @@ to calling a \emph{timer} routine twice that tells you the clock values:
   runtime = (tend-tstart)/ticks_per_sec
 \end{verbatim}
 
+Many systems have their own timers:
+\begin{itemize}
+\item MPI see section~\PCSEref{sec:mpi-timing};
+\item OpenMP see section~\PCSEref{sec:omp-timing};
+\item PETSc see section~\PCSEref{sec:petsc-timing}.
+\end{itemize}
+
 \Level 1 {Fortran}
 \index{timer!routines, Fortran}
 
@@ -193,8 +200,8 @@ that you have declared as such. The tool will then report how many
 time the event occurred, total and average time spent, et cetera.
 
 The only tool we mention here is \indexterm{gprof}, the profiler of
-the \indexterm{GNU} compiler. The TAU tool, discussed in section~\ref{sec:tau}
-for the purposes of tracing,
+the \indexterm{GNU} compiler.
+The TAU tool, discussed in section~\ref{tut:tau} for the purposes of tracing,
 also has profiling capabilities, presented in a nice graphic way.
 Finally, we mention that the \indexterm{PETSc} library
 allows you to define your own timers and events.
@@ -227,6 +234,51 @@ figure~\ref{fig:vampyr}.
   \caption{A Vampyr timeline diagram of a parallel process.}
   \label{fig:vampyr}
 \end{figure}
+
+%% \TUTORIAL{Timing, tracing}{tracing}
+
+\Level 0 {Parallel timing}
+
+Timing parallel operations is fraught with peril,
+as processes or threads can interact with each other.
+This means that you may be measuring the wait time
+induced by synchronization.
+Sometimes that is actually what you want,
+as in the case of a \indexterm{ping-pong} operation;
+section~\PCSEref{sec:mpi-send-recv}.
+
+Other times, this is not what you want.
+Consider the code
+\begin{lstlisting}
+if (procno==0)
+  do_big_setup();
+t = timer();
+mpi_some_collective();
+duration = timer() - t;
+\end{lstlisting}
+
+\begin{figure}[ht]
+  \hbox\bgroup
+  \includegraphics[scale=.5]{timenobarrier}
+  \includegraphics[scale=.5]{timebarrier}
+  \egroup
+  \caption{Timing a parallel code without and with barrier}
+  \label{fig:time-collective}
+\end{figure}
+
+Figure~\ref{fig:time-collective} illustrates this:
+\begin{itemize}
+\item in the naive scenario, processes other than zero start the collective immediately,
+  but process zero first does the setup;
+\item all processes presumably finish more or less together.
+\end{itemize}
+On the non-zero processes we now get a time measurement,
+which we intended to be just the collective operation,
+that includes the setup time of process zero.
+
+The solution is to put a barrier around the section that you want to time;
+see again figure~\ref{fig:time-collective}.
+
 
 % LocalWords:  Eijkhout systemclock chrono unix getrusage wallclock
 % LocalWords:  gettimeofday RDTSC ReaD PAPI MPI OpenMP gprof PETSc cc

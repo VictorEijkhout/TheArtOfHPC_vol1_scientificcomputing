@@ -11,9 +11,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\Level 0 {Tau}
-\label{sec:tau}
-
 \index{TAU|(}
 
 The TAU tool~\cite{TAU:ijhpca}
@@ -34,7 +31,7 @@ process lags behind others. For understanding a program's behaviour,
 and the reasons behind profiling statistics, a tracing tool can be
 very insightful.
 
-\Level 1 {merge this section}
+\Level 0 {merge this section}
 
 There are two ways to instrument your code:
 \begin{itemize}
@@ -76,7 +73,7 @@ The \texttt{slog2}\index{slog2 file format} file can be displayed with \indexter
 
 % http://wiki.mpich.org/mpich/index.php/TAU_by_example
 
-\Level 1 {Instrumentation}
+\Level 0 {Instrumentation}
 
 Unlike such tools as \indexterm{VTune} which profile your binary as-is,
 TAU works by adding \indexterm{instrumentation} to your code: in
@@ -118,7 +115,7 @@ To use \emph{TAU} on \emph{TACC}\index{TAU!on TACC resources} resources,
 do \n{module load tau}.
 \end{istc}
 
-\Level 1 {Running}
+\Level 0 {Running}
 
 You can now run your instrumented code;
 trace/profile output will be written to file 
@@ -152,7 +149,7 @@ the count is derived from the queue submission parameters.
 While this example uses two separate directories, there is no
 harm in using the same for both.
 
-\Level 1 {Output}
+\Level 0 {Output}
 
 The tracing/profiling information is spread over many files, and hard to read as such.
 Therefore, you need some further programs to consolidate and display the information.
@@ -180,7 +177,7 @@ The \n{slog2} file can be viewed with \indextermtt{jumpshot}:
 jumpshot yourprogram.slog2
 \end{verbatim}
 
-\Level 1 {Without instrumentation}
+\Level 0 {Without instrumentation}
 
 Event-based sampling on uninstrumented code:
 \begin{verbatim}
@@ -188,9 +185,9 @@ tau_exec -ebs yourprogram
 \end{verbatim}
 The resulting \n{.trc} file can be viewed with \indextermtt{paraprof}.
 
-\Level 1 {Examples}
+\Level 0 {Examples}
 
-\Level 2 {Bucket brigade}
+\Level 1 {Bucket brigade}
 
 Let's consider a \indexterm{bucket brigade} implementation of a broadcast:
 each process sends its data to the next higher rank. 
@@ -242,7 +239,7 @@ and received with non-blocking calls.
 %
 The TAU trace is in figure~\ref{fig:tau-bucketpipe}.
 
-\Level 2 {Butterfly exchange}
+\Level 1 {Butterfly exchange}
 
 \begin{figure}[ht]
 \includegraphics[scale=.4]{butterfly8-legend}

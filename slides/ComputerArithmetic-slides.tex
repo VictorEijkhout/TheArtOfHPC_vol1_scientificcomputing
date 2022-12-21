@@ -309,7 +309,7 @@ Analogous to scientific notation $x=6.022\cdot 10^{23}$:
     IEEE double (64 bit)&2&53&-1022&1023\\
     Old Cray 64bit&2&48&-16383&16384\\
     IBM mainframe 32 bit&16&6&-64&63\\
-    packed decimal&10&50&-999&999
+    packed decimal&10&50&-999&999\\
     \bottomrule
   \end{tabular}
   
@@ -476,17 +476,19 @@ How would this story change with a non-zero exponent,\\
 for instance $1.256\cdot 10^{12}$?
 \end{numberedframe}
 
-\begin{exercise}{Round-off}
-  The number $e\approx 2.72$, the base for the natural logarithm, has
-  various definitions. One of them is 
-  \[ e=\lim_{n\rightarrow\infty} (1+1/n)^n. \]
-  Write a single precision program that tries to compute~$e$ in this
-  manner. Evaluate the expression for an upper bound $n=10^k$ with
-  $k=1,\ldots,10$. Explain the output for large~$n$. Comment on the
-  behavior of the error.
 
-  Can you come up with a better way of computing~$e$?
-  How is this number actually computed?
+\begin{exercise}{Round-off}
+  \input{ex:e-compute}
+%%   The number $e\approx 2.72$, the base for the natural logarithm, has
+%%   various definitions. One of them is 
+%%   \[ e=\lim_{n\rightarrow\infty} (1+1/n)^n. \]
+%%   Write a single precision program that tries to compute~$e$ in this
+%%   manner. Evaluate the expression for an upper bound $n=10^k$ with
+%%   $k=1,\ldots,10$. Explain the output for large~$n$. Comment on the
+%%   behavior of the error.
+
+%%   Can you come up with a better way of computing~$e$?
+%%   How is this number actually computed?
 \end{exercise}
 \begin{answer}
   \snippetwithoutput{elimit}{code/754}{elimit}
