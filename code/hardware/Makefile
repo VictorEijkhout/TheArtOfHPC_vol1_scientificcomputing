@@ -27,11 +27,8 @@ ${PROGRAMS} : clock.o allocation.o
 allocation.o : allocation.hpp
 clock.o : clock.hpp
 
-ifeq "${TACC_SYSTEM}" "macbookair"
-  CXXOPTS = ${HOME}/Installation/cxxopts/installation
-else
-  CXXOPTS = ${TACC_CXXOPTS_INC}
-endif
+CXXOPTS = ${TACC_CXXOPTS_INC}
+
 EXTRA_OPTIONS_intel = -qopt-report=5
 EXTRA_OPTIONS += -I${CXXOPTS} ${EXTRA_OPTIONS_${TACC_FAMILY_COMPILER}}
 EXTRALIBS = -lpthread
@@ -96,7 +93,11 @@ run_unroll :
 RUNS += run_associativity
 .PHONY: run_associativity
 run_associativity : associativity
-	@./associativity
+	@cmdline="./associativity ${RUN_OPTS}" \
+	 && if [ ${ECHO} -gt 0 ] ; then \
+	      echo "Executing: $$cmdline" \
+	    ; fi \
+	 && $$cmdline
 
 RUNS += run_bandwidth
 .PHONY: run_bandwidth

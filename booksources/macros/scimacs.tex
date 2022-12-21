@@ -85,10 +85,11 @@
 \newwrite\acrowrite
 \openout\acrowrite=acronyms.tex
 \def\acroitem#1#2{\acrodef{#1}{#2}
-    \write\acrowrite{\message{defining #1}\noexpand\acitem{#1}{#2}}
+    \expandafter \let \csname ifneed#1\endcsname \iffalse
+    \write\acrowrite{\noexpand\acitem{#1}{#2}}
 }
 %\def\acitem#1#2{\item[#1] #2}
-\def\acitem#1#2{\item[#1]{#2}\index{#1|see{#2}}}
+\def\acitem#1#2{\csname ifneed#1\endcsname \item[#1]{#2}\index{#1|see{#2}}\fi }
 \def\acitemi#1#2#3{\item[#1]{#2}\index{#1|see{#3}}}
 
 \acroitem{AMR}{Adaptive Mesh Refinement}
@@ -127,6 +128,7 @@
 \acroitem{GPU}{Graphics Processing Unit}
 \acroitem{GPGPU}{General Purpose Graphics Processing Unit}
 \acroitem{GS}{Gram-Schmidt}
+\acroitem{GUI}{Graphical User Interface}
 \acroitem{HDFS}{Hadoop File System}
 \acroitem{HPC}{High-Performance Computing}
 \acroitem{HPF}{High Performance Fortran}
@@ -201,7 +203,7 @@
            {\bgroup\catcode`\_=12 \indextermcmeg}
 \newcommand{\indextermcmeg}[1]%end term with underscore
            {{\lstinline+#1+}%
-            \index{#1@\makeusletter\texttt{#1}\makeusother (cmake)}\egroup
+            \index{#1@\makeusletter\texttt{#1}\makeusother\ (cmake command)}\egroup
            }
 
 \newcommand\makeusletter{\catcode`\_=11 }
@@ -220,6 +222,8 @@
            {{\ttfamily\slshape #1}%
             \index{#1@\makeusletter\texttt{#1}\makeusother\ (unix command)|textbf}\egroup
            }
+\let\indexunix\indextermunix
+\let\indexunixdef\indextermunixdef
 
 \newcommand{\indextermcmake}% begin term with underscore
            {\bgroup\catcode`\_=12 \indextermcmakeeg}
@@ -243,19 +247,18 @@
 
 \makeatletter
 \newcommand\indexac[1]{\emph{\ac{#1}}%
-  %\tracingmacros=2 \tracingcommands=2
+  \expandafter \let \csname ifneed#1\endcsname \iftrue
   \edef\tmp{\noexpand\index{%
     \expandafter\expandafter\expandafter
         \@secondoftwo\csname fn@#1\endcsname%
     @\acl{#1} (#1)}}\tmp}
 \newcommand\indexacdef[1]{\emph{\ac{#1}}%
-  %\tracingmacros=2 \tracingcommands=2
+  \expandafter \let \csname ifneed#1\endcsname \iftrue
   \edef\tmp{\noexpand\index{%
     \expandafter\expandafter\expandafter
         \@secondoftwo\csname fn@#1\endcsname%
     @\acl{#1} (#1)}|textbf}\tmp}
 \newcommand\indexacp[1]{\emph{\ac{#1}}%
-  %\tracingmacros=2 \tracingcommands=2
   \edef\tmp{\noexpand\index{%
     \expandafter\expandafter\expandafter
         \@secondoftwo\csname fn@#1\endcsname%

@@ -31,12 +31,9 @@ using std::vector;
 template <typename R>
 Cache<R>::Cache( std::vector<R> c,bool trace ) : thecache(c) {};
 template <typename R>
-Cache<R>::Cache( uint64_t cachesize_in_words,bool trace )
-  : thecache( vector<R>(cachesize_in_words) ) {
-  if (trace) {
-    auto ptr = data();
-    cout << "allocating cache at " << reinterpret_cast<intptr_t>(ptr) << endl;
-  }
+Cache<R>::Cache( uint64_t cachesize_in_words,bool trace ) {
+  //  : thecache( vector<R>(cachesize_in_words) ) {
+  allocate(cachesize_in_words,trace);
 };
 
 template <typename R>
@@ -80,22 +77,22 @@ void operator delete(void* ptr, std::size_t size, std::align_val_t align) noexce
 #endif
 }
 
-template <typename R>
-Cache<R> allocate_cache( uint64_t cachesize_in_words,bool trace ) {
-  vector<R> cache(cachesize_in_words,1.);
+// template <typename R>
+// Cache<R> allocate_cache( uint64_t cachesize_in_words,bool trace ) {
+//   vector<R> cache(cachesize_in_words,1.);
 
-  if (trace) {
-    stringstream report;
-    report << "Cachesize in words: " << setw(9) << cachesize_in_words ;
-    report <<         "; in bytes: " << setw(9) << (cachesize_in_words<<3); // bytes;
-    cout << report.str() << endl;
-  }
+//   if (trace) {
+//     stringstream report;
+//     report << "Cachesize in words: " << setw(9) << cachesize_in_words ;
+//     report <<         "; in bytes: " << setw(9) << (cachesize_in_words<<3); // bytes;
+//     cout << report.str() << endl;
+//   }
 
-  for ( auto &c : cache ) c += 1.2;
-  auto return_cache = Cache(cache);
-  if (trace) return_cache.check_alignment();
-  return return_cache;
-};
+//   for ( auto &c : cache ) c += 1.2;
+//   auto return_cache = Cache(cache);
+//   if (trace) return_cache.check_alignment();
+//   return return_cache;
+// };
 
 //codesnippet cachesumstream
 template <typename R>
@@ -164,6 +161,6 @@ void Cache<R>::force() {
 template class Cache<int>;
 template class Cache<float>;
 template class Cache<double>;
-template Cache<int> allocate_cache<int>(uint64_t,bool);
-template Cache<float> allocate_cache<float>(uint64_t,bool);
-template Cache<double> allocate_cache<double>(uint64_t,bool);
+// template Cache<int> allocate_cache<int>(uint64_t,bool);
+// template Cache<float> allocate_cache<float>(uint64_t,bool);
+// template Cache<double> allocate_cache<double>(uint64_t,bool);

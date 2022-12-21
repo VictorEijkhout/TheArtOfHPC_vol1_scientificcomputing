@@ -12,14 +12,9 @@
  ****************************************************************/
 
 #include <iostream>
-using std::cout;
-using std::cin;
-using std::endl;
+using std::cout, std::cin, std::endl;
 #include <iomanip>
-using std::setw;
-using std::fixed;
-using std::setprecision;
-using std::scientific;
+using std::setw, std::fixed, std::setprecision, std::scientific;
 #include <string>
 using std::string;
 #include <sstream>
@@ -28,8 +23,7 @@ using std::stringstream;
 #include "clock.hpp"
 #include "allocation.hpp"
 
-#include <vector>
-using std::vector;
+#include "cxxopts.hpp"
 
 #include <stdint.h>
 
@@ -38,8 +32,8 @@ int compute_elements_to_write(int associativity,uint64_t cachesize_in_words) {
   while ( (associativity>>shifts) > 0 )
     shifts++;
   int division  = 1<<shifts;
-  std::cout << "associativity" << associativity
-	    << " gives division " << division << std::endl;
+  // std::cout << "associativity " << associativity
+  // 	    << " gives division " << division << std::endl;
   return cachesize_in_words/division;
 };
 
@@ -56,210 +50,202 @@ string generate_runtime_report
 
 template <int ASSOC>
 void cache_writing(Cache<double> &cache,int how_many_repeats,int n_elements_to_write) {
-    for (int irepeat=0; irepeat<how_many_repeats; irepeat++) {
-      if constexpr (ASSOC==1) {
+  double s{1.};
+  for (int irepeat=0; irepeat<how_many_repeats; irepeat++) {
+    int loc{0};
+    if constexpr (ASSOC==1) {
 	for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	  cache[iwrite] += 1.1; 
+	  auto next_loc = cache[loc];
+	  cache[loc] += 1.1; 
+	  loc = next_loc;
 	}
       } else if (ASSOC==2) {
-	for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	  cache[iwrite] += cache[iwrite+n_elements_to_write];
-	}
-      } else if (ASSOC==3) {
-	for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	  cache[iwrite] += cache[iwrite+n_elements_to_write]
-	    + cache[iwrite+2*n_elements_to_write];
-	}
-      } else if (ASSOC==4) {
-	for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	  cache[iwrite] += cache[iwrite+n_elements_to_write]
-	    + cache[iwrite+2*n_elements_to_write]
-	    + cache[iwrite+3*n_elements_to_write];
-	}
-      } else if (ASSOC==5) {
-	for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	  cache[iwrite] += cache[iwrite+n_elements_to_write]
-	    + cache[iwrite+2*n_elements_to_write]
-	    + cache[iwrite+3*n_elements_to_write]
-	    + cache[iwrite+4*n_elements_to_write];
-	}
-      } else if (ASSOC==6) {
-	for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	  cache[iwrite] += cache[iwrite+n_elements_to_write]
-	    + cache[iwrite+2*n_elements_to_write]
-	    + cache[iwrite+3*n_elements_to_write]
-	    + cache[iwrite+4*n_elements_to_write]
-	    + cache[iwrite+5*n_elements_to_write];
-	}
-      } else if (ASSOC==7) {
-	for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	  cache[iwrite] += cache[iwrite+n_elements_to_write]
-	    + cache[iwrite+2*n_elements_to_write]
-	    + cache[iwrite+3*n_elements_to_write]
-	    + cache[iwrite+4*n_elements_to_write]
-	    + cache[iwrite+5*n_elements_to_write]
-	    + cache[iwrite+6*n_elements_to_write];
-	}
-      } else if (ASSOC==8) {
-	for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	  cache[iwrite] += cache[iwrite+n_elements_to_write]
-	    + cache[iwrite+2*n_elements_to_write]
-	    + cache[iwrite+3*n_elements_to_write]
-	    + cache[iwrite+4*n_elements_to_write]
-	    + cache[iwrite+5*n_elements_to_write]
-	    + cache[iwrite+6*n_elements_to_write]
-	    + cache[iwrite+7*n_elements_to_write];
-	}
+      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
+	auto next_loc = cache[loc];
+	cache[loc] += s * (
+			      + cache[loc+1*n_elements_to_write]
+			      ) ;
+	loc = next_loc;
       }
+    } else if (ASSOC==3) {
+      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
+	auto next_loc = cache[loc];
+	cache[loc] += s * ( 
+			      + cache[loc+1*n_elements_to_write]
+			      + cache[loc+2*n_elements_to_write]
+			       ) ;
+	loc = next_loc;
+      }
+    } else if (ASSOC==4) {
+      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
+	auto next_loc = cache[loc];
+	cache[loc] += s * ( 
+			      + cache[loc+1*n_elements_to_write]
+			      + cache[loc+2*n_elements_to_write]
+			      + cache[loc+3*n_elements_to_write]
+			       ) ;
+	loc = next_loc;
+      }
+    } else if (ASSOC==5) {
+      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
+	auto next_loc = cache[loc];
+	cache[loc] += s * ( 
+			      + cache[loc+1*n_elements_to_write]
+			      + cache[loc+2*n_elements_to_write]
+			      + cache[loc+3*n_elements_to_write]
+			      + cache[loc+4*n_elements_to_write]
+			       ) ;
+	loc = next_loc;
+      }
+    } else if (ASSOC==6) {
+      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
+	auto next_loc = cache[loc];
+	cache[loc] += s * ( 
+			      + cache[loc+1*n_elements_to_write]
+			      + cache[loc+2*n_elements_to_write]
+			      + cache[loc+3*n_elements_to_write]
+			      + cache[loc+4*n_elements_to_write]
+			      + cache[loc+5*n_elements_to_write]
+			       ) ;
+	loc = next_loc;
+      }
+    } else if (ASSOC==7) {
+      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
+	auto next_loc = cache[loc];
+	cache[loc] += s * ( 
+			      + cache[loc+1*n_elements_to_write]
+			      + cache[loc+2*n_elements_to_write]
+			      + cache[loc+3*n_elements_to_write]
+			      + cache[loc+4*n_elements_to_write]
+			      + cache[loc+5*n_elements_to_write]
+			      + cache[loc+6*n_elements_to_write]
+			       ) ;
+	loc = next_loc;
+      }
+    } else if (ASSOC==8) {
+      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
+	auto next_loc = cache[loc];
+	cache[loc] += s * ( 
+			      + cache[loc+1*n_elements_to_write]
+			      + cache[loc+2*n_elements_to_write]
+			      + cache[loc+3*n_elements_to_write]
+			      + cache[loc+4*n_elements_to_write]
+			      + cache[loc+5*n_elements_to_write]
+			      + cache[loc+6*n_elements_to_write]
+			      + cache[loc+7*n_elements_to_write]
+			       ) ;
+	loc = next_loc;
+      }
+    } else if (ASSOC==9) {
+      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
+	auto next_loc = cache[loc];
+	cache[loc] += s * ( 
+			      + cache[loc+1*n_elements_to_write]
+			      + cache[loc+2*n_elements_to_write]
+			      + cache[loc+3*n_elements_to_write]
+			      + cache[loc+4*n_elements_to_write]
+			      + cache[loc+5*n_elements_to_write]
+			      + cache[loc+6*n_elements_to_write]
+			      + cache[loc+7*n_elements_to_write]
+			      + cache[loc+8*n_elements_to_write]
+			       ) ;
+	loc = next_loc;
+      }
+    } else if (ASSOC==10) {
+      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
+	auto next_loc = cache[loc];
+	cache[loc] += s * ( 
+			      + cache[loc+1*n_elements_to_write]
+			      + cache[loc+2*n_elements_to_write]
+			      + cache[loc+3*n_elements_to_write]
+			      + cache[loc+4*n_elements_to_write]
+			      + cache[loc+5*n_elements_to_write]
+			      + cache[loc+6*n_elements_to_write]
+			      + cache[loc+7*n_elements_to_write]
+			      + cache[loc+8*n_elements_to_write]
+			      + cache[loc+9*n_elements_to_write]
+			       ) ;
+	loc = next_loc;
+      }
+      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ )
+	s += cache[iwrite];
+      s/ n_elements_to_write;
     }
+  }
 }
 
 template<int ASSOC>
-void cache_test( Cache<double>& cache, int how_many_repeats) {
-    const int n_elements_to_write =
-      compute_elements_to_write(ASSOC,cache.size());
-    auto start_time = Clock::now();
-    cache_writing<ASSOC>(cache,how_many_repeats,n_elements_to_write);
-    int microsec_duration = compute_microsec_duration(start_time);
-    cache.force();
-    string report =
-      generate_runtime_report(microsec_duration,ASSOC,n_elements_to_write,how_many_repeats);
-    cout << report << endl;
-  }
+void cache_test( uint64_t write_size_in_words, int how_many_repeats,bool random_traversal,bool trace=false) {
+  Cache<double> cache(write_size_in_words * ASSOC,trace);
+  //  auto cache = allocate_cache<double>(write_size_in_words * ASSOC);
+  cache.make_linked_list(write_size_in_words,random_traversal,trace);
+  auto cache_size = cache.size();
+  cout << "Cache size=" << cache.size_in_kibytes() << " kib; " << ASSOC
+       << " streams each write " << write_size_in_words << " elements\n";
+  auto start_time = Clock::now();
+  cache_writing<ASSOC>(cache,how_many_repeats,write_size_in_words);
+  int microsec_duration = compute_microsec_duration(start_time);
+  cache.force();
+  string report =
+    generate_runtime_report(microsec_duration,ASSOC,write_size_in_words,how_many_repeats);
+  cout << report << endl;
+}
 
-int main() {
+int main(int argc,char **argv) {
+
+  cxxopts::Options options("associativity", "Explore cache associativity");
+  options.add_options()
+    ("w,words", "write size per stream in words",   cxxopts::value<uint64_t>())
+    ("W,Words", "write size per stream in k words",   cxxopts::value<uint64_t>())
+    ("a,assoc","associativity (0 for 1-8)",cxxopts::value<int>()->default_value("0"))
+    ("r,random","random traversal",cxxopts::value<bool>()->default_value("false"))
+    ("t,trace","trace output",cxxopts::value<bool>()->default_value("true"))
+    ("h,help","usage information")
+    ;
+  auto result = options.parse(argc, argv);
+  if (result.count("help")) {
+    cout << options.help() << endl;
+    return 1;
+  }
 
   clock_init();
 
   /*
    * Create cache data
    */
-  uint64_t cachesize_in_bytes{ 0xffff };
-  auto cachesize_in_words = cachesize_in_bytes/8;
-  auto cache = allocate_cache<double>(cachesize_in_words);
+  uint64_t writesize_in_words;
+  if (result.count("w")>0) 
+    writesize_in_words = result["w"].as<uint64_t>();
+  else if (result.count("W")>0) 
+    writesize_in_words = result["W"].as<uint64_t>() << 10;
+  else {
+    cout << "Need w or W option\n"; throw;
+  }
+  cout << "Using cache size in words: " << writesize_in_words << '\n';
+  bool random_traversal = result["random"].as<bool>();
+  if (random_traversal)
+    cout << "Random traversal of cache\n";
+  else
+    cout << "Sequential traversal of cache\n";
+  bool trace = result["trace"].as<bool>();
 
   auto how_many_repeats = 100;
-  cache_test<1>(cache,how_many_repeats);
-  cache_test<2>(cache,how_many_repeats);
-  cache_test<3>(cache,how_many_repeats);
-  cache_test<4>(cache,how_many_repeats);
-  cache_test<5>(cache,how_many_repeats);
-  cache_test<6>(cache,how_many_repeats);
-  cache_test<7>(cache,how_many_repeats);
-  cache_test<8>(cache,how_many_repeats);
-
-#if 0
-  // 1
-  {
-    const int associativity{1};
-    const int n_elements_to_write =
-      compute_elements_to_write(associativity,cachesize_in_words);
-    auto start_time = Clock::now();
-    cache_writing<associativity>(cache,how_many_repeats,n_elements_to_write);
-    int microsec_duration = compute_microsec_duration(start_time);
-    cache.force();
-    string report =
-      generate_runtime_report(microsec_duration,associativity,n_elements_to_write,how_many_repeats);
-    cout << report << endl;
+  auto associativity = result["a"].as<int>();
+  if (associativity==0) {
+    cache_test<1>(writesize_in_words,how_many_repeats,random_traversal,trace);
+    cache_test<2>(writesize_in_words,how_many_repeats,random_traversal,trace);
+    cache_test<3>(writesize_in_words,how_many_repeats,random_traversal,trace);
+    cache_test<4>(writesize_in_words,how_many_repeats,random_traversal,trace);
+    cache_test<5>(writesize_in_words,how_many_repeats,random_traversal,trace);
+    cache_test<6>(writesize_in_words,how_many_repeats,random_traversal,trace);
+    cache_test<7>(writesize_in_words,how_many_repeats,random_traversal,trace);
+    cache_test<8>(writesize_in_words,how_many_repeats,random_traversal,trace);
+    cache_test<9>(writesize_in_words,how_many_repeats,random_traversal,trace);
+    cache_test<10>(writesize_in_words,how_many_repeats,random_traversal,trace);
+  } else {
+    //    cache_test<associativity>(writesize_in_words,cache,how_many_repeats,random_traversal,trace);
   }
 
-  // 2
-  {
-    const int associativity{2};
-    const int n_elements_to_write =
-      compute_elements_to_write(associativity,cachesize_in_words);
-    auto start_time = Clock::now();
-    cache_writing<associativity>(cache,how_many_repeats,n_elements_to_write);
-    int microsec_duration = compute_microsec_duration(start_time);
-    cache.force();
-    string report =
-      generate_runtime_report(microsec_duration,associativity,n_elements_to_write,how_many_repeats);
-    cout << report << endl;
-  }
-
-  // 3
-  {
-    const int associativity{3};
-    const int n_elements_to_write =
-      compute_elements_to_write(associativity,cachesize_in_words);
-    auto start_time = Clock::now();
-    cache_writing<associativity>(cache,how_many_repeats,n_elements_to_write);
-    int microsec_duration = compute_microsec_duration(start_time);
-    cache.force();
-    string report =
-      generate_runtime_report(microsec_duration,associativity,n_elements_to_write,how_many_repeats);
-    cout << report << endl;
-  }
-
-  // 4
-  {
-    const int associativity{4};
-    const int n_elements_to_write =
-      compute_elements_to_write(associativity,cachesize_in_words);
-    auto start_time = Clock::now();
-    cache_writing<associativity>(cache,how_many_repeats,n_elements_to_write);
-    int microsec_duration = compute_microsec_duration(start_time);
-    cache.force();
-    string report =
-      generate_runtime_report(microsec_duration,associativity,n_elements_to_write,how_many_repeats);
-    cout << report << endl;
-  }
-
-  // 5
-  {
-    const int associativity{5};
-    const int n_elements_to_write =
-      compute_elements_to_write(associativity,cachesize_in_words);
-    auto start_time = Clock::now();
-    cache_writing<associativity>(cache,how_many_repeats,n_elements_to_write);
-    int microsec_duration = compute_microsec_duration(start_time);
-    cache.force();
-    string report =
-      generate_runtime_report(microsec_duration,associativity,n_elements_to_write,how_many_repeats);
-    cout << report << endl;
-  }
-
-  // 6
-  {
-    const int associativity{6};
-    const int n_elements_to_write =
-      compute_elements_to_write(associativity,cachesize_in_words);
-    auto start_time = Clock::now();
-    cache_writing<associativity>(cache,how_many_repeats,n_elements_to_write);
-    int microsec_duration = compute_microsec_duration(start_time);
-    cache.force();
-    string report =
-      generate_runtime_report(microsec_duration,associativity,n_elements_to_write,how_many_repeats);
-    cout << report << endl;
-  }
-
-  // 7
-  {
-    const int associativity{7};
-    const int n_elements_to_write =
-      compute_elements_to_write(associativity,cachesize_in_words);
-    auto start_time = Clock::now();
-    cache_writing<associativity>(cache,how_many_repeats,n_elements_to_write);
-    int microsec_duration = compute_microsec_duration(start_time);
-    cache.force();
-    string report =
-      generate_runtime_report(microsec_duration,associativity,n_elements_to_write,how_many_repeats);
-    cout << report << endl;
-  }
-
-  // 8
-  {
-    const int associativity{8};
-    const int n_elements_to_write =
-      compute_elements_to_write(associativity,cachesize_in_words);
-    auto start_time = Clock::now();
-    cache_writing<associativity>(cache,how_many_repeats,n_elements_to_write);
-    int microsec_duration = compute_microsec_duration(start_time);
-    cache.force();
-    string report =
-      generate_runtime_report(microsec_duration,associativity,n_elements_to_write,how_many_repeats);
-    cout << report << endl;
-  }
-#endif
+  return 0;
 
 }

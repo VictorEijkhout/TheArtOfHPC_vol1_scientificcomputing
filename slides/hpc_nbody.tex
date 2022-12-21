@@ -1,0 +1,48 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% hpc_linear.tex : linear algebra
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{beamer}
+
+\beamertemplatenavigationsymbolsempty
+\usepackage{beamerthemeTACC}
+\parskip=.5\baselineskip plus .5\baselineskip
+\input semester
+
+\usepackage{pslatex}
+\usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
+
+\newdimen\unitindent \unitindent=20pt
+
+\input slidemacs
+
+\input scimacs
+
+\excludecomment{diagonalstorage}
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{N-body Problems}
+\author{\hpcteachers}
+\date{\hpcsemester}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\input Nbody-slides
+
+\end{document}
