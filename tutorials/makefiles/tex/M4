@@ -1,0 +1,11 @@
+.SECONDEXPANSION:
+%.pdf : %.tex \
+  ${addsuffix .tex,${shell (grep "^.input " $$@ | awk '{print $$2}') } \
+   }
+        pdflatex ${basename $@}
+        -bibtex ${basename $@}
+        -makeindex ${basename $@}
+        while [ `cat ${basename $@}.log | grep "Rerun to get cross-references right." | wc -l` -gt 0 ] ; do \
+          pdflatex ${basename $@} ; \
+        done
+

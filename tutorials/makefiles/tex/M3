@@ -1,0 +1,22 @@
+includes :
+        grep "^\\\\input " ${TARGET}.tex | sed -e "s/.input //" > .mincs
+        export nincs=`cat .mincs | wc -l` ; export sincs=0 ; \
+        echo "found $$nincs includes" ; \
+        while [ $$nincs -gt $$sincs ] ; do \
+          for f in `cat .mincs` ; do \
+            export sincs=$$nincs ; \
+            grep "^\\\\input " $$f.tex | sed -e "s/.input //" >> .tincs ; \
+            export nincs=`cat .tincs | wc -l` ; \
+          done ; \
+          echo "found $$nincs includes" ; \
+          mv .tincs .mincs ; \
+        done
+
+% : 
+        pdflatex $@
+        -bibtex $@
+        -makeindex $@
+        while [ `cat $@.log | grep "Rerun to get cross-references right." | wc -l` -gt 0 ] ; do \
+          pdflatex $@ ; \
+        done
+

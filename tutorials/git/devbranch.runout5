@@ -1,0 +1,9 @@
+Cmd >> git diff main dev
+Out >>
+diff --git a/firstfile b/firstfile
+index 257cc56..5716ca5 100644
+--- a/firstfile
++++ b/firstfile
+@@ -1 +1 @@
+-foo
++bar

@@ -1,0 +1,9 @@
+Cmd >> ( cd person2 && git pull )
+Out >>
+From github.com:TACC/tinker
+8863559..6f6b126  main       -> origin/main
+Updating 8863559..6f6b126
+Fast-forward
+p1 | 1 +
+1 file changed, 1 insertion(+)
+create mode 100644 p1

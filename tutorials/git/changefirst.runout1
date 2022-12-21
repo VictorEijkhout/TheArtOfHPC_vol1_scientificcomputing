@@ -1,0 +1,13 @@
+Cmd >> echo bar >> firstfile
+Cmd >> cat firstfile
+Out >>
+foo
+bar
+Cmd >> git status
+Out >>
+On branch main
+Changes not staged for commit:
+(use "git add <file>..." to update what will be committed)
+(use "git restore <file>..." to discard changes in working directory)
+modified:   firstfile
+no changes added to commit (use "git add" and/or "git commit -a")

@@ -1,0 +1,9 @@
+%.pdf : %.tex
+        pdflatex ${basename $@}
+        -bibtex ${basename $@}
+        -makeindex ${basename $@}
+        while [ `cat ${basename $@}.log | grep "Rerun to get" \
+                 | wc -l` -gt 0 ] ; do \
+          pdflatex ${basename $@} ; \
+        done
+

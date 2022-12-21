@@ -1,0 +1,9 @@
+----------------
+touch a header file and make:
+Consolidate compiler generated dependencies of target auxlib
+[ 25%] Building CXX object CMakeFiles/auxlib.dir/aux.cxx.o
+[ 50%] Linking CXX static library libauxlib.a
+[ 50%] Built target auxlib
+[ 75%] Building CXX object CMakeFiles/program.dir/program.cxx.o
+[100%] Linking CXX executable program
+[100%] Built target program

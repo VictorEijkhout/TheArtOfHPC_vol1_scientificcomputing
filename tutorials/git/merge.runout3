@@ -1,0 +1,6 @@
+Cmd >> ( cd person1 && git add fourlines && git commit -m "edit line one" && git push )
+Out >>
+[main 6767e3f] edit line one
+1 file changed, 1 insertion(+), 1 deletion(-)
+To github.com:TACC/tinker.git
+fdd70b7..6767e3f  main -> main

@@ -1,0 +1,34 @@
+==== Push a file to remote site
+%%
+%% 1. Committed changes
+%%
+Cmd >> git add newfile && git commit -m "adding first file"
+Out >>
+[main 8ce1de4] adding first file
+ 1 file changed, 1 insertion(+)
+ create mode 100644 newfile
+%%
+%% 2. Connect local repo to a remote one
+%%
+Cmd >> git remote add mainserver git@github.com:TACC/tinker.git
+Cmd >> git remote -v
+Out >>
+mainserver	git@github.com:TACC/tinker.git (fetch)
+mainserver	git@github.com:TACC/tinker.git (push)
+%%
+%% 3. Push changes
+%%
+Cmd >> git push -u mainserver main
+Out >>
+To github.com:TACC/tinker.git
+   8333bc1..8ce1de4  main -> main
+Branch 'main' set up to track remote branch 'main' from 'mainserver'.
+%%
+%% 4. Further changes go there by default
+%%
+Cmd >> echo bar >> newfile && git add -u :. && git commit -m more && git push
+Out >>
+[main 4f4706d] more
+ 1 file changed, 1 insertion(+)
+To github.com:TACC/tinker.git
+   8ce1de4..4f4706d  main -> main

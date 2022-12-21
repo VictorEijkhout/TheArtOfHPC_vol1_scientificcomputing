@@ -1,0 +1,54 @@
+==== Change existing file
+%%
+%% 1. Make changes to a file that is tracked
+%%
+Cmd >> echo bar >> firstfile
+Cmd >> cat firstfile
+Out >>
+foo
+bar
+Cmd >> git status
+Out >>
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   firstfile
+no changes added to commit (use "git add" and/or "git commit -a")
+%%
+%% 2. See what the changes were wrt the previously commit version
+%%
+Cmd >> git diff firstfile
+Out >>
+diff --git a/firstfile b/firstfile
+index 257cc56..3bd1f0e 100644
+--- a/firstfile
++++ b/firstfile
+@@ -1 +1,2 @@
+ foo
++bar
+%%
+%% 3. Commit the changes to the local repo
+%%
+Cmd >> git add firstfile
+Cmd >> git commit -m "changes to first file"
+Out >>
+[main b1edf77] changes to first file
+ 1 file changed, 1 insertion(+)
+Cmd >> git status
+Out >>
+On branch main
+nothing to commit, working tree clean
+%%
+%% 4. Get the log of all commits so far
+%%
+Cmd >> git log 
+Out >>
+commit b1edf778c17b7c7e6cb1a8ac73fa9b61464eba14
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:40 2022 -0600
+    changes to first file
+commit f968ac6c05dd877db84705a4dcdadbc0bed2c535
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:39 2022 -0600
+    adding first file

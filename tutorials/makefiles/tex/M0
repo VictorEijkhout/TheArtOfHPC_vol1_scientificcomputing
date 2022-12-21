@@ -1,0 +1,7 @@
+info :
+        @echo "Usage: make foo"
+        @echo "where foo.tex is a LaTeX input file"
+
+%.pdf : %.tex
+        pdflatex $<
+

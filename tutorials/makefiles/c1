@@ -1,0 +1,22 @@
+foo.c:
+#include "bar.h"
+int c=3;
+int d=4;
+int main()
+{
+  int a=2;
+  return(bar(a*c*d));
+}
+
+
+bar.c:
+#include "bar.h"
+int bar(int a)
+{
+  int b=10;
+  return(b*a);
+}
+
+
+bar.h:
+extern int bar(int);

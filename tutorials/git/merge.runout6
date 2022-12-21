@@ -1,0 +1,12 @@
+Cmd >> ( cd person1 && git pull && cat fourlines )
+Out >>
+From github.com:TACC/tinker
+6767e3f..62bd424  main       -> origin/main
+Updating 6767e3f..62bd424
+Fast-forward
+fourlines | 2 +-
+1 file changed, 1 insertion(+), 1 deletion(-)
+one
+2
+3
+four

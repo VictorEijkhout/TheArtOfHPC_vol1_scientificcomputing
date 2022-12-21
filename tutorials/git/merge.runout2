@@ -1,0 +1,6 @@
+Cmd >> ( cd person1 && sed -i -e '1s/1/one/' fourlines && cat fourlines )
+Out >>
+one
+2
+3
+4

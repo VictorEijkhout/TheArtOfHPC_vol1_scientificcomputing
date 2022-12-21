@@ -1,0 +1,15 @@
+Cmd >> mkdir newrepo
+Cmd >> cd newrepo
+Cmd >> git init
+Out >>
+Initialized empty Git repository in /users/demo/git/newrepo/.git/
+Cmd >> ls -a
+Out >>
+.
+..
+.git
+Cmd >> git status
+Out >>
+On branch master
+No commits yet
+nothing to commit (create/copy files and use "git add" to track)

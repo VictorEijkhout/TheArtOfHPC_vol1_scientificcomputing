@@ -1,0 +1,11 @@
+Cmd >> ( cd person2 && cat fourlines )
+Out >>
+<<<<<<< HEAD
+1
+two
+=======
+one
+2
+>>>>>>> a10216da358649df80aaaeb94f1ceef909c2ed83
+3
+4

@@ -1,0 +1,5 @@
+Cmd >> git push -u mainserver main
+Out >>
+To github.com:TACC/tinker.git
+8333bc1..8ce1de4  main -> main
+Branch 'main' set up to track remote branch 'main' from 'mainserver'.

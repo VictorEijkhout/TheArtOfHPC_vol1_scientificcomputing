@@ -1,0 +1,35 @@
+==== Collaboration ====
+%%
+%% 1. Person 1 makes a clone
+%%
+Cmd >> git clone git@github.com:TACC/tinker.git person1
+Out >>
+Cloning into 'person1'...
+%%
+%% 2. Person 2 makes a clone
+%%
+Cmd >> git clone git@github.com:TACC/tinker.git person2
+Out >>
+Cloning into 'person2'...
+%%
+%% 3. Person 1 adds a file and pushes it
+%%
+Cmd >> ( cd person1 && echo 123 >> p1 && git add p1 && git commit -m "add p1" && git push ) 
+Out >>
+[main 6f6b126] add p1
+ 1 file changed, 1 insertion(+)
+ create mode 100644 p1
+To github.com:TACC/tinker.git
+   8863559..6f6b126  main -> main
+%%
+%% 4. Person 2 pulls, getting the new file
+%%
+Cmd >> ( cd person2 && git pull )
+Out >>
+From github.com:TACC/tinker
+   8863559..6f6b126  main       -> origin/main
+Updating 8863559..6f6b126
+Fast-forward
+ p1 | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 p1

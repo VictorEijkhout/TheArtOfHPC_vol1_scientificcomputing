@@ -1,0 +1,9 @@
+Cmd >> git branch dev && git branch -a
+Out >>
+dev
+* main
+Cmd >> git checkout dev && git branch -a
+Out >>
+Switched to branch 'dev'
+* dev
+main

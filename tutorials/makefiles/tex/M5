@@ -1,0 +1,8 @@
+% : ${shell grep "^.input" $@.tex | sed -e s/.input //}
+        pdflatex $@
+        -bibtex $@
+        -makeindex $@
+        while [ `cat $@.log | grep "Rerun to get cross-references right." | wc -l` -gt 0 ] ; do \
+          pdflatex $@ ; \
+        done
+

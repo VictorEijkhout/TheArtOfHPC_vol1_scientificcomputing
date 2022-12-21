@@ -1,0 +1,13 @@
+Cmd >> git checkout main
+Out >>
+Switched to branch 'main'
+Cmd >> sed -i -e '1s/1/one/' fourlines && cat fourlines
+Out >>
+one
+2
+3
+4
+Cmd >> git add fourlines && git commit -m "edit line 1"
+Out >>
+[main c51d4ff] edit line 1
+1 file changed, 1 insertion(+), 1 deletion(-)

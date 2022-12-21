@@ -1,0 +1,64 @@
+==== Revert committed file
+%%
+%% 1. Find the commit id that you want to roll back
+%%
+Cmd >> git log
+Out >>
+commit e411fad261fd82eb93c328c44978699e946abc0d
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:42 2022 -0600
+    changes to first file
+commit 63d6ad16beb4e2d12574fb238c29e8ba11fc6732
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:41 2022 -0600
+    adding first file
+Cmd >> git show HEAD
+Out >>
+commit e411fad261fd82eb93c328c44978699e946abc0d
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:42 2022 -0600
+    changes to first file
+diff --git a/firstfile b/firstfile
+index 257cc56..3bd1f0e 100644
+--- a/firstfile
++++ b/firstfile
+@@ -1 +1,2 @@
+ foo
++bar
+%%
+%% 2. Use 'git revert' to roll back
+%%
+Cmd >> git revert $commit --no-edit
+Out >>
+[main 3dca724] Revert "changes to first file"
+ Date: Sat Jan 29 14:14:42 2022 -0600
+ 1 file changed, 1 deletion(-)
+%%
+%% 3. See that we have indeed undone the commit
+%%
+Cmd >> cat firstfile
+Out >>
+foo
+Cmd >> git status
+Out >>
+On branch main
+nothing to commit, working tree clean
+%%
+%% 4. But there will be an entry in the log
+%%
+Cmd >> git log
+Out >>
+commit 3dca724a1902e8a5e3dba007c325542c6753a424
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:42 2022 -0600
+    Revert "changes to first file"
+    
+    This reverts commit e411fad261fd82eb93c328c44978699e946abc0d.
+commit e411fad261fd82eb93c328c44978699e946abc0d
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:42 2022 -0600
+    changes to first file
+commit 63d6ad16beb4e2d12574fb238c29e8ba11fc6732
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:41 2022 -0600
+    adding first file

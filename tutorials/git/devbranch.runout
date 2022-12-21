@@ -1,0 +1,65 @@
+==== Branching
+%%
+%% 1. We have a file, committed and all
+%%
+Cmd >> cat firstfile
+Out >>
+foo
+Cmd >> git status
+Out >>
+On branch main
+nothing to commit, working tree clean
+%%
+%% 2. Make a development branch
+%%
+Cmd >> git branch dev && git branch -a
+Out >>
+  dev
+* main
+Cmd >> git checkout dev && git branch -a
+Out >>
+Switched to branch 'dev'
+* dev
+  main
+%%
+%% 3. Make changes and commit them to the dev branch
+%%
+Cmd >> cat firstfile
+Out >>
+foo
+Cmd >> echo bar > firstfile && cat firstfile
+Out >>
+bar
+Cmd >> git status
+Out >>
+On branch dev
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   firstfile
+no changes added to commit (use "git add" and/or "git commit -a")
+Cmd >> git add firstfile && git commit -m "dev changes" 
+Out >>
+[dev b07cd2e] dev changes
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+%%
+%% 4. The other branch is still unchanged
+%%
+Cmd >> git checkout main && cat firstfile && git status
+Out >>
+Switched to branch 'main'
+foo
+On branch main
+nothing to commit, working tree clean
+%%
+%% 5. We can check differences between branches
+%%
+Cmd >> git diff main dev
+Out >>
+diff --git a/firstfile b/firstfile
+index 257cc56..5716ca5 100644
+--- a/firstfile
++++ b/firstfile
+@@ -1 +1 @@
+-foo
++bar

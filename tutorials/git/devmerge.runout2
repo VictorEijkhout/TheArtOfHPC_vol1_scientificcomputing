@@ -1,0 +1,3 @@
+Cmd >> git branch dev && git checkout dev
+Out >>
+Switched to branch 'dev'

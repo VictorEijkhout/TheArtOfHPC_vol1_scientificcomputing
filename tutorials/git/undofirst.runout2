@@ -1,0 +1,11 @@
+Cmd >> git checkout firstfile
+Out >>
+Updated 1 path from the index
+Cmd >> cat firstfile
+Out >>
+foo
+bar
+Cmd >> git status
+Out >>
+On branch main
+nothing to commit, working tree clean

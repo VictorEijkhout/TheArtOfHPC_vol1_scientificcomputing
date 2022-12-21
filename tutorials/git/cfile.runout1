@@ -1,0 +1,14 @@
+Cmd >> git add cfile.c
+Cmd >> clang -c cfile.c
+Cmd >> clang -o cprog cfile.o
+Cmd >> git status
+Out >>
+On branch master
+No commits yet
+Changes to be committed:
+(use "git rm --cached <file>..." to unstage)
+new file:   cfile.c
+Untracked files:
+(use "git add <file>..." to include in what will be committed)
+cfile.o
+cprog

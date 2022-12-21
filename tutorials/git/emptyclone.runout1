@@ -1,0 +1,15 @@
+Cmd >> git clone https://github.com/TACC/empty.git empty
+Out >>
+Cloning into 'empty'...
+warning: You appear to have cloned an empty repository.
+Cmd >> cd empty
+Cmd >> ls -a
+Out >>
+.
+..
+.git
+Cmd >> git status
+Out >>
+On branch main
+No commits yet
+nothing to commit (create/copy files and use "git add" to track)

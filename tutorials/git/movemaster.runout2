@@ -1,0 +1,6 @@
+Cmd >> git branch -m main
+Cmd >> git status
+Out >>
+On branch main
+No commits yet
+nothing to commit (create/copy files and use "git add" to track)

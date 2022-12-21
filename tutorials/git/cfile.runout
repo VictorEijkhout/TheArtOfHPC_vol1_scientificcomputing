@@ -1,0 +1,48 @@
+==== Dealing with source / object files
+Cmd >> echo "int main(){}" > cfile.c
+%%
+%% 1. Add a source file to the repo
+%%
+Cmd >> git add cfile.c
+Cmd >> clang -c cfile.c
+Cmd >> clang -o cprog cfile.o
+Cmd >> git status
+Out >>
+On branch master
+No commits yet
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+	new file:   cfile.c
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	cfile.o
+	cprog
+%%
+%% 2. Keep object files out of the repo
+%%
+Cmd >> echo "*.o" >> .gitignore
+Cmd >> echo cprog >> .gitignore
+Cmd >> git status
+Out >>
+On branch master
+No commits yet
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+	new file:   cfile.c
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.gitignore
+Cmd >> git status --ignored
+Out >>
+On branch master
+No commits yet
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+	new file:   cfile.c
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.gitignore
+Ignored files:
+  (use "git add -f <file>..." to include in what will be committed)
+	cfile.o
+	cprog

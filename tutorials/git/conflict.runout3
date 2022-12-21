@@ -1,0 +1,8 @@
+Cmd >> ( cd person2 && sed -i -e '2s/2/two/' fourlines && cat fourlines  && git add fourlines && git commit -m "edit line two" )
+Out >>
+1
+two
+3
+4
+[main c9b6ded] edit line two
+1 file changed, 1 insertion(+), 1 deletion(-)

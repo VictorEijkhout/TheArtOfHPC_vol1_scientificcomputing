@@ -1,0 +1,7 @@
+Cmd >> ( cd person2 && git pull --no-edit || echo )
+Out >>
+From github.com:TACC/tinker
+4955e50..a10216d  main       -> origin/main
+Auto-merging fourlines
+CONFLICT (content): Merge conflict in fourlines
+Automatic merge failed; fix conflicts and then commit the result.

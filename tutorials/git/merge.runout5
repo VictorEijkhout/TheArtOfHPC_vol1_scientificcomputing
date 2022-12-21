@@ -1,0 +1,12 @@
+Cmd >> ( cd person2 && git add fourlines && git commit -m "edit line four" && git pull --no-edit && git push )
+Out >>
+[main 27fb2b2] edit line four
+1 file changed, 1 insertion(+), 1 deletion(-)
+From github.com:TACC/tinker
+fdd70b7..6767e3f  main       -> origin/main
+Auto-merging fourlines
+Merge made by the 'recursive' strategy.
+fourlines | 2 +-
+1 file changed, 1 insertion(+), 1 deletion(-)
+To github.com:TACC/tinker.git
+6767e3f..62bd424  main -> main

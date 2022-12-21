@@ -1,0 +1,13 @@
+%.pdf : %.tex ${INCLUDES}
+        -if [ -z "${INCLUDES}" ] ; then  \
+          export includes=`grep "^.input " $< | awk '{print $$2".tex"}'` ; \
+          ${MAKE} $@ INCLUDES="$$includes" ; \
+        else \
+          pdflatex $< ; \
+          bibtex ${basename $@} ; \
+          makeindex ${basename $@} ; \
+          while [ `cat ${basename $@}.log | grep "Rerun to get cross-references right." | wc -l` -gt 0 ] ; do \
+            pdflatex $< ; \
+          done ; \
+        fi
+

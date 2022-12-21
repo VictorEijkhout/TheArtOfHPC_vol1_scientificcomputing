@@ -1,0 +1,66 @@
+==== Conflict between changes ====
+%%
+%% 1. We have a four line file
+%%
+Cmd >> cat person1/fourlines
+Out >>
+1
+2
+3
+4
+%%
+%% 2. Person 1 makes a change
+%%
+Cmd >> ( cd person1 && sed -i -e '1s/1/one/' fourlines && git add fourlines && git commit -m "edit line one" && git push ) 
+Out >>
+[main a10216d] edit line one
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+To github.com:TACC/tinker.git
+   4955e50..a10216d  main -> main
+%%
+%% 3. Person 2 makes a different change to the same file
+%%
+Cmd >> ( cd person2 && sed -i -e '2s/2/two/' fourlines && cat fourlines  && git add fourlines && git commit -m "edit line two" ) 
+Out >>
+1
+two
+3
+4
+[main c9b6ded] edit line two
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+%%
+%% 4. This change conflicts, we get an error
+%%
+Cmd >> ( cd person2 && git pull --no-edit || echo ) 
+Out >>
+From github.com:TACC/tinker
+   4955e50..a10216d  main       -> origin/main
+hint: Pulling without specifying how to reconcile divergent branches is
+hint: discouraged. You can squelch this message by running one of the following
+hint: commands sometime before your next pull:
+hint: 
+hint:   git config pull.rebase false  # merge (the default strategy)
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only
+hint: 
+hint: You can replace "git config" with "git config --global" to set a default
+hint: preference for all repositories. You can also pass --rebase, --no-rebase,
+hint: or --ff-only on the command line to override the configured default per
+hint: invocation.
+Auto-merging fourlines
+CONFLICT (content): Merge conflict in fourlines
+Automatic merge failed; fix conflicts and then commit the result.
+%%
+%% 5. The file now has both versions, and you can edit it
+%%
+Cmd >> ( cd person2 && cat fourlines )
+Out >>
+<<<<<<< HEAD
+1
+two
+=======
+one
+2
+>>>>>>> a10216da358649df80aaaeb94f1ceef909c2ed83
+3
+4

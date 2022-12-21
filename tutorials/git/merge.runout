@@ -1,0 +1,79 @@
+==== Non-conflicting changes ====
+%%
+%% 1. We have a four line file
+%%
+Cmd >> cat person1/fourlines
+Out >>
+1
+2
+3
+4
+%%
+%% 2. Person 1 makes a change
+%%
+Cmd >> ( cd person1 && sed -i -e '1s/1/one/' fourlines && cat fourlines ) 
+Out >>
+one
+2
+3
+4
+%%
+%% 3. Person 1 pushes the change
+%%
+Cmd >> ( cd person1 && git add fourlines && git commit -m "edit line one" && git push ) 
+Out >>
+[main 6767e3f] edit line one
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+To github.com:TACC/tinker.git
+   fdd70b7..6767e3f  main -> main
+%%
+%% 4. Person 2 makes a different change to the same file
+%%
+Cmd >> ( cd person2 && sed -i -e '4s/4/four/' fourlines && cat fourlines ) 
+Out >>
+1
+2
+3
+four
+%%
+%% 5. This change does not conflict, we can pull/push
+%%
+Cmd >> ( cd person2 && git add fourlines && git commit -m "edit line four" && git pull --no-edit && git push ) 
+Out >>
+[main 27fb2b2] edit line four
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+From github.com:TACC/tinker
+   fdd70b7..6767e3f  main       -> origin/main
+hint: Pulling without specifying how to reconcile divergent branches is
+hint: discouraged. You can squelch this message by running one of the following
+hint: commands sometime before your next pull:
+hint: 
+hint:   git config pull.rebase false  # merge (the default strategy)
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only
+hint: 
+hint: You can replace "git config" with "git config --global" to set a default
+hint: preference for all repositories. You can also pass --rebase, --no-rebase,
+hint: or --ff-only on the command line to override the configured default per
+hint: invocation.
+Auto-merging fourlines
+Merge made by the 'recursive' strategy.
+ fourlines | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+To github.com:TACC/tinker.git
+   6767e3f..62bd424  main -> main
+%%
+%% 6. Person 1 pulls to get all the changes
+%%
+Cmd >> ( cd person1 && git pull && cat fourlines )
+Out >>
+From github.com:TACC/tinker
+   6767e3f..62bd424  main       -> origin/main
+Updating 6767e3f..62bd424
+Fast-forward
+ fourlines | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+one
+2
+3
+four

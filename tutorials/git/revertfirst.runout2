@@ -1,0 +1,5 @@
+Cmd >> git revert $commit --no-edit
+Out >>
+[main 3dca724] Revert "changes to first file"
+Date: Sat Jan 29 14:14:42 2022 -0600
+1 file changed, 1 deletion(-)

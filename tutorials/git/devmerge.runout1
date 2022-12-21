@@ -1,0 +1,10 @@
+Cmd >> cat fourlines
+Out >>
+1
+2
+3
+4
+Cmd >> git status
+Out >>
+On branch main
+nothing to commit, working tree clean

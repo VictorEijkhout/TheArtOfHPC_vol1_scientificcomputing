@@ -1,0 +1,9 @@
+Cmd >> git add firstfile
+Cmd >> git commit -m "changes to first file"
+Out >>
+[main b1edf77] changes to first file
+1 file changed, 1 insertion(+)
+Cmd >> git status
+Out >>
+On branch main
+nothing to commit, working tree clean

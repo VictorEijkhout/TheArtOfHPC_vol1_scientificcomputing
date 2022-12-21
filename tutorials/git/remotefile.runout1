@@ -1,0 +1,5 @@
+Cmd >> git add newfile && git commit -m "adding first file"
+Out >>
+[main 8ce1de4] adding first file
+1 file changed, 1 insertion(+)
+create mode 100644 newfile

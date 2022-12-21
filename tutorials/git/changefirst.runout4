@@ -1,0 +1,10 @@
+Cmd >> git log
+Out >>
+commit b1edf778c17b7c7e6cb1a8ac73fa9b61464eba14
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:40 2022 -0600
+changes to first file
+commit f968ac6c05dd877db84705a4dcdadbc0bed2c535
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:39 2022 -0600
+adding first file

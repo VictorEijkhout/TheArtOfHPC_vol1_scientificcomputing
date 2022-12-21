@@ -1,0 +1,23 @@
+Cmd >> git log
+Out >>
+commit e411fad261fd82eb93c328c44978699e946abc0d
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:42 2022 -0600
+changes to first file
+commit 63d6ad16beb4e2d12574fb238c29e8ba11fc6732
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:41 2022 -0600
+adding first file
+Cmd >> git show HEAD
+Out >>
+commit e411fad261fd82eb93c328c44978699e946abc0d
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:42 2022 -0600
+changes to first file
+diff --git a/firstfile b/firstfile
+index 257cc56..3bd1f0e 100644
+--- a/firstfile
++++ b/firstfile
+@@ -1 +1,2 @@
+foo
++bar

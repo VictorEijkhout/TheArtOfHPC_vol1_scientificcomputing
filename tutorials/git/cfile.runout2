@@ -1,0 +1,26 @@
+Cmd >> echo "*.o" >> .gitignore
+Cmd >> echo cprog >> .gitignore
+Cmd >> git status
+Out >>
+On branch master
+No commits yet
+Changes to be committed:
+(use "git rm --cached <file>..." to unstage)
+new file:   cfile.c
+Untracked files:
+(use "git add <file>..." to include in what will be committed)
+.gitignore
+Cmd >> git status --ignored
+Out >>
+On branch master
+No commits yet
+Changes to be committed:
+(use "git rm --cached <file>..." to unstage)
+new file:   cfile.c
+Untracked files:
+(use "git add <file>..." to include in what will be committed)
+.gitignore
+Ignored files:
+(use "git add -f <file>..." to include in what will be committed)
+cfile.o
+cprog

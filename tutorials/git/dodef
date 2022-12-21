@@ -1,0 +1,23 @@
+# -*- sh -*-
+home=`pwd`
+function do_cmd() \
+	 { \
+	   cmd="$1" \
+	       && echo "Cmd >> $cmd" \
+	       && eval $cmd >$home/cmd.out 2>&1 \
+	       && if [ $( cat $home/cmd.out | wc -l ) -gt 0 ] ; then \
+	               echo "Out >>" && cat $home/cmd.out \
+	           ; fi \
+	   ; }
+function do_quiet() \
+	 { \
+	   cmd="$1" && eval $cmd \
+	   ; }
+function note() \
+	 { \
+	   str="$1" \
+	       && echo \
+	       && echo "%%" \
+	       && echo "%% $str" \
+	       && echo "%%" \
+	   ; }

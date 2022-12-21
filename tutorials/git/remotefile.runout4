@@ -1,0 +1,6 @@
+Cmd >> echo bar >> newfile && git add -u :. && git commit -m more && git push
+Out >>
+[main 4f4706d] more
+1 file changed, 1 insertion(+)
+To github.com:TACC/tinker.git
+8ce1de4..4f4706d  main -> main

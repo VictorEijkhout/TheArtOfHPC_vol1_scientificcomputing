@@ -1,0 +1,7 @@
+Cmd >> ( cd person1 && echo 123 >> p1 && git add p1 && git commit -m "add p1" && git push )
+Out >>
+[main 6f6b126] add p1
+1 file changed, 1 insertion(+)
+create mode 100644 p1
+To github.com:TACC/tinker.git
+8863559..6f6b126  main -> main

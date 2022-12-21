@@ -1,0 +1,5 @@
+Cmd >> git remote add mainserver git@github.com:TACC/tinker.git
+Cmd >> git remote -v
+Out >>
+mainserver	git@github.com:TACC/tinker.git (fetch)
+mainserver	git@github.com:TACC/tinker.git (push)

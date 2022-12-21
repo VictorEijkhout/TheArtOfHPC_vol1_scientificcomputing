@@ -1,0 +1,16 @@
+Cmd >> git log
+Out >>
+commit 3dca724a1902e8a5e3dba007c325542c6753a424
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:42 2022 -0600
+Revert "changes to first file"
+
+This reverts commit e411fad261fd82eb93c328c44978699e946abc0d.
+commit e411fad261fd82eb93c328c44978699e946abc0d
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:42 2022 -0600
+changes to first file
+commit 63d6ad16beb4e2d12574fb238c29e8ba11fc6732
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:14:41 2022 -0600
+adding first file

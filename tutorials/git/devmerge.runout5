@@ -1,0 +1,15 @@
+Cmd >> git checkout main
+Out >>
+Switched to branch 'main'
+Cmd >> git merge dev
+Out >>
+Auto-merging fourlines
+Merge made by the 'recursive' strategy.
+fourlines | 2 +-
+1 file changed, 1 insertion(+), 1 deletion(-)
+Cmd >> cat fourlines
+Out >>
+one
+2
+3
+four

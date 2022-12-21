@@ -1,0 +1,6 @@
+Cmd >> git checkout main && cat firstfile && git status
+Out >>
+Switched to branch 'main'
+foo
+On branch main
+nothing to commit, working tree clean

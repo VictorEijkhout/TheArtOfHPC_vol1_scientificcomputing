@@ -1,0 +1,101 @@
+==== Branch merging
+%%
+%% 1. We have a file, committed and all
+%%
+Cmd >> cat fourlines
+Out >>
+1
+2
+3
+4
+Cmd >> git status
+Out >>
+On branch main
+nothing to commit, working tree clean
+%%
+%% 2. Make a development branch
+%%
+Cmd >> git branch dev && git checkout dev
+Out >>
+Switched to branch 'dev'
+%%
+%% 3. Make a change in the main branch
+%%
+Cmd >> git checkout main
+Out >>
+Switched to branch 'main'
+Cmd >> sed -i -e '1s/1/one/' fourlines && cat fourlines 
+Out >>
+one
+2
+3
+4
+Cmd >> git add fourlines && git commit -m "edit line 1" 
+Out >>
+[main c51d4ff] edit line 1
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+%%
+%% 4. A different change elsewhere in the file
+%%
+Cmd >> git checkout dev
+Out >>
+Switched to branch 'dev'
+Cmd >> sed -i -e '4s/4/four/' fourlines && cat fourlines 
+Out >>
+1
+2
+3
+four
+Cmd >> git add fourlines && git commit -m "edit line 4" 
+Out >>
+[dev dbb0c03] edit line 4
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+%%
+%% 5. Merge the dev branch into the main one
+%%
+Cmd >> git checkout main
+Out >>
+Switched to branch 'main'
+Cmd >> git merge dev
+Out >>
+Auto-merging fourlines
+Merge made by the 'recursive' strategy.
+ fourlines | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Cmd >> cat fourlines
+Out >>
+one
+2
+3
+four
+%%
+%% 6. Check the current state
+%%
+Cmd >> git status && git log
+Out >>
+On branch main
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	fourlines-e
+nothing added to commit but untracked files present (use "git add" to track)
+commit d1839f3c1cb9d205b842472a4beb0847a41ea46b
+Merge: c51d4ff dbb0c03
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:15:53 2022 -0600
+    Merge branch 'dev'
+commit c51d4ff0472b1594ad9498237865ff6f0b3bd54f
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:15:53 2022 -0600
+    edit line 1
+commit dbb0c03f2c872e13ab943f44035e85b843575b71
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:15:53 2022 -0600
+    edit line 4
+commit bd9425f8a1fc732fa38a59978dc6377762023805
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:15:53 2022 -0600
+    long file
+commit ec248b11e66f66ff5b90d7413be3682916395e03
+Author: Victor Eijkhout <eijkhout@tacc.utexas.edu>
+Date:   Sat Jan 29 14:15:53 2022 -0600
+    adding first file
