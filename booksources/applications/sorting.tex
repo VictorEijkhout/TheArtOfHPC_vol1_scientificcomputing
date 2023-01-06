@@ -16,12 +16,11 @@
 
 \index{Bubblesort|see{sorting, bubblesort}}
 \index{Quicksort|see{sorting, quicksort}}
-\index{Bitonic sort|see{soring, bitonic sort}}
+\index{Bitonic sort|see{sorting, bitonic sort}}
 \index{Radix sort|see{sorting, radix sort}}
 \index{Samplesort|see{sorting, samplesort}}
 
 \label{sec:sorting}
-\index{sorting|(}
 
 Sorting is not a common operation in scientific computing: one expects
 it to be more important in databases, whether these be financial or
@@ -304,7 +303,7 @@ total algorithm runs in $O((\log n)^2)$ time.
 %
 The
 \indextermsub{sequential complexity of}{quicksort}%
-\index{complexity!sequential!of quicksort}
+\index{quicksort!sequential complexity of}
 is~$(\log_2N)^2$.
 
 
@@ -582,7 +581,7 @@ We see that, modulo terminology changes, this is really samplesort.
 
 \Level 0 {Bitonic sort}
 \label{app:bitonicsort}
-\index{bitonic sort|(textbf}
+\index{sorting!bitonic|(textbf}
 
 To motivate bitonic sorting,
 suppose a sequence $x=\langle x_0,\ldots,x_n-1\rangle$
@@ -648,14 +647,13 @@ From this description you see that you $\log_2N$ stages to sort $N$
 elements, where the $i$-th stage is of length~$\log_2i$. This makes
 the total
 \indextermsub{sequential complexity of}{bitonic sort}%
-\index{complexity!sequential!of bitonic sort}~$(\log_2N)^2$.
+\index{sorting!bitonic!sequential complexity of}~$(\log_2N)^2$.
 
 The sequence of operations in figure~\ref{fig:full-bitonic}
 is called a \indextermbus{sorting}{network}, built up out of simple 
 \indexterm{compare-and-swap} elements. There is no dependence 
 on the value of the data elements, as is the case with quicksort.
 
-\index{bitonic sort|)}
+\index{sorting!bitonic|)}
 
-\index{sorting|)}
 

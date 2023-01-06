@@ -11,7 +11,11 @@
 
 info ::
 	@echo "================ OMP running"
-	@echo "make run_xxx in: ${RUNS}"
+	@sortedruns=$$( \
+	        for w in ${RUNS} ; do echo $$w ; done \
+	        | sort | awk '{v = v" "$$0} END {print v}' \
+	    ) \
+	 && echo "make run_xxx in: $${sortedruns}"
 
 ifeq "${TACC_SYSTEM}" "frontera"
   OMPTHREADS = 1 2 4 8 12 26 38 56 
