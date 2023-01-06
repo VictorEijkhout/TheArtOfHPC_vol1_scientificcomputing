@@ -18,7 +18,8 @@ info ::
 	@echo "    available: ${LECTURES}"
 	@echo "make lectures : format all"
 LECTURE = arithmetic
-LECTURES = arithmetic course graph intro iterative linear parallel programming scaling unix
+LECTURES = arithmetic cmake course debug git graph intro iterative linear \
+    nbody parallel programming scaling unix
 .PHONY: lecture lectures onepass pdf
 lecture :
 	make onepass FILE=hpc_${LECTURE}

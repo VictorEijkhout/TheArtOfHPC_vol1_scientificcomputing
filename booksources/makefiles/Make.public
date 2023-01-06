@@ -25,8 +25,15 @@ public :
 	     && for e in ${PUBLICEXTS} ; do \
 	          echo " .. copy *.$$e" \
 	           && for f in *.$$e ; do \
-	                cp $$f ${DESTDIR}/ \
+	                cp "$$f" ${DESTDIR}/ \
 	              ; done \
 	           && ( cd ${DESTDIR} && git add *.$$e 2>/dev/null ) \
                 ; done \
 	 ; fi
+	@if [ ! -z "${PUBLICDIRS}" ] ; then \
+	    echo " .. public dirs to ${DESTDIR} : ${PUBLICDIRS}" \
+	     && for d in ${PUBLICDIRS} ; do \
+	          cp -r "$$d" ${DESTDIR}/ \
+	        ; done \
+	 ; fi
+

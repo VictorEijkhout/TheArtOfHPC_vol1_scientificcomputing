@@ -21,7 +21,7 @@ info ::
 localclean basic_clean ::
 	@/bin/rm -f \
 	  *~ \#* \
-	  *.{aux,blg,idx,ilg,log,mtc,maf,nav,out,snm,svn,toc,vrb} \
+	  *.{aux,auxlock,blg,idx,ilg,log,mtc,maf,nav,out,snm,svn,toc,vrb} \
 	  *.{gch,o} *.mtc[0-9]* *.pyc \
 	  *.cut
 	@/bin/rm -rf *.dSYM __pycache__
