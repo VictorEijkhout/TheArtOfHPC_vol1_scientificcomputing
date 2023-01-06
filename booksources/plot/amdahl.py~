@@ -1,0 +1,7 @@
+import matplotlib.pyplot as plt
+
+alpha = .1
+beta = .9
+def parallel_time(p):
+    return alpha+beta/p
+
