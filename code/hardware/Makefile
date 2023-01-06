@@ -45,7 +45,6 @@ RUNS =
 include ../../makefiles/Make.omp_run
 
 RUNS += run_cachesize
-.PHONY: run_cachesize run_cachesizes cachesizes_postprocess
 run_cachesize : cachesize
 	@./cachesize
 run_cachesizes : cachesize
@@ -61,7 +60,6 @@ cachesizes_postprocess :
 	 && git add caches.tkz
 
 RUNS += run_stride run_strides
-.PHONY: run_stride run_strides
 info ::
 	@echo "special case:"
 	@echo "    make run_stride run_strides"
@@ -77,7 +75,6 @@ run_strides : strides
 	@git add strides.tkz
 
 RUNS += run_unroll
-.PHONY: run_unroll
 run_unroll : 
 	@if [ "${TACC_FAMILY_COMPILER}" = "intel" ] ; then \
 	    for model in fast precise ; do \
@@ -91,7 +88,6 @@ run_unroll :
 	; fi
 
 RUNS += run_associativity
-.PHONY: run_associativity
 run_associativity : associativity
 	@cmdline="./associativity ${RUN_OPTS}" \
 	 && if [ ${ECHO} -gt 0 ] ; then \
@@ -100,14 +96,12 @@ run_associativity : associativity
 	 && $$cmdline
 
 RUNS += run_bandwidth
-.PHONY: run_bandwidth
 run_bandwidth : bandwidth
 	@cmdline="OMP_PROC_BIND=true ./bandwidth -t `make --no-print-directory num_cores` -s 8 -k 64" \
 	 && echo $$cmdline \
 	 && eval $$cmdline
 
 RUNS += run_denormal run_denormalflush
-.PHONY: run_denormal run_denormalflush
 run_denormal : 
 	make --no-print-directory denormal \
 	        EXTRA_OPTIONS="${EXTRA_OPTIONS} -no-ftz" \
@@ -120,7 +114,6 @@ run_denormalflush :
 	@./denormal
 
 RUNS += run_falsesharing
-.PHONY: run_falsesharing
 run_falsesharing : falsesharing-omp
 	@make --no-print-directory omp_run PROGRAM=falsesharing-omp \
 	    ECHO=${ECHO}
@@ -135,6 +128,8 @@ RUNS += run_saturation
 .PHONY: run_saturation
 run_saturation : saturation
 	@./saturation
+
+.PHONY: ${RUNS}
 
 clean :
 	@rm -rf ${PROGRAMS} *.o *~ *.dSYM *.gch *.optrpt

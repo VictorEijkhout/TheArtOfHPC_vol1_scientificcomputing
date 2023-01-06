@@ -1,0 +1,16 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                Processing 16384 words
+                using memory model: fast
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Unroll  1.. ran for      518 usec (efficiency: 100% )
+Unroll  2.. ran for      451 usec (efficiency: 114% )
+Unroll  4.. ran for      258 usec (efficiency: 200% )
+unroll factor 8 not implemented
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                Processing 16384 words
+                using memory model: precise
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Unroll  1.. ran for     1782 usec (efficiency: 100% )
+Unroll  2.. ran for      444 usec (efficiency: 401% )
+Unroll  4.. ran for      256 usec (efficiency: 696% )
+unroll factor 8 not implemented

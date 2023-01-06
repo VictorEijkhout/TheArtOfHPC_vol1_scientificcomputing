@@ -1,0 +1,10 @@
+executing: OMP_NUM_THREADS=24 OMP_PROC_BIND=close OMP_PLACES=cores  ./falsesharing-omp 
+Running with 24 threads; each doing stream length=9000
+Spacing 16.. ran for  0.01017 usec, equivalent serial time:  1.018e+04 usec (efficiency:   100% ); operation count: 1.08e+07
+Spacing 12.. ran for  0.01016 usec, equivalent serial time:  1.016e+04 usec (efficiency: 100.1% ); operation count: 1.08e+07
+Spacing  8.. ran for  0.01016 usec, equivalent serial time:  1.016e+04 usec (efficiency: 100.1% ); operation count: 1.08e+07
+Spacing  4.. ran for   0.1301 usec, equivalent serial time:  1.301e+05 usec (efficiency:   7.8% ); operation count: 1.08e+07
+Spacing  3.. ran for   0.1447 usec, equivalent serial time:  1.447e+05 usec (efficiency:     7% ); operation count: 1.08e+07
+Spacing  2.. ran for   0.1803 usec, equivalent serial time:  1.803e+05 usec (efficiency:   5.6% ); operation count: 1.08e+07
+Spacing  1.. ran for   0.2879 usec, equivalent serial time:  2.879e+05 usec (efficiency:   3.5% ); operation count: 1.08e+07
+Spacing  0.. ran for   0.3587 usec, equivalent serial time:  3.587e+05 usec (efficiency:   2.8% ); operation count: 1.08e+07

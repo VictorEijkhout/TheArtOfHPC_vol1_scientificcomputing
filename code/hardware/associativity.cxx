@@ -27,7 +27,7 @@ using std::stringstream;
 
 #include <stdint.h>
 
-int compute_elements_to_write(int associativity,uint64_t cachesize_in_words) {
+int compute_elements_to_write(int associativity,size_t cachesize_in_words) {
   int shifts{1};
   while ( (associativity>>shifts) > 0 )
     shifts++;
@@ -52,130 +52,139 @@ template <int ASSOC>
 void cache_writing(Cache<double> &cache,int how_many_repeats,int n_elements_to_write) {
   double s{1.};
   for (int irepeat=0; irepeat<how_many_repeats; irepeat++) {
-    int loc{0};
+    size_t loc{0};
     if constexpr (ASSOC==1) {
 	for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	  auto next_loc = cache[loc];
+	  auto next_loc = static_cast<size_t>( cache[loc] );
 	  cache[loc] += 1.1; 
 	  loc = next_loc;
 	}
       } else if (ASSOC==2) {
       for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	auto next_loc = cache[loc];
+	auto next_loc = static_cast<size_t>( cache[loc] );
 	cache[loc] += s * (
-			      + cache[loc+1*n_elements_to_write]
-			      ) ;
+			   + cache[loc+1*n_elements_to_write]
+			   )
+	  / static_cast<double>( n_elements_to_write );
 	loc = next_loc;
       }
     } else if (ASSOC==3) {
       for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	auto next_loc = cache[loc];
+	auto next_loc = static_cast<size_t>( cache[loc] );
 	cache[loc] += s * ( 
-			      + cache[loc+1*n_elements_to_write]
-			      + cache[loc+2*n_elements_to_write]
-			       ) ;
+			   + cache[loc+1*n_elements_to_write]
+			   + cache[loc+2*n_elements_to_write]
+			    )
+	  / static_cast<double>( n_elements_to_write );
 	loc = next_loc;
       }
     } else if (ASSOC==4) {
       for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	auto next_loc = cache[loc];
+	auto next_loc = static_cast<size_t>( cache[loc] );
 	cache[loc] += s * ( 
-			      + cache[loc+1*n_elements_to_write]
-			      + cache[loc+2*n_elements_to_write]
-			      + cache[loc+3*n_elements_to_write]
-			       ) ;
+			   + cache[loc+1*n_elements_to_write]
+			   + cache[loc+2*n_elements_to_write]
+			   + cache[loc+3*n_elements_to_write]
+			    )
+	  / static_cast<double>( n_elements_to_write );
 	loc = next_loc;
       }
     } else if (ASSOC==5) {
       for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	auto next_loc = cache[loc];
+	auto next_loc = static_cast<size_t>( cache[loc] );
 	cache[loc] += s * ( 
-			      + cache[loc+1*n_elements_to_write]
-			      + cache[loc+2*n_elements_to_write]
-			      + cache[loc+3*n_elements_to_write]
-			      + cache[loc+4*n_elements_to_write]
-			       ) ;
+			   + cache[loc+1*n_elements_to_write]
+			   + cache[loc+2*n_elements_to_write]
+			   + cache[loc+3*n_elements_to_write]
+			   + cache[loc+4*n_elements_to_write]
+			    )
+	  / static_cast<double>( n_elements_to_write );
 	loc = next_loc;
       }
     } else if (ASSOC==6) {
       for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	auto next_loc = cache[loc];
+	auto next_loc = static_cast<size_t>( cache[loc] );
 	cache[loc] += s * ( 
-			      + cache[loc+1*n_elements_to_write]
-			      + cache[loc+2*n_elements_to_write]
-			      + cache[loc+3*n_elements_to_write]
-			      + cache[loc+4*n_elements_to_write]
-			      + cache[loc+5*n_elements_to_write]
-			       ) ;
+			   + cache[loc+1*n_elements_to_write]
+			   + cache[loc+2*n_elements_to_write]
+			   + cache[loc+3*n_elements_to_write]
+			   + cache[loc+4*n_elements_to_write]
+			   + cache[loc+5*n_elements_to_write]
+			    )
+	  / static_cast<double>( n_elements_to_write );
 	loc = next_loc;
       }
     } else if (ASSOC==7) {
       for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	auto next_loc = cache[loc];
+	auto next_loc = static_cast<size_t>( cache[loc] );
 	cache[loc] += s * ( 
-			      + cache[loc+1*n_elements_to_write]
-			      + cache[loc+2*n_elements_to_write]
-			      + cache[loc+3*n_elements_to_write]
-			      + cache[loc+4*n_elements_to_write]
-			      + cache[loc+5*n_elements_to_write]
-			      + cache[loc+6*n_elements_to_write]
-			       ) ;
+			   + cache[loc+1*n_elements_to_write]
+			   + cache[loc+2*n_elements_to_write]
+			   + cache[loc+3*n_elements_to_write]
+			   + cache[loc+4*n_elements_to_write]
+			   + cache[loc+5*n_elements_to_write]
+			   + cache[loc+6*n_elements_to_write]
+			    )
+	  / static_cast<double>( n_elements_to_write );
 	loc = next_loc;
       }
     } else if (ASSOC==8) {
       for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	auto next_loc = cache[loc];
+	auto next_loc = static_cast<size_t>( cache[loc] );
 	cache[loc] += s * ( 
-			      + cache[loc+1*n_elements_to_write]
-			      + cache[loc+2*n_elements_to_write]
-			      + cache[loc+3*n_elements_to_write]
-			      + cache[loc+4*n_elements_to_write]
-			      + cache[loc+5*n_elements_to_write]
-			      + cache[loc+6*n_elements_to_write]
-			      + cache[loc+7*n_elements_to_write]
-			       ) ;
+			   + cache[loc+1*n_elements_to_write]
+			   + cache[loc+2*n_elements_to_write]
+			   + cache[loc+3*n_elements_to_write]
+			   + cache[loc+4*n_elements_to_write]
+			   + cache[loc+5*n_elements_to_write]
+			   + cache[loc+6*n_elements_to_write]
+			   + cache[loc+7*n_elements_to_write]
+			    )
+	  / static_cast<double>( n_elements_to_write );
 	loc = next_loc;
       }
     } else if (ASSOC==9) {
       for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	auto next_loc = cache[loc];
+	auto next_loc = static_cast<size_t>( cache[loc] );
 	cache[loc] += s * ( 
-			      + cache[loc+1*n_elements_to_write]
-			      + cache[loc+2*n_elements_to_write]
-			      + cache[loc+3*n_elements_to_write]
-			      + cache[loc+4*n_elements_to_write]
-			      + cache[loc+5*n_elements_to_write]
-			      + cache[loc+6*n_elements_to_write]
-			      + cache[loc+7*n_elements_to_write]
-			      + cache[loc+8*n_elements_to_write]
-			       ) ;
+			   + cache[loc+1*n_elements_to_write]
+			   + cache[loc+2*n_elements_to_write]
+			   + cache[loc+3*n_elements_to_write]
+			   + cache[loc+4*n_elements_to_write]
+			   + cache[loc+5*n_elements_to_write]
+			   + cache[loc+6*n_elements_to_write]
+			   + cache[loc+7*n_elements_to_write]
+			   + cache[loc+8*n_elements_to_write]
+			    )
+	  / static_cast<double>( n_elements_to_write );
 	loc = next_loc;
       }
     } else if (ASSOC==10) {
       for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ ) {
-	auto next_loc = cache[loc];
+	auto next_loc = static_cast<size_t>( cache[loc] );
 	cache[loc] += s * ( 
-			      + cache[loc+1*n_elements_to_write]
-			      + cache[loc+2*n_elements_to_write]
-			      + cache[loc+3*n_elements_to_write]
-			      + cache[loc+4*n_elements_to_write]
-			      + cache[loc+5*n_elements_to_write]
-			      + cache[loc+6*n_elements_to_write]
-			      + cache[loc+7*n_elements_to_write]
-			      + cache[loc+8*n_elements_to_write]
-			      + cache[loc+9*n_elements_to_write]
-			       ) ;
+			   + cache[loc+1*n_elements_to_write]
+			   + cache[loc+2*n_elements_to_write]
+			   + cache[loc+3*n_elements_to_write]
+			   + cache[loc+4*n_elements_to_write]
+			   + cache[loc+5*n_elements_to_write]
+			   + cache[loc+6*n_elements_to_write]
+			   + cache[loc+7*n_elements_to_write]
+			   + cache[loc+8*n_elements_to_write]
+			   + cache[loc+9*n_elements_to_write]
+			    )
+	  / static_cast<double>( n_elements_to_write );
 	loc = next_loc;
       }
-      for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ )
-	s += cache[iwrite];
-      s/ n_elements_to_write;
     }
+    for (int iwrite=0; iwrite<n_elements_to_write; iwrite++ )
+      s += cache[iwrite];
+    s /= static_cast<double>( n_elements_to_write );
   }
-}
+};
 
 template<int ASSOC>
-void cache_test( uint64_t write_size_in_words, int how_many_repeats,bool random_traversal,bool trace=false) {
+void cache_test( const size_t write_size_in_words, const int how_many_repeats, const bool random_traversal,bool trace=false) {
   Cache<double> cache(write_size_in_words * ASSOC,trace);
   //  auto cache = allocate_cache<double>(write_size_in_words * ASSOC);
   cache.make_linked_list(write_size_in_words,random_traversal,trace);
@@ -195,11 +204,11 @@ int main(int argc,char **argv) {
 
   cxxopts::Options options("associativity", "Explore cache associativity");
   options.add_options()
-    ("w,words", "write size per stream in words",   cxxopts::value<uint64_t>())
-    ("W,Words", "write size per stream in k words",   cxxopts::value<uint64_t>())
+    ("w,words", "write size per stream in words",   cxxopts::value<size_t>())
+    ("W,Words", "write size per stream in k words",   cxxopts::value<size_t>())
     ("a,assoc","associativity (0 for 1-8)",cxxopts::value<int>()->default_value("0"))
     ("r,random","random traversal",cxxopts::value<bool>()->default_value("false"))
-    ("t,trace","trace output",cxxopts::value<bool>()->default_value("true"))
+    ("t,trace","trace output",cxxopts::value<bool>()->default_value("false"))
     ("h,help","usage information")
     ;
   auto result = options.parse(argc, argv);
@@ -213,11 +222,11 @@ int main(int argc,char **argv) {
   /*
    * Create cache data
    */
-  uint64_t writesize_in_words;
+  size_t writesize_in_words;
   if (result.count("w")>0) 
-    writesize_in_words = result["w"].as<uint64_t>();
+    writesize_in_words = result["w"].as<size_t>();
   else if (result.count("W")>0) 
-    writesize_in_words = result["W"].as<uint64_t>() << 10;
+    writesize_in_words = result["W"].as<size_t>() << 10;
   else {
     cout << "Need w or W option\n"; throw;
   }

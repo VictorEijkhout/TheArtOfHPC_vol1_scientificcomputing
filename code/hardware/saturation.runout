@@ -1,0 +1,7 @@
+clang++ -g -O2 -std=c++17 -fopenmp   -I/Users/eijkhout/Installation/cxxopts/installation/include  \
+	    -c saturation.cxx
+saturation.cxx:42:17: error: use of undeclared identifier 'allocate_cache'
+  auto memory = allocate_cache(memorysize_in_words);
+                ^
+1 error generated.
+make[1]: *** [saturation.o] Error 1

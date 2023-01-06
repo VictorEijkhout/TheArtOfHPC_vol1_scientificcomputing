@@ -1,0 +1,21 @@
+OMP_PROC_BIND=true ./bandwidth -t 56 -s 8 -k 64
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                Processing 8192 words
+                over up to 56 threads
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Overhead for 1 threads:       66 usec
+Threads  1.. ran for   136965 usec (efficiency: 100% )
+Overhead for 8 threads:      187 usec
+Threads  8.. ran for   137492 usec (efficiency: 99% )
+Overhead for 16 threads:      260 usec
+Threads 16.. ran for   137642 usec (efficiency: 99% )
+Overhead for 24 threads:      406 usec
+Threads 24.. ran for   137930 usec (efficiency: 99% )
+Overhead for 32 threads:      559 usec
+Threads 32.. ran for   138183 usec (efficiency: 99% )
+Overhead for 40 threads:      793 usec
+Threads 40.. ran for   138405 usec (efficiency: 98% )
+Overhead for 48 threads:     1090 usec
+Threads 48.. ran for   143611 usec (efficiency: 95% )
+Overhead for 56 threads:     1191 usec
+Threads 56.. ran for   149732 usec (efficiency: 91% )

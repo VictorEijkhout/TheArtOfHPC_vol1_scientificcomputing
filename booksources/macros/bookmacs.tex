@@ -118,11 +118,10 @@
 %% #3 full path
 %%
 \newcommand\ListNamedSource[3][bash]{
-  \message{Using language #1}
-  \begingroup \footnotesize
-  \immediate \write 18 { ./stripsource #3 }
+  %% \message{Using language #1}
+  \begingroup \par \texttt{#2}
   \lstset{language=#1}
-  \srclisting{#2}{input.cut}
+  \ListStrippedSource{#3}
   \endgroup
 }
 

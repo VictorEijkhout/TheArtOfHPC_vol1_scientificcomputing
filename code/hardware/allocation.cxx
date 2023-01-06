@@ -25,6 +25,7 @@ using std::vector;
 #include <numeric>
 #include <random>
 #include <algorithm>
+#include <cassert>
 
 #include "allocation.hpp"
 
@@ -127,10 +128,23 @@ void Cache<R>::make_linked_list( size_t length,bool random_traversal,bool tracin
       cout << "\n";
     }
   } else {
-    auto data = thecache.data();
-    for (size_t i=0; i<length; i++)
-      data[i] = (i+1) % length;
+    auto& data = cachedata();
+    std::iota(data.begin(),data.end(),1.);
+    data.back() = 0.;
+    // for (size_t i=0; i<data.size(); i++)
+    //   data[i] = (i+1) % length;
   }
+  const auto& data = cachedata(); // the vector of doubles
+  // for_each( data.begin(),data.end(),
+  // 	    [] (auto e) { cout << e << " "; } );
+  // cout << '\n';
+  auto [minindex,maxindex] = std::minmax_element
+    ( data.begin(),data.end() );
+  // cout << "min traverse: " << (*minindex)
+  //      << ", max traverse: " << (*maxindex)
+  //      << " out of 0--" << data.size()-1 << '\n';
+  assert( static_cast<size_t>(*minindex)==0 );
+  assert( static_cast<size_t>(*maxindex)==data.size()-1 );
 }
 
 template <typename R>

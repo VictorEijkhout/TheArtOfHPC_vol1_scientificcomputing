@@ -1,0 +1,9 @@
+This float type:
+min normal=1.175494e-38
+    eps=1.192093e-07
+progression from 1 with ratio: 0.9
+  final result: 0.00515377
+  nsec per access: 1.176
+progression from 1.17549e-38 with ratio: 0.9
+  final result: 6.05823e-41 (underflow)
+  nsec per access: 47.567

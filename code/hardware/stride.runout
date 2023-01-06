@@ -1,0 +1,11 @@
+clang++ -g -O2 -std=c++17 -fopenmp   -I/Users/eijkhout/Installation/cxxopts/installation/include  \
+	    -c stride.cxx
+stride.cxx:64:28: error: constant expression evaluates to -1 which cannot be narrowed to type 'size_t' (aka 'unsigned long') [-Wc++11-narrowing]
+  size_t datasize_in_words{-1};
+                           ^~
+stride.cxx:64:28: note: insert an explicit cast to silence this issue
+  size_t datasize_in_words{-1};
+                           ^~
+                           static_cast<size_t>( )
+1 error generated.
+make[1]: *** [stride.o] Error 1

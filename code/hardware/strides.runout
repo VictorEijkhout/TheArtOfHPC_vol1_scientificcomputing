@@ -1,0 +1,104 @@
+Using 1 cores, 8-byte words
+Using data size of 6000 kbytes
+Write pass repeated 10 times, flush cache: false
+
+ran for     9849 usec on 7.68e+06 accesses; nsec per access: 1.282
+ran for     4898 usec on 3.84e+06 accesses; nsec per access: 1.276
+ran for     3281 usec on 2.56e+06 accesses; nsec per access: 1.282
+ran for     2631 usec on 1.92e+06 accesses; nsec per access: 1.370
+ran for     2463 usec on 1.54e+06 accesses; nsec per access: 1.604
+ran for     2401 usec on 1.28e+06 accesses; nsec per access: 1.876
+ran for     2369 usec on 1.10e+06 accesses; nsec per access: 2.159
+ran for     2353 usec on 9.60e+05 accesses; nsec per access: 2.451
+
+Using 2 cores, 8-byte words
+Using data size of 6000 kbytes
+Write pass repeated 10 times, flush cache: false
+
+ran for    10176 usec on 7.68e+06 accesses; nsec per access: 1.325
+ran for     4913 usec on 3.84e+06 accesses; nsec per access: 1.279
+ran for     3286 usec on 2.56e+06 accesses; nsec per access: 1.284
+ran for     2684 usec on 1.92e+06 accesses; nsec per access: 1.398
+ran for     2475 usec on 1.54e+06 accesses; nsec per access: 1.611
+ran for     2420 usec on 1.28e+06 accesses; nsec per access: 1.891
+ran for     2380 usec on 1.10e+06 accesses; nsec per access: 2.169
+ran for     2362 usec on 9.60e+05 accesses; nsec per access: 2.460
+
+Using 4 cores, 8-byte words
+Using data size of 6000 kbytes
+Write pass repeated 10 times, flush cache: false
+
+ran for    10228 usec on 7.68e+06 accesses; nsec per access: 1.332
+ran for     4908 usec on 3.84e+06 accesses; nsec per access: 1.278
+ran for     3285 usec on 2.56e+06 accesses; nsec per access: 1.283
+ran for     2713 usec on 1.92e+06 accesses; nsec per access: 1.413
+ran for     2583 usec on 1.54e+06 accesses; nsec per access: 1.682
+ran for     2480 usec on 1.28e+06 accesses; nsec per access: 1.938
+ran for     2465 usec on 1.10e+06 accesses; nsec per access: 2.247
+ran for     2464 usec on 9.60e+05 accesses; nsec per access: 2.567
+
+Using 8 cores, 8-byte words
+Using data size of 6000 kbytes
+Write pass repeated 10 times, flush cache: false
+
+ran for    10440 usec on 7.68e+06 accesses; nsec per access: 1.359
+ran for     4970 usec on 3.84e+06 accesses; nsec per access: 1.294
+ran for     3406 usec on 2.56e+06 accesses; nsec per access: 1.330
+ran for     3100 usec on 1.92e+06 accesses; nsec per access: 1.615
+ran for     2999 usec on 1.54e+06 accesses; nsec per access: 1.952
+ran for     2918 usec on 1.28e+06 accesses; nsec per access: 2.280
+ran for     2890 usec on 1.10e+06 accesses; nsec per access: 2.634
+ran for     2850 usec on 9.60e+05 accesses; nsec per access: 2.969
+
+Using 12 cores, 8-byte words
+Using data size of 6000 kbytes
+Write pass repeated 10 times, flush cache: false
+
+ran for    12028 usec on 7.68e+06 accesses; nsec per access: 1.566
+ran for     7121 usec on 3.84e+06 accesses; nsec per access: 1.854
+ran for     5920 usec on 2.56e+06 accesses; nsec per access: 2.312
+ran for     5599 usec on 1.92e+06 accesses; nsec per access: 2.916
+ran for     5166 usec on 1.54e+06 accesses; nsec per access: 3.363
+ran for     4961 usec on 1.28e+06 accesses; nsec per access: 3.876
+ran for     4884 usec on 1.10e+06 accesses; nsec per access: 4.452
+ran for     4457 usec on 9.60e+05 accesses; nsec per access: 4.643
+
+Using 26 cores, 8-byte words
+Using data size of 6000 kbytes
+Write pass repeated 10 times, flush cache: false
+
+ran for    29625 usec on 7.68e+06 accesses; nsec per access: 3.857
+ran for    24158 usec on 3.84e+06 accesses; nsec per access: 6.291
+ran for    24374 usec on 2.56e+06 accesses; nsec per access: 9.521
+ran for    24175 usec on 1.92e+06 accesses; nsec per access: 12.591
+ran for    24246 usec on 1.54e+06 accesses; nsec per access: 15.785
+ran for    24301 usec on 1.28e+06 accesses; nsec per access: 18.985
+ran for    24366 usec on 1.10e+06 accesses; nsec per access: 22.208
+ran for    24383 usec on 9.60e+05 accesses; nsec per access: 25.399
+
+Using 38 cores, 8-byte words
+Using data size of 6000 kbytes
+Write pass repeated 10 times, flush cache: false
+
+ran for    51338 usec on 7.68e+06 accesses; nsec per access: 6.685
+ran for    49453 usec on 3.84e+06 accesses; nsec per access: 12.878
+ran for    48911 usec on 2.56e+06 accesses; nsec per access: 19.106
+ran for    48489 usec on 1.92e+06 accesses; nsec per access: 25.255
+ran for    48294 usec on 1.54e+06 accesses; nsec per access: 31.441
+ran for    48083 usec on 1.28e+06 accesses; nsec per access: 37.565
+ran for    47975 usec on 1.10e+06 accesses; nsec per access: 43.727
+ran for    47730 usec on 9.60e+05 accesses; nsec per access: 49.719
+
+Using 56 cores, 8-byte words
+Using data size of 6000 kbytes
+Write pass repeated 10 times, flush cache: false
+
+ran for    82066 usec on 7.68e+06 accesses; nsec per access: 10.686
+ran for    79798 usec on 3.84e+06 accesses; nsec per access: 20.781
+ran for    79359 usec on 2.56e+06 accesses; nsec per access: 31.000
+ran for    78920 usec on 1.92e+06 accesses; nsec per access: 41.104
+ran for    78666 usec on 1.54e+06 accesses; nsec per access: 51.215
+ran for    78485 usec on 1.28e+06 accesses; nsec per access: 61.316
+ran for    77972 usec on 1.10e+06 accesses; nsec per access: 71.068
+ran for    77826 usec on 9.60e+05 accesses; nsec per access: 81.069
+

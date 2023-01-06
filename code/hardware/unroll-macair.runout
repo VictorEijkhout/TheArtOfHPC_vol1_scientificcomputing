@@ -1,0 +1,8 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                Processing 4096 words
+                unroll by  1 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Unroll  1.. ran for      659 usec (efficiency: 100% )
+Unroll  2.. ran for      185 usec (efficiency: 356% )
+Unroll  4.. ran for      307 usec (efficiency: 214% )
+unroll factor 8 not implemented

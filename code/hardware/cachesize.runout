@@ -1,0 +1,22 @@
+clang++ -g -O2 -std=c++17 -fopenmp   -I/Users/eijkhout/Installation/cxxopts/installation/include  \
+	    -c cachesize.cxx
+ 0: cachesize in words:         8: in bytes:        64 (at attempt    1) ran for      114 usec on 8.00e+04 accesses; nsec per access: 1.425
+ 1: cachesize in words:        16: in bytes:       128 (at attempt    1) ran for      228 usec on 1.60e+05 accesses; nsec per access: 1.425
+ 2: cachesize in words:        32: in bytes:       256 (at attempt    1) ran for      457 usec on 3.20e+05 accesses; nsec per access: 1.428
+ 3: cachesize in words:        64: in bytes:       512 (at attempt    1) ran for      913 usec on 6.40e+05 accesses; nsec per access: 1.427
+ 4: cachesize in words:       128: in bytes:      1024 (at attempt    1) ran for     1775 usec on 1.28e+06 accesses; nsec per access: 1.387
+ 5: cachesize in words:       256: in bytes:      2048 (at attempt    1) ran for     3491 usec on 2.56e+06 accesses; nsec per access: 1.364
+ 6: cachesize in words:       512: in bytes:      4096 (at attempt    1) ran for     6897 usec on 5.12e+06 accesses; nsec per access: 1.347
+ 7: cachesize in words:      1024: in bytes:      8192 (at attempt    1) ran for    14034 usec on 1.02e+07 accesses; nsec per access: 1.371
+ 8: cachesize in words:      2048: in bytes:     16384 (at attempt    1) ran for    25108 usec on 2.05e+07 accesses; nsec per access: 1.226
+ 9: cachesize in words:      4096: in bytes:     32768 (at attempt    1) ran for    51351 usec on 4.10e+07 accesses; nsec per access: 1.254
+10: cachesize in words:      8192: in bytes:     65536 (at attempt    1) ran for   104028 usec on 8.19e+07 accesses; nsec per access: 1.270
+11: cachesize in words:     16384: in bytes:    131072 (at attempt    1) ran for   191849 usec on 1.64e+08 accesses; nsec per access: 1.171
+12: cachesize in words:     32768: in bytes:    262144 (at attempt    1) ran for   375485 usec on 3.28e+08 accesses; nsec per access: 1.146
+13: cachesize in words:     65536: in bytes:    524288 (at attempt    1) ran for   801548 usec on 6.55e+08 accesses; nsec per access: 1.223
+14: cachesize in words:    131072: in bytes:   1048576 (at attempt    1) ran for  1889389 usec on 1.31e+09 accesses; nsec per access: 1.441
+15: cachesize in words:    262144: in bytes:   2097152 (at attempt    1) ran for  3674530 usec on 2.62e+09 accesses; nsec per access: 1.402
+16: cachesize in words:    524288: in bytes:   4194304 (at attempt    1) ran for  7139187 usec on 5.24e+09 accesses; nsec per access: 1.362
+17: cachesize in words:   1048576: in bytes:   8388608 (at attempt    1) ran for 14310951 usec on 1.05e+10 accesses; nsec per access: 1.365
+18: cachesize in words:   2097152: in bytes:  16777216 (at attempt    1) ran for 38920468 usec on 2.10e+10 accesses; nsec per access: 1.856
+19: cachesize in words:   4194304: in bytes:  33554432 (at attempt    1) ran for 72221102 usec on 4.19e+10 accesses; nsec per access: 1.722

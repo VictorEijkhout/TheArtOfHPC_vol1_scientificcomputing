@@ -1,0 +1,16 @@
+associativity1 gives division 2
+Associativity  1 ran for     1051 usec on 4.10e+05 accesses; nsec per access: 2.567
+associativity2 gives division 4
+Associativity  2 ran for      514 usec on 4.09e+05 accesses; nsec per access: 1.255
+associativity3 gives division 4
+Associativity  3 ran for      771 usec on 6.14e+05 accesses; nsec per access: 1.255
+associativity4 gives division 8
+Associativity  4 ran for      422 usec on 4.09e+05 accesses; nsec per access: 1.031
+associativity5 gives division 8
+Associativity  5 ran for      643 usec on 5.12e+05 accesses; nsec per access: 1.257
+associativity6 gives division 8
+Associativity  6 ran for      685 usec on 6.14e+05 accesses; nsec per access: 1.116
+associativity7 gives division 8
+Associativity  7 ran for      843 usec on 7.16e+05 accesses; nsec per access: 1.177
+associativity8 gives division 16
+Associativity  8 ran for      499 usec on 4.09e+05 accesses; nsec per access: 1.221
