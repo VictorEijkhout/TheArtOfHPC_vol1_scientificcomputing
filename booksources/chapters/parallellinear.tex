@@ -537,6 +537,29 @@ see that the block row implementation above is not optimal if we take
 communication into account. For scalability we need a two-dimensional
 decomposition. We start with a discussion of collectives.
 
+\Level 1 {The block-column case}
+\label{sec:blockcol}
+
+We can also distribute the matrix by block columns. If you have studied
+the block-row case, this is not much different:
+\begin{itemize}
+\item We start out again with each process storing a distinct
+  set of columns;
+\item and each process starts out storing the corresponding
+  part of the input;
+\item after completion of the product operation, each process stores
+  its section of the output.
+\end{itemize}
+
+\begin{exercise}
+  \label{ex:dist-col-mvp}
+  Sketch the algorithm in pseudo-code. Where does the communication
+  now happen relative to the computation?
+  What collective operation are you using?
+  (Hint: each process needs only part of the output,
+  not the whole vector.)
+\end{exercise}
+
 \Level 1 {Scalability of the dense matrix-vector product}
 \label{sec:densescaling}
 

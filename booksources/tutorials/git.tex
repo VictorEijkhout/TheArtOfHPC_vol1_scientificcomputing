@@ -101,6 +101,7 @@ preferably opening two windows on your computer.
 Best practices for distributed version control:
 \url{https://homes.cs.washington.edu/~mernst/advice/version-control.html}
 
+\newpage
 \Level 0 {Create and populate a repository}
 
 \begin{purpose}
@@ -130,6 +131,7 @@ of the repository.
   Clone an empty repository and check that it is indeed empty
 \end{gitstep}
 
+\newpage
 \Level 1 {Create a repository locally}
 
 You can also create a directory for your repository,
@@ -148,6 +150,7 @@ over cloning an empty repo,
 is that you now have to connect your directory to a remote repository.
 See section~\ref{sec:git-remote}.
 
+\newpage
 \Level 1 {Main vs master}
 
 It used to be that the default branch
@@ -175,6 +178,7 @@ and for good measure check with \lstinline{git status}.
   Rename this branch.
 \end{gitstep}
 
+\newpage
 \Level 0 {Adding and changing files}
 \label{sec:hg-push}
 
@@ -206,6 +210,7 @@ Use \lstinline{git commit} to add these changes to the repository.
   Commit these changes
 \end{gitstep}
 
+\newpage
 \Level 1 {Changes to a file in the repository}
 
 The \n{git add} and \n{git commit} commands need to be repeated
@@ -239,6 +244,7 @@ listing the commit numbers, and the messages that you entered on those commits.
   Get the log of all commits so far.
 \end{gitstep}
 
+\newpage
 \Level 0 {Undoing changes}
 
 There are various levels of undo, depending on whether you have added or committed
@@ -263,6 +269,7 @@ and puts it back in your working directory.
   Restore previously committed version.
 \end{gitstep}
 
+\newpage
 \Level 1 {Restore a file from a previous commit}
 
 A more complicated scenario is where you have committed the change.
@@ -282,6 +289,7 @@ Now do:
 git checkout sdf234987238947 -- myfile myotherfile
 \end{lstlisting}
 
+\newpage
 \Level 1 {Undo a commit}
 
 As above, find the commit number.
@@ -311,6 +319,7 @@ However, the log will show that you have reverted a certain commit.
 The \n{git reset} command can also be used for various
 types of undo.
 
+\newpage
 \Level 0 {Remote repositories and collaboration}
 \label{sec:git-remote}
 
@@ -356,6 +365,7 @@ and multiple \indexterm{upstream}s remotely, you intially specify both:
   Push changes.
 \end{gitstep}
 
+\newpage
 \Level 1 {Changing the transport}
 
 You may have made your clone with
@@ -372,6 +382,7 @@ git remote -v
 git remote set-url origin git@bitbucket.org:username/reponame.git
 \end{verbatim}
 
+\newpage
 \Level 1 {Collaboration on the same repository}
 
 Let's see how changes from one clone of a repository
@@ -416,6 +427,7 @@ or how many other files were changes.
   Person 2 pulls, getting the new file.
 \end{gitstep}
 
+\newpage
 \Level 1 {Merging changes}
 
 If you work with someone else, or even if you work solo on a project,
@@ -468,6 +480,7 @@ Now if the first user does a pull, they see all the merged changes.
   Person 1 pulls to get all the changes.
 \end{gitstep}
 
+\newpage
 \Level 1 {Conflicting changes}
 \label{sec:git-conflict}
 
@@ -550,6 +563,7 @@ This involves the following steps:
 \item make a branch with your changes;
 \end{enumerate}
 
+\newpage
 \Level 0 {Branching}
 
 With a \indexterm{branch} you can keep a completely
@@ -595,6 +609,7 @@ We can inspect differences between branches with
   We can check differences between branches.
 \end{gitstep}
 
+\newpage
 \Level 1 {Branch merging}
 \label{sec:git-branch-merge}
 

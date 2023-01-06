@@ -616,6 +616,51 @@ computational behavior. This issue, in the context of dense matrices,
 is the focus of van de Geijn and Quintana's {\it The Science of
   Programming Matrix Computations}~\cite{TSoPMC}.
 
+\Level 1 {Computational variants}
+
+The above algorithm is only one of a several ways of computing the $A=LU$ result.
+That particular formulation was derived by formalizing the process of row elimination.
+A~different algorithm results by looking at the finished result
+and writing elements $a_{ij}$ in term of elements of $L$ and~$U$.
+
+In particular, let $j\geq k$, then
+\[ a_{kj} = u_{kj} + \sum_{i<k} \ell_{ki} u_{ij}, \]
+which gives us the row $u_{kj}$ (for $j\geq k$) expressed in terms of
+earlier computed $U$ terms:
+\begin{equation}
+  \forall_{j\geq k}\colon u_{kj} = a_{kj} - \sum_{i<k} \ell_{ki} u_{ij}.
+\end{equation}
+
+Similarly, with $i>k$,
+\[ a_{ik} = \ell_{ik} u_{kk} + \sum_{j<k} \ell_{ij} u_{jk} \]
+which gives us the column $\ell_{ik}$ (for $i>k$) as
+\begin{equation}
+  \forall_{i>k}\colon \ell_{ik} = u_{kk}\inv (a_{ik} - \sum_{j<k} \ell_{ij} u_{jk} ).
+\end{equation}
+(This is known as \indexterm{Doolittle's algorithm} for the LU factorization.)
+
+In a classical analysis, this algorithm does the same number of operations,
+but a computational analysis shows differences.
+For instance, the prior algorithm would update for each~$k$ value
+the block $i,j>k$, meaning that these elements are repeatedly read and written.
+This makes it hard to keep these elements in cache.
+
+On the other hand, Doolittle's algorithm computes for each~$k$
+only one row of~$U$ and one column of~$L$.
+The elements used for this are only read, so they can conceivably be kept in cache.
+
+Another difference appears if we think about parallel execution.
+Imagine that after computing a pivot in the first algorithm,
+we compute the next pivot as quickly as possible, and
+let some other threads do the updating of the $i,j>k$ block.
+Now we can have potentially several threads all updating the remaining block,
+which requires synchronization.
+(This argument will be presented in more detail in section~\ref{sec:multicore-block}.)
+
+The new algorithm, on the other hand, has no such conflicting writes:
+sufficient parallelism can be obtained from the computation of the
+row of $U$ and column of~$L$.
+
 \Level 1 {The Cholesky factorization}
 \index{Cholesky factorization|(}
 \label{sec:cholesky}
