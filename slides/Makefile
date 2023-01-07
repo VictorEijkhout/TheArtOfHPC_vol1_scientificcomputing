@@ -29,7 +29,8 @@ lectures :
 	    make lecture LECTURE=$$l \
 	    ; done
 onepass :
-	TEXINPUTS=..//:${TEXINPUTS} pdflatex ${FILE}
+	TEXINPUTS=../booksources/macros:../booksources/exercises:../booksources/graphics:taccstyle:${TEXINPUTS} \
+	    pdflatex ${FILE}
 pdf :
 	make onepass FILE=${FILE}
 	make onepass FILE=${FILE}

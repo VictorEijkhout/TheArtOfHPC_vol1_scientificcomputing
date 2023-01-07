@@ -18,14 +18,14 @@ FILE = EijkhoutIntroToHPC
 LATEX = xelatex
 .PHONY: onepass pdf
 onepass :
-	@TEXINPUTS=${TEXINPUTS}:graphics:macros:applications:taccstyle:.. \
+	@TEXINPUTS=${TEXINPUTS}:graphics:macros:applications:.. \
 	    ${LATEX} ${FILE}
 pdf :
 	@make --no-print-directory onepass
 	@cd exercises && \
 	for e in *.tex ; do \
 	  if [ `cat $$e | grep label | wc -l` -eq 1 ] ; then \
-	    export nam=`cat $$e | grep label | sed -e s/^.*label.// -e s/\}// | sed -e 's/:/--/'` ; \
+	    export nam=`cat $$e | grep label | sed -e s/^.*label.// -e s/\}// '` ; \
 	    cp $$e $$nam.tex ; \
 	  fi ; \
 	done
