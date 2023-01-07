@@ -18,7 +18,7 @@ FILE = EijkhoutIntroToHPC
 LATEX = xelatex
 .PHONY: onepass pdf
 onepass :
-	@TEXINPUTS=${TEXINPUTS}:graphics:macros:applications:.. \
+	@TEXINPUTS=${TEXINPUTS}:graphics:macros:applications:taccstyle:.. \
 	    ${LATEX} ${FILE}
 pdf :
 	@make --no-print-directory onepass
