@@ -16,7 +16,6 @@ info ::
 
 BOOKNAME = EijkhoutScientificComputing
 
-DROPBOX = ${HOME}/Dropbox/Scicomp
 upload_dropbox ::
 	@dir="${DROPBOX}/${REPOSUBDIR}" \
 	 && if [ ! -z "$$dir" ] ; then \
@@ -27,7 +26,6 @@ upload_dropbox ::
 	  ; \
 	fi
 
-PUBLICDIR = ${HOME}/Current/istc/pdf/stc
 upload_publicpdf ::
 	@if [ ! -z "${PUBLICDIR}" ] ; then \
 	  if [ -z "${TARGETFILE}" ] ; then \
@@ -37,13 +35,10 @@ upload_publicpdf ::
 	  ; \
 	fi
 
-PUBLICREPO = 
-
 ##
 ## base directory, not the lectures directory
 ## DO NoT escape any spaces!
 ##
-STUDENTREPO = ${HOME}/Current/SSC/STC/2022 Fall/sds335fall2022
 REPOSUBDIR =
 upload_studentrepo ::
 	@if [ ! -z "${STUDENTREPO}" ] ; then \
