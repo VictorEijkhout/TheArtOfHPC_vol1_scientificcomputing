@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -2441,8 +2441,7 @@ in several ways. We compare two implementations, assuming that all
 matrices are stored by rows, and that the cache size is insufficient
 to store a whole row or column.
 
-\hbox{%\begin{quotation}
-\setbox0=\hbox{%
+\hbox{\setbox0=\hbox{%pyskip
 \begin{minipage}{.4\textwidth}
 \begin{verbatim}
 for i=1..n
@@ -2450,8 +2449,8 @@ for i=1..n
     for k=1..n
       c[i,j] += a[i,k]*b[k,j]
 \end{verbatim}
-\end{minipage}}
-\ht0=1.2\ht0 \box0
+  \end{minipage}}
+  \ht0=1.2\ht0 \box0 %pyskip
 \,
 \begin{minipage}{.4\textwidth}
 \begin{verbatim}
@@ -2461,7 +2460,8 @@ for i=1..n
       c[i,j] += a[i,k]*b[k,j]
 \end{verbatim}
 \end{minipage}
-}%\end{quotation}
+}
+
 These implementations are illustrated in figure~\ref{fig:ijk-mult}
 \begin{figure}[ht]
   \includegraphics[scale=.1]{ijk-mult}

@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -59,9 +59,9 @@ and execute this on different threads and disjoint memory locations:
 We see that for 40 threads there is essentially no efficiency loss,
 but with 56 threads there is a 10~percent loss.
 
-{\scriptsize
+{\scriptsize%pyskip
 \verbatiminput{code/hardware/bandwidth.runout}
-}
+}%pyskip
 
 \Level 1 {Pipelining}
 \label{sec:coding-pipeline}
