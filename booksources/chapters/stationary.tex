@@ -3,8 +3,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% This text file is part of the source of 
-%%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -259,12 +259,14 @@ is, the matrix containing the diagonal part of~$A$: $k_{ii}=a_{ii}$
 and $k_{ij}=0$ for all~\mbox{$i\not=j$}. 
 Likewise, $n_{ii}=0$ and $n_{ij}=-a_{ij}$ for all $i\not=\nobreak j$.
 
-This is known as the
-\indexterm{Jacobi method} method. The iteration scheme
+This is known as the \indextermbus{Jacobi}{iteration}.
+The matrix formulation
 $Kx^{(n+1)}=Nx^{(n)}+b$ can be written pointwise as
-\[ \forall_i\colon
-    a_{ii}x^{(t+1)}_i = \sum_{j\not=i} a_{ij}x^{(t)}_j+b_i
-\]
+\begin{equation}
+  \forall_i\colon
+  a_{ii}x^{(t+1)}_i = \sum_{j\not=i} a_{ij}x^{(t)}_j+b_i
+  \label{eq:jacobi-ij}
+\end{equation}
 which becomes
 \begin{quote}
   \begin{tabbing}
@@ -544,7 +546,7 @@ the matrix), but that an incomplete factorization takes~$O(N)$, just
 like the matrix. It may therefore come as a surprise that the error
 matrix $R=A-LU$ is not dense, but itself sparse.
 \begin{exercise}
-  Let $A$ be the matrix of the Poisson equation, $LU$~an incomplete
+  Let $A$ be the matrix of the \indexterm{Laplacian}, $LU$~an incomplete
   factorization, and $R=A-LU$. Show that $R$ is a bi-diagonal matrix:
   \begin{itemize}
   \item Consider that $R$ consists of those elements that are

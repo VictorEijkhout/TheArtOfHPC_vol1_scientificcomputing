@@ -3,8 +3,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% This text file is part of the source of 
-%%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -506,12 +506,12 @@ many files that have permissions $755$ which stands for an executable
 that everyone can run, but only the owner can change, or $644$ which
 stands for a data file that everyone can see but again only the owner
 can alter. You can set permissions by the \indexunix{chmod} command:
-\begin{verbatim}
+\begin{lstlisting}
   chmod <permissions> file         # just one file
   chmod -R <permissions> directory # directory, recursively
-\end{verbatim}
+\end{lstlisting}
 Examples:
-\begin{verbatim}
+\begin{lstlisting}
   chmod 766 file  # set to rwxrw-rw-
   chmod g+w file  # give group write permission
   chmod g=rx file # set group permissions
@@ -519,7 +519,7 @@ Examples:
   chmod o=  file  # take away all permissions from others.
   chmod g+r,o-x file # give group read permission
                      # remove other execute permission
-\end{verbatim}
+\end{lstlisting}
 The man page gives all options.
 
 %\practical
@@ -537,10 +537,10 @@ The man page gives all options.
 \end{outcome}
 
 Make a file \n{com} with the following contents:
-\begin{verbatim}
+\begin{lstlisting}
 #!/bin/sh
 echo "Hello world!"
-\end{verbatim}
+\end{lstlisting}
 This is a legitimate shell script. What happens when you type
 \n{./com}? Can you get the script executed?
 
@@ -584,23 +584,23 @@ see files with certain conditions on their names, the
 \end{fntable}
 
 Example:
-\begin{verbatim}
+\begin{lstlisting}
 %% ls
 s       sk      ski     skiing  skill
 %% ls ski*
 ski     skiing  skill
-\end{verbatim}
+\end{lstlisting}
 The second option lists all files whose name start with
 \n{ski}, followed by any number of other characters'; below you will
 see that in different contexts \n{ski*} means `\n{sk} followed by any
 number of \n{i} characters'. Confusing, but that's the way it is.
 
 You can use \n{rm} with wildcards, but this can be dangerous.
-\begin{verbatim}
+\begin{lstlisting}
 rm -f foo    ## remove foo if it exists
 rm -r foo    ## remove directory foo with everything in it
 rm -rf foo/* ## delete all contents of foo
-\end{verbatim}
+\end{lstlisting}
 
 \begin{zshnote}{No match}
   Removing with a wildcard \n{rm foo*}
@@ -653,7 +653,7 @@ general expressions.
 This looks like the wildcard mechanism you just saw
 (section~\ref{sec:shell-wildcard}) but it's subtly different. Compare
 the example above with:
-\begin{verbatim}
+\begin{lstlisting}
 %% cat s
 sk
 ski
@@ -664,7 +664,7 @@ sk
 ski
 skill
 skiing
-\end{verbatim}
+\end{lstlisting}
 In the second case you search for a string consisting of \n{sk} and
 any number of \n{i} characters, including zero of them.
 
@@ -717,9 +717,9 @@ to search that actual character, you have to \indexterm{escape} it.
 
 Another tool for editing lines is \indexunix{cut}, which will cut up a line
 and display certain parts of it. For instance,
-\begin{verbatim}
+\begin{lstlisting}
 cut -c 2-5 myfile
-\end{verbatim}
+\end{lstlisting}
 will display the characters in position 2--5 of every line of
 \n{myfile}. Make a test file and verify this example.
 
@@ -730,18 +730,18 @@ information\footnote{This is traditionally the case; on Mac OS
   information about users is kept elsewhere and this file only
   contains system services.}, with every line consisting of fields
 separated by colons. For instance:
-\begin{verbatim}
+\begin{lstlisting}
 daemon:*:1:1:System Services:/var/root:/usr/bin/false
 nobody:*:-2:-2:Unprivileged User:/var/empty:/usr/bin/false
 root:*:0:0:System Administrator:/var/root:/bin/sh
-\end{verbatim}
+\end{lstlisting}
 The seventh and last field is the login shell of the user;
 \n{/bin/false} indicates that the user is unable to log in.
 
 You can display users and their login shells with:
-\begin{verbatim}
+\begin{lstlisting}
 cut -d ":" -f 1,7 /etc/passwd
-\end{verbatim}
+\end{lstlisting}
 This tells \n{cut} to use the colon as delimiter, and to print fields
 1~and~7.
 
@@ -757,24 +757,24 @@ this bundles them into a single file.
 The two most common options are for 
 \begin{enumerate}
 \item creating a tar file:
-\begin{verbatim}
+\begin{lstlisting}
 tar fc package.tar directory_with_stuff
-\end{verbatim}
+\end{lstlisting}
 pronounced `tar file create', and
 \item unpacking a tar file:
-\begin{verbatim}
+\begin{lstlisting}
 tar fx package.tar
 # this creates the directory that was packaged
-\end{verbatim}
+\end{lstlisting}
 pronounced `tar file extract'.
 \end{enumerate}
 Text files can often be compressed to a large extent, so
 adding the \n{z} compressiong for \indexunix{gzip}
 is a good idea:
-\begin{verbatim}
+\begin{lstlisting}
 tar fcz package.tar.gz directory_with_stuff
 tar fx package.tar.gz
-\end{verbatim}
+\end{lstlisting}
 Naming the `gzipped' file \n{package.tgz}
 is also common.
 
@@ -792,9 +792,9 @@ This section will go into the mechanisms.
 \end{remark}
 \begin{zshnote}
   In Apple's zsh, the comment character is disabled. Do
-\begin{verbatim}
+\begin{lstlisting}
   setopt interactivecomments
-\end{verbatim}
+\end{lstlisting}
 to enable it.
 \end{zshnote}
 
@@ -898,24 +898,24 @@ commandline.
 \Level 2 {Simple sequencing}
 
 First of all, you can type
-\begin{verbatim}
+\begin{lstlisting}
 command1 ; command2
-\end{verbatim}
+\end{lstlisting}
 This is convenient if you repeat the same two commands a number of
 times: you only need to up-arrow once to repeat them both.
 
 There is a problem: if you type
-\begin{verbatim}
+\begin{lstlisting}
 cc -o myprog myprog.c ; ./myprog
-\end{verbatim}
+\end{lstlisting}
 and the compilation fails, the program will still be executed,
 using an old version of the executable if that exists. This is very
 confusing.
 
 A better way is:
-\begin{verbatim}
+\begin{lstlisting}
 cc -o myprog myprog.c && ./myprog
-\end{verbatim}
+\end{lstlisting}
 which only executes the second command if the first one was
 successful.
 
@@ -941,14 +941,14 @@ the output of the first as input. The syntax for this is
 
 There are a few more ways to combine commands. Suppose you want to
 present the result of \n{wc} a bit nicely. Type the following command
-\begin{verbatim}
+\begin{lstlisting}
 echo The line count is wc -l foo
-\end{verbatim}
+\end{lstlisting}
 where \n{foo} is the name of an existing file. The way to
 get the actual line count echoed is by the \indextermdef{backquote}:
-\begin{verbatim}
+\begin{lstlisting}
 echo The line count is `wc -l foo`
-\end{verbatim}
+\end{lstlisting}
 Anything in between backquotes is executed before the rest of the
 command line is evaluated.
 
@@ -959,9 +959,9 @@ command line is evaluated.
 
 There is another mechanism for
 out-of-order evaluation:
-\begin{verbatim}
+\begin{lstlisting}
 echo "There are $( cat Makefile | wc -l ) lines"
-\end{verbatim}
+\end{lstlisting}
 This mechanism makes it possible to nest commands,
 but for compatibility and legacy purposes backquotes
 may still be preferable when nesting is not neeeded.
@@ -970,14 +970,14 @@ may still be preferable when nesting is not neeeded.
 
 Suppose you want to apply output redirection to a couple of commands
 in a row:
-\begin{verbatim}
+\begin{lstlisting}
   configure ; make ; make install > installation.log 2>&1
-\end{verbatim}
+\end{lstlisting}
 This only catches the last command. You could for instance group the
 three commands in a subshell and catch the output of that:
-\begin{verbatim}
+\begin{lstlisting}
   ( configure ; make ; make install ) > installation.log 2>&1
-\end{verbatim}
+\end{lstlisting}
 
 \Level 1 {Exit status}
 
@@ -990,13 +990,13 @@ success, nonzero otherwise) that is stored in an internal variable,
 and that you can access with \verb+$?+.
 
 Example. Suppose we have a directory that is not writable
-\begin{verbatim}
+\begin{lstlisting}
 [testing] ls -ld nowrite/
 dr-xr-xr-x  2 eijkhout  506  68 May 19 12:32 nowrite//
 [testing] cd nowrite/
-\end{verbatim}
+\end{lstlisting}
 and write try to create a file there:
-\begin{verbatim}
+\begin{lstlisting}
 [nowrite] cat ../newfile 
 #!/bin/bash
 touch $1
@@ -1008,11 +1008,11 @@ touch: myfile: Permission denied
 Created file: myfile
 [nowrite] ls
 [nowrite]
-\end{verbatim}
+\end{lstlisting}
 The script reports that the file was created even though it wasn't.
 
 Improved script:
-\begin{verbatim}
+\begin{lstlisting}
 [nowrite] cat ../betterfile
 #!/bin/bash
 touch $1
@@ -1025,7 +1025,7 @@ fi
 [nowrite] ../betterfile myfile
 touch: myfile: Permission denied
 Problem creating file: myfile
-\end{verbatim}
+\end{lstlisting}
 
 
 \Level 1 {Processes and jobs}
@@ -1063,9 +1063,9 @@ In this long listing of \n{ps}, the second column contains the
 \emph{process numbers}\index{process!numbers}.
 Sometimes it is useful to have those: if a program misbehaves you can
 \indexunix{kill} it with
-\begin{verbatim}
+\begin{lstlisting}
 kill 123456
-\end{verbatim}
+\end{lstlisting}
 where \n{12345} is the process number.
 
 The \n{cut} command
@@ -1087,13 +1087,13 @@ Everything else that is running at the same time is a
 \indexterm{background process}.
 
 Make an executable file \n{hello} with the following contents:
-\begin{verbatim}
+\begin{lstlisting}
 #!/bin/sh
 while [ 1 ] ; do
   sleep 2
   date
 done
-\end{verbatim}
+\end{lstlisting}
 and type \n{./hello}. 
 
 %\practical
@@ -1216,9 +1216,9 @@ overwritten. (To append, use \n{grep text yourfile >> outfile}.)
 Sometimes you want to run a program, but ignore the output.
 For that, you can redirect your output to the system
 \indextermsub{null}{device}: \indextermtt{/dev/null}.
-\begin{verbatim}
+\begin{lstlisting}
 yourprogram >/dev/null
-\end{verbatim}
+\end{lstlisting}
 Here are some useful idioms:
 
 \begin{stufflearned}[Idiom]
@@ -1270,13 +1270,13 @@ We start by exploring the use of this dollar sign in relation to shell variables
 You can get the value of a shell variable by prefixing it with
 a dollar sign.
 Type the following and inspect the output:
-\begin{verbatim}
+\begin{lstlisting}
 echo x
 echo $x
 x=5
 echo x
 echo $x
-\end{verbatim}
+\end{lstlisting}
 
 You see that the shell treats everything as a string, unless you explicitly tell it
 to take the value of a variable, by putting a dollar in front of the name.
@@ -1314,7 +1314,7 @@ A variable set this way will be known to all subsequent commands
 you issue in this shell, but not to commands in new shells you start up.
 For that you need the \indexunix{export} command.
 Reproduce the following session (the square brackets form the command prompt):
-\begin{verbatim}
+\begin{lstlisting}
 [] a=20
 [] echo $a
 20
@@ -1328,36 +1328,36 @@ exit
 [] echo $a
 21
 [] exit
-\end{verbatim}
+\end{lstlisting}
 
 You can also temporarily set a variable. Replay this scenario:
 \begin{enumerate}
 \item Find an environment variable that does not have a value:
-\begin{verbatim}
+\begin{lstlisting}
 [] echo $b
 
 []
-\end{verbatim}
+\end{lstlisting}
 \item Write a short shell script to print this variable:
-\begin{verbatim}
+\begin{lstlisting}
 [] cat > echob
 #!/bin/bash
 echo $b
-\end{verbatim}
+\end{lstlisting}
 and of course make it executable: \n{chmod +x echob}.
 \item Now call the script, preceding it with a setting of the variable~\n{b}:
-\begin{verbatim}
+\begin{lstlisting}
 [] b=5 ./echob
 5
-\end{verbatim}
+\end{lstlisting}
 The syntax where you set the value, as a prefix without using a separate
 command, sets the value just for that one command.
 \item Show that the variable is still undefined:
-\begin{verbatim}
+\begin{lstlisting}
 [] echo $b
 
 []
-\end{verbatim}
+\end{lstlisting}
 That is, you defined the variable just for the execution of a single command.
 \end{enumerate}
 
@@ -1383,15 +1383,15 @@ bash shell.
 The \emph{conditional} of the bash shell is predictably called
 \indexunixdef{if}, and it can be written over several
 lines:
-\begin{verbatim}
+\begin{lstlisting}
 if [ $PATH = "" ] ; then
   echo "Error: path is empty"
 fi
-\end{verbatim}
+\end{lstlisting}
 or on a single line:
-\begin{verbatim}
+\begin{lstlisting}
 if [ `wc -l file` -gt 100 ] ; then echo "file too long" ; fi
-\end{verbatim}
+\end{lstlisting}
 (The backquote is explained in section~\ref{tut:unix-backquote}.)
 There are a number of tests defined, for instance \n{-f somefile}
 tests for the existence of a file. Change your script so that it will
@@ -1410,26 +1410,35 @@ The syntax of this is finicky:
 \begin{exercise}
   Bash conditionals have an \indexunix{elif} keyword.
   Can you predict the error you get from this:
-\begin{verbatim}
+\begin{lstlisting}
 if [ something ] ; then
   foo
 else if [ something_else ] ; then
   bar
 fi
-\end{verbatim}
+\end{lstlisting}
 Code it out and see if you were right.
 \end{exercise}
+
+\begin{zshnote}
+  The \indexunix{zsh} shell has an extended conditional syntax
+  with double square brackets.
+  For instance, pattern matching:
+  \begin{lstlisting}
+    if [[ $myvar == *substring* ]] ; then ....
+  \end{lstlisting}
+\end{zshnote}
 
 \Level 1 {Looping}
 \label{sec:unix-loop}
 
 In addition to conditionals,
 the shell has loops. A~\indexunix{for} loop looks like
-\begin{verbatim}
+\begin{lstlisting}
 for var in listofitems ; do
   something with $var
 done
-\end{verbatim}
+\end{lstlisting}
 This does the following:
 \begin{itemize}
 \item for each item in \n{listofitems}, the variable \n{var} is set to the
@@ -1437,46 +1446,46 @@ This does the following:
 \item the loop body is executed.
 \end{itemize}
 As a simple example:
-\begin{verbatim}
+\begin{lstlisting}
 for x in a b c ; do echo $x ; done
 a
 b
 c
-\end{verbatim}
+\end{lstlisting}
 In a more meaningful example,
 here is how you would make backups of all your~\n{.c}
 files:
-\begin{verbatim}
+\begin{lstlisting}
 for cfile in *.c ; do
   cp $cfile $cfile.bak
 done
-\end{verbatim}
+\end{lstlisting}
 Shell variables can be manipulated in a number of ways.
 Execute the following commands to see that you can remove trailing
 characters from a variable:
-\begin{verbatim}
+\begin{lstlisting}
 [] a=b.c
 [] echo ${a%.c}
 b
-\end{verbatim}
+\end{lstlisting}
 (See the section~\ref{tut:unix-expansion} on expansion.)
 With this as a hint, write a loop that renames all your \n{.c} files
 to~\n{.x} files.
 
 The above construct loops over words, such as the output of
 \n{ls}. To do a numeric loop, use the command \indexunixdef{seq}:
-\begin{verbatim}
+\begin{lstlisting}
 [shell:474] seq 1 5
 1
 2
 3
 4
 5
-\end{verbatim}
+\end{lstlisting}
 Looping over a sequence of numbers then typically looks like
-\begin{verbatim}
+\begin{lstlisting}
 for i in `seq 1 ${HOWMANY}` ; do echo $i ; done
-\end{verbatim}
+\end{lstlisting}
 Note the \indexterm{backtick}, which is necessary to have the \n{seq}
 command executed before evaluating the loop.
 
@@ -1492,10 +1501,10 @@ about this aspect of unix in this section.
 It is possible to write programs of unix shell commands. First you
 need to know how to put a program in a file and have it be
 executed. Make a file \n{script1} containing the following two lines:
-\begin{verbatim}
+\begin{lstlisting}
 #!/bin/bash
 echo "hello world"
-\end{verbatim}
+\end{lstlisting}
 and type \n{./script1} on the command line. Result?
 Make the file executable and try again.
 
@@ -1515,21 +1524,21 @@ contained in \indexunix{PATH}; see section~\ref{sec:PATH}.
 \Level 1 {Script arguments}
 
 You can invoke a shell script with options and arguments:
-\begin{verbatim}
+\begin{lstlisting}
 ./my_script -a file1 -t -x file2 file3
-\end{verbatim}
+\end{lstlisting}
 
 You will now learn how to incorporate this functionality in your scripts.
 
 First of all, all commandline arguments and options are available
 as variables \verb+$1+,\verb+$2+ et cetera in the script, and
 the number of command line arguments is available as \verb+$#+:
-\begin{verbatim}
+\begin{lstlisting}
 #!/bin/bash
 
 echo "The first argument is $1"
 echo "There were $# arguments in all"
-\end{verbatim}
+\end{lstlisting}
 
 Formally:\\
 \begin{fntable}{ll}
@@ -1563,14 +1572,14 @@ shifting, and looking at the new \verb+$1+.
 
 \begin{exercise}
   Write a script \n{say.sh} that prints its text argument. However, if you invoke it with 
-\begin{verbatim}
+\begin{lstlisting}
 ./say.sh -n 7 "Hello world"
-\end{verbatim}
+\end{lstlisting}
   it should be print it as many times as you indicated. Using the
   option \n{-u}:
-\begin{verbatim}
+\begin{lstlisting}
 ./say.sh -u -n 7 "Goodbye cruel world"
-\end{verbatim}
+\end{lstlisting}
   should print the message in uppercase. Make sure that the order of
   the arguments does not matter, and give an error message for any
   unrecognized option.
@@ -1597,70 +1606,70 @@ The shell performs various kinds of expansion on a command line, that
 is, replacing part of the commandline with different text.
 
 Brace expansion:
-\begin{verbatim}
+\begin{lstlisting}
 [] echo a{b,cc,ddd}e
 abe acce addde
-\end{verbatim}
+\end{lstlisting}
 This can for instance be used to delete all extension of some base
 file name:
-\begin{verbatim}
+\begin{lstlisting}
 [] rm tmp.{c,s,o}  # delete tmp.c tmp.s tmp.o
-\end{verbatim}
+\end{lstlisting}
 
 Tilde expansion gives your own, or someone else's home directory:
-\begin{verbatim}
+\begin{lstlisting}
 [] echo ~
 /share/home/00434/eijkhout
 [] echo ~eijkhout
 /share/home/00434/eijkhout
-\end{verbatim}
+\end{lstlisting}
 
 Parameter expansion gives the value of shell variables:
-\begin{verbatim}
+\begin{lstlisting}
 [] x=5
 [] echo $x
 5
-\end{verbatim}
+\end{lstlisting}
 Undefined variables do not give an error message:
-\begin{verbatim}
+\begin{lstlisting}
 [] echo $y
-\end{verbatim}
+\end{lstlisting}
 There are many variations on parameter expansion. Above you already
 saw that you can strip trailing characters:
-\begin{verbatim}
+\begin{lstlisting}
 [] a=b.c
 [] echo ${a%.c}
 b
-\end{verbatim}
+\end{lstlisting}
 Here is how you can deal with undefined variables:
-\begin{verbatim}
+\begin{lstlisting}
 [] echo ${y:-0}
 0
-\end{verbatim}
+\end{lstlisting}
 
 \begin{comment}
 There are ways of doing pattern matching and substitution 
 on a variable:
-\begin{verbatim}
+\begin{lstlisting}
 [] f=x.fort
 [] echo ${f%%.fort}
 x
 [] echo ${f%%.fort}.bak
 x.bak
-\end{verbatim}
+\end{lstlisting}
 \end{comment}
 
 The backquote mechanism (section~\ref{tut:unix-backquote} above)
 is known as command substitution. It allows you to evaluate part
 of a command and use it as input for another. For example,
 if you want to ask what type of file the command \n{ls} is, do
-\begin{verbatim}
+\begin{lstlisting}
 [] file `which ls`
-\end{verbatim}
+\end{lstlisting}
 This first evaluates \n{which ls}, giving \n{/bin/ls}, and then
 evaluates \n{file /bin/ls}. As another example, here
 we backquote a whole pipeline, and do a test on the result:
-\begin{verbatim}
+\begin{lstlisting}
 [] echo 123 > w
 [] cat w
 123
@@ -1668,7 +1677,7 @@ we backquote a whole pipeline, and do a test on the result:
        4 w
 [] if [ `cat w | wc -c` -eq 4 ] ; then echo four ; fi
 four
-\end{verbatim}
+\end{lstlisting}
 
 \Level 1 {Arithmetic expansion}
 \label{sec:arith-expansion}
@@ -1677,14 +1686,14 @@ Unix shell programming is very much oriented towards text manipulation, but it
 is possible to do arithmetic. 
 Arithmetic substitution tells the shell to treat the expansion of a
 parameter as a number:
-\begin{verbatim}
+\begin{lstlisting}
 [] x=1
 [] echo $((x*2))
 2
-\end{verbatim}
+\end{lstlisting}
 
 Integer ranges can be used as follows:
-\begin{verbatim}
+\begin{lstlisting}
 [] for i in {1..10} ; do echo $i ; done
 1
 2
@@ -1696,7 +1705,7 @@ Integer ranges can be used as follows:
 8
 9
 10
-\end{verbatim}
+\end{lstlisting}
 (but see also the \indexunix{seq} command in section~\ref{sec:unix-loop}.)
 
 \Level 0 {Startup files}
@@ -1713,10 +1722,10 @@ need to apply to every sessions, so you can have
 \emph{shell startup files} that will be read at the start of any session.
 
 Popular things to do in a startup file are defining \indexunix{alias}es:
-\begin{verbatim}
+\begin{lstlisting}
 alias grep='grep -i'
 alias ls='ls -F'
-\end{verbatim}
+\end{lstlisting}
 and setting a custom commandline \indexterm{prompt}.
 
 Unfortunately, there are several startup files, and which one gets read
@@ -1724,21 +1733,21 @@ is a complicated functions of circumstances. Here is a good common sense
 guideline\footnote{Many thanks to Robert McLay for figuring this out.}:
 \begin{itemize}
 \item Have a \n{.profile} that does nothing but read the \n{.bashrc}:
-\begin{verbatim}
+\begin{lstlisting}
 # ~/.profile
 if [ -f ~/.bashrc ]; then
     source ~/.bashrc
 fi
-\end{verbatim}
+\end{lstlisting}
 \item Your \n{.bashrc} does the actual customizations:
-\begin{verbatim}
+\begin{lstlisting}
 # ~/.bashrc
 # make sure your path is updated
 if [ -z "$MYPATH" ]; then
   export MYPATH=1
   export PATH=$HOME/bin:$PATH
 fi
-\end{verbatim}
+\end{lstlisting}
 \end{itemize}
 
 \index{shell!startup files|)textbf}
@@ -1827,13 +1836,13 @@ which a file belongs, to share it with a user who is also in that group.
 Creating a new group, or
 adding a user to a group needs system privileges.
 To create a group:
-\begin{verbatim}
+\begin{lstlisting}
 sudo groupadd new_group_name
-\end{verbatim}
+\end{lstlisting}
 To add a user to a group:
-\begin{verbatim}
+\begin{lstlisting}
 sudo usermod -a -G thegroup theuser
-\end{verbatim}
+\end{lstlisting}
 
 \Level 1 {The super user}
 
@@ -1849,21 +1858,21 @@ user' and do things with their privileges, with the
 
 \begin{itemize}
 \item To execute a command as another user:
-\begin{verbatim}
+\begin{lstlisting}
 sudo -u otheruser command arguments
-\end{verbatim}
+\end{lstlisting}
 \item To execute a command as the root user:
-\begin{verbatim}
+\begin{lstlisting}
 sudo command arguments
-\end{verbatim}
+\end{lstlisting}
 \item Become another user:
-\begin{verbatim}
+\begin{lstlisting}
 sudo su - otheruser
-\end{verbatim}
+\end{lstlisting}
 \item Become the \indextermsub{super}{user}:
-\begin{verbatim}
+\begin{lstlisting}
 sudo su -
-\end{verbatim}
+\end{lstlisting}
 \end{itemize}
 
 \Level 0 {Connecting to other machines: {\tt ssh} and {\tt scp}}
@@ -1875,9 +1884,9 @@ instance a supercomputer.
 If you are already on a Unix computer, you can log into another with
 the `secure shell' command~\indexunixdef{ssh}, a~more secure variant
 of the old `remote shell' command~\indexunixdef{rsh}:
-\begin{verbatim}
+\begin{lstlisting}
 ssh yourname@othermachine.otheruniversity.edu
-\end{verbatim}
+\end{lstlisting}
 where the \n{yourname} can be omitted if you have the same name on
 both machines.
 
@@ -1888,29 +1897,29 @@ except that the source or destination can have a machine prefix.
 
 To copy a file from the current machine to
 another, type:
-\begin{verbatim}
+\begin{lstlisting}
 scp localfile yourname@othercomputer:otherdirectory
-\end{verbatim}
+\end{lstlisting}
 where \n{yourname} can again be omitted, and \n{otherdirectory} can be
 an absolute path, or a path relative to your home directory:
-\begin{verbatim}
+\begin{lstlisting}
 # absolute path:
 scp localfile yourname@othercomputer:/share/
 # path relative to your home directory:
 scp localfile yourname@othercomputer:mysubdirectory
-\end{verbatim}
+\end{lstlisting}
 Leaving the destination path empty puts the file in the remote home directory:
-\begin{verbatim}
+\begin{lstlisting}
 scp localfile yourname@othercomputer:
-\end{verbatim}
+\end{lstlisting}
 Note the colon at the end of this command: if you leave it out you get
 a local file with an `at' in the name.
 
 You can also copy a file from the remote machine. For instance, to
 copy a file, preserving the name:
-\begin{verbatim}
+\begin{lstlisting}
 scp yourname@othercomputer:otherdirectory/otherfile .
-\end{verbatim}
+\end{lstlisting}
 
 \Level 0 {The {\tt sed} and {\tt awk} tools}
 
@@ -1929,9 +1938,9 @@ The stream editor \indexunix{sed} is one example. If you have used the
 \verb+s/foo/bar/+ for making changes.
 With \n{sed}, you can do this on the commandline.
 For instance
-\begin{verbatim}
+\begin{lstlisting}
 sed 's/foo/bar/' myfile > mynewfile
-\end{verbatim}
+\end{lstlisting}
 will apply the substitute command \n{s/foo/bar/} to every line of
 \n{myfile}. The output is shown on your screen so you should capture
 it in a new file; see section~\ref{sec:unixpipe} for more on output
@@ -1939,39 +1948,39 @@ it in a new file; see section~\ref{sec:unixpipe} for more on output
 
 \begin{itemize}
 \item If you have more than one edit, you can specify them with
-\begin{verbatim}
+\begin{lstlisting}
 sed -e 's/one/two/' -e 's/three/four/'
-\end{verbatim}
+\end{lstlisting}
 \item If an edit needs to be done only on certain lines, you can
   specify that by prefixing the edit with the match string. For instance
-\begin{verbatim}
+\begin{lstlisting}
 sed '/^a/s/b/c/'
-\end{verbatim}
+\end{lstlisting}
 only applies the edit on lines that start with an~\n{a}. (See
 section~\ref{sec:regexp} for regular expressions.)
 
 You can also apply it on a numbered line:
-\begin{verbatim}
+\begin{lstlisting}
 sed '25/s/foo/bar'
-\end{verbatim}
+\end{lstlisting}
 \item The \n{a} and \n{i} commands are for `append' and `insert' respectively.
   They are somewhat strange in how they take their argument text:
   the command letter is followed by a backslash, with the insert/append
   text on the next line(s), delimited by the closing quote of the command.
-\begin{verbatim}
+\begin{lstlisting}
 sed -e '/here/a\
 appended text
 ' -e '/there/i\
 inserted text
 ' -i file
-\end{verbatim}
+\end{lstlisting}
 \item Traditionally, \n{sed} could only function in a stream, so
   the output file always had to be different from the input. The GNU
   version, which is standard on Linux systems, has a flag \n{-i} which
   edits `in place':
-\begin{verbatim}
+\begin{lstlisting}
 sed -e 's/ab/cd/' -e 's/ef/gh/' -i thefile
-\end{verbatim}
+\end{lstlisting}
 \end{itemize}
 
 \Level 1 {\tt awk}
@@ -1980,23 +1989,23 @@ The \indexunixdef{awk} utility also operates on each line, but it can be
 described as having a memory. An awk program consists of a sequence of
 pairs, where each pair consists of a match string and an action. The
 simplest awk program is
-\begin{verbatim}
+\begin{lstlisting}
 cat somefile | awk '{ print }'
-\end{verbatim}
+\end{lstlisting}
 where the match string is omitted, meaning that all lines match, and
 the action is to print the line. Awk breaks each line into fields
 separated by whitespace. A~common application of awk is to print a
 certain field:
-\begin{verbatim}
+\begin{lstlisting}
 awk '{print $2}' file
-\end{verbatim}
+\end{lstlisting}
 prints the second field of each line.
 
 Suppose you want to print all subroutines in a Fortran program; this
 can be accomplished with
-\begin{verbatim}
+\begin{lstlisting}
 awk '/subroutine/ {print}' yourfile.f
-\end{verbatim}
+\end{lstlisting}
 
 \begin{exercise}
   Build a command pipeline that prints of each subroutine header only
@@ -2008,15 +2017,15 @@ awk '/subroutine/ {print}' yourfile.f
 Awk has variables with which it can remember things. For instance,
 instead of just printing the second field of every line, you can make
 a list of them and print that later:
-\begin{verbatim}
+\begin{lstlisting}
 cat myfile | awk 'BEGIN {v="Fields:"} {v=v " " $2} END {print v}'
-\end{verbatim}
+\end{lstlisting}
 
 As another example of the use of variables, here is how you would
 print all lines in between a \n{BEGIN} and \n{END} line:
-\begin{verbatim}
+\begin{lstlisting}
 cat myfile | awk '/END/ {p=0} p==1 {print} /BEGIN/ {p=1} '
-\end{verbatim}
+\end{lstlisting}
 
 \begin{exercise}
   The placement of the match with \n{BEGIN} and \n{END} may seem
@@ -2037,16 +2046,16 @@ cat myfile | awk '/END/ {p=0} p==1 {print} /BEGIN/ {p=1} '
   Pretend that you're a professor writing a script for homework
   submission: if a student invokes this script it copies the student
   file to some standard location.
-\begin{verbatim}
+\begin{lstlisting}
 submit_homework myfile.txt
-\end{verbatim}
+\end{lstlisting}
   For simplicity, we simulate this by making a directory
   \n{submissions} and two different files \n{student1.txt} and
   \n{student2.txt}. After
-\begin{verbatim}
+\begin{lstlisting}
 submit_homework student1.txt
 submit_homework student2.txt
-\end{verbatim}
+\end{lstlisting}
   there should be copies of both files in the \n{submissions}
   directory. Start by writing a simple script; it should give a
   helpful message if you use it the wrong way.

@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% This text file is part of the source of 
-%%%% `Introduction to High-Performance Scientific Computing'
+%%%% `The Art of HPC, vol 1: The Science of Computing'
 %%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
@@ -192,23 +192,9 @@ We illustrate the spanning tree algorithm,
 using the notation $x_i^{(j)}$ for the data item~$i$
 that was originally on processor~$j$, and $x_i^{(j:k)}$ for the sum of
 the items~$i$ of processors $j\ldots k$.
-\[
-\begin{array}{|c|ccc|}
-\hline
-  &t=1&t=2&t=3\\ \hline
-p_0&x_0^{(0)},x_1^{(0)},x_2^{(0)},x_3^{(0)}
-   &x_0^{(0:1)},x_1^{(0:1)},x_2^{(0:1)},x_3^{(0:1)}
-   &x_0^{(0:3)},x_1^{(0:3)},x_2^{(0:3)},x_3^{(0:3)}\\
-p_1&x_0^{(1)}\uparrow,x_1^{(1)}\uparrow,x_2^{(1)}\uparrow,x_3^{(1)}\uparrow
-   &&\\
-p_2&x_0^{(2)},x_1^{(2)},x_2^{(2)},x_3^{(2)}
-   &x_0^{(2:3)}\uparrow,x_1^{(2:3)}\uparrow,x_2^{(2:3)}\uparrow,x_3^{(2:3)}\uparrow
-   &\\
-p_3&x_0^{(3)}\uparrow,x_1^{(3)}\uparrow,x_2^{(3)}\uparrow,x_3^{(3)}\uparrow
-   &&\\
-\hline
-\end{array}
-\]
+
+\input reduce
+
 On time $t=1$ processors $p_0,p_2$ receive from $p_1,p_3$, and on
 $t=2$ $p_0$ receives from~$p_2$.
 
@@ -234,6 +220,8 @@ elements on each processor, but leaves the result on each processor,
 rather than just on the root of the spanning tree. This could be
 implemented as a reduction followed by a broadcast, but more clever
 algorithms exist.
+
+\input allreduce
 
 The lower bound on the cost of an allreduce is, somewhat remarkably,
 almost the same as of a simple reduction: since in a reduction not all
@@ -2074,13 +2062,59 @@ in the problem. On a global level this will typically not be the case
 separate problems, right?) but on a smaller level there may be
 parallelism. 
 
-For instance, looking at time-dependent problems, and referring to
+For instance, looking at \indexterm{time-dependent problems}, and referring to
 section~\ref{sec:region-influence}, we can say that every next time
 step is of course dependent on the previous one, but not every
 individual point on the next time step is dependent on every point in
 the previous step: there is a \indexterm{region of influence}. 
 Thus it may be possible to partition the problem domain and
 obtain parallelism.
+
+In \acp{PDE}, we can also make a high-level statement about their
+\emph{parallel solution}\index{Partial Differential Equation!parallel solution}
+based on their characterization in term of
+what is known in PDE theory as \indexterm{characteristics}.
+A~\indexterm{wave equation} is intuitively a strictly forward going phenomenon,
+so the next time step is an explicit, parallel computable, function of the previous.
+On the other hand, \indexterm{elliptic problems}
+(section~ref{sec:elliptic})
+have every point depending on every other one.
+Therefore a parallel solution is probably going to involve
+some sequence of more explicit approximations.
+We will discuss that in the next subsection for a simple case.
+
+\Level 1 {The Laplace/Poisson equation on the unit square}
+\label{sec:laplace-model}
+
+The \indextermbus{Laplace equation}{on the unit square}
+\begin{equation}
+  -\Delta u=0,\qquad\hbox{on $\Omega=[0,1]^2$}
+\end{equation}
+is the simplest both-serious-and-useful \ac{PDE} problem.
+If we discretize this to second order,
+using either the \ac{FEM} or \ac{FDM},
+we obtain the matrix of \eqref{eq:5starmatrix}.
+
+The following approaches to solving this implicit system exist.
+\begin{itemize}
+\item The \indextermbus{Jacobi}{iteration}, equation~\eqref{eq:jacobi-ij},
+  is a fully parallel computation over all points,
+  but it takes many sweeps over the domain.
+\item The closely related \indextermbus{Gauss-Seidel}{iteration}
+  converges faster, but is implicit.
+  The common way to parallelize it is by \indexterm{multi-coloring};
+  section~\ref{sec:redblackgreen}.
+  Another approach is possible with \indexterm{wavefront}s; section~\ref{sec:wavefront}.
+\item A much better iteration scheme is to use the \indexac{CG} method;
+  section~\ref{sec:cg}.
+  This is typically accelerated by a preconditioner,
+  for which often some variant of the above Jacobi or Gauss-Seidel iteration is chosen;
+  see sections \ref{sec:preconditioner} and~\ref{sec:parallel-prec}.
+\item Finally, simple equations like the Laplace equation
+  can be solved by \indexterm{multigrid} methods,
+  whether by themselves or as preconditioner for an iterative method.
+  We will not discus that in this book.
+\end{itemize}
 
 \Level 1 {Operator splitting}
 

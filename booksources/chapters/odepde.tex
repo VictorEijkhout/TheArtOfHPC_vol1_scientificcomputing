@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% This text file is part of the source of 
-%%%% `Introduction to High-Performance Scientific Computing'
+%%%% `The Art of HPC, vol 1: The Science of Computing'
 %%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
@@ -593,8 +593,9 @@ The \indexterm{heat equation}
 (section~\ref{sec:heateq}) is the standard example of the parabolic type.
 
 \Level 2 {Elliptic equations}
+\label{sec:elliptic}
 
-\acp{PDE}\index{Elliptic PDEs} have the form 
+\acp{PDE}\index{elliptic problems} have the form 
 \begin{equation}
   Au_{xx}+Bu_{yy}+\hbox{lower order terms} =0
 \end{equation}
@@ -605,11 +606,12 @@ each other. These equations often describe phenomena in structural
 mechanics, such as a beam or a membrane. It is intuitively clear that
 pressing down on any point of a membrane will change the elevation of
 every other point, no matter how little.
-The \indexterm{Poisson equation}
+The \indexterm{Laplace equation}
+\index{Poisson equation|seealso{Laplace equation}}
 (section~\ref{sec:poisson}) is the standard example of
 this type.
 
-\Level 1 {The Poisson equation in one space dimension}
+\Level 1 {The Laplace equation in one space dimension}
 \label{sec:poisson}
 \label{sec:1dbvp}
 
@@ -626,8 +628,9 @@ a second order \indextermdef{differential operator}, and equation
     with $u(\bar x)=u_0$ on $\delta\Omega$.}
  \label{eq:2nd-order-bvp-poisson}
  \end{equation}
-is called the \indexterm{Poisson equation}, in this case defined on
+is called the \indextermdef{Poisson equation}, in this case defined on
 the unit square.
+The case of $f\equiv0$ is called the \indextermdef{Laplace equation}.
 Second order \acp{PDE} are quite common, describing many phenomena in
 fluid and heat flow and structural mechanics.
 
@@ -819,12 +822,12 @@ want to solve $Au=f$ in a way that does not require $O(n^2)$ storage.
   such a matrix? This relation is not typical!
 \end{exercise}
 
-\Level 1 {The Poisson equation in two space dimensions}
+\Level 1 {The Laplace equation in two space dimensions}
 \label{sec:2dbvp}
 
 The one-dimensional \ac{BVP} above was atypical in a number of ways,
 especially related to the resulting linear algebra problem. In this
-section we will investigate the two-dimensional Poisson problem.
+section we will investigate the two-dimensional Poisson/Laplace problem.
 You'll see that it constitutes a non-trivial generalization of the one-dimensional problem.
 The three-dimensional case is very much like the two-dimensional case,
 so we will not discuss it. (For one essential difference, see the discussion
