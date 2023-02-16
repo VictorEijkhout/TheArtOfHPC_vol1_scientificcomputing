@@ -1718,7 +1718,7 @@ the behavior of your shell. For instance, by setting the \n{PATH}
 variable you can extend the locations where the shell looks for executables.
 Other environment variables (section~\ref{tut:shellvars}) you can
 introduce for your own purposes. Many of these customizations will
-need to apply to every sessions, so you can have 
+need to apply to every session, so you can have 
 \emph{shell startup files} that will be read at the start of any session.
 
 Popular things to do in a startup file are defining \indexunix{alias}es:
@@ -1727,6 +1727,17 @@ alias grep='grep -i'
 alias ls='ls -F'
 \end{lstlisting}
 and setting a custom commandline \indexterm{prompt}.
+
+The name of the startup file depends on your shell:
+\indextermtt{.bashrc} for Bash,
+\indextermtt{.cshrc} for the C-shell, and
+\indextermtt{.zshrc} for the Z-shell.
+These files are read everytime you log in (see below for details),
+but you can also \indexunix{source} them directly:
+\begin{lstlisting}
+source ~/.bashrc
+\end{lstlisting}
+You would do this, for instance, if you have edited your startup file.
 
 Unfortunately, there are several startup files, and which one gets read
 is a complicated functions of circumstances. Here is a good common sense

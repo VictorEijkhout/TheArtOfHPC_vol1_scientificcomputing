@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -565,13 +565,12 @@ is, $(i,j)\in E$,
 then
 the value of~$a_{ij}$ is merely altered,
 which does not change the adjacency graph.
-In case $a_{ij}=0$  in the original
-matrix,
+In case $a_{ij}=0$  in the original matrix,
 meaning $(i,j)\not\in E$,
 there will be a nonzero element, termed a \indextermdef{fill-in}
 element,
 after the $k$~unknown
-is eliminated:
+is eliminated~\cite{Pa:graph}:
 \[ (i,j)\not\in E\quad\hbox{but}\quad (i,j)\in E'. \] 
 This is illustrated in figure~\ref{fig:ijk-eliminate}.
 

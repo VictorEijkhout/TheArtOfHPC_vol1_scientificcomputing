@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -152,5 +152,23 @@ giving an essentially lower complexity of~$O(n^{\log 7}) \approx O(n^{2.81})$.
 There are other algorithms like this~\cite{Pa:combinations},
 with slightly lower complexities,
 though all still well above~$O(n^2)$.
+
+\Level 0 {Little-oh complexity}
+
+In most algorithms we are interested in big-oh complexity.
+Computing little-oh complexity is more rare.
+
+As an example, considering factoring large integers,
+an important part of \indexterm{cryptography}.
+Naively, to find factors of a number~$N$,
+we would at worst have to try all numbers up to~$\sqrt N$.
+One of the best algorithms is the \indexterm{quadratic sieve},
+which has a complexity of $O( e^{ \sqrt{ \ln n \ln \ln n } } )$.
+
+Is this better than~$O(\sqrt N)$? Yes, because
+\[ e^{ \sqrt{ \ln n \ln \ln n } } = o( \sqrt n ). \]
+\begin{exercise}
+  Prove this. Hint: write $\sqrt n=e^{\ln \sqrt n}$.
+\end{exercise}
 
 %\index{complexity|)}

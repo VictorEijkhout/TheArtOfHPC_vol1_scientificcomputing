@@ -5,7 +5,7 @@
 #### for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
 ####
-#### copyright 2010-2021 Victor Eijkhout
+#### copyright 2010-2023 Victor Eijkhout
 ####
 #### makefile for graph computations
 ####     code/graph
@@ -37,6 +37,8 @@ run_graph2 : graphmvp
 
 include ../../makefiles/Make.run
 
+PUBLICEXTS = runout
+PUBLICFILES = README
 include ../../makefiles/Make.public
 
 include ../../makefiles/Make.clean

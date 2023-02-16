@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -41,16 +41,16 @@ has efficiency~$1$, which is optimal.
 
 Adding $N$ numbers $\{x_i\}_{i=1\ldots N}$ can be performed in
 $\log_2 N$ time with $N/2$ processors.
-If we have $n/2$ processors we
+If we have $N/2$ processors we
 could compute:
 \begin{enumerate}
 \item Define $s^{(0)}_i = x_i$.
-\item Iterate with $j=1,\ldots,\log_2 n$:
-\item Compute $n/2^j$ partial sums $s^{(j)}_i=s^{(j-1)}_{2i}+s^{(j-1)}_{2i+1}$
+\item Iterate with $j=1,\ldots,\log_2 N$:
+\item Compute $N/2^j$ partial sums $s^{(j)}_i=s^{(j-1)}_{2i}+s^{(j-1)}_{2i+1}$
 \end{enumerate}
-We see that the $n/2$ processors perform a total of $n$ operations (as
-they should) in $\log_2n$ time. The efficiency of this parallel scheme
-is~$O(1/\log_2n)$, a slowly decreasing function of~$n$.  
+We see that the $N/2$ processors perform a total of $N$ operations (as
+they should) in $\log_2N$ time. The efficiency of this parallel scheme
+is~$O(1/\log_2N)$, a slowly decreasing function of~$N$.  
 \begin{exercise}
   Show that, with the scheme for parallel addition just outlined, you
   can multiply two matrices in $\log_2 N$ time with $N^3/2$

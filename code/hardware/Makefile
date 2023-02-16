@@ -3,7 +3,7 @@
 ####
 #### Makefile for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-2022
+#### copyright 2010-2023
 ####
 #### makefile for hardware effects
 ####
@@ -125,9 +125,12 @@ run_falsesharing : falsesharing-omp
 # 	    ./falsesharing-thread
 
 RUNS += run_saturation
-.PHONY: run_saturation
 run_saturation : saturation
 	@./saturation
+.PHONY: ${RUNS}
+
+PUBLICEXTS = cxx hpp runout
+include ../../makefiles/Make.public
 
 .PHONY: ${RUNS}
 

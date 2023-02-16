@@ -1,0 +1,1 @@
+char const* greet(void);

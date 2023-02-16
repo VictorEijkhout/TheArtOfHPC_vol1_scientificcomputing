@@ -2,7 +2,7 @@
 ####
 #### Makefile for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-7
+#### copyright 2010-2023
 ####
 #### Makefile for gdb examples, F90 style
 ####
@@ -18,4 +18,4 @@ FC = gfortran
 % : %.F
 	${FC} -g -o $@ $@.F
 clean :
-	/bin/rm -rf ${PROGS} *~ *.o *.dSYM
+	@/bin/rm -rf ${PROGS} *~ *.o *.dSYM

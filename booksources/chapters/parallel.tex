@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -339,7 +339,7 @@ traversed. The speedup is much greater than~3 in this case.
 \Level 2 {Cost-optimality}
 
 In cases where the speedup is not perfect we can define
-\indexterm{overhead} as the difference \[ T_o = pT_p-T1. \]
+\indexterm{overhead} as the difference \[ T_o = pT_p-T_1. \]
 We can also interpret this as the difference between simulating the
 parallel algorithm on a single processor, and the actual best
 sequential algorithm.
@@ -482,8 +482,8 @@ to do all the operations of the parallel program.
   \label{fig:gustafson}
 \end{figure}
 (See figure~\ref{fig:gustafson}.)
-This is:
-\[ T_1=F_sT+p\cdot F_pT. \]
+Thus, we start out with an observed $T_p$, and reconstruct $T_1$ as:
+\[ T_1=F_sT_p+p\cdot F_pT_p. \]
 This gives us a speedup of
 \begin{equation}
   S_p=\frac{T_1}{T_p}=\frac{F_s+p\cdot F_p}{F_s+F_p}
@@ -822,9 +822,9 @@ This was satisfied by scaling up the problem.
 
 In the definition of \indextermsub{weak}{scalability} above, we stated
 that, under some relation between problem size~$N$ and number of
-processors~$P$, efficiency will stay constant. We can make this
+processors~$p$, efficiency will stay constant. We can make this
 precise and define the \indextermdef{iso-efficiency curve} as the
-relation between $N,P$ that gives constant
+relation between $N,p$ that gives constant
 efficiency~\cite{Grama:1993:isoefficiency}.
 
 \Level 2 {Precisely what do you mean by scalable?}

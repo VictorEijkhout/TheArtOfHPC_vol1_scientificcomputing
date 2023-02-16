@@ -5,7 +5,7 @@
 #### This Makefile belong with the sources
 #### for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-2021
+#### copyright 2010-2023
 ####
 #### makefile for code/array
 ####
@@ -62,6 +62,7 @@ run_cmallocpass :
 
 include ../../makefiles/Make.run
 
+PUBLICEXTS = c runout
 include ../../makefiles/Make.public
 
 include ../../makefiles/Make.clean
