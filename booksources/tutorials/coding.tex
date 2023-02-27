@@ -1,9 +1,10 @@
+% -*- latex -*-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -442,6 +443,25 @@ section~\HPSCref{sec:nonstationary}). As a result, the same iterative
 process can take different numbers of iterations depending on how many
 processors are used.
  
+\Level 1 {Unit testing}
+
+Unit testing is a way to ensure correctness of a code.
+For that it's necessary that the tests have full \indexterm{coverage}
+of the code: all statements in your code should be part of a test.
+
+Unit tests are also a way to document the use of a code:
+they show the intended use of the code.
+
+A few notes:
+\begin{itemize}
+\item Global state in your program makes it hard to test,
+  since it carries information between tests.
+\item Tests should not reproduce the logic of your code:
+  if the program logic is faulty, the test will be too.
+\item Tests should be short, and obey the \indexterm{single-responsibility} principle.
+  Naming your tests is good to keep them focused.
+\end{itemize}
+
 \Level 1 {Test-driven design and development}
 
 In test-driven design there is a strong emphasis on the code always
@@ -453,8 +473,6 @@ being testable. The basic ideas are as follows.
 \item With every change, test before and after.
 \item Assure correctness before adding new features.
 \end{itemize}
-
-\Level 1 {Further reading}
 
 Volume~3 of this series discusses \ac{TDD} and Unit Testing, using the
 \indexterm{Catch2} framework. See~\ISPref[chapter]{ch:tdd}.

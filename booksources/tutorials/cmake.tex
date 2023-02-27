@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -438,12 +438,21 @@ The full cmake file:
   \end{minipage}
 \end{floatingfigure}
 %
-If your program needs to be built using header files from a subdirectory,
-meaning:
+Suppose you have a directory with header files,
+as in the diagram on the right.
+The main program would have
+\lstinputlisting{tutorials/cmake/includedir/program.cxx}
+and which is compiled as:
 \begin{verbatim}
-cc -c yourprogram.c -I./some/dir
+cc -c program.cxx -I./inc
 \end{verbatim}
-you can specify that include path with \indexcmake{target_include_directories}.
+To make sure the header file gets found during the build,
+you specify that include path with \indexcmake{target_include_directories}:
+\begin{lstlisting}
+target_include_directories(
+	program PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}/inc" )
+\end{lstlisting}
 It is best to make such paths relative to
 \indexcmake{CMAKE_CURRENT_SOURCE_DIR},
 or the source root \indexcmake{CMAKE_SOURCE_DIR},
@@ -629,6 +638,27 @@ else()
 endif()
 \end{lstlisting}
 
+\Level 2 {Example: MPI}
+\index{MPI!cmake integration|(}
+
+(The files for this example are in \n{tutorials/cmake/mpiprog}.
+
+While many MPI implementations have a \n{.pc} file,
+it's better to use the FindMPI module.
+This package defines a number of variables
+that can be used to query the MPI found;
+for details see \url{https://cmake.org/cmake/help/latest/module/FindMPI.html}
+
+C version:
+%
+\lstinputlisting{tutorials/cmake/mpiprog/CMakeLists.txt}
+
+Fortran version:
+%
+\lstinputlisting{tutorials/cmake/mpiprogf/CMakeLists.txt}
+
+\index{MPI!cmake integration|)}
+
 \Level 2 {Example: OpenMP}
 \index{OpenMP!cake integration|(}
 
@@ -694,17 +724,6 @@ MYLIBRARY_LIBRARIES
 \end{verbatim}
 which you can then use in the \indexcmake{target_include_directories}
 command.
-
-\Level 2 {Example: MPI}
-\index{MPI!cmake integration|(}
-
-(The files for this example are in \n{tutorials/cmake/mpiprog}.
-
-This cmake setup searches for \n{mpich.pc}:
-%
-\lstinputlisting{tutorials/cmake/mpiprog/CMakeLists.txt}
-
-\index{MPI!cmake integration|)}
 
 \Level 2 {Example: PETSc}
 \index{PETSc!cmake integration|(}
@@ -957,7 +976,10 @@ Some variables are set by other commands.
 For instance the \texttt{project} command sets
 \indextermtt{PROJECT_NAME} and \indextermtt{PROJECT_VERSION}.
 
-Environment variables can be queried with the \indexcmake{ENV} command:
+\Level 2 {Environment variables}
+
+\emph{Environment variables}\index{environment variable!in Cmake}
+can be queried with the \indexcmake{ENV} command:
 \begin{lstlisting}
 set( MYDIR $ENV{MYDIR} )
 \end{lstlisting}

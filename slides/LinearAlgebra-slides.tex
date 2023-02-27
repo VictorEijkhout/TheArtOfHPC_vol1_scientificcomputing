@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2020
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -274,7 +274,7 @@ so $x_2$ is correct, but $x_1$ is completely wrong.
     \end{matrix}\right)
   \]
   Define $U=L_2L_1A$, then $A=LU$ with $L=L_1^{-1}L_2^{-1}$\\
-  `LU factorization'
+  `LU factorization' with $U$~upper; $L$~see next.
 }
 
 \frame{\frametitle{LU 3}
@@ -304,6 +304,7 @@ so $x_2$ is correct, but $x_1$ is completely wrong.
     \begin{matrix}
       1&0&0\\ 2&1&0\\ 1/2&3&1
     \end{matrix}\right)
+    \qquad\hbox{Lower triangular!}
   \]
   Can be computed in place! (pivoting?)
 }
@@ -352,6 +353,7 @@ so $x_2$ is correct, but $x_1$ is completely wrong.
   \onslide<2->{
     \[ x_n=u_{nn}^{-1}y_n,\quad x_{n-1}=u_{n-1n-1}^{-1}(y_{n-1}-u_{n-1n}x_n),
     \ldots \]
+    (Compute inverses once; store)
   }
 }
 

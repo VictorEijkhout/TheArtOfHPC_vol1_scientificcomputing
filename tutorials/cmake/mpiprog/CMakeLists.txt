@@ -1,18 +1,14 @@
 cmake_minimum_required( VERSION 3.12 )
-project( pkgconfiglib VERSION 1.0 )
+project( ${PROJECT_NAME} VERSION 1.0 )
 
-find_package( PkgConfig REQUIRED )
-pkg_check_modules( MPI REQUIRED mpich )
-message( STATUS "mpi includes: ${MPI_INCLUDE_DIRS}" )
+find_package( MPI )
 
-add_executable( program program.cxx )
+add_executable( ${PROJECT_NAME} ${PROJECT_NAME}.c )
 target_include_directories(
-	program PUBLIC
-	${MPI_INCLUDE_DIRS} )
-target_link_directories(
-	program PUBLIC
-	${MPI_LIBRARY_DIRS} )
+	${PROJECT_NAME} PUBLIC
+	${MPI_C_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} )
 target_link_libraries(
-	program PUBLIC mpich )
+	${PROJECT_NAME} PUBLIC 
+	${MPI_C_LIBRARIES} )
 
-install( TARGETS program DESTINATION . )
+install( TARGETS ${PROJECT_NAME} DESTINATION . )

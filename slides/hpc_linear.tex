@@ -109,11 +109,15 @@
     u(\bar x)=u_0&\bar x\in\delta\Omega
   \end{cases}
   \]
-  Now using central differences in both $x$ and $y$ directions.
+  Now using central differences in both $x$ and $y$ directions:
+  \[ 4u(x,y) - u(x+y,y) - u(x-h,y) - u(x,y+h) -u(x,y-h) \]
 \end{frame}
 
 \begin{frame}{The stencil view of things}
-  \includegraphics[scale=.1]{laplacedomain}
+  \hbox\bgroup
+  \includegraphics[scale=.09]{laplacedomain}
+  \( \begin{matrix}  &-1&\\ -1&4&-1\\ &-1& \\ \end{matrix} \)
+  \egroup
 \end{frame}
 
 \frame{\frametitle{Sparse matrix from 2D equation}
