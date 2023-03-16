@@ -24,6 +24,9 @@ using std::vector;
 
 #include <numeric>
 #include <random>
+using std::default_random_engine,std::random_device,std::mt19937,
+  std::uniform_real_distribution,std::uniform_int_distribution;
+
 #include <algorithm>
 #include <cassert>
 
@@ -48,6 +51,24 @@ void Cache<R>::allocate( uint64_t cachesize_in_words,bool trace ) {
 
 template <typename R>
 void Cache<R>::set( R v ) {
+  for ( auto &e : thecache )
+    e = v;
+};
+
+template <typename R>
+void Cache<R>::setrandom( R v ) {
+  static random_device rd;
+  static std::default_random_engine random_generator{ rd() };
+  uniform_real_distribution<R> fraction_dist(0,v);
+  for ( auto &e : thecache )
+    e = v;
+};
+
+template <>
+void Cache<int>::setrandom( int v ) {
+  static random_device rd;
+  static std::default_random_engine random_generator{ rd() };
+  uniform_int_distribution<int> fraction_dist(0,v);
   for ( auto &e : thecache )
     e = v;
 };

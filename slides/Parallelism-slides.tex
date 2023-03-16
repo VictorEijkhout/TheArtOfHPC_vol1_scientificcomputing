@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,8 +163,34 @@ for (s=2; s<n; s*=2)
   \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}{Simulation scaling}
+\begin{numberedframe}{Strong scaling}
+  \begin{itemize}
+  \item
+    Let $M$ be the total memory needed for your problem.
+  \item Let $P$ be the number of processors\\
+    $\Rightarrow$~memory per processor is~$M/P$
+  \item What is $\lim_{P\rightarrow\infty} E_P$?\\
+    (Note that implicitly $E_p=E(P,M)$.)
+  \end{itemize}
+\end{numberedframe}
 
+\begin{numberedframe}{Weak scaling}
+  \begin{itemize}
+  \item
+    Let $M$ be the memory per processor.
+  \item Let $P$ be the number of processors\\
+    $\Rightarrow$~total memory is~$M\cdot P$
+  \item What is $\lim_{P\rightarrow\infty} E_P$?\\
+    (Note that implicitly $E_p=E(P,M)$.)
+  \end{itemize}
+\end{numberedframe}
+
+\begin{exercise}{Linpack scaling}
+  \input{ex:scal-linpack}
+\end{exercise}
+%{ex:scal-linpack}
+
+\begin{numberedframe}{Simulation scaling}
   \begin{itemize}
   \item Assumption: simulated time~$S$, running time~$T$ constant, now increase precision
   \item  $m$ memory per processor, and $P$ the number of processors
@@ -206,26 +232,7 @@ for (s=2; s<n; s*=2)
   \end{itemize}
 \end{numberedframe}
 
-\begin{exercise}{Linpack scaling}
-  \label{ex:scal-linpack}
-  Explore simulation scaling in the context of the
-  \indextermbus{Linpack}{benchmark},
-  that is, Gaussian elimination.
-  Ignore the system solving part and
-  only consider the factorization part.
-  \begin{enumerate}
-  \item Suppose you have a single core machine, 
-    and your benchmark run takes time~$T$ with $M$~words of memory
-    Now you buy a processor that is twice as fast, and you want to do a
-    benchmark run that again takes time~$T$. How much memory do you need?
-  \item Now suppose you have a machine with $P$ processors,
-    each with $M$ memory, and your benchmark run takes time~$T$.
-    You buy a machine with $2P$ processors, of the same clock speed
-    and core count, and you want to do a benchmark run, again
-    taking time~$T$. How much memory does each node take?
-  \end{enumerate}
-\end{exercise}
-%{ex:scal-linpack}
+\Level 2 {Critical path analysis}
 
 \begin{numberedframe}{Critical path}
   \begin{itemize}
@@ -681,32 +688,13 @@ for (i=0; i<NTHREADS; i++)
 \end{lstlisting}
 \end{numberedframe}
 
-\begin{numberedframe}{Atomic operations}
-\begin{tabbing}
-  process 1: \texttt{I=I+2}\\
-  process 2: \texttt{I=I+3}
-\end{tabbing}
-\footnotesize
-\begin{tabular}{rrrrrr}
-  \toprule
-  \multicolumn{2}{c}{scenario 1.}& \multicolumn{2}{|c|}{scenario 2.}&
-  \multicolumn{2}{c}{scenario 3.}\\ \midrule
-  \multicolumn{6}{c}{$\n{I}=0$}\\ \midrule
-  read $\n{I}=0$&read $\n{I}=0$&
-    read $\n{I}=0$&read $\n{I}=0$&
-      read $\n{I}=0$& \\
-  do $\n{I}=2$&do $\n{I}=3$& 
-    do $\n{I}=2$&do $\n{I}=3$&
-      do $\n{I}=2$& \\
-  write $\n{I}=2$& & &write $\n{I}=3$&write $\n{I}=2$& \\
-  &write $\n{I}=3$&write $\n{I}=2$& & &read $\n{I}=2$\\
-  &&&&&do $\n{I}=5$\\
-  &&&&&write $\n{I}=5$\\
-  \midrule
-  \multicolumn{2}{c}{$\n{I}=3$}& \multicolumn{2}{c}{$\n{I}=2$}&
-  \multicolumn{2}{c}{$\n{I}=5$}\\ 
-  \bottomrule
-\end{tabular}
+\begin{numberedframe}{Race conditions}
+
+  \input race1
+  
+  \footnotesize
+  \input race2
+
 \end{numberedframe}
 
 \begin{numberedframe}{Dealing with atomic operations}
@@ -806,7 +794,7 @@ y_i\leftarrow y_i+x_{i-1}&i>0\\ \mbox{$y_i$ unchanged}&i=0
 \begin{numberedframe}{Using threads for load balancing}
   Dynamic scheduling gives load balancing
 
-  \includegraphics[scale=.1]{scheduling}
+  \hbox{\kern -20pt \includegraphics[scale=.08]{scheduling}}
 
   Hybrid is possible improvement over strict-MPI
 \end{numberedframe}

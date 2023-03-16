@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -879,9 +879,12 @@ that every time we pivot, we need to update the columns of~$L$ that
 have already been computed.
 
 \begin{exercise}
-  If we write equation~\eqref{eq:lu-pivot} as $PA=LU$, we get~$A=P\inv
-  LU$. Can you come up with a simple formula for $P\inv$ in terms of
-  just~$P$? Hint: each $P^{(i)}$ is symmetric and its own inverse; see
+  \label{ex:lu-pivot}
+  If we write equation~\eqref{eq:lu-pivot} as $PA=LU$,
+  we get~$A=P\inv LU$.
+  Can you come up with a simple formula for $P\inv$ in terms of
+  just~$P$?
+  Hint: each $P^{(i)}$ is symmetric and its own inverse; see
   the exercise above.
 \end{exercise}
 

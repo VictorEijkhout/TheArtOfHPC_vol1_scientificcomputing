@@ -483,7 +483,9 @@ classes too:
 \item the group \n{g}: a group of users to which the owner belongs;
 \item other \n{o}: everyone else.
 \end{itemize}
-These nine permissions are rendered in sequence
+(For more on groups and ownership, see section~\ref{sec:tut-group-own}.)
+
+The nine permissions are rendered in sequence
 
 \begin{fntable}{ccc}
   user&group&other\\ \midrule rwx&rwx&rwx \\
@@ -1827,7 +1829,8 @@ users. Here are some commands relating to them.
 \item [\indexunix{uptime}] how long has it been since your last reboot?
 \end{itemize}
 
-\Level 1 {Groups}
+\Level 1 {Groups and ownership}
+\label{sec:tut-group-own}
 
 In section~\ref{sec:unix-permissions} you saw that there is a
 permissions category for `group'. This allows you to open up files to
@@ -1855,7 +1858,13 @@ To add a user to a group:
 sudo usermod -a -G thegroup theuser
 \end{lstlisting}
 
+While you can change the group of a file,
+at least between groups that you belong to,
+changing the owning user of a file with \indexunix{chown}
+needs root priviliges. See section~\ref{sec:unix-sudo}.
+
 \Level 1 {The super user}
+\label{sec:unix-sudo}
 
 Even if you own your machine, there are good reasons to work as much
 as possible from a regular user account, and use
@@ -1885,6 +1894,12 @@ sudo su - otheruser
 sudo su -
 \end{lstlisting}
 \end{itemize}
+
+Change the owning user of a file is done with \indexunixdef{chown}:
+\begin{lstlisting}
+sudo chown somefile someuser
+sudo chown -R somedir someuser
+\end{lstlisting}
 
 \Level 0 {Connecting to other machines: {\tt ssh} and {\tt scp}}
 

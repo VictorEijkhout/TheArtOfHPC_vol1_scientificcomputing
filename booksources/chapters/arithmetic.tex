@@ -1001,20 +1001,20 @@ be interrupted: section~\ref{sec:catch-exp}.)
 
 \Level 2 {Not-a-Number}
 \label{sec:754nan}
-\index{NaN|(textbf}
 
 Apart from overflow and underflow, there are other
 exceptional situations.
 For instance,
 what result should be returned if the program asks for
 illegal operations such as~$\sqrt{-4}$? The IEEE 754 standard has two
-special quantities for this: \texttt{Inf} and~\texttt{NaN} for
-`infinity' and `not a number'.  Infinity is the result of overflow or
+special quantities for this:
+\indextermtt{Inf} and~\indextermtt{NaN} for `infinity' and `not a number'.
+Infinity is the result of overflow or
 dividing by zero, not-a-number is the result of, for instance,
 subtracting infinity from infinity.  
 
 To be precise,
-processors will represent as \emph{NaN} 
+processors will represent as \indextermttdef{NaN} 
 (`not a number')
 the result of:
 
@@ -1029,10 +1029,11 @@ the result of:
 \end{itemize}
 
 Since the processor can continue computing with such a number, it is
-referred to as a \indextermsub{quiet}{NaN}. By contrast, some NaN
+referred to as a \indextermttsub{quiet}{NaN}.
+ By contrast, some NaN
 quantities can cause the processor to generate an
 \indexterm{interrupt} or \indexterm{exception}. This is called a
-\indextermsub{signaling}{NaN}. 
+\indextermttsub{signaling}{NaN}. 
 
 If \texttt{NaN} appears in an
 expression, the whole expression will evaluate to that value. The rule

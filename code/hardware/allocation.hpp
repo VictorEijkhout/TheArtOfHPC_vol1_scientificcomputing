@@ -36,6 +36,8 @@ private:
   void check_alignment();
 public:
   void set( R v );
+  void setrandom( R mx );
+
   /*
    * indexing
    */

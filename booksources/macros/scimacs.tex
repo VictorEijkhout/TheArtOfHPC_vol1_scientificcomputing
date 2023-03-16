@@ -197,6 +197,10 @@
            {{\ttfamily\slshape #1}%
             \index{#1@\makeusletter\texttt{#1}\makeusother|textbf}\egroup
            }
+\newcommand{\indextermttsub}[2]{%
+    \emph{#1} \texttt{#2}%
+    \index{#1@\makeusletter\texttt{#2}\makeusother!#1}}
+
 %% \newcommand{\indextermttdef}[1]{{\ttfamily\slshape #1}\index{#1@\texttt{#1}|textbf}}
 
 \newcommand{\indexcmake}

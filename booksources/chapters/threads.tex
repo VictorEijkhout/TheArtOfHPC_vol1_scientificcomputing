@@ -218,11 +218,7 @@ source of potential problems.
 Suppose that two processes both try to increment an integer
 variable~\texttt{I}:
 
-  \begin{tabbing}
-    Init: \texttt{I=0}\\
-    process 1: \texttt{I=I+2}\\
-    process 2: \texttt{I=I+3}
-  \end{tabbing}
+\input race1
 
 This is a legitimate activity if the variable is an accumulator for
 values computed by independent processes.
@@ -231,26 +227,7 @@ depends on the sequence in which the processors read and
 write the variable.
 
 \begin{figure}[ht]
-  \begin{tabular}{rrrrrr}
-    \toprule
-    \multicolumn{2}{c}{scenario 1.}& \multicolumn{2}{c}{scenario 2.}&
-    \multicolumn{2}{c}{scenario 3.}\\ \midrule
-    \multicolumn{6}{c}{$\n{I}=0$}\\ \midrule
-    read $\n{I}=0$&read $\n{I}=0$&
-    read $\n{I}=0$&read $\n{I}=0$&
-    read $\n{I}=0$& \\
-    compute $\n{I}=2$&compute $\n{I}=3$& 
-    compute $\n{I}=2$&compute $\n{I}=3$&
-    compute $\n{I}=2$& \\
-    write $\n{I}=2$& & &write $\n{I}=3$&write $\n{I}=2$& \\
-    &write $\n{I}=3$&write $\n{I}=2$& & &read $\n{I}=2$\\
-    &&&&&compute $\n{I}=5$\\
-    &&&&&write $\n{I}=5$\\
-    \midrule
-    \multicolumn{2}{c}{$\n{I}=3$}& \multicolumn{2}{c}{$\n{I}=2$}&
-        \multicolumn{2}{c}{$\n{I}=5$}
- \\ \bottomrule
-  \end{tabular}
+  \input race2
   \caption{Three executions of a data race scenario.}
   \label{fig:race}
 \end{figure}

@@ -17,7 +17,7 @@ info ::
 
 PROGRAMS = arrayindex associativity bandwidth cachesize dependence stride strides  \
     falsesharing-omp falsesharing-thread falsesharing-spin \
-    loopexchange saturation template denormal unroll
+    branch loopexchange saturation template denormal unroll
 
 MODE = omp
 LANGUAGE = CXX

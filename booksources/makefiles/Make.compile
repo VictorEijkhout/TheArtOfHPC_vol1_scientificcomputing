@@ -19,7 +19,7 @@ MAKEFLAGS += --no-builtin-rules
 OMPFLAGS_intel    = -g -qopenmp
 OMPFLAGS_gcc      = -ggdb -fopenmp
 OMPFLAGS_clang    = -fopenmp
-OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
+OMPFLAGS = ${OMPFLAGS_${LMOD_FAMILY_COMPILER}}
 
 info ::
 	@echo "================ Compile rules:"
@@ -31,7 +31,7 @@ OPTLEVEL = 2
 info ::
 	@echo "    [ EXTRA_OPTIONS=... ] [ INCLUDES=... ]"
 
-ifdef TACC_TAU_DIR
+ifdef LMOD_TAU_DIR
   C_COMPILER = tau_cc.sh
   CXX_COMPILER = tau_cxx.sh
   F_COMPILER = tau_f90.sh
@@ -68,9 +68,9 @@ else
     CXX_COMPILER = ${MPI_CXX_COMPILER}
     F_COMPILER   = ${MPI_F_COMPILER}
   else
-    C_COMPILER = ${C_COMPILER_${TACC_FAMILY_COMPILER}}
-    CXX_COMPILER = ${CXX_COMPILER_${TACC_FAMILY_COMPILER}}
-    F_COMPILER = ${F_COMPILER_${TACC_FAMILY_COMPILER}}
+    C_COMPILER = ${C_COMPILER_${LMOD_FAMILY_COMPILER}}
+    CXX_COMPILER = ${CXX_COMPILER_${LMOD_FAMILY_COMPILER}}
+    F_COMPILER = ${F_COMPILER_${LMOD_FAMILY_COMPILER}}
   endif
 
 endif
