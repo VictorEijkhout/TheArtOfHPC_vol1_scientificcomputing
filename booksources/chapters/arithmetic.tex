@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -383,6 +383,9 @@ individual digits in such a number takes some decoding. For this
 reason, BCD arithmetic needs hardware support from the processor,
 which is rarely found these days; one example is the IBM
 Power architecture, starting with the \indextermbus{IBM}{Power6}.
+Intel had `BCD opcodes' that stored a decimal digit in 4~bits,
+so a byte could represent the numbers $0\cdots 99$.
+These opcodes were removed in 64-bit mode.
 
 \Level 0 {Real numbers}
 \label{sec:real-numbers}
@@ -2275,7 +2278,7 @@ processors could have a whole range of precisions. In practice,
 only single and double precision as defined have been used.
 However, one instance of \indextermdef{extended precision} still survives:
 Intel processors have 80-bit registers for storing intermediate results.
-(This goes back to the \indextermbus{Intel}{80287 co-processor}.)
+(This goes back to the \indextermbus{Intel}{8087 co-processor}.)
 This strategy makes sense in \indexac{FMA} instructions, 
 and in the accumulation of inner products.
 

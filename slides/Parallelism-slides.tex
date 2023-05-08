@@ -185,11 +185,6 @@ for (s=2; s<n; s*=2)
   \end{itemize}
 \end{numberedframe}
 
-\begin{exercise}{Linpack scaling}
-  \input{ex:scal-linpack}
-\end{exercise}
-%{ex:scal-linpack}
-
 \begin{numberedframe}{Simulation scaling}
   \begin{itemize}
   \item Assumption: simulated time~$S$, running time~$T$ constant, now increase precision
@@ -258,17 +253,6 @@ for (s=2; s<n; s*=2)
   \end{itemize}
 \end{numberedframe}
 
-\begin{exercise}{Linpack analysis}
-  Apply Brent's theorem to Gaussian elimination,
-  assuming that add/multiply/division all take one unit time.
-
-  What is the critical path; what is its length; what is the resulting upper bound
-  on the parallel runtime?
-  
-  How many processors could you theoretically use?
-  What speedup and efficiency does that give?
-\end{exercise}
-
 \Level 2 {Granularity}
 
 \begin{numberedframe}{Definition}
@@ -330,6 +314,73 @@ for (i=my_lower_bound; i<my_upper_bound; i++)
   // the loop body goes here
 \end{lstlisting}
 \end{numberedframe}
+
+\Level 2 {LU factorization analysis}
+
+\begin{numberedframe}{Algorithm}
+  \begin{tabbing}
+    \kern10pt\=\kern10pt\=\kern10pt\=\kill
+    for\={} $k=1,n-1$:\\
+    \>for\={} $i=k+1$ to $n$:\\
+    \>\> $a_{ik}\leftarrow a_{ik}/a_{kk}$\\
+    \>for\={} $i=k+1$ to $n$:\\
+    \>\>for\={} $j=k+1$ to $n$:\\
+    \>\>\>$a_{ij}\leftarrow a_{ij}-a_{ik}*a_{kj}$
+  \end{tabbing}
+
+  Can the $k$ loop be done in parallel? The $i,j$ loops?
+\end{numberedframe}
+
+\begin{numberedframe}{Dependent operations}
+\[ 
+\begin{array}{l}
+  a_{22} \leftarrow a_{22} - a_{21}*a_{11}\inv a_{12}\\
+  \cdots\\
+  a_{33} \leftarrow a_{33} - a_{32}*a_{22}\inv a_{23}\\
+\end{array}
+\]
+\end{numberedframe}
+
+\begin{exercise}{Critical path}
+  \input{ex:gauss-critical}
+\end{exercise}
+
+\begin{numberedframe}{Subblock update}
+\begin{tabbing}
+  \kern20pt\=\kern10pt\=\kern10pt\=\kern10pt\=\kill
+  for\={} $i=k+1$ to $n$:\\
+  \>for\={} $j=k+1$ to $n$:\\
+  \>\>$a_{ij}\leftarrow a_{ij}-a_{ik}*a_{kj}$
+\end{tabbing}
+  
+How many processors can you use maximally in step~$k$?
+\end{numberedframe}
+
+\begin{exercise}{Parallel execution}
+  \input{ex:gauss-n2parallel}  
+\end{exercise}
+
+\begin{numberedframe}{Application scaling}
+  Single processor.
+
+  Relating time and memory to problem size
+  \[ T=\frac 13 N^3/f,\qquad M=N^2. \]
+  where $f$ is processor frequency.
+\end{numberedframe}
+
+\begin{exercise}{Memory scaling, case 1: Faster processor}
+  \input{ex:gauss-f2f}
+\end{exercise}
+
+\begin{numberedframe}{More processors}
+  Keep frequency constant, but vary number of processors~$p$:
+  \[ T=\frac 13 N^3/p,\qquad M=N^2. \]
+  Each processor now stores $M_p=N^2/p$ elements.  
+\end{numberedframe}
+
+\begin{exercise}{Memory scaling, case 2: More processors}
+  \input{ex:gauss-p2p}
+\end{exercise}
 
 \Level 1 {The SIMD/MIMD/SPMD/SIMT model for parallelism}
 

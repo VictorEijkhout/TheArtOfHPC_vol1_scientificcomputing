@@ -15,7 +15,7 @@
 info ::
 
 CFLAGS = -O2 -std=c99
-MAKEINCLUDES = ${STOCKYARD}/makefiles
+MODE = seq
 
 PROJECTS = 
 info ::

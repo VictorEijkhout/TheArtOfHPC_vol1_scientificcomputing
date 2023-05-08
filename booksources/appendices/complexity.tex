@@ -171,4 +171,58 @@ Is this better than~$O(\sqrt N)$? Yes, because
   Prove this. Hint: write $\sqrt n=e^{\ln \sqrt n}$.
 \end{exercise}
 
+\Level 0 {Amortized complexity}.
+
+There are cases where you are interested in doing a sequence
+of operations, where the cost of each can vary widely.
+In that case, looking at the worst operation is valid,
+but from a practical point of view not the most relevant.
+For this, the concept of \indextermsubdef{amortized}{complexity}
+has been coined~\cite{Tarjan:amortized}.
+
+A common example of amortized complexity is dynamically extending an array.
+Assume we have allocated space for $n$ contiguous elements,
+and we want to add a new element to the array,
+keeping the data contiguous.
+The following is the space-minimal solution: 
+\begin{enumerate}
+\item Allocate $n+1$ elements;
+\item copy the existing data over;
+\item write the new element;
+\item de-allocate the old array.
+\end{enumerate}
+
+\begin{exercise}
+  What is the complexity of doing this operation repeatedly?
+  Ignore all cost of creating the arrays, and consider
+  only the copy operation, assuming a unit time per element.
+\end{exercise}
+
+A more efficient scheme is used in the run-time libraries
+of such languages as~C++:
+\begin{enumerate}
+\item Given allocated space for $n$ elements,
+  and wanting to store an $n+1$st element:
+\item Allocate $2n$ elements;
+\item Copy data over, write the new element;
+\item De-allocate the old array, and:
+\item For the next $n-1$ elements, write into the unused
+  portions of the new array.
+\end{enumerate}
+
+This solution is not minimal in space:
+if you never fill up the $2n$ elements,
+some memory will be wasted.
+However, by the above measure of the cost of writing elements
+it is optimal.
+
+\begin{exercise}
+  Show that the cost of storing $n$ elements by this scheme
+  is $O(n)$. What is the actual multiplicative constant?
+\end{exercise}
+
+Since writing $n$ elements has complexit $O(n)$,
+we say that the \indextermsub{amortized}{complexity}
+of this scheme is~$O(1)$, which is optimal up to a constant.
+
 %\index{complexity|)}

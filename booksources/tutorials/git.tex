@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -671,6 +671,63 @@ and you have to edit the file as in section~\ref{sec:git-conflict}.
   \label{fig:git-push}
   \label{fig:git-pull}
 \end{figure}
+
+\Level 0 {Releases}
+
+At certain point in your development process you
+may want to mark the current state of the repository
+as `finished'.
+You can do this by 
+\begin{enumerate}
+\item Attaching \indexgit{tag} to the state of the repository, or
+\item Creating an \indexgit{archive}: a released version that
+  has the repo information stripped.
+\end{enumerate}
+
+\Level 1 {Tags}
+
+A tag is a marked state of the repository.
+There are two types of tags:
+\begin{enumerate}
+\item light-weight tags are no more than a synonym for a commit:
+  \begin{lstlisting}
+    git tag v0.09
+  \end{lstlisting}
+\item annotated tags, which carry an information message:
+  \begin{lstlisting}
+    git tag -a v0.1 "base classes finished"
+  \end{lstlisting}
+\end{enumerate}
+
+You list all tags with \lstinline{git tag},
+you get information on a tag with \lstinline{git show v0.1},
+and you push a tag to a remote server with
+\begin{lstlisting}
+  git push origin v0.1
+\end{lstlisting}
+
+You can retrieve the tagged state of the repository with
+\begin{lstlisting}
+  git checkout v0.1
+\end{lstlisting}
+but beware that changes you now make can not be pushed to anything:
+this is a `detached HEAD' state.
+If you want to fix bugs in a tagged state,
+you can create a branch based on the tag:
+\begin{lstlisting}
+  git checkout -b version0.2 v0.1
+\end{lstlisting}
+
+\Level 1 {Archives, releases}
+
+%% https://git-scm.com/book/en/v2/Distributed-Git-Maintaining-a-Project#_preparing_release
+
+If you want to make a released version of your software,
+that can be downloaded and does not rely on the git software,
+use the \indexgit{archive} command:
+\begin{lstlisting}
+  git archive master --format=tgz --prefix=MyProject-v1 -o MyProject-v1.tgz
+\end{lstlisting}
 
 \endinput
 

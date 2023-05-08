@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2020
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,14 +33,14 @@ with a location of your choice.
   \begin{itemize}
   \item Either replace only the configure stage
 \begin{lstlisting}
-cmake ## argments
+cmake ## arguments
 make
 make install
 \end{lstlisting}
 or
   \item do everything with CMake:
 \begin{lstlisting}
-cmake ## argments
+cmake ## arguments
 cmake --build ## stuff
 cmake --install ## stuff
 \end{lstlisting}
@@ -75,6 +75,7 @@ cmake --install ## stuff
   \begin{itemize}
   \item In-source build: pretty common
   \item Out-of-source build: cleaner because never touches the source tree
+  \item Some people skip the install, use everything from the build directory.
   \end{itemize}
 \begin{lstlisting}
 \end{lstlisting}
@@ -85,29 +86,32 @@ cmake --install ## stuff
   \item Work from a build directory
   \item Specify prefix and location of \n{CMakeLists.txt}
   \end{itemize}
+\lstset{numbers=left,numberstyle=\tiny}
 \begin{lstlisting}
 ls some_package_1.0.0 # we are outside the source
 ls some_package_1.0.0/CMakeLists.txt # source contains cmake file
 mkdir builddir && cd builddir # goto build location
 cmake -D CMAKE_INSTALL_PREFIX=../installdir \
       ../some_package_1.0.0
-make
-make install
+make # make all tmp data in build loc
+make install # move stuff to install loc
 \end{lstlisting}
 \end{numberedframe}
+
+\sectionframe{Make your CMake configuration}
 
 \lstset{language=CMake}
 
 \begin{numberedframe}{The CMakeLists file}
+\begin{lstlisting}
+cmake_minimum_required( VERSION 3.12 )
+project( myproject VERSION 1.0 )
+\end{lstlisting}
   \begin{itemize}
   \item Which cmake version is needed for this file?\\
     (CMake has undergone quite some evolution!)
   \item Give a name to your project.
   \end{itemize}
-\begin{lstlisting}
-cmake_minimum_required( VERSION 3.12 )
-project( myproject VERSION 1.0 )
-\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Target philosophy}
@@ -138,16 +142,51 @@ target_link_libraries( program PRIVATE auxlib )
 \end{numberedframe}
 
 \begin{numberedframe}{Example: library during build}
+  \lstset{numbers=left,numberstyle=\tiny}
   \lstinputlisting{tutorials/cmake/privatelib/CMakeLists.txt}  
 \end{numberedframe}
 
 \begin{numberedframe}{Release a library}
-  To have the library released too use \lstinline{PUBLIC}.\\
+  To have the library released too, use \lstinline{PUBLIC}.\\
   Add the library target to the \lstinline{install} command.
 \end{numberedframe}
 
 \begin{numberedframe}{Example: released library}
+  \lstset{numbers=left,numberstyle=\tiny}
   \lstinputlisting{tutorials/cmake/withlib/CMakeLists.txt}  
+\end{numberedframe}
+
+\begin{numberedframe}{More about libraries}
+  Static vs shared libraries.
+  In the configuration file:
+\begin{lstlisting}
+add_library( auxlib STATIC aux.cxx aux.h )
+# or
+add_library( auxlib SHARED aux.cxx aux.h )
+\end{lstlisting}
+  or by adding a runtime flag
+\begin{verbatim}
+cmake -D BUILD_SHARED_LIBS=TRUE
+\end{verbatim}
+Related: the \indextermtt{-fPIC} compile option
+is set by \indexcmake{CMAKE_POSITION_INDEPENDENT_CODE}.
+\end{numberedframe}
+
+\sectionframe{Using other packages}
+
+\begin{numberedframe}{Problem}
+  You want to install a package/application\\
+  \dots~which needs 2 or 3 other packages.
+\lstset{language=Bash}
+\begin{lstlisting}
+cmake \
+    -D PACKAGE1_INC=/users/my/package1/include \ 
+    -D PACKAGE1_LIB=/users/my/package1/lib \ 
+    -D PACKAGE2_INC=/users/my/package2/include/packaage \ 
+    -D PACKAGE2_LIB=/users/my/package2/lib64 \ 
+    ../newpackage
+\end{lstlisting}
+Can this be make simpler?
 \end{numberedframe}
 
 \begin{numberedframe}{Finding packages with `pkg config'}
@@ -166,6 +205,40 @@ target_include_directories(
 	program PUBLIC
 	${PETSC_INCLUDE_DIRS} )
 \end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Eigen}
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/eigen/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{Other discovery mechanisms}
+  Some packages come with \texttt{FindWhatever.cmake}
+  or similar files.\\
+  Pity that there is not just one standard.
+
+  These define some macros, but you need to read the docs
+  to see which.\\
+  Pity that there is not just one standard.
+
+  Some examples follow.
+\end{numberedframe}
+
+\begin{numberedframe}{MPI from C}
+  \tiny
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/mpiprog/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{MPI from Fortran}
+  \tiny
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/mpiprogf/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{OpenMP}
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/openmp/CMakeLists.txt}
 \end{numberedframe}
 
 \endinput

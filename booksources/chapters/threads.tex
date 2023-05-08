@@ -261,7 +261,8 @@ and it is common enough that many threading systems have a
 dedicated mechanism for it.
 
 Code that behaves the same whether it's executed
-sequentially or threaded is called \indextermbusdef{thread}{safe}.
+sequentially or threaded is called
+\emph{thread-safe}\index{thread-safe|see{thread,safety}}\index{thread!safety}.
 As you can see from the above examples, a lack of thread safety is
 typically due to the treatment of shared data. This implies that
 the more your program uses local data, the higher the chance

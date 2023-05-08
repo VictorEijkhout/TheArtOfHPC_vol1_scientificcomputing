@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% application/montecarlo.tex
 %%%%
@@ -16,7 +16,7 @@ for generating random test data,
 or in \indexterm{Monte Carlo simulation};
 see chapter~\ref{app:montecarlo}.
 
-Here we discuss random number generators in general,
+Here we discuss \acfp{RNG} in general,
 their use in programming languages,
 and the problems of parallel random number generationn.
 
@@ -79,7 +79,7 @@ The main problems with lagged Fibonacci generators are:
 \lstset{language=C}
 
 There is an easy (but not terribly great)
-\indextermbus{random number}{generator}
+\ac{RNG}
 that works the same in C and~C++.
 %
 \begin{lstlisting}
@@ -126,6 +126,21 @@ for a generator with period~7 taken modulo~3.
   \caption{Low number bias of a random number generator taken module.}
   \label{fig:rand7mod3}
 \end{figure}
+
+\Level 2 {Other generators}
+
+There are other \acp{RNG} for~C,
+coming from Unix system calls.
+\begin{itemize}
+\item \indextermtt{drand48}: obsolete in \indextermbus{System V}{3},
+  replaced by \indextermtt{rand}.
+\item \indextermtt{rand_r}: a
+  \emph{thread-safe}\index{thread!safety, and RNGs}
+  variant of \indextermtt{rand}.
+  Marked obsolete in \indextermbus{POSIX}{1-2008}
+\item \indextermtt{random}: a more modern version of \indextermtt{rand}.
+\item \indextermtt{random_r}: a thread-safe variant of \indextermtt{random}.
+\end{itemize}
 
 \index{random numbers!generator!C language|)}
 

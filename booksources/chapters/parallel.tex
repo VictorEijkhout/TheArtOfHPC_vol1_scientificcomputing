@@ -291,6 +291,14 @@ attain that, so $S_p\leq p$. To measure how far we are from the ideal
 speedup, we introduce the \indextermdef{efficiency} $E_p=S_p/p$. Clearly,
 $0< E_p\leq 1$.
 
+\begin{exercise}
+  Prove that $E=1$ implies that all processors are active all the time.
+
+  (Hint: suppose all processors finish their work in time~$T$,
+  except for one processor in $T'<T$. What is $T_p$ in this case?
+  Explore the above relations.)
+\end{exercise}
+
 There is a practical problem with
 the above definitions: a problem that can be solved on a parallel machine
 may be too large to fit on any single processor. Conversely,
@@ -581,6 +589,11 @@ To make these notions precise, we define the following concepts:
 With these concepts, we can define the \indextermsub{average}{parallelism}
 of an algorithm as $T_1/T_\infty$, and the length of the critical path is~$T_\infty$.
 
+\begin{exercise}
+  Suppose you have an algorithm that can be executed with $E_p\equiv1$.
+  What does that mean for the critical path analysis?
+\end{exercise}
+
 We will now give a few illustrations by showing a graph of tasks and their dependencies.
 We assume for simplicity that each node is a unit time task.
 
@@ -686,6 +699,7 @@ That last statement actually holds in general. This is known as
   Brent's theorem and Amdahl's law?
 \end{exercise}
 
+\begin{comment}
 \begin{exercise}
   Apply Brent's theorem to Gaussian elimination,
   assuming that add/multiply/division all take one unit time.
@@ -696,6 +710,7 @@ That last statement actually holds in general. This is known as
   How many processors could you theoretically use?
   What speedup and efficiency does that give?
 \end{exercise}
+\end{comment}
 
 \Level 1 {Scalability}
 \label{sec:scaling}
@@ -932,27 +947,6 @@ Substituting $M=Pm$, we find ultimately
 \]
 that is, the memory per processor that we can use
 goes down as a higher power of the number of processors.
-
-\begin{exercise}
-  \label{ex:scal-linpack}
-  Explore simulation scaling in the context of the
-  \indextermbus{Linpack}{benchmark},
-  that is, Gaussian elimination.
-  Ignore the system solving part and
-  only consider the factorization part;
-  assume that it can be perfectly parallelized.
-  \begin{enumerate}
-  \item Suppose you have a single core machine,
-    and your benchmark run takes time~$T$ with $M$~words of memory.
-    Now you buy a processor twice as fast, and you want to do a
-    benchmark run that again takes time~$T$. How much memory do you need?
-  \item Now suppose you have a machine with $P$ processors,
-    each with $M$ memory, and your benchmark run takes time~$T$.
-    You buy a machine with $2P$ processors, of the same clock speed
-    and core count, and you want to do a benchmark run, again
-    taking time~$T$. How much memory does each node take?
-  \end{enumerate}
-\end{exercise}
 
 \Level 1 {Other scaling measures}
 
@@ -2367,7 +2361,8 @@ efficiency. Thus, the idea of incorporating a \emph{co-processor}
 attached to the \indexterm{host process}
 has been explored many times. For instance, Intel's 8086 chip, which
 powered the first generation of IBM PCs, could have a numerical
-co-processor, the 80287, added to it. This processor was very
+co-processor, the \indextermbus{Intel}{8087 co-processor}, added to it.
+This co-processor was very
 efficient at transcendental functions and it also incorporated
 \ac{SIMD} technology. Using separate functionality for graphics has also
 been popular, leading to the \indexac{SSE} instructions for the x86 processor,

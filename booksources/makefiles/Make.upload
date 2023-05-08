@@ -4,9 +4,9 @@
 #### This makefile is part of the course
 #### High Performance Scientific Computing
 #### by Victor Eijkhout (eijkhout@tacc.utexas.edu)
-#### copyright 2017-2022 Victor Eijkhout
+#### copyright 2017-2023 Victor Eijkhout
 ####
-#### Make.inc : global definitions
+#### Make.upload : repo management
 ####
 ################################################################
 
@@ -15,7 +15,7 @@ info ::
 .PHONY: upload upload_dropbox upload_publicpdf upload_studentrepo
 
 BOOKNAME = EijkhoutScientificComputing
-
+VOL = 1
 upload_dropbox ::
 	@dir="${DROPBOX}/${REPOSUBDIR}" \
 	 && if [ ! -z "$$dir" ] ; then \
@@ -30,8 +30,11 @@ upload_publicpdf ::
 	@if [ ! -z "${PUBLICDIR}" ] ; then \
 	  if [ -z "${TARGETFILE}" ] ; then \
 	        targetfile=${FILE} ; else targetfile=${TARGETFILE} ; fi \
-	  && echo "Copying <<${FILE}>> to publicdir: <<${PUBLICDIR}>> as <<$$targetfile>>" \
-	  && cp "${FILE}" "${PUBLICDIR}"/"$$targetfile" \
+	  && targetdir="${PUBLICDIR}/${REPOSUBDIR}" \
+	  && if [ ! -d "$${targetdir}" ] ; then \
+	        echo "No such target dir for public pdf: $${targetdir}" && exit 1 ; fi \
+	  && echo "Copying <<${FILE}>> to publicdir: <<$$targetdir>> as <<$$targetfile>>" \
+	  && cp "${FILE}" "$$targetdir/$$targetfile" \
 	  ; \
 	fi
 

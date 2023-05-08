@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -17,18 +17,20 @@
 \label{sec:graph-analytics}
 
 Various problems in scientific computing can be formulated as graph
-problems (for
-an introduction to graph theory see Appendix~\ref{app:graph}); for
-instance, you have 
-encountered the problem of load
+problems;
+for an introduction to graph theory see Appendix~\ref{app:graph}).
+For instance, you have 
+encountered the problems of load
 balancing (section~\ref{sec:graph-loadbalancing}) and finding
 independent sets (section~\ref{sec:redblackgreen}).
 
 Many traditional graph algorithms are
 not immediately, or at least not efficiently, applicable, since the
-graphs are often distributed, and traditional graph theory assume global
+graphs are often distributed, and traditional graph theory assumes global
 knowledge of the whole graph. Moreover, graph theory is often concerned
 with finding the optimal algorithm, which is usually not a parallel one.
+Conversely, in parallel we may get enough of a speedup that we
+can afford to waste some cycles on an algorithms that is not optimal sequentially.
 Therefore, parallel graph algorithms are a field of study by themselves.
 
 Recently, new types of graph computations in have arisen in scientific
@@ -61,13 +63,15 @@ There are several types of shortest path algorithms. For instance,
 in the \indextermsub{single source}{shortest path} algorithm
 one wants the shortest path from a given node to any other node.
 In \indextermsub{all-pairs}{shortest path} algorithms
-one wants to know the distance between any two nodes.
+one wants to know the shortest distance between any two nodes.
 Computing the actual paths is not part of these algorithms; 
 however, it is usually easy to include some information by
 which the path can be reconstructed later.
 
 We start with a simple algorithm: finding the single source shortest
 paths in an unweighted graph. This is simple to do with a \acf{BFS}:
+in each step we have a set~$U$ of nodes for which the shortest distances
+are known, and we consider the set~$V$ of their neighbors.
 
 \begin{displayalgorithm}
   \Input{A graph, and a starting node~$s$}
@@ -76,9 +80,9 @@ paths in an unweighted graph. This is simple to do with a \acf{BFS}:
   Initialize the finished set as $U=\{s\}$\;
   Set $c=1$\;
   \While{not finished}{
-    Let $V$ the neighbours of $U$ that are not themselves in $U$\;
+    Let $V$ be the set of neighbours of $U$ that are not themselves in $U$\;
     \If{$V=\emptyset$}{We're done}\Else{
-    Set $d(v)=c+1$ for all $v\in V$.\;
+      \For{$v\in V$}{Set $d(v)=c+1$}
     $U\leftarrow U\cup V$\;
     Increase $c\leftarrow c+1$
     }
@@ -114,7 +118,9 @@ nodes for the paths.
 Specifically,  in step~$k$ all paths $u\rightsquigarrow v$ are considered 
 that have intermediate nodes in the set $k=\{0,\ldots,k-1\}$, and $\Delta_k(u,v)$ 
 is the defined as the path length from $u$ to~$v$ where all intermediate nodes
-are in~$k$. Initially, this means that only graph edges are considered, and
+are in~$k$.
+Initially, for $k=0$ this means that there are no intermeidate edges,
+so only graph edges are considered;
 when $k\equiv |V|$ we have considered all possible paths and we are done.
 
 The computational step is
@@ -139,11 +145,7 @@ Writing it algorithmically:
 \end{displayalgorithm}
 we see that this algorithm has a similar structure to Gaussian elimination, 
 except that there the inner loop would be `for all $u,v>k$'.
-
-In section~\ref{sec:fill} you saw that the factorization of sparse
-matrices leads to \emph{fill-in}\index{fill-in!in graph algorithms},
-so the same problem occurs here. This requires flexible data structures,
-and this problem becomes even worse in parallel; see section~\ref{sec:random-graph-product}.
+(One could also compare this to the \indextermbus{Gauss}{Jordan} algorithm.)
 
 Algebraically:
 \begin{displayalgorithm}
@@ -164,6 +166,11 @@ path between $i$ and~$j$.
   and~$j$ once $d(\cdot,\cdot)$ and $n(\cdot,\cdot)$ are known.
 \end{exercise}
 
+In section~\ref{sec:fill} you saw that the factorization of sparse
+matrices leads to \emph{fill-in}\index{fill-in!in graph algorithms},
+so the same problem occurs here. This requires flexible data structures,
+and this problem becomes even worse in parallel; see section~\ref{sec:random-graph-product}.
+
 \index{Floyd-Warshall algorithm|)}
 
 \Level 1 {Spanning trees}
@@ -180,10 +187,13 @@ A~minimum spanning tree need not be unique.
 \indexterm{Prim's algorithm}, a slight variant of
 \indexterm{Dijkstra's shortest path algorithm}, computes a spanning
 tree starting at a root. The root has path length zero, and all other
-nodes infinity.  In each step, all nodes connected to the known tree
+nodes have path length infinity.
+In each step, all nodes connected to the known tree
 nodes are considered, and their best known path length updated.
 
 \begin{displayalgorithm}
+  \Input{A graph $\langle V,E\rangle$ and node $s\in V$}
+  \Output{A function $\ell(\cdot)$ giving the shortest distance of any node to~$s$}
   \For {all vertices $v$}{$\ell(v)\leftarrow\infty$}
   $\ell(s)\leftarrow 0$\;
   $Q\leftarrow V-\{s\}$ and $T\leftarrow \{s\}$\;
@@ -234,9 +244,9 @@ nodes are considered, and their best known path length updated.
   which contradicts the fact that we choose~$u$ to have minimal $\ell$~value.
 \end{proof}
 
-To parallelize this algorith we observe that the inner loop is
-independent and therefore parallelizable.
-However, the outer loop
+To parallelize this algorithm we observe that the inner loop has
+independent iterations and is therefore parallelizable.
+However, each iteration of the outer loop
 has a choice that minimizes a function value. Computing this
 choice is a reduction operator, and subsequently it needs to be broadcast.
 This strategy makes the sequential time equal to $d\log P$ where $d$~is
@@ -257,11 +267,12 @@ It runs in $O\left(|V|\cdot |E|\right)$ time.
 Sometimes you may want to partition a graph, for instance for purposes
 of parallel processing. If this is done by partitioning the vertices,
 you are as-it-were cutting edges, which is why this is known as a
-\indexterm{vertex cut} partitioning. There are various criteria for
+\indexterm{vertex cut} partitioning.
+
+There are various criteria for
 what makes a good vertex cut.
 For instance, you want the cut parts to
-be of roughly equal size, to balance out parallel work.
-
+be of roughly equal size, in order to balance out parallel work.
 Since the
 vertices often correspond to communication,
 you also want the number of vertices on the cut
@@ -320,9 +331,11 @@ seen before.
 
 \Level 2 {Parallelizing the all-pairs algorithms}
 
-In the single-source shortest path algorithm above we didn't have much
-choice but to parallelize by distributing the vector rather than the
-matrix.  This type of distribution is possible here too, and it
+In the single-source shortest path algorithm
+(section~\ref{sec:sssp})
+we didn't have much choice but to parallelize by distributing the vector rather than the
+matrix.
+This type of distribution is possible here too, and it
 corresponds to a one-dimensional distribution of the $D(\cdot,\cdot)$
 quantities.
 \begin{exercise}

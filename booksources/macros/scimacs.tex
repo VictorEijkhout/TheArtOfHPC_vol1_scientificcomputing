@@ -156,6 +156,7 @@
 \acroitem{PDE}{Partial Diffential Equation}
 \acroitem{PRAM}{Parallel Random Access Machine}
 \acroitem{RDMA}{Remote Direct Memory Access}
+\acroitem{RNG}{Random Number Generator}
 \acroitem{SAN}{Storage Area Network}
 \acroitem{SAS}{Software As a Service}
 \acroitem{SFC}{Space-Filling Curve}
@@ -203,12 +204,27 @@
 
 %% \newcommand{\indextermttdef}[1]{{\ttfamily\slshape #1}\index{#1@\texttt{#1}|textbf}}
 
+%%
+%% cmake indexing
+%%
 \newcommand{\indexcmake}
            {\bgroup\catcode`\_=12 \indextermcmeg}
 \newcommand{\indextermcmeg}[1]%end term with underscore
            {{\lstinline+#1+}%
             \index{#1@\makeusletter\texttt{#1}\makeusother\ (cmake command)}\egroup
            }
+\let\indextermcmake\indexcmake
+
+%%
+%% git indexing
+%%
+\newcommand{\indexgit}
+           {\bgroup\catcode`\_=12 \indextermgteg}
+\newcommand{\indextermgteg}[1]%end term with underscore
+           {{\lstinline+#1+}%
+            \index{#1@\makeusletter\texttt{#1}\makeusother\ (git command)}\egroup
+           }
+\let\indextermgit\indexgit
 
 \newcommand\makeusletter{\catcode`\_=11 }
 \newcommand\makeusother{\catcode`\_=12 }
@@ -228,13 +244,6 @@
            }
 \let\indexunix\indextermunix
 \let\indexunixdef\indextermunixdef
-
-\newcommand{\indextermcmake}% begin term with underscore
-           {\bgroup\catcode`\_=12 \indextermcmakeeg}
-\newcommand{\indextermcmakeeg}[1]%end term with underscore
-           {{\ttfamily\slshape #1}%
-            \index{#1@\makeusletter\texttt{#1}\makeusother\ (cmake command)}\egroup
-           }
 
 \newcommand{\indextermdef}[1]{\emph{#1}\index{#1|textbf}}
 \newcommand{\indextermp}[1]{\emph{#1s}\index{#1}}

@@ -25,9 +25,12 @@ the user.
 Most of this tutorial will work on any Unix-like platform,
 however, there is not just one Unix:
 \begin{itemize}
-\item Traditionally there are a few major flavors of Unix: ATT and BSD.
+\item Traditionally there are a few major flavors of Unix:
+  ATT or \indexterm{System V}, and \indexterm{BSD}.
   Apple has Darwin which is close to BSD; IBM and HP have their own
-  versions of Unix, and Linux is yet another variant. The differences between
+  versions of Unix, and Linux is yet another variant.
+  These days many Unix versions adhere to the \indexterm{POSIX} standard.
+  The differences between
   these are deep down and if you are taking this tutorial you probably
   won't see them for quite a while.
 \item Within Linux there are various \indextermbus{Linux}{distributions}
@@ -858,22 +861,12 @@ security risk. If your directory is writable, someone could put a
 malicious script named \n{cd} (or any other system command) in your
 directory, and you would execute it unwittingly.
 
-It is possible to define your own commands as aliases of existing
-commands.
-
-%\practical
-\begin{exercise}
-  Do \n{alias chdir=cd} and convince yourself that now \n{chdir} works
-  just like \n{cd}. Do \n{alias rm='rm -i'}; look up the meaning of
-  this in the man pages. Some people find this alias a good idea; can
-  you see why?
-\end{exercise}
-\begin{outcome}
-  The \n{-i} `interactive' option for \n{rm} makes the command ask for
-  confirmation before each delete. Since unix does not have a trashcan
-  that needs to be emptied explicitly (as on Windows or the Mac OS),
-  this can be a good idea.
-\end{outcome}
+The safest way to execute a program in the current directory is:
+\begin{lstlisting}
+./my_program
+\end{lstlisting}
+This holds both for compiled programs and shell scripts;
+section~\ref{sec:shell-scripting}.
 
 \begin{remark}
   Not all Unix commands correspond to executables. The
@@ -890,6 +883,25 @@ $ type module
 module is a shell function from /usr/local/Cellar/lmod/8.7.2/init/zsh
 \end{lstlisting}
 \end{remark}
+
+\Level 1 {Aliases}
+
+It is possible to define your own commands as aliases of existing
+commands.
+
+%\practical
+\begin{exercise}
+  Do \n{alias chdir=cd} and convince yourself that now \n{chdir} works
+  just like \n{cd}. Do \n{alias rm='rm -i'}; look up the meaning of
+  this in the man pages. Some people find this alias a good idea; can
+  you see why?
+\end{exercise}
+\begin{outcome}
+  The \n{-i} `interactive' option for \n{rm} makes the command ask for
+  confirmation before each delete. Since unix does not have a trashcan
+  that needs to be emptied explicitly (as on Windows or the Mac OS),
+  this can be a good idea.
+\end{outcome}
 
 \Level 1 {Command sequencing}
 \label{tut:unix-bq}
@@ -1490,6 +1502,10 @@ for i in `seq 1 ${HOWMANY}` ; do echo $i ; done
 \end{lstlisting}
 Note the \indexterm{backtick}, which is necessary to have the \n{seq}
 command executed before evaluating the loop.
+
+You can break out of a loop with \indexunix{break};
+this can even have a numeric argument indicating
+how many levels of loop to break out of.
 
 \Level 0 {Scripting}
 \label{sec:unix-script}

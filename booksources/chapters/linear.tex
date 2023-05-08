@@ -616,7 +616,8 @@ computational behavior. This issue, in the context of dense matrices,
 is the focus of van de Geijn and Quintana's {\it The Science of
   Programming Matrix Computations}~\cite{TSoPMC}.
 
-\Level 1 {Computational variants}
+\Level 2 {Computational variants}
+\label{sec:LUvariants}
 
 The above algorithm is only one of a several ways of computing the $A=LU$ result.
 That particular formulation was derived by formalizing the process of row elimination.
@@ -661,7 +662,7 @@ The new algorithm, on the other hand, has no such conflicting writes:
 sufficient parallelism can be obtained from the computation of the
 row of $U$ and column of~$L$.
 
-\Level 1 {The Cholesky factorization}
+\Level 2 {The Cholesky factorization}
 \index{Cholesky factorization|(}
 \label{sec:cholesky}
 
