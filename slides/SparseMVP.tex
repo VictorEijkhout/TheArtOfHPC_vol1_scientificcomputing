@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,7 +45,7 @@ induces ghost region:
 
 \includegraphics[scale=.5]{ghost}
 
-Limited number of neighbours, limited buffer space
+Limited number of neighbors, limited buffer space
 }
 
 \begin{frame}{Matrix vs operator view}
@@ -98,7 +98,7 @@ Limited number of neighbours, limited buffer space
 \begin{frame}{MPI implementation}
 \begin{itemize}
 \item Assume general communication structure:\\
-  neighbour processors can not statically be determined
+  neighbor processors can not statically be determined
 \item Assume no structural symmetry
 \item For matrix-vector product:\\
   each processor issues send and receive requests
@@ -138,7 +138,7 @@ Reduce-scatter, proc~$i$ has $C_{i*}$
   \begin{itemize}
   \item The above is collective, implies synchronization
   \item temp space $O(P)$
-  \item can we get this down to $O(\#\mathrm{neighbours})$?
+  \item can we get this down to $O(\#\mathrm{neighbors})$?
   \item \textsl{can we detect that we have received all requests\\
     without knowing how many to expect?}
   \end{itemize}
@@ -161,7 +161,7 @@ Reduce-scatter, proc~$i$ has $C_{i*}$
   `Distributed Termination Detection'\\
   used to be (extremely) tricky, now easy with MPI~3
 
-  Establish sparse neighbours:
+  Establish sparse neighbors:
   \begin{itemize}
   \item Send all your own requests (Isend)
   \item Loop:

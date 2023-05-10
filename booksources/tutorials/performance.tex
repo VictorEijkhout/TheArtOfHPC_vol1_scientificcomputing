@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -199,18 +199,64 @@ program, typically functions and subroutines, or parts of the code
 that you have declared as such. The tool will then report how many
 time the event occurred, total and average time spent, et cetera.
 
-The only tool we mention here is \indexterm{gprof}, the profiler of
-the \indexterm{GNU} compiler.
+Here we discuss two simple tools:
+\begin{itemize}
+\item \indextermunix{gprof}, which requires instrumentation, and
+\item \indextermunix{perf}, which doesn't.
+\item Intel VTune.
+\end{itemize}
+
 The TAU tool, discussed in section~\ref{tut:tau} for the purposes of tracing,
 also has profiling capabilities, presented in a nice graphic way.
 Finally, we mention that the \indexterm{PETSc} library
 allows you to define your own timers and events.
 
+\Level 1 {gprof}
+
+The profiler of the \indexterm{GNU} compiler, \indextermunixdef{gprof}
+requires recomplication with an extra flag:
+
 \begin{verbatim}
-% gcc  -g -pg ./srcFile.
+% gcc  -g -pg ./srcFile.c -o MyProgram
+\end{verbatim}
+
+The program is then run by itself:
+\begin{verbatim}
+% ./MyProgram
+\end{verbatim}
+
+and the results are post-processed and displayed:
+\begin{verbatim}
 % gprof    ./exeFile gmon.out > profile.txt
 % gprof -l ./exeFile gmon.out > profile_line.txt
-% gprof -A ./exeFile gmon.out > profile_anotated.tx
+% gprof -A ./exeFile gmon.out > profile_anotated.txt
+\end{verbatim}
+
+\Level 1 {perf}
+
+Coming with most Unix distributions,
+\indextermunixdef{perf}
+does not require any instrumentation.
+
+Run:
+\begin{verbatim}
+perf record yourprogram options
+perf record --call-graph fp yourprogram options
+\end{verbatim}
+
+Post-process and display:
+\begin{verbatim}
+perf report
+perf report --demangle ## for C++
+\end{verbatim}
+
+\Level 1 {Intel VTune}
+
+The \indextermbus{Intel}{VTune} profiler also needs no instrumentation.
+\begin{verbatim}
+vtune -collect hotspots yourprogram options
+## result dir something like: r001hs
+vtune -report hotspots -r r001hs
 \end{verbatim}
 
 \Level 1 {MPI profiling}

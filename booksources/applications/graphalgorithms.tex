@@ -80,7 +80,7 @@ are known, and we consider the set~$V$ of their neighbors.
   Initialize the finished set as $U=\{s\}$\;
   Set $c=1$\;
   \While{not finished}{
-    Let $V$ be the set of neighbours of $U$ that are not themselves in $U$\;
+    Let $V$ be the set of neighbors of $U$ that are not themselves in $U$\;
     \If{$V=\emptyset$}{We're done}\Else{
       \For{$v\in V$}{Set $d(v)=c+1$}
     $U\leftarrow U\cup V$\;
@@ -102,7 +102,7 @@ In that case, the traditional formulations fall short:
 \begin{itemize}
 \item They are often based on queues to which nodes are added or subtracted; this means
   that there is some form of shared memory.
-\item Statements about nodes and neighbours are made without wondering if these
+\item Statements about nodes and neighbors are made without wondering if these
   satisfy any sort of spatial locality; if a node is touched more than once there is
   no guarantee of temporal locality.
 \end{itemize}
@@ -238,7 +238,7 @@ nodes are considered, and their best known path length updated.
   yet, and $L(u)>L(x)+w_{xy}$ since there is at least one edge (which has 
   positive weight) between $y$ and~$u$. But $x\in T$, so $L(x)=\ell(x)$
   and $L(x)+w_{xy}=\ell(x)+w_{xy}$. Now we observe that when $x$ was
-  added to~$T$ its neighbours were updated, so $\ell(y)$ is $\ell_x+w_{xy}$ or less.
+  added to~$T$ its neighbors were updated, so $\ell(y)$ is $\ell_x+w_{xy}$ or less.
   Stringing together these inequalities we find 
   \[ \ell(y)<\ell(x)+w_{xy}=L(x)+w_{xy}<L(u)<\ell(u) \]
   which contradicts the fact that we choose~$u$ to have minimal $\ell$~value.
@@ -374,7 +374,7 @@ matrix as a linear algebra object.
 In many cases we actually need the left product, that is, multiplying
 the adjacency matrix from the left by a row vector. Let for example $e_i$~be 
 the vector with a~$1$ in location~$i$ and zero elsewhere. Then $e_i^tG$
-has a one in every~$j$ that is a neighbour of~$i$ in the adjacency graph of~$G$.
+has a one in every~$j$ that is a neighbor of~$i$ in the adjacency graph of~$G$.
 
 More general, if we compute $x^tG=y^t$ for a unit basis vector~$x$, we have
 \[ 
@@ -621,7 +621,7 @@ amenable to certain kinds of problems.
 %
 For instance, using \acp{FDM} or \acp{FEM} to model two or
 three-dimensional objects leads graphs where each node is connected to
-just a few neighbours. This makes it easy to find
+just a few neighbors. This makes it easy to find
 \indextermp{separator}, which in turn allows such solution methods as
 \indexterm{nested dissection}; see section~\ref{sec:dissection}.
 
@@ -706,7 +706,7 @@ function.
     while for a closed triplet the last relation is an
     inclusion. A~local definition is based on the fact that in a
     \indexterm{clique} of $k$ nodes there are $k(k-1)/2$ edges (in an
-    undirected graph). Defining the \indexterm{neighbourhood} of a
+    undirected graph). Defining the \indexterm{neighborhood} of a
     node~$i$ as 
     \[ N_i=\{j\not=i\colon (i,j)\in E\}, \]
     the local clustering coefficient can be defined as 

@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -24,7 +24,7 @@ study of collections of particles, possibly very big particles such as
 planets or stars, under the influence of a force such as gravity or
 the electrical force. (There can also be external forces, which we
 will ignore; also we assume there are no collisions, otherwise we need
-to incorporate nearest-neighbour interactions.) This type of problems
+to incorporate nearest-neighbor interactions.) This type of problems
 is known as N-body problems; for an introduction
 see \url{http://www.scholarpedia.org/article/N-body_simulations_(gravitational)}.
 
@@ -241,7 +241,7 @@ With this we compute the force \emph{on} a cell:
 \end{quotation}
 
 We see that on each level, each cell now only interacts with a small
-number of neighbours on that level. In the first half of the algorithm
+number of neighbors on that level. In the first half of the algorithm
 we go up the tree using only parent-child relations between
 cells. Presumably this is fairly easy.
 

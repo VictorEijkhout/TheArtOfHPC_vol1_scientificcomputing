@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -36,7 +36,7 @@ The energy of a lattice is modeled as
 \[ H=H(\sigma)=-J\sum_i\sigma_i-E\sum_{ij}\sigma_i\sigma_j. \]
 The first term models the interaction of individual spins $\sigma_i$
 with an external field of strength~$J$. The second term, which sums
-over nearest neighbour pairs, models
+over nearest neighbor pairs, models
 alignment of atom pairs: the product $\sigma_i\sigma_j$ is positive if
 the atoms have identical spin, and negative if opposite.
 
@@ -66,7 +66,7 @@ element of chance to prevent artificial solutions. (This is the
 This algorithm can be parallelized, if we notice the similarity with
 the structure of the sparse matrix-vector product. In that algorithm too we
 compute a local quantity by combining inputs from a few nearest
-neighbours. This means we can partitioning the lattice, and compute
+neighbors. This means we can partitioning the lattice, and compute
 the local updates after each processor collects a \indexterm{ghost
   region}.
 
