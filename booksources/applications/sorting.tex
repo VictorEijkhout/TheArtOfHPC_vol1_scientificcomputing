@@ -112,7 +112,7 @@ out of compare and swap elements.
 Below we will consider the Bitonic sort algorithm
 as a prime example of a sorting network.
 
-\Level 1 {Parallel complexity}
+\Level 1 {Parallel and sequential complexity}
 
 Above we remarked that sorting sequentially takes at least $O(N\log N)$ time.
 If we can have perfect speedup, using for simplicity $P=N$ processors,
@@ -168,9 +168,9 @@ A~single step of the
 algorithm consists of two substeps:
 \begin{itemize}
 \item Every even-numbered processor does a compare-and-swap
-  with its right neighbour; then
+  with its right neighbor; then
 \item Every odd-numbered processor does a compare-and-swap
-  with its right neighbour.
+  with its right neighbor.
 \end{itemize}
 
 \begin{theorem}
@@ -253,7 +253,7 @@ for proof, see section~\ref{sec:compl-master}.
 
 We will now consider parallel implementations of quicksort.
 
-\Level 1 {Quicksort in shared memory}
+\Level 1 {Quicksort in parallel}
 
 A simple parallelization of the quicksort algorithm can be achieved by
 executing the two recursive calls in parallel. This is easiest
