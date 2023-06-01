@@ -5,7 +5,7 @@
 #### This Makefile belong with the sources
 #### for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-2021
+#### copyright 2010-2023
 ####
 #### makefile for code/compile
 ####
@@ -35,7 +35,7 @@ include ../../makefiles/Make.public
 ##
 include ../../makefiles/Make.clean
 clean ::
-	@rm -f *.optrpt *.annot
+	@rm -f *.optrpt *.annot *.i *.s
 
 .PHONY: example_clean
 info ::

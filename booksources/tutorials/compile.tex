@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -228,6 +228,50 @@ hello world
 \end{verbatim}
 This process is illustrated in figure~\ref{fig:compilelink1}.
 
+\Level 1 {Compilation: the nitty gritty}
+
+Even for the simple compilation of the previous section
+some details have been left out.
+The commandline
+\begin{lstlisting}
+  gcc -save-temps -o hello hello.c
+\end{lstlisting}
+actually generates the following:
+\begin{itemize}
+\item \n{hello.i}: a text file where all preprocessor directives have been inlined.
+  In this case, that's the \lstinline{stdlib.h} and \lstinline{stdio.h} files:
+\begin{lstlisting}
+# 0 "hello.c"
+# 0 "<built-in>"
+# 0 "<command-line>"
+# 1 "hello.c"
+# 12 "hello.c"
+# 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/usr/include/stdlib.h" 1 3 4
+# 61 "/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/usr/include/stdlib.h" 3 4
+# 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/usr/include/Availability.h" 1 3 4    
+\end{lstlisting}
+et cetera.
+\item \n{hello.s}: the \indextermbus{assembly}{listing} of your program.
+  This is a sort of `readable machine language':
+\begin{lstlisting}
+        .arch armv8-a
+        .text
+        .cstring
+        .align  3
+lC0:
+        .ascii "hello world\0"
+        .text
+        .align  2
+        .globl _main
+_main:
+LFB10:
+        stp     x29, x30, [sp, -16]!    
+\end{lstlisting}
+\item \n{hello.o}: the object file, containing actual machine language.
+  We will go into this more below.
+  The object file is not directly readable, but later
+  you'll see the \indextermunix{nm} tool that can give you some information.
+\end{itemize}
 \Level 1 {Multiple files: compile and link}
 
 \begin{figure}[ht]
