@@ -1,0 +1,25 @@
+// Makefile
+	    ; done
+total_clean ::
+	@rm -f *.stripped_out
+
+##
+## public copy
+##
+PUBLICEXTS = cxx runout
+include ../../makefiles/Make.public
+
+##
+## clean rules
+##
+include ../../makefiles/Make.clean
+clean ::
+	@rm -f *.optrpt *.annot
+
+.PHONY: example_clean
+info ::
+	@echo "make example_clean : remove local binaries"
+example_clean ::
+	@rm -f ${PROGRAMS} ${LIBS}
+clean :: example_clean
+	@rm -rf libs

@@ -1,0 +1,74 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of slides for
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2023
+%%%%
+%%%% CMake-slides.tex : cmake slides
+%%%% see hpc_cmake.tex for driver file
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\lstset{language=bash}
+
+\sectionframe{Using packages through pkgconfig}
+
+\begin{numberedframe}{Problem}
+  You want to install a package/application\\
+  \dots~which needs 2 or 3 other packages.
+\lstset{language=Bash}
+\begin{lstlisting}
+cmake \
+    -D PACKAGE1_INC=/users/my/package1/include \ 
+    -D PACKAGE1_LIB=/users/my/package1/lib \ 
+    -D PACKAGE2_INC=/users/my/package2/include/packaage \ 
+    -D PACKAGE2_LIB=/users/my/package2/lib64 \ 
+    ../newpackage
+\end{lstlisting}
+Can this be make simpler?
+\end{numberedframe}
+
+\begin{numberedframe}{Finding packages with `pkg config'}
+  \begin{itemize}
+  \item Many packages come with a \n{package.pc} file
+  \item Add that location to \n{PKG_CONFIG_PATH}
+  \item That defines variables in your own cmake file
+  \end{itemize}
+Example: PETSc\\
+add \verb+$PETSC_DIR/$PETSC_ARCH/lib/pkgconfig+ to config path,
+then
+\begin{lstlisting}
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( PETSC REQUIRED petsc )
+target_include_directories(
+	program PUBLIC
+	${PETSC_INCLUDE_DIRS} )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Eigen}
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/eigen/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{Where do these settings come from?}
+\begin{lstlisting}
+find $TACC_EIGEN_DIR -name \*.pc
+${TACC_EIGEN_DIR}/share/pkgconfig/eigen3.pc    
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Pkgconfig outside CMake}
+\n{.pc} files are also useful outside CMake:
+\begin{lstlisting}
+$ pkg-config --cflags tbb
+-I/opt/intel//oneapi/tbb/latest/lib/pkgconfig/../..//include
+$ pkg-config --libs tbb
+-L/opt/intel//oneapi/tbb/latest/lib/pkgconfig/../..//lib/intel64/gcc4.8 -ltbb
+\end{lstlisting}
+(useful for packages where there is no module)
+\end{numberedframe}
+

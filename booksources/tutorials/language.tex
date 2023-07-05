@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -144,6 +144,54 @@ Libraries written in C++ offer further problems.
 The C++ compiler makes external symbols by combining
 the names a class and its methods, in a process known
 as \emph{name mangling}\index{C++!name mangling}.
+
+\Level 1 {Mangling and demangling}
+
+Consider a simple C program:
+%% compilecxx/foochar.c
+\begin{verbatim}
+#include <stdlib.h>
+#include <stdio.h>
+void bar(char *s) {
+  printf("%s",s);
+  return;
+}
+\end{verbatim}
+If you compile this and inspect the output with \n{nm} you get:
+\begin{verbatim}
+$ gcc -c foochar.c && nm foochar.o | grep bar
+0000000000000000 T _bar
+\end{verbatim}
+That is, apart from a leading underscore the symbol name is clear.
+
+On the other hand, the identical program compiled as C++ gives
+\begin{verbatim}
+$ g++ -c foochar.c && nm foochar.o | grep bar
+0000000000000000 T __Z3barPc
+\end{verbatim}
+
+Why is this? Well,
+because of polymorphism, and the fact that methods
+can be included in classes,
+you can not have a unique linker symbol for each function name.
+Instead this mangled symbol includes enough information
+to make the symbol unique.
+
+You can retrieve the meaning of this mangled symbol a number of ways.
+First of all, there is a demangling utility \indexunix{c++filt}:
+\begin{verbatim}
+c++filt __Z3barPc
+bar(char*)
+\end{verbatim}
+
+But maybe easier is to use the \n{-C} flag on \indexunix{nm}
+\begin{verbatim}
+$ g++ -c foochar.c && nm -C foochar.o | grep bar
+0000000000000000 T bar(char*)
+\end{verbatim}
+
+\Level 1 {Extern naming}
+
 You can force the compiler to
 generate names that are intelligible to other languages by
 \begin{verbatim}
@@ -160,42 +208,7 @@ generate names that are intelligible to other languages by
 #endif
 \end{verbatim}
 
-Example:
-compiling
-\begin{verbatim}
-#include <stdlib.h>
-
-int foo(int x) {
-  return x;
-}
-\end{verbatim}
-and inspecting the output with \n{nm} gives:
-\begin{verbatim}
-0000000000000010 s EH_frame1
-0000000000000000 T _foo
-\end{verbatim}
-On the other hand, the identical program compiled as C++ gives
-\begin{verbatim}
-0000000000000010 s EH_frame1
-0000000000000000 T __Z3fooi
-\end{verbatim}
-You see that the name for \n{foo} is something mangled, so you can not call 
-this routine from a program in a different language. On the other hand,
-if you add the \n{extern} declaration:
-\begin{verbatim}
-#include <stdlib.h>
-
-#ifdef __cplusplus
-  extern"C" {
-#endif
-int foo(int x) {
-  return x;
-}
-#ifdef __cplusplus
-  }
-#endif
-\end{verbatim}
-you again get the same linker symbols as for~C, so that the routine
+You again get the same linker symbols as for~C, so that the routine
 can be called from both C and~Fortran.
 
 If your main program is in~C, you can use the C++ compiler as linker.

@@ -553,6 +553,14 @@ The link line now contains the library path twice:
   stores the path into the executable so that it can be found at runtime.
 \end{enumerate}
 
+\begin{remark}
+  You may also come across a syntax with \n{rpath=}:
+\begin{verbatim}
+  gcc -o foo fooprog.o -L../lib -Wl,-rpath,`pwd`/../lib -lfoo
+\end{verbatim}
+but beware that that is a GNU extension.
+\end{remark}
+
 Use the command \indextermunixdef{ldd} to get information about what shared libraries
 your executable uses. (On Mac OS~X, use \n{otool -L} instead.)
 

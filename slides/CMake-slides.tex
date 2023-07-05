@@ -6,26 +6,31 @@
 %%%% `The Art of HPC, vol 1: The Science of Computing'
 %%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
+%%%% CMake-slides.tex : cmake slides
+%%%% see hpc_cmake.tex for driver file
+%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \lstset{language=bash}
 
+\sectionframe{The build/make cycle}
+
 \begin{numberedframe}{Building software the old way}
   Using `GNU Autotools':
-\begin{verbatim}
+\begin{lstlisting}
 ./configure
 make
 make install
-\end{verbatim}
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{User vs system packages}
   The \n{make install} often tries to copy
   to a system directory. If you're not the admin, do:
-\begin{verbatim}
+\begin{lstlisting}
 ./configure --prefix=/home/yourname/mypackages
-\end{verbatim}
+\end{lstlisting}
 with a location of your choice.
 \end{numberedframe}
 
@@ -47,6 +52,20 @@ cmake --install ## stuff
   \end{itemize}
 (The second one is portable to non-Unix environments.)
 \end{numberedframe}
+
+\begin{numberedframe}{The build/make cycle}
+  CMake creates makefiles;\\
+  makefiles ensure minimal required compilation
+  \begin{lstlisting}
+    cmake           ## make the makefiles
+    make            ## compile your project
+    emacs onefile.c ## edit
+    make            ## minimal recompile
+  \end{lstlisting}
+  Only if you add (include) files do you rerun CMake.
+\end{numberedframe}
+
+\endinput
 
 \begin{numberedframe}{Directory structure}
   \hbox to \textwidth\bgroup
@@ -101,6 +120,7 @@ make install # move stuff to install loc
 \sectionframe{Make your CMake configuration}
 
 \lstset{language=CMake}
+\lstset{style=greencode}
 
 \begin{numberedframe}{The CMakeLists file}
 \begin{lstlisting}
@@ -165,82 +185,27 @@ add_library( auxlib STATIC aux.cxx aux.h )
 add_library( auxlib SHARED aux.cxx aux.h )
 \end{lstlisting}
   or by adding a runtime flag
-\begin{verbatim}
+\begin{lstlisting}
 cmake -D BUILD_SHARED_LIBS=TRUE
-\end{verbatim}
+\end{lstlisting}
 Related: the \indextermtt{-fPIC} compile option
 is set by \indexcmake{CMAKE_POSITION_INDEPENDENT_CODE}.
 \end{numberedframe}
 
-\sectionframe{Using other packages}
-
-\begin{numberedframe}{Problem}
-  You want to install a package/application\\
-  \dots~which needs 2 or 3 other packages.
-\lstset{language=Bash}
-\begin{lstlisting}
-cmake \
-    -D PACKAGE1_INC=/users/my/package1/include \ 
-    -D PACKAGE1_LIB=/users/my/package1/lib \ 
-    -D PACKAGE2_INC=/users/my/package2/include/packaage \ 
-    -D PACKAGE2_LIB=/users/my/package2/lib64 \ 
-    ../newpackage
-\end{lstlisting}
-Can this be make simpler?
-\end{numberedframe}
-
-\begin{numberedframe}{Finding packages with `pkg config'}
+\begin{numberedframe}{External libraries}
   \begin{itemize}
-  \item Many packages come with a \n{package.pc} file
-  \item Add that location to \n{PKG_CONFIG_PATH}
-  \item That defines variables in your own cmake file
+  \item Use \indexunix{LD_LIBRARY_PATH}, or
+  \item use \indexunix{rpath}.
   \end{itemize}
-Example: PETSc\\
-add \verb+$PETSC_DIR/$PETSC_ARCH/lib/pkgconfig+ to config path,
-then
+  (Apple note: forced to use second option)
 \begin{lstlisting}
-find_package( PkgConfig REQUIRED )
-pkg_check_modules( PETSC REQUIRED petsc )
-target_include_directories(
-	program PUBLIC
-	${PETSC_INCLUDE_DIRS} )
+set_target_properties(
+	${PROGRAM_NAME} PROPERTIES
+	BUILD_RPATH   "${CATCH2_LIBRARY_DIRS};${FMTLIB_LIBRARY_DIRS}"
+	INSTALL_RPATH "${CATCH2_LIBRARY_DIRS};${FMTLIB_LIBRARY_DIRS}"
+    )
 \end{lstlisting}
 \end{numberedframe}
-
-\begin{numberedframe}{Eigen}
-  \lstset{numbers=left,numberstyle=\tiny}
-  \lstinputlisting{tutorials/cmake/eigen/CMakeLists.txt}
-\end{numberedframe}
-
-\begin{numberedframe}{Other discovery mechanisms}
-  Some packages come with \texttt{FindWhatever.cmake}
-  or similar files.\\
-  Pity that there is not just one standard.
-
-  These define some macros, but you need to read the docs
-  to see which.\\
-  Pity that there is not just one standard.
-
-  Some examples follow.
-\end{numberedframe}
-
-\begin{numberedframe}{MPI from C}
-  \tiny
-  \lstset{numbers=left,numberstyle=\tiny}
-  \lstinputlisting{tutorials/cmake/mpiprog/CMakeLists.txt}
-\end{numberedframe}
-
-\begin{numberedframe}{MPI from Fortran}
-  \tiny
-  \lstset{numbers=left,numberstyle=\tiny}
-  \lstinputlisting{tutorials/cmake/mpiprogf/CMakeLists.txt}
-\end{numberedframe}
-
-\begin{numberedframe}{OpenMP}
-  \lstset{numbers=left,numberstyle=\tiny}
-  \lstinputlisting{tutorials/cmake/openmp/CMakeLists.txt}
-\end{numberedframe}
-
 \endinput
 
 \begin{numberedframe}{}

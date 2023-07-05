@@ -11,6 +11,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\usepackage{listings,verbatim,xcolor}% needed for parsing some aux files
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% Outlining
@@ -84,6 +86,7 @@
     {numberedframe}[1]
     {
       \refstepcounter{slidecounter}
-      \begin{frame}[containsverbatim]{\arabic{slidecounter}\ #1}
+      \begin{frame}[containsverbatim]{%\arabic{slidecounter}\
+          #1}
     }
     {\end{frame}}

@@ -617,7 +617,27 @@ $(suffix a/b/c.x) # gives `.x'
 \end{lstlisting}
 For the full list see \url{https://www.gnu.org/software/make/manual/html_node/Functions.html}.
 
-  
+\begin{multicols}{2}
+  \lstinputlisting{snippets/makerulesrc}
+  \columnbreak
+  \lstinputlisting{snippets/makeout-src}
+\end{multicols}
+\begin{multicols}{2}
+  \lstinputlisting{snippets/makeruleobj}
+  \columnbreak
+  \lstinputlisting{snippets/makeout-obj}
+\end{multicols}
+\begin{multicols}{2}
+  \lstinputlisting{snippets/makerulepre}
+  \columnbreak
+  \lstinputlisting{snippets/makeout-pre}
+\end{multicols}
+\begin{multicols}{2}
+  \lstinputlisting{snippets/makerulebak}
+  \columnbreak
+  \lstinputlisting{snippets/makeout-bak}
+\end{multicols}
+
 \Level 1 {Conditionals}
 
 There are various ways of making the behavior of a makefile dynamic.

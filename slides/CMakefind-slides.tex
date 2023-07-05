@@ -1,0 +1,45 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of slides for
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2023
+%%%%
+%%%% CMakefind-slides.tex : cmake slides for finding packages
+%%%% see hpc_cmake.tex for driver file
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\lstset{language=bash}
+
+\begin{numberedframe}{Other discovery mechanisms}
+  Some packages come with \texttt{FindWhatever.cmake}
+  or similar files.\\
+  Pity that there is not just one standard.
+
+  These define some macros, but you need to read the docs
+  to see which.\\
+  Pity that there is not just one standard.
+
+  Some examples follow.
+\end{numberedframe}
+
+\begin{numberedframe}{MPI from C}
+  \tiny
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/mpiprog/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{MPI from Fortran}
+  \tiny
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/mpiprogf/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{OpenMP}
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/openmp/CMakeLists.txt}
+\end{numberedframe}
+

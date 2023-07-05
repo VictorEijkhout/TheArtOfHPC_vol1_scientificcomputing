@@ -479,7 +479,7 @@ icc -o dynamicprogram fooprog.o -Llibs -lfoo
 \end{verbatim}
 \begin{comment}
 # Using shared library
-icc -o rpathprogram fooprog.o -Wl,-rpath=./libs -Llibs -lfoo
+icc -o rpathprogram fooprog.o -Wl,,rpath=./libs -Llibs -lfoo
 -rwx------ 1 eijkhout G-25072 28160 Sep 23 14:25 rpathprogram
 \end{comment}
 \end{numberedframe}
@@ -522,12 +522,18 @@ hello world
 icc -O2 -std=c99 -fPIC -c foosub.c
 icc -o libs/libfoo.so -shared foosub.o
 icc -o rpathprogram fooprog.o \
-    -Wl,-rpath=./libs -Llibs -lfoo
+    -Wl,-rpath,./libs -Llibs -lfoo
 -rwx------ 1 eijkhout G-25072 28160 Sep 23 13:41 rpathprogram
 ./rpathprogram
 hello world
 \end{verbatim}
-(Notice the bizarre combination of minuses and commas)
+Note
+\begin{itemize}
+\item
+  the bizarre combination of minuses and commas
+\item you may also come across the \n{rpath=} syntax,
+  but that's a GNU extension.
+\end{itemize}
 \end{numberedframe}
 
 \end{document}

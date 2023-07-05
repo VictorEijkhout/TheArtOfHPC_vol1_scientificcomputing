@@ -269,7 +269,7 @@ Here is the full \n{CMakeLists.txt}:
 \lstinputlisting{tutorials/cmake/single/CMakeLists.txt}
 
 \newpage
-\Level 1 {Making a library during build}
+\Level 1 {Making libraries}
 
 (The files for this examples are in \n{tutorials/cmake/multiple}.)
 
@@ -487,7 +487,7 @@ Complete \indexterm{CMake} file:
 \lstinputlisting{tutorials/cmake/includedir/CMakeLists.txt}
 
 \newpage
-\Level 1 {Subdirectories in the installation}
+\Level 1 {Libraries for release; rpath}
 \label{sec:cmake-install-dirs}
 \label{sec:cmake-rpath}
 
@@ -523,6 +523,9 @@ Complete \indexterm{CMake} file:
         child { node {program} }
         child { node {lib}
           child { node {libauxlib.so} }
+        }
+        child { node {include}
+          child { node {aux.h} }
         }
       }
       ;
@@ -576,11 +579,43 @@ The whole file:
 %
 \lstinputlisting{tutorials/cmake/publiclib/CMakeLists.txt}
 
+\newpage
+\Level 1 {Programs that use other libraries}
+
+So far we have discussed executables and libraries that can be used by themselves.
+What to if your build result needs external libraries?
+We will discuss how to find those libraries in section~\ref{sec:cmake-external};
+here we point out their use.
+
+The issue is that these libraries need to be findable
+when someone uses your binary. There are two strategies:
+\begin{itemize}
+\item make sure they have been added to the \indexunix{LD_LIBRARY_PATH};
+\item have the \indexterm{linker} add their location through the \indexunix{rpath}
+  mechanism to the binary itself.
+  This second option is in fact the only one on recent versions of
+  \indextermbus{Apple}{Mac OS} because of `System Integrity Protection'.
+\end{itemize}
+
+As an example, assume your binary needs the \indexunix{Catch2}
+and \indexunix{fmtlib} libraries.
+You would then,
+in addition to the \indexcmake{target_link_directories} specification,
+have:
+\begin{lstlisting}
+set_target_properties(
+	${PROGRAM_NAME} PROPERTIES
+	BUILD_RPATH   "${CATCH2_LIBRARY_DIRS};${FMTLIB_LIBRARY_DIRS}"
+	INSTALL_RPATH "${CATCH2_LIBRARY_DIRS};${FMTLIB_LIBRARY_DIRS}"
+    )
+\end{lstlisting}
+
 \Level 1 {Header-only libraries}
 
 Use the \indexcmake{INTERFACE} keyword.
 
 \Level 0 {Finding and using external packages}
+\label{sec:cmake-external}
 
 If your program depends on other libraries, there is a variety of ways
 to let \indexterm{CMake} find them.
@@ -728,8 +763,12 @@ MYLIBRARY_INCLUDE_DIRS
 MYLIBRARY_LIBRARY_DIRS
 MYLIBRARY_LIBRARIES
 \end{verbatim}
-which you can then use in the \indexcmake{target_include_directories}
-command.
+which you can then use in the
+\indexcmake{target_include_directories}
+and
+\indexcmake{target_link_directories}~\
+\indexcmake{target_link_libraries}
+commands.
 
 \Level 2 {Example: PETSc}
 \index{PETSc!cmake integration|(}
@@ -792,6 +831,30 @@ Library file:
 \lstinputlisting{tutorials/cmake/fmtliblib/prolib/CMakeLists.txt}
 
 \index{fmtlib!cmake integration|)}
+
+\Level 1 {Writing your own pkg config}
+
+We extend the configuration of section~\ref{sec:cmake-install-dirs}
+to generate a \n{.pc} file.
+
+First of all we need a template for the \n{.pc} file:
+%
+\lstinputlisting{tutorials/cmake/pclib/pclib.pc.in}
+
+and we transform this by:
+%
+\begin{lstlisting}
+set( libtarget auxlib )
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+    @ONLY
+)  
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+    DESTINATION share/pkgconfig
+)
+\end{lstlisting}
 
 \Level 0 {Customizing the compilation process}
 

@@ -8,6 +8,7 @@ else()
 endif()
 
 add_executable( program program.cxx )
-target_link_libraries( program PUBLIC OpenMP::OpenMP_CXX)
+target_link_libraries( program
+    PUBLIC OpenMP::OpenMP_CXX)
 
 install( TARGETS program DESTINATION . )

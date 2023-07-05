@@ -1,0 +1,2 @@
+// Makefile
+SRC := ${wildcard src/*.c}

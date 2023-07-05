@@ -172,8 +172,7 @@ that floating point arithmetic can be sacrificed for speed.
       \toprule
       1&2&3&4&5&6\\ \midrule 6794&507&340&359&334&528\\ \bottomrule
     \end{tabular}
-    \caption{Cycle times for the inner product operation, unrolled up to
-      six times.}
+    \caption{Cycle times for the inner product operation, unrolled up to six times.}
     \label{tab:unroll-inner}
   \end{table}
 \end{comment}
@@ -340,8 +339,9 @@ increasing runtime, which is born out by
 the graph in figure~\ref{fig:cacheline}.
 
 The graph also shows a decreasing reuse of cachelines, defined as the
-number of vector elements divided by the number of L1 misses (on
-stall; see section~\ref{sec:prefetch}). 
+number of vector elements divided by the number of L1 misses.
+To be precise, this is a \emph{miss on stall}\index{cache!miss!on stall};
+see section~\ref{sec:prefetch}). 
 
 %% \begin{figure}[ht]
 %%   \includegraphics[scale=.5]{cacheline16}

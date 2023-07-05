@@ -7,4 +7,4 @@ Name: @PROJECT_NAME@
 Description: @CMAKE_PROJECT_DESCRIPTION@
 Version: @PROJECT_VERSION@
 Cflags: -I${includedir}
-Libs: -L${libdir} -l@target1@
+Libs: -L${libdir} -l@libtarget@

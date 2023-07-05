@@ -14,20 +14,20 @@ target_link_libraries(
 install( TARGETS program DESTINATION . EXPORT installroot )
 
 # generate pc file for pkg-config
-set(target1 my_library)
+set( libtarget auxlib )
 configure_file(
-    pclib.pc.in
-    lib/pkgconfig/${PROJECT_NAME}.pc @ONLY)
+    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+    @ONLY)
   
 # https://discourse.cmake.org/t/how-to-generate-pc-pkg-config-file-supporting-prefix-of-the-cmake-install/4109/7
 
 install(
-    FILES lib/pkgconfig/${PROJECT_NAME}.pc
-    DESTINATION lib/pkgconfig
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+    DESTINATION share/pkgconfig
 )
 
 # kinda sorta. This install .cmake files.
 ## install( TARGETS program DESTINATION . EXPORT installroot )
 ## install( EXPORT installroot DESTINATION lib/pkgconfig )
-
 
