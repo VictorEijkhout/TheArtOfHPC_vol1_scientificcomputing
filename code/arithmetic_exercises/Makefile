@@ -21,13 +21,7 @@ include ../../makefiles/Make.compile
 
 .SECONDEXPANSION:
 # libraries
-INCLUDES = -I${HOME}/Installation/cli11/installation/include
-# https://cliutils.github.io/CLI11/class_c_l_i_1_1_app.html
-# https://cliutils.github.io/CLI11/book/chapters/options.html
-# %.o : %.cxx
-# 	${CXX} -std=c++17 -g -O2 \
-# 	    ${INCLUDES} \
-# 	    -c $^
+EXTRA_INCLUDES = -I${HOME}/Installation/cli11/installation/include
 
 # ellipse program
 LIBS = minimlib.o vectorlib.o

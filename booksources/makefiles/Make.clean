@@ -26,7 +26,7 @@ localclean basic_clean ::
 	  *.cut
 	@/bin/rm -rf *.dSYM __pycache__
 clean :: localclean 
-	@rm -f ${PROGRAMS}
+	@rm -f ${PROGRAMS} ${WRONGS}
 total_clean :: localclean
 recursive_clean :: clean
 	for d in * ; do \

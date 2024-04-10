@@ -3,7 +3,7 @@
 ####
 #### Makefile for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-2023
+#### copyright 2010-2024
 ####
 #### makefile for hardware effects
 ####
@@ -20,59 +20,148 @@ PROGRAMS = arrayindex associativity bandwidth cachesize dependence stride stride
     branch loopexchange saturation template denormal unroll
 
 MODE = omp
+MODULES = cxxopts
 LANGUAGE = CXX
 
+EXTRA_OBJS = clock.o allocation.o
 include ../../makefiles/Make.compile
-${PROGRAMS} : clock.o allocation.o
+CPPSTANDARD = 2b
 allocation.o : allocation.hpp
 clock.o : clock.hpp
 
-CXXOPTS = ${TACC_CXXOPTS_INC}
-
-EXTRA_OPTIONS_intel = -qopt-report=5
-EXTRA_OPTIONS += -I${CXXOPTS} ${EXTRA_OPTIONS_${TACC_FAMILY_COMPILER}}
-EXTRALIBS = -lpthread
+EXTRA_INCLUDES = \
+    $$( pkg-config --cflags cxxopts ) 
+EXTRA_OPTIONS_intel = -qopt-report
+## EXTRA_OPTIONS += -DFMT_ENFORCE_COMPILE_STRING
+EXTRA_OPTIONS += ${EXTRA_OPTIONS_${TACC_FAMILY_COMPILER}}
+EXTRA_LIBS =
+RPATH = ${TACC_FMTLIB_LIB}
 info ::
 	@echo "note: EXTRA_OPTIONS set to: ${EXTRA_OPTIONS}, use EXTRA_EXTRA_OPTIONS"
 
-ifdef TACC_SYSTEM
-EXTRA_LIBS=-lpthread
-endif
-
-NP = 24
-
 RUNS =
+info ::
+	@echo "---- custom runs:"
+	@echo "make run_whatever"
+	@echo "    [ GITADD= (nonzero for git add) ]"
 include ../../makefiles/Make.omp_run
+
+RUNS += run_associativity
+REPEATS = 10000
+info ::
+	@echo "make run_associativity"
+	@echo "    [ EXTRAID=... ] [ REPEATS=123 ( default=${REPEATS} ) ]"
+run_associativity : associativity
+	@program=$@ && program=$${program##run_} \
+	 && runoutid=${TACC_SYSTEM} \
+	 && if [ ! -z "${EXTRAID}" ] ; then \
+	      runoutid=$${runoutid}-${EXTRAID} ; fi \
+	 && results=$${program}-$${runoutid}.out \
+	 \
+	 && maxassoc=14 && minassoc=4 \
+	 && assoc_values=$$( seq -s "," $$minassoc $$maxassoc ) \
+	 && cmdline="./associativity --associativity $${assoc_values} -r ${REPEATS}" \
+	 && if [ ${ECHO} -gt 0 ] ; then \
+	      echo "Executing: $$cmdline" \
+	    ; fi \
+	 && $$cmdline >$${results} \
+	 && echo "---- $${results}" && cat $${results} \
+	 \
+	 && if [ ! -z ${GITADD} ] ; then \
+	      mv $${results} $${results%%.out}.runout \
+	       && git add $${results%%.out}.runout \
+	       && git commit -m "$${program} scaling output for $${runoutid}" \
+	    ; fi 
+
+GITADD = 
+NSIZE = 1000
+RUNS += run_bandwidth
+ITERATIONS= 10
+EXTRAID = 
+info ::
+	@echo "make run_bandwidth"
+	@echo "    [ NSIZE= (default: ${NSIZE}) ] [ ITERATIONS= (default ${ITERATIONS}) ]"
+	@echo "    [ RUN_OPTIONS=... ] [ EXTRAID=string ]"
+run_bandwidth : bandwidth
+	@program=$@ && program=$${program##run_} \
+	 && runoutid=${TACC_SYSTEM}${NSIZE} \
+	 && if [ ! -z "${EXTRAID}" ] ; then \
+	      runoutid=$${runoutid}-${EXTRAID} ; fi \
+	 && results=$${program}-$${runoutid}.out \
+	 && make --no-print-directory omp_scaling PROGRAM=$${program} \
+	    ECHO=${ECHO} NDIV=${NDIV} RUNOUTID=$${runoutid} RESULTS="$${results}" \
+	    RUN_OPTIONS="-k ${NSIZE} -i ${ITERATIONS} " \
+	 && if [ ! -z ${GITADD} ] ; then \
+	      mv $${results} $${results%%.out}.runout \
+	       && git add $${results%%.out}.runout \
+	       && git commit -m "$${program} scaling output for $${runoutid}" \
+	    ; fi 
 
 RUNS += run_cachesize
 run_cachesize : cachesize
-	@./cachesize
-run_cachesizes : cachesize
-	@make --no-print-directory omp_scaling \
-	    OMPTHREADS=1 \
-	    PROGRAM=cachesize RUN_OPTIONS="-W 1000"
-	@make --no-print-directory cachesize_postprocess
-## \addplot coordinates { (1, 5.42) (18, 9.69) (37, 3.97) (56, 2.07) };
-cachesizes_postprocess :
-	@cat cachesizes.runout \
-	    | awk '{s = "(" $$4 "," $$15 ")" s } END {print s}' \
-	    > caches.tkz \
-	 && git add caches.tkz
+	@program=$@ && program=$${program##run_} \
+	 && runoutid=${TACC_SYSTEM} \
+	 && if [ ! -z "${EXTRAID}" ] ; then \
+	      runoutid=$${runoutid}-${EXTRAID} ; fi \
+	 && results=$${program}-$${runoutid}.out \
+	 && cmdline="./cachesize -B 11000 ${RUN_OPTIONS}" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	      echo "cmdline=$$cmdline" && echo "  into $$results" ; fi \
+	 && eval $$cmdline | tee $$results \
+	 && if [ ! -z ${GITADD} ] ; then \
+	      mv $${results} $${results%%.out}.runout \
+	       && git add $${results%%.out}.runout \
+	       && git commit -m "$${program} scaling output for $${runoutid}" \
+	    ; fi 
 
-RUNS += run_stride run_strides
+RUNS += run_denormal
+run_denormal : 
+	@program=$@ && program=$${program##run_} \
+	 && runoutid=${TACC_SYSTEM} \
+	 && if [ ! -z "${EXTRAID}" ] ; then \
+	      runoutid=$${runoutid}-${EXTRAID} ; fi \
+	 && results=$${program}-$${runoutid}.out && rm -f $$results \
+	 \
+	 && make --no-print-directory clean \
+	 && echo "==== Flush to zero" | tee -a $$results \
+	 && make --no-print-directory denormal ECHO=${ECHO} \
+	        EXTRA_OPTIONS="${EXTRA_OPTIONS} -ftz" \
+	 && ./denormal | tee -a $$results \
+	 \
+	 && make --no-print-directory clean \
+	 && echo "==== No flush to zero" | tee -a $$results \
+	 && make --no-print-directory denormal ECHO=${ECHO} \
+	        EXTRA_OPTIONS="${EXTRA_OPTIONS} -no-ftz" \
+	 && ./denormal | tee -a $$results \
+	 && if [ ! -z ${GITADD} ] ; then \
+	      mv $${results} $${results%%.out}.runout \
+	       && git add $${results%%.out}.runout \
+	       && git commit -m "$${program} scaling output for $${runoutid}" \
+	    ; fi 
+
+RUNS += run_stride
 info ::
-	@echo "special case:"
-	@echo "    make run_stride run_strides"
-	@echo "        [ FLUSH=0/1, default=${FLUSH} ]"
-	@echo "        [ NP=..., default=${NP} : maximum #threads (run_strides only) ]"
-FLUSH = 1
+	@echo "run_stride"
+	@echo "    [ NSIZE= (data set in kwords, default=${NSIZE} ) ]"
 run_stride : stride
-	@./stride \
-	    `if [ "${FLUSH}" = "1" ] ; then echo "-f"; fi `
-run_strides : strides
-	@rm -f strides.tkz
-	@make --no-print-directory omp_scaling PROGRAM=strides RUN_OPTIONS="-k 6000"
-	@git add strides.tkz
+	@program=$@ && program=$${program##run_} \
+	 && runoutid=${TACC_SYSTEM}${NSIZE} \
+	 && if [ ! -z "${EXTRAID}" ] ; then \
+	      runoutid=$${runoutid}-${EXTRAID} ; fi \
+	 && results=$${program}-$${runoutid}.out \
+	 && make --no-print-directory omp_scaling PROGRAM=$${program} \
+	    ECHO=${ECHO} NDIV=${NDIV} RUNOUTID=$${runoutid} RESULTS="$${results}" \
+	    RUN_OPTIONS="-D ${NSIZE}" \
+	 && if [ ! -z ${GITADD} ] ; then \
+	      mv $${results} $${results%%.out}.runout \
+	       && git add $${results%%.out}.runout \
+	       && git commit -m "$${program} scaling output for $${runoutid}" \
+	    ; fi 
+
+
+####
+#### old tests to be redone
+####
 
 RUNS += run_unroll
 run_unroll : 
@@ -87,31 +176,12 @@ run_unroll :
 	     && ./unrol \
 	; fi
 
-RUNS += run_associativity
-run_associativity : associativity
+run_old_associativity : associativity
 	@cmdline="./associativity ${RUN_OPTS}" \
 	 && if [ ${ECHO} -gt 0 ] ; then \
 	      echo "Executing: $$cmdline" \
 	    ; fi \
 	 && $$cmdline
-
-RUNS += run_bandwidth
-run_bandwidth : bandwidth
-	@cmdline="OMP_PROC_BIND=true ./bandwidth -t `make --no-print-directory num_cores` -s 8 -k 64" \
-	 && echo $$cmdline \
-	 && eval $$cmdline
-
-RUNS += run_denormal run_denormalflush
-run_denormal : 
-	make --no-print-directory denormal \
-	        EXTRA_OPTIONS="${EXTRA_OPTIONS} -no-ftz" \
-	    ECHO=${ECHO}
-	@./denormal
-run_denormalflush : 
-	make --no-print-directory denormal \
-	        EXTRA_OPTIONS="${EXTRA_OPTIONS} -ftz" \
-	    ECHO=${ECHO}
-	@./denormal
 
 RUNS += run_falsesharing
 run_falsesharing : falsesharing-omp
@@ -135,4 +205,6 @@ include ../../makefiles/Make.public
 .PHONY: ${RUNS}
 
 clean :
-	@rm -rf ${PROGRAMS} *.o *~ *.dSYM *.gch *.optrpt
+	@rm -rf ${PROGRAMS} *.o *.o.tmp *~ *.dSYM 
+	@rm -f *.gch *.pchi *.optrpt *.opt.yaml
+	@rm -f *.out

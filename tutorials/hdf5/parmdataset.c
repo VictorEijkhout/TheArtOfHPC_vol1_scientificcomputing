@@ -1,8 +1,14 @@
-/* 
+/****************************************************************
+ ****
+ **** This program source is part of
+ **** Introduction to High-performance Scientific Computing
+ **** by Victor Eijkhout
+ **** copyright Victor Eijkhout 2011-2023
+ ****
  * File: parmdataset.c
- * Author: Victor Eijkhout
- */
-#include "myh5defs.h"
+ ****
+ ****************************************************************/
+
 #define FILE "pdset.h5"
 
 main() {

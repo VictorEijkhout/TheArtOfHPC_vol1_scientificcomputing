@@ -5,7 +5,7 @@
 #### This Makefile belong with the sources
 #### for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-2022
+#### copyright 2010-2024
 ####
 #### makefile for Cmake tutorial projects
 ####
@@ -29,7 +29,7 @@ info ::
 PROJECT = siliceum1
 BOOKPROJECTS = \
     single single17 multiple includedir privatelib withlib publiclib pclib \
-    cxxopts fmtlib fmtliblib eigen cuda \
+    cxxopts fmtlib fmtliblib eigen eigensolve cuda \
     message mpiprog petscprog \
     mklcmake mklpc oneapi openmp \
     somelib
@@ -40,8 +40,14 @@ PROJECTS += ${BOOKPROJECTS} ${BOOKPROJECTSf}
 
 .PHONY: build install
 options_cmakegood2b = --log-level=NOTICE -D MYVAR=myvalue
+MAIN_eigensolve = solve
 MAIN_single = program
+MAIN_withlib = program
+BIN_withlib = bin
+MAIN_mpiprog = cxxprogram
+MAIN_recursive = bin/program
 MAIN = ${MAIN_${PROJECT}}
+BIN = ${BIN_${PROJECT}}
 options_somelib = \
     -D CMAKE_SOMELIB_INCLUDE=$( command pwd )/install-withlib/include
 pkgconfig_fmtlib = ${HOME}/Installation/fmtlib/installation-git/lib/pkgconfig
@@ -123,7 +129,10 @@ run :
 	            echo "No MAIN_PROJECT macro defined for PROJECT=${PROJECT}" && exit 1 \
 	        ; fi \
 	    ; fi \
-	 && cmdline=$${installdir}/$${main} \
+	 && if [ ! -z ${BIN} ] ; then \
+	      cmdline=$${installdir}/${BIN}/$${main} \
+	    ; else \
+	      cmdline=$${installdir}/$${main} ; fi \
 	 && if [ $$project = "mpiprog" -o $$project = "petscprog" ] ; then \
 	        cmdline="mpiexec -n 4 $$cmdline" ; fi \
 	 && echo Executing: $$cmdline && eval $$cmdline

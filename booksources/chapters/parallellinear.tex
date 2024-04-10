@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -228,7 +228,11 @@ The lower bound on the cost of an allreduce is, somewhat remarkably,
 almost the same as of a simple reduction: since in a reduction not all
 processors are active at the same time, we assume that the extra work
 can be spread out perfectly. This means that the lower bound on the
-latency and computation stays the same. For the bandwidth we reason as
+latency and computation stays the same.
+
+Since every processor originates a
+minimum spanning tree, we have $\log_2p\alpha$ latency.
+For the bandwidth we reason as
 follows: in order for the communication to be perfectly parallelized,
 $\frac{p-1}p n$ items have to arrive at, and leave each
 processor. Thus we have a total time of
@@ -254,11 +258,12 @@ in the dense matrix-vector product (section~\ref{sec:mvp-2d}),
 and the setup of the sparse matrix-vector product
 (section~\ref{sec:par-spmvp-setup}).
 
-Again we assume that gathers with multiple
-targets are active simultaneously. Since every processor originates a
-minimum spanning tree, we have $\log_2p\alpha$ latency; since each
-processor receives $n/p$ elements from $p-1$ processors, there is
-$(p-1)\times(n/p)\beta$ bandwidth cost. The total cost for constructing a
+Again we assume that gathers with multiple targets are active simultaneously.
+Since every processor originates a
+minimum spanning tree, we have $\log_2p\alpha$ latency;
+since each processor receives $n/p$ elements from $p-1$ processors,
+there is $(p-1)\times(n/p)\beta$ bandwidth cost.
+The total cost for constructing a
 length~$n$ vector by allgather is then
 \[ \lceil \log_2 p\rceil\alpha +\frac{p-1}pn\beta. \]
 We illustrate this:

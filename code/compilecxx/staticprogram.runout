@@ -1,12 +1,13 @@
 
 ==== Use of static library ====
 
-for o in foosub.o ; do \
-	  ar cr libs/libfoo.a ${o} ; \
-	done
-clang++  -o staticprogram fooprog.o -Llibs -lfoo
--rwxr-xr-x  1 eijkhout  staff  52536 Sep 27 04:57 staticprogram
+---- Build library:
+for o in foosub.o ; do ar cr libs/libfoo.a ${o} ; done
+---- Linking:
+g++ -o staticprogram fooprog.o -Llibs -lfoo
+---- Program:
+-rwxr-xr-x  1 eijkhout  staff  52042 Oct 21 10:46 staticprogram
 
-.. running:
-
+---- running:
 hello world
+---- done

@@ -1,0 +1,98 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of slides for
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2024
+%%%%
+%%%% CMake-slides.tex : cmake slides
+%%%% see hpc_cmake.tex for driver file
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Package finding} 
+  Package dependent:
+  \begin{itemize}
+  \item Sometimes through \indextermtt{pkg-config}:\\
+    find the \indextermtt{.pc} file
+  \item Sometimes through a \lstinline{Find....} module\\
+    see CMake documentation
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Catch2}
+\begin{lstlisting}
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( CATCH2 REQUIRED catch2-with-main )
+target_include_directories(
+        ${PROGRAM_NAME} PUBLIC
+        ${CATCH2_INCLUDE_DIRS}
+        )
+target_link_directories(
+        ${PROGRAM_NAME} PUBLIC
+        ${CATCH2_LIBRARY_DIRS}
+        )
+target_link_libraries(
+        ${PROGRAM_NAME} PUBLIC
+        ${CATCH2_LIBRARIES}
+        )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Cxxopts}
+Header-only:
+\begin{lstlisting}
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( OPTS REQUIRED cxxopts )
+target_include_directories(
+        ${PROGRAM_NAME} PUBLIC
+        ${OPTS_INCLUDE_DIRS}
+        )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Eigen}
+Header-only:
+\begin{lstlisting}
+cmake_minimum_required( VERSION 3.12 )
+project( eigentest )
+
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( EIGEN REQUIRED eigen3 )
+
+add_executable( eigentest )
+target_sources( eigentest PRIVATE eigentest.cxx )
+target_include_directories(
+	myprogram PUBLIC
+        ${EIGEN_INCLUDE_DIRS})
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Fmtlib}
+\begin{lstlisting}
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( FMTLIB REQUIRED fmt )
+target_include_directories(
+        ${PROGRAM_NAME} PUBLIC ${FMTLIB_INCLUDE_DIRS}
+        )
+target_link_directories(
+        ${PROGRAM_NAME} PUBLIC ${FMTLIB_LIBRARY_DIRS}
+        )
+target_link_libraries(
+        ${PROGRAM_NAME} PUBLIC ${FMTLIB_LIBRARIES}
+        )\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Range-v3}
+Has its own module:
+\begin{lstlisting}
+find_package( range-v3 REQUIRED )
+target_link_libraries(
+    ${PROGRAM_NAME} PUBLIC range-v3::range-v3 )
+\end{lstlisting}
+\end{numberedframe}
+
+\input CMakempiomp-slides.tex
+\input CMakedata-slides.tex

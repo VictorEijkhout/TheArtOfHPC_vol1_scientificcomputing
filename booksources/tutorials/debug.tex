@@ -597,79 +597,90 @@ Memory leaks will only surface in that your program runs out of
   \indextermtt{malloc} or \indextermtt{allocate} statement!
 
 \Level 0 {Memory debugging with Valgrind}
+%%packtsnippet valgrind
 \label{sec:valgrind}
 
-Insert the following allocation of \n{squares} in your program:
-\begin{verbatim}
-squares = (float *) malloc( nmax*sizeof(float) );
-\end{verbatim}
-Compile and run your program. The output will likely be correct,
-although the program is not. Can you see the problem?
+Errors leading to memory problems are easy to make.
+In this section we will see how \indexterm{valgrind}
+makes it possible to track down these errors.
+The use of valgrind is simplicity itself:
+\begin{lstlisting}
+valgrind yourprogram yourargs
+\end{lstlisting}
 
-\index{valgrind|(}
+As a first example, consider out of bound addressing,
+also known as \indextermbus{buffer}{overflow}:
+%
+\cxxverbatimsnippet{corruptbound}
 
-To find such subtle memory errors you need a different tool: a memory
-debugging tool. A~popular (because open source) one is
-\emph{valgrind}; a~common commercial tool is \indexterm{purify}.
+This is unlikely to crash your code,
+but the results are unpredictable,
+and this is certainly a failure of your program logic.
 
-%%\codelisting{tutorials/gdb/c/square1.c}
-\cverbatimsnippet{gdbsquare1c}
+Valgrind indicates that this is an invalid read,
+what line it occurs on,
+and where the block was allocated:
+%
+\lstinputlisting{code/corruption/cxx/bound.runout}
 
-Compile this program with \n{cc -o square1 square1.c} and run it with
-\n{valgrind square1} (you need to type the input value). You will lots
-of output, starting with:
-{\small
-\begin{verbatim}
-%% valgrind square1
-==53695== Memcheck, a memory error detector
-==53695== Copyright (C) 2002-2010, and GNU GPL'd, by Julian Seward et al.
-==53695== Using Valgrind-3.6.1 and LibVEX; rerun with -h for copyright info
-==53695== Command: a.out
-==53695== 
-10
-==53695== Invalid write of size 4
-==53695==    at 0x100000EB0: main (square1.c:10)
-==53695==  Address 0x10027e148 is 0 bytes after a block of size 40 alloc'd
-==53695==    at 0x1000101EF: malloc (vg_replace_malloc.c:236)
-==53695==    by 0x100000E77: main (square1.c:8)
-==53695== 
-==53695== Invalid read of size 4
-==53695==    at 0x100000EC1: main (square1.c:11)
-==53695==  Address 0x10027e148 is 0 bytes after a block of size 40 alloc'd
-==53695==    at 0x1000101EF: malloc (vg_replace_malloc.c:236)
-==53695==    by 0x100000E77: main (square1.c:8)
-\end{verbatim}
-}
+\begin{remark}
+  Buffer overflows are a well-known security risk,
+  typically associated with reading string input
+  from a user source.
+  Buffer overflows can be largely avoided by using
+  C++ constructs such as \lstinline{cin} and \lstinline{string}
+  instead of \lstinline{sscanf} and character arrays.
+\end{remark}
+
 Valgrind is informative but cryptic, since it works on the bare
 memory, not on variables. Thus, these error messages take some
-exegesis. They state that a line 10 writes a 4-byte object immediately
+exegesis. They state that line 10 reads a 4-byte object immediately
 after a block of 40 bytes that was allocated. In other words: the code
-is writing outside the bounds of an allocated array. Do you see what
-the problem in the code is?
+is writing outside the bounds of an allocated array.
 
-Note that valgrind also reports at the end of the program run how much
-memory is still in use, meaning not properly \n{free}d.
+The next example performs a read on an array that has already been free'd.
+In this simple case you will actually get the expected output,
+but if the read comes much later than the free, the output can be anything.
+%
+\cxxverbatimsnippet{corruptfree}
 
-If you fix the array bounds and recompile and rerun the program,
-valgrind still complains:
-{\small
-\begin{verbatim}
-==53785== Conditional jump or move depends on uninitialised value(s)
-==53785==    at 0x10006FC68: __dtoa (in /usr/lib/libSystem.B.dylib)
-==53785==    by 0x10003199F: __vfprintf (in /usr/lib/libSystem.B.dylib)
-==53785==    by 0x1000738AA: vfprintf_l (in /usr/lib/libSystem.B.dylib)
-==53785==    by 0x1000A1006: printf (in /usr/lib/libSystem.B.dylib)
-==53785==    by 0x100000EF3: main (in ./square2)
-\end{verbatim}
-}
-Although no line number is given, the mention of \n{printf} gives an
-indication where the problem lies.
-The reference to an `uninitialized value' is again cryptic: the only
-value being output is \n{sum}, and that is not uninitialized: it has
-been added to several times. Do you see why valgrind calls it
-uninitialized all the same?
+Valgrind again states that this is an invalid read;
+it gives both where the block was allocated and where it was freed.
+%
+\lstinputlisting{code/corruption/cxx/free.runout}
 
-\index{valgrind|)}
+On the other hand, if you forget to free memory you have a
+\indextermbus{memory}{leak}
+(just imagine allocation, and not free'ing, in a loop)
+%
+\cxxverbatimsnippet{corruptleak}
+
+which valgrind reports on:
+%
+\lstinputlisting{code/corruption/cxx/leak.runout}
+
+Memory leaks are much more rare in C++ than in~C
+because of containers such as \lstinline{std::vector}.
+However, in sophisticated cases you may still do your own
+memory management, and you need to be aware of the danger of memory leaks.
+
+If you do your own memory management, there is also a danger
+of writing to an array pointer that has not been allocated yet:
+%
+\cxxverbatimsnippet{corruptinit}
+
+The behavior of this code depends on all sorts of things:
+if the pointer variable is zero, the code will crash.
+On the other hand, if it contains some random value,
+the write may succeed; provided you are not writing
+too far from that location.
+
+The output here shows both the valgrind diagnosis,
+and the \ac{OS} message when the program aborted:
+%
+\lstinputlisting{code/corruption/cxx/leak.runout}
+
+%%packtsnippet end
 
 \Level 1 {Electric fence}
 

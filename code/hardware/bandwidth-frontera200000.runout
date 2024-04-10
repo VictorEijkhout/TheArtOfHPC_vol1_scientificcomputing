@@ -1,0 +1,44 @@
+Execute program bandwidth cores 1
+Threads: 1
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 13.5006
+Execute program bandwidth cores 5
+Threads: 5
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 61.8742
+Execute program bandwidth cores 11
+Threads: 11
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 130.09
+Execute program bandwidth cores 16
+Threads: 16
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 180.9
+Execute program bandwidth cores 22
+Threads: 22
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 227.754
+Execute program bandwidth cores 28
+Threads: 28
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 247.768
+Execute program bandwidth cores 33
+Threads: 33
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 249.031
+Execute program bandwidth cores 39
+Threads: 39
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 218.137
+Execute program bandwidth cores 44
+Threads: 44
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 253.913
+Execute program bandwidth cores 50
+Threads: 50
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 247.995
+Execute program bandwidth cores 56
+Threads: 56
+Data: 25M repeated: 100
+Bandwidth Gbyte/sec: 246.818

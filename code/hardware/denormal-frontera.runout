@@ -1,0 +1,16 @@
+==== Flush to zero
+Float: minnormal=1.1754944e-38
+Start: 1 ratio: 0.9 terms: 50
+Final number: 0.005153768
+usec /word: 1.526288
+Start: 1.1754944e-38 ratio: 0.9 terms: 50
+Final number: 0
+usec /word: 1.525552
+==== No flush to zero
+Float: minnormal=1.1754944e-38
+Start: 1 ratio: 0.9 terms: 50
+Final number: 0.005153768
+usec /word: 1.526528
+Start: 1.1754944e-38 ratio: 0.9 terms: 50
+Final number: 6.0582e-41
+usec /word: 45.044945

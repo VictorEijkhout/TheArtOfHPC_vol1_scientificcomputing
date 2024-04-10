@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% tau.tex : tutorial about tracing with TAU
 %%%%
@@ -76,7 +76,7 @@ The \texttt{slog2}\index{slog2 file format} file can be displayed with \indexter
 \Level 0 {Instrumentation}
 
 Unlike such tools as \indexterm{VTune} which profile your binary as-is,
-TAU works by adding \indexterm{instrumentation} to your code: in
+TAU can work by adding \indexterm{instrumentation} to your code: in
 effect it is a source-to-source translator that takes your code and
 turns it into one that generates run-time statistics.
 
@@ -109,6 +109,13 @@ one of the TAU compilation scripts; otherwise we set it to a regular MPI compile
 \end{verbatim}
 to the TAU compiler.
 \end{fortrannote}
+
+\begin{remark}
+  The \emph{PETSc}\index{PETSc!instrumented by TAU}
+  library can be compiled with TAU instrumentation enabled
+  by adding the \lstinline{--with-perfstubs-tau=1} option
+  at configuration time.
+\end{remark}
 
 \begin{istc}
 To use \emph{TAU} on \emph{TACC}\index{TAU!on TACC resources} resources,

@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% io.tex : parallel I/O
 %%%%
@@ -37,7 +37,7 @@ Illustrating the last point:
 \cverbatimsnippet{pseek}
 
 MPI also has its own portable I/O: \indextermbus{MPI}{I/O}, for which
-see chapter~\PCSEref{ch:mpi-io}.
+see chapter~\PCSEref[chapter]{ch:mpi-io}.
 
 Alternatively, one could use a library such as \indexterm{hdf5};
 see~\ref{tut:hdf5}.
@@ -71,7 +71,7 @@ This has the big advantage that the end result is an ordinary Unix file.
 \Level 0 {Higher level libraries}
 
 Libraries such as \indexterm{NetCDF} or \indexterm{HDF5}
-(see~\ref{tut:hdf5})
+(see chapter~\ref{tut:hdf5})
 offer advantages over MPI I/O:
 \begin{itemize}
 \item Files can be OS-independent, removing worries such

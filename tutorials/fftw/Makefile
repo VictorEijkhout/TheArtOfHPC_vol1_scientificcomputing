@@ -22,7 +22,7 @@ info ::
 MODE = mpi
 include Makefile.compile
 LOAD_LIBS = -L${TACC_FFTW3_LIB} -lfftw3_mpi -lfftw3
-INCLUDES  = -I${TACC_FFTW3_INC}
+EXTRA_INCLUDES  = -I${TACC_FFTW3_INC}
 package ::
 	@cp ../../code/Makefile.compile .
 

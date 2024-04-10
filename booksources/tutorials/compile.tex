@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -102,8 +102,10 @@ There are two types of programming languages:
 \item In an \indextermsubdef{interpreted}{language} you write
   human-readable source code and you execute it directly: the computer
   translates your source line by line as it encounters it. 
-\item In a \indextermsubdef{compiled}{language} your code whole source
-  is first compiled to a program, which you then execute.
+\item In a \indextermsubdef{compiled}{language} your whole source code
+  is first compiled to a binary program file,
+  called the \indextermdef{executable},
+  which you then execute.
 \end{enumerate}
 Examples of interpreted languages are \indexterm{Python},
 \indexterm{Matlab}, \indexterm{Basic}, \indexterm{Lisp}.
@@ -135,8 +137,9 @@ Data files can be really anything: they are typically output from
 a program, and their format is often specific to that program,
 although there are some standards, such as \indexterm{hdf5}.
 You get a binary data file if you write out the exact bytes
-of certain integers or floating point numbers,
-rather than a readable representation of that number.
+that integer or floating point data takes up in memory,
+rather than a readable representation of that number,
+the way you see on your screen.
 
 \begin{exercise}
   Why don't programs write their results to file in readable form?
@@ -206,7 +209,7 @@ Let's start with a simple program that has the whole source in one
 file.
 
 %% \srclisting{One file: \n{hello.c}}{code/compilec/hello.c}
-\strippedinput{code/compilec}{hello.c}
+\ListStrippedSource{code/compilec}{hello.c}
 
 Compile this program with your favorite compiler; we will use \n{gcc}
 in this tutorial, but substitute your own as desired.
@@ -232,26 +235,29 @@ This process is illustrated in figure~\ref{fig:compilelink1}.
 
 Even for the simple compilation of the previous section
 some details have been left out.
-The commandline
-\begin{lstlisting}
-  gcc -save-temps -o hello hello.c
-\end{lstlisting}
-actually generates the following:
-\begin{itemize}
-\item \n{hello.i}: a text file where all preprocessor directives have been inlined.
-  In this case, that's the \lstinline{stdlib.h} and \lstinline{stdio.h} files:
-\begin{lstlisting}
-# 0 "hello.c"
-# 0 "<built-in>"
-# 0 "<command-line>"
-# 1 "hello.c"
-# 12 "hello.c"
-# 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/usr/include/stdlib.h" 1 3 4
-# 61 "/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/usr/include/stdlib.h" 3 4
-# 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/usr/include/Availability.h" 1 3 4    
-\end{lstlisting}
-et cetera.
-\item \n{hello.s}: the \indextermbus{assembly}{listing} of your program.
+%%packtsnippet compilesteps
+Here is an outline of the steps of the compilation process,
+which involves more than merely invoking the compiler.
+For instance, your program likely contains \n{#include} statements,
+which are processed in a separate stage.
+
+Let's take a look at a simple `hello world' program.
+Rather than transforming your source in one fell swoop into an executable,
+the following steps happen.
+\begin{enumerate}
+\item The preprocessor generates
+  a file \n{hello.i} where all includes are inlined,
+  and other macros
+\begin{packt}
+  expanded, see section~\ref{sec:cpp-include};
+\end{packt}
+\begin{nopackt}
+  expanded.
+\end{nopackt}
+  This file is usually immediately deleted: you need to supply
+  a compiler flag for it to be left behind.
+\item An \indextermbus{assembly}{listing} \n{hello.s} of your program
+  is generated; againi, to be immediately deleted after use.
   This is a sort of `readable machine language':
 \begin{lstlisting}
         .arch armv8-a
@@ -267,20 +273,27 @@ _main:
 LFB10:
         stp     x29, x30, [sp, -16]!    
 \end{lstlisting}
-\item \n{hello.o}: the object file, containing actual machine language.
+\item The main tangible result of the compilation is \n{hello.o},
+  the object file, containing actual machine language.
   We will go into this more below.
   The object file is not directly readable, but later
   you'll see the \indextermunix{nm} tool that can give you some information.
-\end{itemize}
+\item Finally, the \indexterm{linker} hooks together the object file
+  and system libraries into a self-contained executable or a library file.
+\end{enumerate}
+%%packtsnippet end
+
 \Level 1 {Multiple files: compile and link}
 
+%%packtsnippet compilelink
 \begin{figure}[ht]
   \includegraphics[scale=.5]{compilelink2}
   \caption{Compiling a program from multiple source files.}
   \label{fig:compilelink2}
 \end{figure}
 
-Now we move on to a program that is in more than one source file.
+As an illustration of linking,
+let's consider a program where the source is contained in more than one file.
 
 \begin{multicols}{2}
   Main program: \n{fooprog.c}
@@ -305,10 +318,9 @@ This is illustrated in figure~\ref{fig:compilelink2}.
 The \texttt{-c} option tells the compiler to compile the source file,
 giving an \indexterm{object file}. The third command then acts as the
 \indexterm{linker}, tieing together the object files into an
-executable. (With programs that are spread over several files there is
-always the danger of editing a subroutine definition and then
-forgetting to update all the places it is used. See the `make'
-tutorial, section~\ref{tut:gnumake}, for a way of dealing with this.) 
+executable.
+
+%%packtsnippet end
 
 \begin{exercise}
   \label{ex:compile3}
@@ -316,10 +328,10 @@ tutorial, section~\ref{tut:gnumake}, for a way of dealing with this.)
   Exercise for separate compilation. Structure:
 \begin{multicols}{2}
   Main program: \n{fooprog.c}
-  \strippedinput{code/compile/}{fooprog.c}
+  \ListStrippedSource{code/compilec}{fooprog.c}
   \columnbreak
   Subprogram: \n{foosub.c}
-  \strippedinput{code/compile}{foosub.c}
+  \ListStrippedSource{code/compilec}{foosub.c}
   Add a second subroutine in a second file.
 \end{multicols}
 
@@ -339,14 +351,53 @@ What files are being produced each time?
 Can you write a shell script to automate this?
 \end{exercise}
 
+\Level 1 {Paths}
+
+%%packtsnippet compilepaths
+
+If your program uses libraries, maybe even of your own making,
+you need to tell
+\begin{enumerate}
+\item the compiler where to find the \indextermsubp{header}{file}, and
+\item the linker where to find the library file.
+\end{enumerate}
+(C++~knows `header only' libraries, so the second step is not always needed.)
+These locations are indicated by commandline options:
+\begin{lstlisting}
+gcc -c mysource.cpp -I${SOMELIB_INC_DIR}
+gcc -o myprogram mysource.o -L${SOMELIB_LIB_DIR} -lsomelib
+\end{lstlisting}
+(Instead of listing these on the commandline every time,
+you would of course put them in a makefile, or use CMake to
+generate such commandlines.)
+The compile line has the \n{-I} option for `include', that specifies
+the location of the library header file.
+You can specify multiple include options.
+
+The link line has the \n{-L} option for `library',
+that specifies the location of the actual library files,
+and the \n{-l} option for the library name.
+You can specify multiple library directories.
+The \n{-l} option is interpreted as follows:
+\n{-l somelib} makes the linker search for files
+\begin{lstlisting}
+libsomelib.a
+libsomelib.so
+libsomelib.dylib
+\end{lstlisting}
+
+%%packtsnippet end
+
 \Level 1 {Looking into binary files: \texttt{nm}}
+
+%%packtsnippet compilenm
 
 Most of a binary file consists of the same instructions that you
 coded in C or Fortran, just in machine language, which
 is much harder to understand.
 Fortunately, you don't need to look at machine language often.
-What often interests you about object files is what functions are
-defined in it, and what functions are used in it.
+Often what interests you about object files is only knowing
+what functions are defined in it, and what functions are used in it.
 
 For this, we use the \indextermunixdef{nm} command.
 
@@ -364,13 +415,73 @@ indicate routines that are used but not define in this file. In this
 case, \n{printf} is a system routine that will be supplied in the
 linker stage.
 
-(With C++ the function names will look a little strange
-because of \indexterm{name mangling}. However, you'll still
-be able to recognize them.)
+\Level 1 {Name demangling in C++}
 
-Sometimes you will come across \indextermsub{stripped}{binary} file,
-and \indextermunix{nm} will report \n{No symbols}.
-In that case \n{nm -D} may help, which displays `dynamic symbols'.
+With C++ the function names will look a little strange
+because of \indexterm{name mangling}.
+For instance the function
+\begin{lstlisting}
+void bar( string s ) {
+  cout << s;
+}
+\end{lstlisting}
+gives:
+\begin{lstlisting}[language=bash]
+[] nm foosub.o
+0000000000000000 T __Z3barNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+                 U __ZNSt8ios_base4InitC1Ev
+                 U __ZNSt8ios_base4InitD1Ev
+                 U __ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l
+                 U __ZSt4cout
+\end{lstlisting}
+You sort of recognize the \lstinline{bar} function in this.
+Add an option \n{nm -C} to get de-mangled names:
+\begin{lstlisting}[language=bash]
+[scientific-computing-private/code/compilecxx 1354] nm -C !$
+[] nm -C foosub.o
+0000000000000000 T bar(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+                 U std::ios_base::Init::Init()
+                 U std::ios_base::Init::~Init()
+                 U std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long)
+                 U std::cout
+\end{lstlisting}
+
+Another possibility is to pipe the \indextermunix{nm} output
+through \indextermunix{c++filt}:
+\begin{lstlisting}[language=bash]
+nm foosub.o | c++file
+\end{lstlisting}
+
+You may also want to demangle names in linker errors,
+when your object files leave some references undefined.
+For this, add an option \lstinline+-Wl,-demangle+
+to the link line:
+\lstinputlisting{code/linkcxx/undefined.runout}
+
+The mangled names are available programmatically:
+\begin{lstlisting}[language=C++]
+#include <typeinfo>
+cout << typeid( &Myclass::method ).name() << '\n'
+\end{lstlisting}
+Demangling also has an \ac{API}:
+\begin{lstlisting}[language=C++]
+#include <cxxabi.h>
+char* abi::__cxa_demangle
+    ( const char* mangled, char* output, size_t* length,int status );
+\end{lstlisting}
+
+%%packtsnippet end
+
+\begin{remark}
+  There are other tools with similar functionality to \lstinline{nm},
+  such as \indextermunix{otool}, \indextermunix{objdump}, \indextermunix{readelf}.  
+\end{remark}
+
+\begin{remark}
+  Sometimes you will come across \indextermsub{stripped}{binary} file,
+  and \indextermunix{nm} will report \n{No symbols}.
+  In that case \n{nm -D} may help, which displays `dynamic symbols'.
+\end{remark}
 
 \Level 1 {Compiler options and optimizations}
 
@@ -451,12 +562,28 @@ specifies that arithmetic operations are evaluated left-to-right.
 Rearranging arithmetic expressions is usually safe, but not always.
 Be careful when applying higher optimization levels!
 
+\Level 2 {Optimization reporting}
+
+Compilers can report on certain optimizations.
+\begin{itemize}
+\item The \emph{Intel compiler}\index{Intel!compiler!optimization report}
+  has a parameter \lstinline{-qoptreport=[0-5]}.
+\item The \emph{GCC compiler}\index{GCC!compiler!optimization report}
+  has multiple commandline options:
+\begin{lstlisting}
+-fopt-info -fopt-info-options -fopt-info-options=filename
+\end{lstlisting}
+See: \url{https://stackoverflow.com/a/65017597/2044454}.
+\end{itemize}
+
 \Level 0 {Libraries}
 \index{libraries!creating and using|(}
 
 \begin{purpose}
-  In this section you will learn about libraries.
+  In this section you will learn about creating libraries.
 \end{purpose}
+
+%%packtsnippet libfile
 
 \begin{figure}[ht]
   \includegraphics[scale=.5]{compilelink3}
@@ -468,6 +595,15 @@ If you have written some subprograms, and you want to share them with
 other people (perhaps by selling them), then handing over individual
 object files is inconvenient. Instead, the solution is to combine them
 into a library.
+This section shows you the basic Unix mechanisms.
+You would typically use these in a Makefile;
+if you use CMake it's all done for you;
+\begin{packt}
+  see chapter~\ref{tut:compcmake}.
+\end{packt}
+\begin{nopackt}
+  see chapter~\ref{tut:cmake}.
+\end{nopackt}
 
 \Level 1 {Static libraries}
 
@@ -475,34 +611,44 @@ First we look at
 \emph{static libraries}\index{library!static}%
 \index{static library|see{library, static}},
 for
-which the \indexterm{archive utility} \n{ar} is used. A~static library
-is linked into your executable, becoming part of it. This may lead to
-large executables; you will learn about shared libraries
+which the \indexterm{archive utility} \indextermunix{ar} is used.
+A~static library
+is linked into your executable, becoming part of it.
+This has the advantage that you can give such an executable to someone else,
+and it will immediately work.
+On the other hand, this may lead to large executables;
+you will learn about shared libraries
 next, which do not suffer from this problem.
 
 The use of a library to build a program is illustrated
 in figure~\ref{fig:compilelink3}.
 
-Create a directory to contain your library (depending on what your
-library is for this can be a
-system directory such as \n{/usr/bin}), and create the library file
+Create a directory to contain your library, and create the library file
 there. 
 The library can be linked into your executable by explicitly giving
 its name, or by specifying a library path:
-
 
 \snippetmakeoutput{code/compilecxx}{staticprogram}
 
 The \indextermunix{nm} command tells you what's in the library, just
 like it did with object files, but now it also tells you what object
 files are in the library:
-\begin{verbatim}
-%% nm ../lib/libfoo.a 
 
-../lib/libfoo.a(foosub.o):
-00000000 T _bar
-         U _printf
-\end{verbatim}
+We show this for~C:
+%
+\begingroup \def\codefraction{.4}\def\outputfraction{.55} %pyskip
+\makewithoutput{staticlib.runcmd}{code/compilec}{staticlib}
+\endgroup 
+
+For~C++ we show the output in figure~\ref{fig:cxxstatic},
+where we note the \n{-C} flag for name \indexterm{demangling}.
+
+\begin{figure}[ht]
+  \def\codefraction{.3}\def\outputfraction{.65} %pyskip
+  \makewithoutput{staticlib.runcmd}{code/compilecxx}{staticlib}
+  \caption{The \texttt{nm} output of a C++ library}
+  \label{fig:cxxstatic}
+\end{figure}
 
 %% \snippetmakeoutput{code/compilecxx}{staticprogram}
 
@@ -514,7 +660,7 @@ Although they are somewhat more complicated to use,
 have several advantages. For
 instance, since they are not linked into the executable but only
 loaded at runtime, they lead to (much) smaller executables. They are
-not created with \n{ar}, but through the compiler. For instance:
+not created with \indexunix{ar}, but through the compiler. For instance:
 
 \snippetmakeoutput{code/compile}{makedynamiclib}
 
@@ -531,13 +677,21 @@ You can again use \indextermunix{nm}:
 00000fb0 t dyld_stub_binding_helper
 \end{verbatim}
 
+\Level 1 {Finding libraries}
+\label{sec:ld_rpath}
+
 Shared libraries are not actually linked into the executable;
 instead, the executable needs the information where the library
 is to be found at execution time. One way to do this is with
-\n{LD_LIBRARY_PATH}:
+\indextermunix{LD_LIBRARY_PATH};
+see figure~\ref{fig:dynamicprogram}
 %\indextermunixdefus{LD_LIBRARY_PATH}:
 
-\snippetmakeoutput{code/compile}{dynamicprogram}
+\begin{figure}[ht]
+  \snippetmakeoutput{code/compile}{dynamicprogram}
+  \caption{Making and using a dynamic library}
+  \label{fig:dynamicprogram}
+\end{figure}
 
 Another solution is to have the path be included in the executable:
 \begin{verbatim}
@@ -556,14 +710,42 @@ The link line now contains the library path twice:
 \begin{remark}
   You may also come across a syntax with \n{rpath=}:
 \begin{verbatim}
-  gcc -o foo fooprog.o -L../lib -Wl,-rpath,`pwd`/../lib -lfoo
+  gcc -o foo fooprog.o -L../lib -Wl,-rpath=`pwd`/../lib -lfoo
 \end{verbatim}
 but beware that that is a GNU extension.
 \end{remark}
 
+\begin{remark}
+  On \indextermbus{Apple}{OS Ventura} the use of \indextermunix{LD_LIBRARY_PATH}
+  is no longer supported for security reasons, so using the \n{rpath} is the only option.
+\end{remark}
 Use the command \indextermunixdef{ldd} to get information about what shared libraries
 your executable uses. (On Mac OS~X, use \n{otool -L} instead.)
 
+\Level 1 {Standard library}
+
+Certain functionality, such as I/O or file and process management,
+is used in all programming languages, but belongs more
+to the \ac{OS} than to the language proper.
+That's why this has been bundled in a \indextermsub{standard}{library},
+called \lstinline{libstdc} or \lstinline{libstdc++}.
+Error messages about the contents of this library typically
+refer to \indextermunix{GLIBC} or \indextermunix{GLIBCXX}
+with a version number.
+\begin{lstlisting}
+[] /sbin/ldconfig -p | grep stdc++
+        libstdc++.so.6 (libc6,x86-64) => /lib64/libstdc++.so.6
+        libstdc++.so.5 (libc6,x86-64) => /lib64/libstdc++.so.5
+[] strings /lib64/libstdc++.so.6 | grep LIBCXX
+GLIBCXX_3.4
+GLIBCXX_3.4.1
+   [...]
+GLIBCXX_3.4.19
+\end{lstlisting}
+Sometimes functionality is requested
+from a later version than is present in your system.
+
+%%packtsnippet end
 
 \index{libraries!creating and using|)}
 

@@ -19,7 +19,7 @@ MAKEFLAGS += --no-builtin-rules
 OMPFLAGS_intel    = -g -qopenmp
 OMPFLAGS_gcc      = -ggdb -fopenmp
 OMPFLAGS_clang    = -fopenmp
-OMPFLAGS = ${OMPFLAGS_${LMOD_FAMILY_COMPILER}}
+OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
 
 info ::
 	@echo "================ Compile rules:"
@@ -31,7 +31,7 @@ OPTLEVEL = 2
 info ::
 	@echo "    [ EXTRA_OPTIONS=... ] [ INCLUDES=... ]"
 
-ifdef LMOD_TAU_DIR
+ifdef TACC_TAU_DIR
   C_COMPILER = tau_cc.sh
   CXX_COMPILER = tau_cxx.sh
   F_COMPILER = tau_f90.sh
@@ -42,18 +42,31 @@ else
 
   ## non-TAU compilation
   CSTANDARD = 99
+ifdef TACC_CXX
+  CXX_COMPILER = ${TACC_CXX} \
+	-g -O${OPTLEVEL} -std=c++${CPPSTANDARD} ${CXXFLAGS_${TACC_FAMILY_COMPILER}}
+else
   C_COMPILER_intel   = icc
   C_COMPILER_gcc     = gcc
   C_COMPILER_clang   = clang
   C_COMPILER_oneapi  = icx
   CFLAGS = -g -O${OPTLEVEL} -std=c${CSTANDARD}
+  C_COMPILER = ${C_COMPILER_${TACC_FAMILY_COMPILER}
+endif
   MPI_C_COMPILER = mpicc
 
+  CPPSTANDARD = 20
+  CXXFLAGS_gcc = -Wno-psabi
+ifdef TACC_CXX
+  CXX_COMPILER = ${TACC_CXX} \
+	-g -O${OPTLEVEL} -std=c++${CPPSTANDARD} ${CXXFLAGS_${TACC_FAMILY_COMPILER}}
+else
   CXX_COMPILER_intel   = icpc
   CXX_COMPILER_gcc     = g++
   CXX_COMPILER_clang   = clang++
   CXX_COMPILER_oneapi  = icpx
-  CXXFLAGS = -g -O${OPTLEVEL} -std=c++17
+  CXXFLAGS = -g -O${OPTLEVEL} -std=c++17 ${CXXFLAGS_${TACC_FAMILY_COMPILER}}
+endif
   MPI_CXX_COMPILER = mpicxx
 
   F_COMPILER_intel   = ifort
@@ -61,45 +74,82 @@ else
   F_COMPILER_clang   = gfortran
   F_COMPILER_oneapi  = gfortran
   FFLAGS = -g -O${OPTLEVEL}
+  F_COMPILER = ${F_COMPILER_${TACC_FAMILY_COMPILER}}
   MPI_F_COMPILER = mpif90
 
   ifeq "${MODE}" "mpi"
     C_COMPILER   = ${MPI_COMPILER}
     CXX_COMPILER = ${MPI_CXX_COMPILER}
     F_COMPILER   = ${MPI_F_COMPILER}
-  else
-    C_COMPILER = ${C_COMPILER_${LMOD_FAMILY_COMPILER}}
-    CXX_COMPILER = ${CXX_COMPILER_${LMOD_FAMILY_COMPILER}}
-    F_COMPILER = ${F_COMPILER_${LMOD_FAMILY_COMPILER}}
   endif
 
 endif
 CLINKER   = ${C_COMPILER}
 FLINKER   = ${F_COMPILER}
-CXXLINKER = ${CXX_COMPILER}
+CXXLINKER = ${CXX_COMPILER} -Wl,-demangle
 LINKER    = ${${LANGUAGE}LINKER}
 
 ifeq "${MODE}" "omp"
   CFLAGS += ${OMPFLAGS} 
   CXXFLAGS += ${OMPFLAGS} 
   FFLAGS += ${OMPFLAGS} 
-  LINKERFLAGS += ${OMPFLAGS}
+  LINK_FLAGS += ${OMPFLAGS}
 endif
+
+##
+## Module detection
+##
+.PHONY: modules
+modules :
+	@needs="" \
+	 && modules="${MODULES}" \
+	 && if [ ! -z "${PROGRAM}" ] ; then \
+	      modules="$${modules} $$( make -p | grep MODULES_${PROGRAM} | cut -d '=' -f 2 ) " \
+	    ; fi \
+	 && for m in $$modules ; do \
+	      mdir=TACC_$${m}_DIR \
+	       && mdir=$$( env | grep -i $${mdir} | cut -d = -f 2 ) \
+	       && if [ -z "$${mdir}" ] ; then \
+	            needs="$$needs $$m" \
+	           ; \
+	          fi \
+	       ; \
+	     done \
+	     && if [ ! -z "$$needs" ] ; then \
+	          echo "Please load modules: $$needs" \
+	           && echo  \
+	           && exit 1 \
+	           ;  \
+	        fi
 
 %.o : %.c
 	@if [ -z "${C_COMPILER}" ] ; then \
 	    echo "Could not determine C compiler" && exit 1 ; fi
-	@cmd="${C_COMPILER}   ${CFLAGS}   ${PIC_OPTION} ${INCLUDES} \
+	@cmd="${C_COMPILER}   ${CFLAGS}   ${PIC_OPTION} ${EXTRA_INCLUDES} \
 	        ${EXTRA_OPTIONS} ${EXTRA_EXTRA_OPTIONS} \
 	    -c $^" \
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo "Compile: $$cmd" ; fi \
 	 && eval $${cmd}
 
-%.o : %.cxx
+%.o : %.cpp
+	@program=$@ && program=$${program%%.o} \
+	 && make --no-print-directory modules PROGRAM=$${program}
 	@if [ -z "${CXX_COMPILER}" ] ; then \
 	    echo "Could not determine CXX compiler" && exit 1 ; fi
-	@cmd="${CXX_COMPILER} ${CXXFLAGS} ${PIC_OPTION} ${INCLUDES} \
+	@cmd="${CXX_COMPILER} ${CXXFLAGS} ${PIC_OPTION} ${EXTRA_INCLUDES} \
+	        ${EXTRA_OPTIONS} ${EXTRA_EXTRA_OPTIONS} \
+	    -c $^" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo "Compile: $$cmd" ; fi \
+	 && eval $${cmd}
+
+%.o : %.cxx 
+	@program=$@ && program=$${program%%.o} \
+	 && make --no-print-directory modules PROGRAM=$${program}
+	@if [ -z "${CXX_COMPILER}" ] ; then \
+	    echo "Could not determine CXX compiler" && exit 1 ; fi
+	@cmd="${CXX_COMPILER} ${CXXFLAGS} ${PIC_OPTION} ${EXTRA_INCLUDES} \
 	        ${EXTRA_OPTIONS} ${EXTRA_EXTRA_OPTIONS} \
 	    -c $^" \
 	 && if [ "${ECHO}" = "1" ] ; then \
@@ -114,12 +164,38 @@ endif
 # use double colon to add more dependencies elsewhere
 info ::
 	@echo "for linking:"
-	@echo "    [ EXTRALIBS=... ]"
-${APPS} ${PROGRAMS} : $$@.o ${EXTRA_OBJS}
-	@cmdline="${LINKER} ${LINKERFLAGS} \
-	    -o $@ $^ ${EXTRALIBS}" \
-	 && if [ "${ECHO}" = "1" ] ; then \
-	        echo "Link line: $$cmdline" ; fi \
-	 && eval $$cmdline
+	@echo "    [ EXTRA_LIBS=... ]"
+${APPS} ${EXERCISES} ${PROGRAMS} ${WRONGS} :: $$@.o ${EXTRA_OBJS}
+	@if [ ! -z "${LINK_SETUP_COMMANDS}" ] ; then \
+	    if [ "${ECHO}" = "1" ] ; then echo ${LINK_SETUP_COMMANDS} ; fi \
+	     && eval ${LINK_SETUP_COMMANDS} \
+	    ; fi
+	@if [ -z "${LINKER}" ] ; then \
+	    echo "No linker defined for LANGUAGE=${LANGUAGE}" && exit 1 ; fi
+	@if [ ! -z "${RPATH}" ] ; then \
+	      for r in ${RPATH} ; do \
+	          rpath="$$rpath -Wl,-rpath,$${r}" \
+	      ; done \
+	    ; fi \
+	 && cmd="${LINKER} -o $@ $^ \
+	        ${LINK_FLAGS} ${EXTRA_LINK_FLAGS} \
+	        ${EXTRA_LIBS} $$rpath " \
+	 && if [ "${ECHO}" = "1" ] ; then echo "Linking: $$cmd" ; fi \
+	 && eval $$cmd
+	@if [ "${ECHO}" = "1" -a ! -z "${LINK_EXTRA_COMMANDS}" ] ; then \
+	    echo ${LINK_EXTRA_COMMANDS} \
+	    ; fi \
+	 && eval ${LINK_EXTRA_COMMANDS}
+# ${APPS} ${PROGRAMS} ${WRONGS} : $$@.o ${EXTRA_OBJS}
+# 	@if [ ! -z "${RPATH}" ] ; then \
+# 	    for r in ${RPATH} ; do \
+# 	        rpath="$$rpath -Wl,-rpath,$${r}" \
+# 	    ; done \
+# 	; fi \
+# 	 && cmdline="${LINKER} ${LINKERFLAGS} $${rpath} \
+# 	        -o $@ $^ ${EXTRALIBS}" \
+# 	 && if [ "${ECHO}" = "1" ] ; then \
+# 	        echo "Link line: $$cmdline" ; fi \
+# 	 && eval $$cmdline
 
 

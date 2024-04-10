@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2020
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,6 +153,7 @@ complexity of
 Optimal complexity:
     \[ \lceil\log_2 p\rceil \alpha+n\beta +\frac{p-1}p \gamma n. \]
 Spanning tree algorithm:
+{\small
 \[ \kern-.2in
 \begin{array}{|c|ccc|}
 \hline
@@ -170,6 +171,7 @@ p_3&x_0^{(3)}\uparrow,x_1^{(3)}\uparrow,x_2^{(3)}\uparrow,x_3^{(3)}\uparrow
 \hline
 \end{array}
 \]
+}
 Running time
     \[ \lceil\log_2 p\rceil (\alpha+n\beta +\frac{p-1}p \gamma n). \]
 Good enough for short vectors.
@@ -178,17 +180,9 @@ Good enough for short vectors.
 \begin{frame}{Allreduce}
   Allreduce~$\equiv$ Reduce$+$Broadcast
 
-\[
-\begin{array}{|c|ccc|}
-\hline
-  &t=1&t=2&t=3\\ \hline
-p_0&x_0\downarrow&x_0x_1\downarrow&x_0x_1x_2x_3\\
-p_1&x_1\uparrow&x_0x_1\downarrow&x_0x_1x_2x_3\\
-p_2&x_2\downarrow&x_2x_3\uparrow&x_0x_1x_2x_3\\
-p_3&x_3\uparrow&x_2x_3\uparrow&x_0x_1x_2x_3\\
-\hline
-\end{array}
-\]
+{\tiny
+\input allreduce
+}
 
 Same running time as regular reduce!
 \end{frame}

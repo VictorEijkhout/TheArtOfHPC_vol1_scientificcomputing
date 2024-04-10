@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -71,7 +71,7 @@ Older systems were based on having one \indextermsub{central}{repository},
 that all developers coordinated with.
 These days a setup is popular where each developer (or a small group)
 has a \indextermsub{local}{repository},
-which gets synchronized to a \indexterm{remote}{repository}.
+which gets synchronized to a \indextermsub{remote}{repository}.
 In so-called \emph{distributed version control}\index{version control!distributed}
 systems there can even be multiple remote repositories to synchronize with.
 
@@ -89,6 +89,8 @@ multiple \indexterm{branch}es,
 even in the same local repository.
 This way you can have a main branch for the release version of the project,
 and one or more development branches for exploring new features.
+These branches can be merged when you're satisfied that a new feature has been
+sufficiently tested.
 
 \Level 0 {Git}
 \lstset{style=gitsession}
@@ -98,8 +100,8 @@ of programmers working on a joint project. You can also do this on
 your own by using two clones of the repository, 
 preferably opening two windows on your computer.
 
-Best practices for distributed version control:
-\url{https://homes.cs.washington.edu/~mernst/advice/version-control.html}
+%% Best practices for distributed version control:
+%% \url{https://homes.cs.washington.edu/~mernst/advice/version-control.html}
 
 \newpage
 \Level 0 {Create and populate a repository}
@@ -118,8 +120,10 @@ You can create a repository two different ways:
 
 \Level 1 {Create a repository by cloning}
 
-If you want to work on a repository that you have found (or created!)
-on some site such as \indextermtt{github.com}, you can use
+The easiest way to start a new repository is use a website such as
+\indextermtt{github.com} or \indextermtt{gitlab.com},
+create the repository there, and then clone it to your local machine.
+Syntax:
 \begin{lstlisting}
     git clone URL [ localname ]
 \end{lstlisting}
@@ -130,6 +134,10 @@ of the repository.
 \begin{gitstep}{emptyclone.runout1}
   Clone an empty repository and check that it is indeed empty
 \end{gitstep}
+
+As you see, even an empty repository contains a directory \indextermtt{.git}.
+This contains bookkeeping information about your repository;
+you will hardly ever look into it.
 
 \newpage
 \Level 1 {Create a repository locally}
@@ -162,20 +170,22 @@ may already create this name by default;
 the git software does not do this, as of this writing in~2022.
 
 Renaming a branch is possible.
-  Use \lstinline{git status} to see what branch you are on,
+You can use \lstinline{git status} to see what branch you are on.
 
-\begin{gitstep}{movemaster.runout}
+\begin{gitstep}{listmaster.runout}
   See what the main branch is
 \end{gitstep}
 
-Move the current branch with
-\begin{lstlisting}
-  git branch -m newbranchname
-\end{lstlisting}
-and for good measure check with \lstinline{git status}.
+Move the current branch:
+
+\begin{gitstep}{movemaster.runout}
+  Rename the branch
+\end{gitstep}
+
+For good measure, check the name again with \lstinline{git status}.
 
 \begin{gitstep}{movemaster.runout2}
-  Rename this branch.
+  Check branch names
 \end{gitstep}
 
 \newpage
@@ -186,14 +196,16 @@ and for good measure check with \lstinline{git status}.
 
 If you create a file it does not automatically become part of your repository.
 This takes a sequence of steps.
-If you create a new file, and you run \n{git status},
+If you create a new file, and you run \lstinline{git status},
 you'll see that the file is listed as `untracked'.
 
 \begin{gitstep}{firstfile.runout1}
-  Create a file; it will initually be untracked
+  Create a file with the usual tools such as an editor.
+  Here we use \lstinline{touch} as a short cut.
+  The file will initially be untracked.
 \end{gitstep}
 
-You need to \n{git add} on your file to tell git that the file
+You need to \lstinline{git add} on your file to tell git that the file
 belongs to the repository.
 (You can add a single file, or use a wildcard to add multiple.)
 However, this does not actually add the file:
@@ -213,17 +225,18 @@ Use \lstinline{git commit} to add these changes to the repository.
 \newpage
 \Level 1 {Changes to a file in the repository}
 
-The \n{git add} and \n{git commit} commands need to be repeated
-if you make any changes to a file in the repository:
-
-When you make changes to a file that has previous been added and committed,
-the \n{git status} command will list it as `modified'.
+Let us investigate the process of adding changes to a file to the repository.
+%% When you make changes to a file that has previous been added and committed,
+%% the \lstinline{git status} command will list it as `modified'.
+%% You then need to \lstinline{git add} and \lstinline{git commit} it
+%% to get the changes into the repository.
 
 \begin{gitstep}{changefirst.runout1}
   Make changes to a file that is tracked.
+  You would typically use an editor, but we use \lstinline{cat} to append.
 \end{gitstep}
 
-If you need to check what changes you have made, \n{git diff} on that file
+If you need to check what changes you have made, \lstinline{git diff} on that file
 will tell you the differences the between the edited, but not yet added or committed,
 file and the previous commit version.
 
@@ -237,7 +250,11 @@ You now need to repeat \lstinline{git add} and \lstinline{git commit} on that fi
   Commit the changes to the local repo.
 \end{gitstep}
 
-Doing \n{git log} will give you the history of the repository,
+The changes are now in your local repo;
+you need to \lstinline{git push} to update the upstream repo;
+see section~\ref{sec:git-remote}.
+
+Doing \lstinline{git log} will give you the history of the repository,
 listing the commit numbers, and the messages that you entered on those commits.
 
 \begin{gitstep}{changefirst.runout4}
@@ -256,13 +273,13 @@ Scenario: you have edited a file that is in the repo,
 you want to undo that change,
 and you have not yet committed the change.
 
-First of all, do \n{git diff} to confirm:
+First of all, do \lstinline{git diff} to confirm:
 
 \begin{gitstep}{undofirst.runout1}
   Make regrettable changes.
 \end{gitstep}
 
-Doing \n{git checkout} on that file gets the last committed version
+Doing \lstinline{git checkout} on that file gets the last committed version
 and puts it back in your working directory.
 
 \begin{gitstep}{undofirst.runout2}
@@ -275,10 +292,10 @@ and puts it back in your working directory.
 A more complicated scenario is where you have committed the change.
 Then you need to find the commit id.
 
-You can use \n{git log} to get the ids of all commits.
+You can use \lstinline{git log} to get the ids of all commits.
 This is useful if you want to roll back to pretty far in the past.
 However, if you only want to roll back the last commit,
-use \n{git show HEAD} to get a description of just that last commit.
+use \lstinline{git show HEAD} to get a description of just that last commit.
 
 \begin{gitstep}{revertfirst.runout1}
   Find the commit id that you want to roll back.
@@ -294,9 +311,9 @@ git checkout sdf234987238947 -- myfile myotherfile
 
 As above, find the commit number.
 
-Then do \n{git revert sdlksdfkl2343} (with the right id).
+Then do \lstinline{git revert sdlksdfkl2343} (with the right id).
 This will normally open an editor for you to leave comments;
-you can prevent this with the \n{--no-edit} option.
+you can prevent this with the \lstinline{--no-edit} option.
 
 \begin{gitstep}{revertfirst.runout2}
   Use 'git revert' to roll back.
@@ -316,7 +333,7 @@ However, the log will show that you have reverted a certain commit.
   But there will be an entry in the log.
 \end{gitstep}
 
-The \n{git reset} command can also be used for various
+The \lstinline{git reset} command can also be used for various
 types of undo.
 
 \newpage
@@ -341,14 +358,21 @@ with \lstinline{git add} and \lstinline{git commit}
   Committed changes.
 \end{gitstep}
 
-We connect to some remote repository with
+If the repository was created with \lstinline{git init},
+we need to connect it to some remote repository with
 \begin{lstlisting}
   git remote add servername url
+\end{lstlisting}
+Often, the remote name is \lstinline{origin} by convention,
+so you often see:
+\begin{lstlisting}
+  git remote add origin url
 \end{lstlisting}
 If you want to see what your remote is, do
 \begin{lstlisting}
   git remote -v
 \end{lstlisting}
+
 
 \begin{gitstep}{remotefile.runout2}
   Connect local repo to a remote one.
@@ -390,13 +414,13 @@ can propagate to another clone.
 This can be because more than one person is working on a project,
 or because one person is working from more than one machine.
 
-We make one local repository in directory \n{person1}.
+We make one local repository in directory \lstinline{person1}.
 
 \begin{gitstep}{collab.runout1}
   Person 1 makes a clone.
 \end{gitstep}
 
-Create another clone in \n{person2}.
+Create another clone in \lstinline{person2}.
 Normally the cloned repositories would be two user accounts,
 or the accounts of one user on two machines.
 
@@ -500,7 +524,7 @@ There can be various reasons for git to report a conflict.
   We will look at that in section~\ref{sec:git-branch-merge}.
 \end{itemize}
 
-As before, we have directories \n{person1} and \n{person2}
+As before, we have directories \lstinline{person1} and \lstinline{person2}
 containing independent clones of a repository.
 We have a file of four lines long, but contrary to above,
 we now make edits that are too close together for git's
@@ -514,7 +538,7 @@ Now developer~1 makes a change on line~1.
 
 \begin{gitstep}{conflict.runout2}
   With apologies for some scripting trickery,
-  we use an edit by \indextermunix{sed}, changing \n{1} on line~1 to \n{one}.
+  we use an edit by \indextermunix{sed}, changing \lstinline{1} on line~1 to \lstinline{one}.
   We add, commit, and push this change.
 \end{gitstep}
 
@@ -523,25 +547,25 @@ This change can be added and committed to the local repository
 without any problem.
 
 \begin{gitstep}{conflict.runout3}
-  Change the \n{2} on line two to \n{two}.
+  Change the \lstinline{2} on line two to \lstinline{two}.
   We add and commit this to the local repository.
 \end{gitstep}
 
-However, if we try to \n{git push} this change to the remote repository,
+However, if we try to \lstinline{git push} this change to the remote repository,
 we get an error that the remote is ahead of the local repository.
 So we first pull the state of the remote repository.
 In the previous section this led to an automatic merge;
 not so here.
 
 \begin{gitstep}{conflict.runout4}
-  The \n{git pull} call results in a message that the automatic mere failed,
+  The \lstinline{git pull} call results in a message that the automatic mere failed,
   indicating what file was the problem.
 \end{gitstep}
 
 You can now edit the file by hand, or using some merge tool.
 
 \begin{gitstep}{conflict.runout5}
-  In between the chevron'ed lines you first get the \n{HEAD},
+  In between the chevron'ed lines you first get the \lstinline{HEAD},
   that is the local state, followed by the pulled remote state.
   Edit this file, commit the merge and push.
 \end{gitstep}
@@ -575,7 +599,7 @@ Initially we have a file on the \lstinline{main} branch.
   We have a file, committed and all.
 \end{gitstep}
 
-We create a new branch, named \n{dev}
+We create a new branch, named \lstinline{dev}
 and check it out
 \begin{lstlisting}
   git branch dev
@@ -593,12 +617,18 @@ We make changes, and commit them to the current branch.
   Make changes and commit them to the dev branch.
 \end{gitstep}
 
-If we switch back to the \n{main} branch,
-everything is as before when we made the \n{dev} branch.
+If we switch back to the \lstinline{main} branch,
+everything is as before when we made the \lstinline{dev} branch.
 
 \begin{gitstep}{devbranch.runout4}
   The other branch is still unchanged.
 \end{gitstep}
+
+The first time you try to push a new branch
+you need to establish it upstream:
+\begin{lstlisting}
+git push --set-upstream origin mynewbranch
+\end{lstlisting}
 
 We can inspect differences between branches with 
 \begin{lstlisting}
@@ -622,37 +652,37 @@ We start with the four line file from before.
   The main branch is up to date.
 \end{gitstep}
 
-Also as before, we have a \n{dev} branch that contains
+Also as before, we have a \lstinline{dev} branch that contains
 these contents.
 
 %% \begin{gitstep}{devmerge.runout2}
 %%   Make a development branch.
 %% \end{gitstep}
 
-We switch back to the \n{main} branch and make a change.
-This will not be visible in the \n{dev} branch.
+We switch back to the \lstinline{main} branch and make a change.
+This will not be visible in the \lstinline{dev} branch.
 
 \begin{gitstep}{devmerge.runout3}
-  On line~1, change \n{1} to~\n{one}.
+  On line~1, change \lstinline{1} to~\lstinline{one}.
 \end{gitstep}
 
-We switch to the \n{dev} branch and make another file.
+We switch to the \lstinline{dev} branch and make another file.
 The change in the main branch is indeed not here.
 
 \begin{gitstep}{devmerge.runout4}
-  On line~4, change \n{4} to~\n{four}.
+  On line~4, change \lstinline{4} to~\lstinline{four}.
   This change is far enough away from the other change,
   that there should be no conflict.
 \end{gitstep}
 
-Switching back to the \n{main} branch, we use
+Switching back to the \lstinline{main} branch, we use
 \begin{lstlisting}
   git merge dev
 \end{lstlisting}
-to merge the \n{dev} changes into \n{main}.
+to merge the \lstinline{dev} changes into \lstinline{main}.
 
 \begin{gitstep}{devmerge.runout5}
-  Merge the dev branch into the main one with \n{git merge}.
+  Merge the dev branch into the main one with \lstinline{git merge}.
   Note the `auto-merge' message,
   and confirm that both changes to the file are there.
 \end{gitstep}
@@ -786,7 +816,7 @@ This may seem complicated, but you see that Mercurial prompts you
 for what commands to execute, and the workflow is clear, if you refer
 to figure~\ref{fig:hg}.
 
-\practical{Do a \n{cat} on the file that both of you have been editing.
+\practical{Do a \lstinline{cat} on the file that both of you have been editing.
 You should find that both edits are incorporated. That is the `merge'
 that Mercurial referred to.}{}{}
 

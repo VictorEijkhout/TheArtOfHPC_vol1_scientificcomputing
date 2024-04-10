@@ -1,0 +1,5 @@
+
+foosub.o:
+0000000000000000 T bar
+0000000000000000 N .debug_info_seg
+                 U printf

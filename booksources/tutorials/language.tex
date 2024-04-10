@@ -348,6 +348,30 @@ data = (ctypes.c_int * Nelements)(*[x for x in range(numel)])
 \end{verbatim}
 \end{enumerate}
 
+\Level 1 {Swig}
+
+Another way to let C and python interact is through \indexterm{Swig}.
+
+Let's assume you have C code that you want to use from Python.
+First of all, you need to supply an interface file for the routines
+you want to use.
+\begin{multicols}{2}
+  Source file:
+  \ListStrippedSource{code/swigpy}{example.c}
+  \columnbreak
+  Interface file:
+  \ListStrippedSource{code/swigpy}{example.i}
+\end{multicols}
+
+You now use a combination of Swig and the regular compiler
+to generate the interface:
+%
+\ListStrippedSource{code/swigpy}{build.sh}
+
+Testing the generated interface:
+%
+\ListStrippedSource{code/swigpy}{swigtest.py}
+
 \Level 1 {Boost}
 
 Another way to let C and python interact is through the \indexterm{Boost} library.

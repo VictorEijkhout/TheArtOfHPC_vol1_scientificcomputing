@@ -1,0 +1,36 @@
+make[1]: `abc' is up to date.
+================
+coefficients 1.00e-03 -1.00e+00 1.00e-03
+textbook zeros 1.000e-03 1.000e+03 evaluate to -2.876e-14  2.631e-14, error  2.876e-11 1.137e-16
+accurate zeros 1.000e-03 1.000e+03 evaluate to -2.168e-19  2.631e-14, error  2.168e-16 1.137e-16
+================
+coefficients 1.00e-04 -1.00e+00 1.00e-04
+textbook zeros 1.000e-04 1.000e+04 evaluate to  5.264e-14  7.072e-13, error  5.264e-10 0.000e+00
+accurate zeros 1.000e-04 1.000e+04 evaluate to  0.000e+00  7.072e-13, error  0.000e+00 0.000e+00
+================
+coefficients 1.00e-05 -1.00e+00 1.00e-05
+textbook zeros 1.000e-05 1.000e+05 evaluate to -8.274e-13 -1.449e-11, error  8.274e-08 0.000e+00
+accurate zeros 1.000e-05 1.000e+05 evaluate to -1.694e-21 -1.449e-11, error  1.694e-16 0.000e+00
+================
+coefficients 1.00e-06 -1.00e+00 1.00e-06
+textbook zeros 1.000e-06 1.000e+06 evaluate to -3.339e-11 -1.240e-10, error  3.339e-05 0.000e+00
+accurate zeros 1.000e-06 1.000e+06 evaluate to -2.118e-22 -1.240e-10, error  0.000e+00 0.000e+00
+================
+coefficients 1.00e-07 -1.00e+00 1.00e-07
+textbook zeros 9.992e-08 1.000e+07 evaluate to  7.993e-11 -5.828e-10, error  7.993e-04 0.000e+00
+accurate zeros 1.000e-07 1.000e+07 evaluate to  1.323e-23 -5.828e-10, error  0.000e+00 0.000e+00
+================
+coefficients 1.00e-08 -1.00e+00 1.00e-08
+.... underflow in b coefficient!
+textbook zeros 1.110e-08 1.000e+08 evaluate to -1.102e-09 -1.102e-09, error  1.102e-01 1.490e-16
+accurate zeros 1.000e-08 1.000e+08 evaluate to  0.000e+00 -1.102e-09, error  1.654e-16 1.490e-16
+================
+coefficients 1.00e-09 -1.00e+00 1.00e-09
+.... underflow in b coefficient!
+textbook zeros 0.000e+00 1.000e+09 evaluate to  1.000e-09 -1.100e-07, error  1.000e+00 0.000e+00
+accurate zeros 1.000e-09 1.000e+09 evaluate to -2.068e-25 -1.100e-07, error  2.068e-16 0.000e+00
+================
+coefficients 1.00e-10 -1.00e+00 1.00e-10
+.... underflow in b coefficient!
+textbook zeros 0.000e+00 1.000e+10 evaluate to  1.000e-10  1.000e-10, error  1.000e+00 0.000e+00
+accurate zeros 1.000e-10 1.000e+10 evaluate to  0.000e+00  1.000e-10, error  0.000e+00 0.000e+00

@@ -1,0 +1,258 @@
+Execute program stride cores 1
+Repeats: 100 flush: false
+Threads: 1
+====
+Stride: 1
+ .. dataset words: 102K
+ .. ran for 31209 usec
+Time/access: 3.0477538 nsec
+====
+Stride: 2
+ .. dataset words: 102K
+ .. ran for 15586 usec
+Time/access: 3.0441406 nsec
+====
+Stride: 3
+ .. dataset words: 102K
+ .. ran for 10401 usec
+Time/access: 3.0471978 nsec
+====
+Stride: 4
+ .. dataset words: 102K
+ .. ran for 7807 usec
+Time/access: 3.0496094 nsec
+====
+Stride: 5
+ .. dataset words: 102K
+ .. ran for 6250 usec
+Time/access: 3.0517578 nsec
+====
+Stride: 6
+ .. dataset words: 102K
+ .. ran for 5203 usec
+Time/access: 3.0487518 nsec
+====
+Stride: 7
+ .. dataset words: 102K
+ .. ran for 4469 usec
+Time/access: 3.0550997 nsec
+====
+Stride: 8
+ .. dataset words: 102K
+ .. ran for 3912 usec
+Time/access: 3.05625 nsec
+Execute program stride cores 11
+Repeats: 100 flush: false
+Threads: 11
+====
+Stride: 1
+ .. dataset words: 102K
+ .. ran for 31285 usec
+Time/access: 3.0551758 nsec
+====
+Stride: 2
+ .. dataset words: 102K
+ .. ran for 15692 usec
+Time/access: 3.0648437 nsec
+====
+Stride: 3
+ .. dataset words: 102K
+ .. ran for 10494 usec
+Time/access: 3.074444 nsec
+====
+Stride: 4
+ .. dataset words: 102K
+ .. ran for 7960 usec
+Time/access: 3.109375 nsec
+====
+Stride: 5
+ .. dataset words: 102K
+ .. ran for 6380 usec
+Time/access: 3.1152344 nsec
+====
+Stride: 6
+ .. dataset words: 102K
+ .. ran for 5355 usec
+Time/access: 3.1378179 nsec
+====
+Stride: 7
+ .. dataset words: 102K
+ .. ran for 4606 usec
+Time/access: 3.1487558 nsec
+====
+Stride: 8
+ .. dataset words: 102K
+ .. ran for 4031 usec
+Time/access: 3.1492188 nsec
+Execute program stride cores 22
+Repeats: 100 flush: false
+Threads: 22
+====
+Stride: 1
+ .. dataset words: 102K
+ .. ran for 31335 usec
+Time/access: 3.0600586 nsec
+====
+Stride: 2
+ .. dataset words: 102K
+ .. ran for 15722 usec
+Time/access: 3.070703 nsec
+====
+Stride: 3
+ .. dataset words: 102K
+ .. ran for 10539 usec
+Time/access: 3.087628 nsec
+====
+Stride: 4
+ .. dataset words: 102K
+ .. ran for 7927 usec
+Time/access: 3.0964844 nsec
+====
+Stride: 5
+ .. dataset words: 102K
+ .. ran for 6436 usec
+Time/access: 3.1425781 nsec
+====
+Stride: 6
+ .. dataset words: 102K
+ .. ran for 5394 usec
+Time/access: 3.1606703 nsec
+====
+Stride: 7
+ .. dataset words: 102K
+ .. ran for 4647 usec
+Time/access: 3.1767843 nsec
+====
+Stride: 8
+ .. dataset words: 102K
+ .. ran for 4078 usec
+Time/access: 3.1859374 nsec
+Execute program stride cores 33
+Repeats: 100 flush: false
+Threads: 33
+====
+Stride: 1
+ .. dataset words: 102K
+ .. ran for 31426 usec
+Time/access: 3.0689454 nsec
+====
+Stride: 2
+ .. dataset words: 102K
+ .. ran for 15814 usec
+Time/access: 3.088672 nsec
+====
+Stride: 3
+ .. dataset words: 102K
+ .. ran for 10596 usec
+Time/access: 3.1043272 nsec
+====
+Stride: 4
+ .. dataset words: 102K
+ .. ran for 7998 usec
+Time/access: 3.1242187 nsec
+====
+Stride: 5
+ .. dataset words: 102K
+ .. ran for 6467 usec
+Time/access: 3.1577148 nsec
+====
+Stride: 6
+ .. dataset words: 102K
+ .. ran for 5400 usec
+Time/access: 3.164186 nsec
+====
+Stride: 7
+ .. dataset words: 102K
+ .. ran for 4860 usec
+Time/access: 3.3223953 nsec
+====
+Stride: 8
+ .. dataset words: 102K
+ .. ran for 4288 usec
+Time/access: 3.35 nsec
+Execute program stride cores 44
+Repeats: 100 flush: false
+Threads: 44
+====
+Stride: 1
+ .. dataset words: 102K
+ .. ran for 31519 usec
+Time/access: 3.0780272 nsec
+====
+Stride: 2
+ .. dataset words: 102K
+ .. ran for 15861 usec
+Time/access: 3.0978515 nsec
+====
+Stride: 3
+ .. dataset words: 102K
+ .. ran for 10671 usec
+Time/access: 3.1263 nsec
+====
+Stride: 4
+ .. dataset words: 102K
+ .. ran for 8090 usec
+Time/access: 3.1601562 nsec
+====
+Stride: 5
+ .. dataset words: 102K
+ .. ran for 6544 usec
+Time/access: 3.1953125 nsec
+====
+Stride: 6
+ .. dataset words: 102K
+ .. ran for 5465 usec
+Time/access: 3.2022736 nsec
+====
+Stride: 7
+ .. dataset words: 102K
+ .. ran for 4967 usec
+Time/access: 3.3955429 nsec
+====
+Stride: 8
+ .. dataset words: 102K
+ .. ran for 4334 usec
+Time/access: 3.3859375 nsec
+Execute program stride cores 56
+Repeats: 100 flush: false
+Threads: 56
+====
+Stride: 1
+ .. dataset words: 102K
+ .. ran for 31478 usec
+Time/access: 3.0740235 nsec
+====
+Stride: 2
+ .. dataset words: 102K
+ .. ran for 15857 usec
+Time/access: 3.0970702 nsec
+====
+Stride: 3
+ .. dataset words: 102K
+ .. ran for 10669 usec
+Time/access: 3.125714 nsec
+====
+Stride: 4
+ .. dataset words: 102K
+ .. ran for 8083 usec
+Time/access: 3.1574218 nsec
+====
+Stride: 5
+ .. dataset words: 102K
+ .. ran for 6673 usec
+Time/access: 3.2583008 nsec
+====
+Stride: 6
+ .. dataset words: 102K
+ .. ran for 5681 usec
+Time/access: 3.328841 nsec
+====
+Stride: 7
+ .. dataset words: 102K
+ .. ran for 4947 usec
+Time/access: 3.3818703 nsec
+====
+Stride: 8
+ .. dataset words: 102K
+ .. ran for 4422 usec
+Time/access: 3.4546876 nsec

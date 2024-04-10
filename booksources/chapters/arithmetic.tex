@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -398,6 +398,7 @@ section~\ref{sec:roundoff} will then explore the ramifications of this for arith
 involving computer numbers.
 
 \Level 1 {They're not really real numbers}
+%%packtsnippet realnotreal
 \label{sec:arith-intro}
 
 In the mathematical sciences, we usually work with real numbers, so
@@ -406,7 +407,9 @@ since numbers in a computer have only a finite number of bits, most
 real numbers can not be represented exactly. In fact, even many
 fractions can not be represented exactly, since they repeat; for
 instance, $1/3=0.333\ldots$, which is not representable in either
-decimal or binary. An illustration of this is given below
+decimal or binary.
+%%packtsnippet end
+An illustration of this is given below
 in exercise~\ref{ex:fraction-code}.
 
 \begin{exercise}
@@ -441,6 +444,7 @@ of how this was realized in computer hardware.
 \end{exercise}
 
 \Level 1 {Representation of real numbers}
+%%packtsnippet realrepr
 \label{sec:float-representation}
 \index{floating point numbers!representation|(}
 
@@ -477,7 +481,7 @@ where the components are
 \item $0\leq d_i\leq \beta-1$ the digits of the \indexterm{mantissa}
   or \indexterm{significand} -- the location of the radix point
   (decimal point in decimal numbers) is implicitly assumed to the
-  immediately following the first digit;
+  immediately following the first digit~$d_1$;
 \item $t$ is the length of the mantissa;
 \item $e\in [L,U]$ exponent; typically $L<{0}<{U} $ and $L\approx-U$.
 \end{itemize}
@@ -486,8 +490,13 @@ Note that there is an explicit sign bit for the whole number, but the sign
 of the exponent is handled differently. 
 For reasons of efficiency, $e$~is not a signed number; instead it is
 considered as an unsigned number in \indexterm{excess} of a certain minimum
-value. For instance, the bit pattern for the number zero is
-interpreted as~$e=\nobreak L$.
+value. For instance, with 8~bits for the exponent we can represent
+the numbers~$0\cdots 256$, but with an excess of 128 this is interpreted
+as $-127\cdots 128$.
+Additionally, the highest and lowest exponent values 
+can be used to express special values such as infinity.
+
+%%packtsnippet end
 
 \Level 2 {Some examples}
 
@@ -515,6 +524,7 @@ further; for packed decimal, see section~\ref{sec:bcd}.
 \index{floating point numbers!representation|)}
 
 \Level 1 {Normalized and unnormalized numbers}
+%%packtsnippet realnorm
 \label{sec:normal-unnormal}
 
 The general definition of floating point numbers,
@@ -528,14 +538,26 @@ The implies that the mantissa\index{mantissa} part is $1\leq x_m <\beta$.
 
 A practical implication in the case of binary numbers is that the
 first digit is always~1, so we do not need to store it explicitly.
-In the \indexterm{IEEE 754} standard, this means that every floating point number
+In the \indexterm{IEEE 754} standard,
+this means that every normalized floating point number
 is of the form
 \begin{equation}
   1.d_1d_2\ldots d_t\times 2^e
 \end{equation}
 and only the digits $d_1d_2\ldots d_t$ are stored.
 
+\begin{exercise}
+  With quantities $t,e$, what is the smallest positive normalized number?
+\end{exercise}
+
+Unnormalized numbers do exist, but only for numbers smaller
+than the smallest positive normalized number.
+See section~\ref{sec:underflow}.
+
+%%packtsnippet end
+
 \Level 1 {Limitations: overflow and underflow}
+%%packtsnippet overunderflow
 \label{sec:exceptions}
 
 Since we use only a finite number of bits to store floating point
@@ -545,8 +567,14 @@ small (in some sense), and those that fall in the gaps.
 
 The second category, where a computational result has to be rounded or
 truncated to be representable, is the basis of the field of round-off
-error analysis. We will study this in some detail in the following
-sections.
+error analysis.
+We will study this in some detail
+\begin{nopackt}
+below.
+\end{nopackt}
+\begin{packt}
+in section~\ref{sec:arith-import}.  
+\end{packt}
 
 Numbers can be
 too large or too small in the following ways.
@@ -603,6 +631,7 @@ normalized numbers.
 Therefore, we also need to look at `gradual underflow'.
 
 \Level 2 {Gradual underflow}
+\label{sec:underflow}
 
 The normalized number closest to zero is $1\cdot \beta^L$.
 
@@ -630,7 +659,7 @@ or \emph{unnormalized}%
 a~process known as \indextermsub{gradual}{underflow}.
 In this case, a~special
 value of the exponent indicates that the number is no longer normalized.
-In the case IEEE standard arithmetic (section~\ref{sec:ieee754})
+In the case of IEEE standard arithmetic (section~\ref{sec:ieee754def})
 this is done through a zero exponent field.
 
 However, this is typically tens or hundreds of times slower than
@@ -675,6 +704,8 @@ the processor will continue, unless you tell it otherwise.
 The `otherwise' consists of you telling the compiler to generate an \indexterm{interrupt},
 which halts the computation with an error message. See section~\ref{sec:fenvh}.
 
+%%packtsnippet end
+
 \Level 2 {Gradual underflow}
 \label{sec:754underflow}
 
@@ -702,10 +733,14 @@ part we get:
 \end{cases}
 \end{equation}
 
+%%packtsnippet arithrepr
 If $x$ is a number and $\tilde x$ its representation in the computer,
 we call $x-\tilde x$ the \emph{representation error} or
 \indextermsub{absolute}{representation error}, and $\frac{x-\tilde x}{x}$
-the \indextermsub{relative}{representation error}. Often we are not
+the \indextermsub{relative}{representation error}.
+%%packtsnippet end
+
+Often we are not
 interested in the sign of the error, so we may apply the terms error
 and relative error to $|x-\tilde x|$ and~$|\frac{x-\tilde x}{x}|$
 respectively.
@@ -740,6 +775,7 @@ and relative error if there had been one?
 \end{exercise}
 
 \Level 1 {Machine precision}
+%%packtsnippet epsilon
 \label{sec:machine-eps}
 \index{precision!machine|see{machine precision}}
 
@@ -758,7 +794,7 @@ Typical values are:
 \end{cases}
 \end{equation}
 (After you have studied the section on the IEEE 754 standard,
-can you derive these values?)
+can you derive these values from the number of bits in the mantissa?)
 
 Machine precision can be defined another way: $\epsilon$~is the
 smallest number that can be added to~$1$ so that $1+\epsilon$ has a
@@ -785,6 +821,7 @@ The machine precision is the maximum attainable accuracy of
 computations: it does not make sense to ask for more than 6-or-so
 digits accuracy in single precision, or 15 in double.
 
+\begin{nopackt}
 \begin{exercise}
   \label{ex:epsilon}%
   Write a small program that computes the machine epsilon. Does it
@@ -793,6 +830,7 @@ digits accuracy in single precision, or 15 in double.
   (If you speak~C++, can you solve this exercise with a single
   templated code?)
 \end{exercise}
+\end{nopackt}
 
 \begin{exercise}
   \label{ex:e-compute}
@@ -818,15 +856,18 @@ digits accuracy in single precision, or 15 in double.
   for instance $x=1,3,10,50$.
   How many terms do you compute?
 
-  Now compute $e^{-x}$ for those values.
-  Use for instance the same number of iterations 
-  as for~$e^x$.
+  Now compute $e^{-x}$ and from it $e^x$.
+  Use for instance the same $x$ values and
+  number of iterations as for~$e^x$.
 
   What do you observe about the $e^x$ versus $e^{-x}$
   computation? Explain.
 \end{exercise}
 
+%%packtsnippet end
+
 \Level 0 {The IEEE 754 standard for floating point numbers}
+%%packtsnippet 754
 \label{sec:ieee754}
 \index{precision!single|see{single precision}}
 \index{precision!double|see{double precision}}
@@ -911,6 +952,9 @@ to be \indextermsub{correct}{rounding}: the result of an operation should be the
 rounded version of the exact result.
 See section~\ref{sec:correct-round}.
 
+\Level 1 {Definition of the floating point formats}
+\label{sec:ieee754def}
+
 \begin{figure}[ht]
   \begin{equation}
   \begin{array}{rrl}
@@ -957,19 +1001,21 @@ $1.d_1d_2\ldots d_t$.
 
 The highest exponent is used to accommodate \indextermtt{Inf} and \indextermtt{Nan};
 see section~\ref{sec:754nan}.
+The lowest exposnent is used to accomodate unnormalized numbers;
+see section~\ref{sec:underflow}.
 
 \begin{exercise}
   Every programmer, at some point in their life, makes the mistake of
   storing a real number in an integer or the other way around. This
   can happen for instance if you call a function differently from how
   it was defined.
-\begin{verbatim}
+\begin{lstlisting}
 void a(double x) {....}
 int main() {
   int i;
   .... a(i) ....
 }
-\end{verbatim}
+\end{lstlisting}
 What happens when you print \n{x} in the function? Consider the bit
 pattern for a small integer, and use the table in
 figure~\ref{fig:single-precision} to interpret it as a floating point
@@ -988,9 +1034,13 @@ The justification
 for this was that single precision is more likely used for graphics,
 where exact compliance matters less. For many scientific computations,
 double precision is necessary, since the precision of calculations
-gets worse with increasing problem size or runtime. This is true for
-the sort of calculations in chapter~\ref{ch:odepde}, but not for
-others such as the \indexacp{LBM}.
+gets worse with increasing problem size or runtime.
+\begin{nopackt}
+This is true for \ac{FD} calculations (chapter~\ref{ch:odepde}),
+but not for others such as the \indexacp{LBM}.
+\end{nopackt}
+
+%%packtsnippet end
 
 \Level 1 {Floating point exceptions}
 
@@ -1003,6 +1053,7 @@ progresses normally. (It is possible to have the program
 be interrupted: section~\ref{sec:catch-exp}.)
 
 \Level 2 {Not-a-Number}
+%%packtsnippet 754nan
 \label{sec:754nan}
 
 Apart from overflow and underflow, there are other
@@ -1060,13 +1111,17 @@ for treatment of \n{Nan} in the GNU compiler.
   NaN and Inf do not always propagate:
   \begin{itemize}
   \item A finite number divided by Inf is zero;
-  \item The min/max of a finite number and NaN is not a NaN;
   \item Various transcendental functions treat Inf correctly,
     such as $\tan\inv(\mathrm{Inf})=\pi/2$.
   \end{itemize}
+
+  The 2008 version of the standard treated the \indextermsub{quiet}{NaN}
+  as `missing data', meaning that the minimum of~1 and a quiet \texttt{NaN} was~1.
+  This led to min/max being non-associative. This was fixed in the 2019 standard
+  where \texttt{NaN}s always propagate.
 \end{remark}
 
-\index{NaN|)}
+%%packtsnippet end
 
 \Level 2 {Divide by zero}
 
@@ -1103,6 +1158,7 @@ This is commonly called
 \indexterm{round-off error analysis}.
 
 \Level 1 {Correct rounding}
+%%packtsnippet correctround
 \label{sec:correct-round}
 
 The IEEE 754 standard, mentioned in section~\ref{sec:ieee754}, does
@@ -1150,6 +1206,8 @@ giving a final result of~$0.1$, which is almost double the correct result.
 One guard digit is not enough to guarantee correct rounding. An
 analysis that we will not reproduce here shows that three extra bits
 are needed~\cite{Goldberg:arithmetic}.
+
+%%packtsnippet end
 
 \Level 2 {Mul-Add operations}
 
@@ -1326,14 +1384,14 @@ alternating signs?
 \end{exercise}
 
 \Level 1 {Associativity}
+%%packtsnippet associative
 \label{sec:fp-associative}
 
-Another effect of the way floating point numbers are treated
-is on the
-\emph{associativity}\index{floating point arithmetic!associativity of}
-of operations such as summation.
-While summation is mathematically associative, this is no longer
-the case in computer arithmetic.
+The implementation of floating point number implies
+that simple arithmetic operation such as adding or multiplying
+no longer are 
+\emph{associative}\index{floating point arithmetic!associativity of},
+they way they are in mathematics.
 
 Let's consider a simple example, showing how associativity is affected
 by the rounding behavior of floating point numbers.
@@ -1368,6 +1426,8 @@ intermediate results makes a difference.
   in an arithmetic system using truncation?
 \end{exercise}
 
+%%packtsnippet end
+
 Usually, the evaluation order of expressions is determined by the definition of the
 programming language, or at least by the compiler.
 In section~\ref{sec:roundoff-parallel} we will see how in parallel computations the associativity
@@ -1385,6 +1445,7 @@ instability of matrix inversion. The interested reader is referred
 to~\cite{Higham:2002:ASN,Wilkinson:roundoff}.
 
 \Level 1 {Cancellation: the `abc-formula'}
+%%packtsnippet abc
 \label{sec:abc-formula}
 
 As a practical example, consider the quadratic equation $ax^2+bx+c=0$ 
@@ -1394,22 +1455,21 @@ the `$+$' solution will be
 inaccurate. In this case it is better 
 to compute $x_-=\frac{-b-\sqrt{b^2-4ac}}{2a}$ and use $x_+\cdot x_-=c/a$.
 
-%% \begin{exercise}
-%%   Program a simulator for decimal $d$-digit arithmetic and experiment with the
-%%   accuracy of the two ways of computing the solution of a quadratic
-%%   equation. Simulating $d$-digit decimal arithmetic can be done as
-%%   follows. Let $x$ be a floating point number, then:
-%%   \begin{itemize}
-%%   \item Normalize $x$ by finding an integer $e$ such that
-%%     $x'\mathrel{:=} |x|\cdot 10^e\in[.1,1)$. 
-%%     \item Now truncate this number to $d$ digits by 
-%%       multiplying $x'$ by $10^d$, truncating the result to an integer,
-%%       and multiplying that result again by~$10^{-d}$.
-%%     \item Multiply this truncated number by~$10^{-e}$ to revert the
-%%       normalization.
-%%   \end{itemize}
-%% \end{exercise}
+For an illustration, we consider the equation
+\[ f(x) = \epsilon x^2 -(1+\epsilon^2) x + \epsilon, \]
+which has, for $\epsilon$~small, the roots
+\[ x_+\approx \epsilon\inv,\qquad x_-\approx \epsilon. \]
+We have two problems here.
+First of all, for $\epsilon$ less than machine precision
+we have $b\approx 1$, $b^2-4ac=1$, and $x_-=0$,
+which means that this solution is totally wrong.
+Even if the \indexterm{discriminant} $b^2-4ac>1$,
+we get problems with cancellation,
+and the function value is grossly inaccurate:
+for the textbook solution, $f(x_-)\approx\epsilon$,
+while for the solution without cancellation $f(x_-)\approx \epsilon^3$.
 
+\begin{comment}
 \begin{exercise}
   Explore computing the roots of
   \begin{equation}
@@ -1424,6 +1484,22 @@ to compute $x_-=\frac{-b-\sqrt{b^2-4ac}}{2a}$ and use $x_+\cdot x_-=c/a$.
   \item What are the computed function values in both methods? Relative errors?
   \end{itemize}
 \end{exercise}
+\end{comment}
+
+\begin{equation}
+  \begin{array}{rrrrr}
+    &\multicolumn{2}{c}{textbook}&\multicolumn{2}{c}{accurate}\\
+    \multicolumn{1}{c}{\epsilon} &\multicolumn{1}{c}{x_-} &\multicolumn{1}{c}{f(x_-)} &\multicolumn{1}{c}{x_-} &\multicolumn{1}{c}{f(x_-)}\\
+    10^{-3}& 1.000\cdot 10^{-03}& -2.876\cdot 10^{-14}&  1.000\cdot 10^{-03}&  -2.168\cdot 10^{-19}\\
+    10^{-4}& 1.000\cdot 10^{-04}&  5.264\cdot 10^{-14}&  1.000\cdot 10^{-04}&   0.000\\
+    10^{-5}& 1.000\cdot 10^{-05}& -8.274\cdot 10^{-13}&  1.000\cdot 10^{-05}&  -1.694\cdot 10^{-21}\\
+    10^{-6}& 1.000\cdot 10^{-06}& -3.339\cdot 10^{-11}&  1.000\cdot 10^{-06}&  -2.118\cdot 10^{-22}\\
+    10^{-7}& 9.992\cdot 10^{-08}&  7.993\cdot 10^{-11}&  1.000\cdot 10^{-07}&   1.323\cdot 10^{-23}\\
+    10^{-8}&  1.110\cdot 10^{-08}& -1.102\cdot 10^{-09}&  1.000\cdot 10^{-08}&   0.000\\
+    10^{-9}&  0.000&  1.000\cdot 10^{-09}&  1.000\cdot 10^{-09}&  -2.068\cdot 10^{-25}\\
+    10^{-10}& 0.000&  1.000\cdot 10^{-10}&  1.000\cdot 10^{-10}&   0.000\\
+  \end{array}
+\end{equation}
 
 \begin{exercise}
   Write a program that computes the roots of the quadratic equation, both
@@ -1472,6 +1548,24 @@ to compute $x_-=\frac{-b-\sqrt{b^2-4ac}}{2a}$ and use $x_+\cdot x_-=c/a$.
   Make sure to test your code in single and double precision.
   If you speak python, try the \indextermtt{bigfloat} package.
 \end{exercise}
+
+%%packtsnippet end
+
+%% \begin{exercise}
+%%   Program a simulator for decimal $d$-digit arithmetic and experiment with the
+%%   accuracy of the two ways of computing the solution of a quadratic
+%%   equation. Simulating $d$-digit decimal arithmetic can be done as
+%%   follows. Let $x$ be a floating point number, then:
+%%   \begin{itemize}
+%%   \item Normalize $x$ by finding an integer $e$ such that
+%%     $x'\mathrel{:=} |x|\cdot 10^e\in[.1,1)$. 
+%%     \item Now truncate this number to $d$ digits by 
+%%       multiplying $x'$ by $10^d$, truncating the result to an integer,
+%%       and multiplying that result again by~$10^{-d}$.
+%%     \item Multiply this truncated number by~$10^{-e}$ to revert the
+%%       normalization.
+%%   \end{itemize}
+%% \end{exercise}
 
 \Level 1 {Summing series}
 \label{sec:fp-summing}
@@ -1545,7 +1639,7 @@ negative, it may pay off to rearrange the algorithm accordingly.
   and \n{nterms} are given):
   \begin{multicols}{2}
 \unitindent=0pt \scriptsize %pyskip
-\begin{verbatim}
+\begin{lstlisting}
 double term = x, sum = term;
 for (int i=1; i<=nterms; i+=2) {
   term *= 
@@ -1553,9 +1647,9 @@ for (int i=1; i<=nterms; i+=2) {
   sum += term;
 }
 printf("Sum: %e\n\n",sum);
-\end{verbatim}
+\end{lstlisting}
 \columnbreak
-\begin{verbatim}
+\begin{lstlisting}
 double term = x, sum = term;
 double power = x, factorial = 1., factor = 1.;
 for (int i=1; i<=nterms; i+=2) {
@@ -1565,7 +1659,7 @@ for (int i=1; i<=nterms; i+=2) {
   sum += term; factor += 2;
 }
 printf("Sum: %e\n\n",sum);
-\end{verbatim}
+\end{lstlisting}
   \end{multicols}
   \begin{itemize}
   \item
@@ -1763,8 +1857,10 @@ but only the following restrictions:
 Additionally, pointers are related to unsigned integers;
 see section~\ref{sec:sizeof}.
 
+%%packtsnippet datamodel
+
 There are a number of conventions, called \indextermdef{data model}s,
-for the actual sizes of these.
+for the actual sizes of the various integer types.
 \begin{itemize}
 \item \indextermdef{LP32} (or `2/4/4') has 16-bit \lstinline{int}s,
   and 32~bits for \lstinline{long int} and pointers.
@@ -1785,7 +1881,7 @@ for the actual sizes of these.
   \indextermbus{Cray}{UNICOS}.
 \end{itemize}
 
-Also, see \url{https://en.cppreference.com/w/cpp/language/types}.
+%%packtsnippet end
 
 \Level 1 {C/C++}
 
@@ -1870,14 +1966,14 @@ For checking whether a value is \n{NaN}, use \n{isnan()}.
 As mandated by the 754 standard, rounding behavior should be controllable.
 In~C99, the API for this is contained in \indextermtt{fenv.h} (or for
 C++ \indextermtt{cfenv}):
-\begin{verbatim}
+\begin{lstlisting}
 #include <fenv.h>
 
 int roundings[] =
   {FE_TONEAREST, FE_UPWARD, FE_DOWNWARD, FE_TOWARDZERO};
 rchoice = ....
 int status = fesetround(roundings[rchoice]);            
-\end{verbatim}
+\end{lstlisting}
 
 Setting the rounding behavior can serve as a quick test for the stability
 of an algorithm: if the result changes appreciably between two different
@@ -1930,12 +2026,12 @@ on a floating point exception.
 The behavior on \indexterm{overflow} can be set to generate an
 \indexterm{exception}.
 In~C, you specify this with a library call:
-\begin{verbatim}
+\begin{lstlisting}
 #include <fenv.h>
 int main() { 
  ...
  feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-\end{verbatim}
+\end{lstlisting}
 
 \index{NaN!programming language support|)}
 
@@ -2040,11 +2136,11 @@ This often corresponds to the number of bytes used, \textbf{but not always}.
 It is technically a numerical \indextermdef{kind selector},
 and it is nothing more than an identifier for a specific type.
 
-\begin{verbatim}
+\begin{lstlisting}
 integer, parameter :: k9 = selected_real_kind(9)
 real(kind=k9) :: r
 r = 2._k9; print *, sqrt(r) ! prints 1.4142135623730
-\end{verbatim}
+\end{lstlisting}
 The `kind' values will usually be 4,8,16 but this is compiler
 dependent.
 
@@ -2148,11 +2244,11 @@ different parallel configurations.
 %
 It is a common compiler optimization to compute constant expressions
 during compile time. For instance, in
-\begin{verbatim}
+\begin{lstlisting}
 float one = 1.;
 ...
 x = 2. + y + one;
-\end{verbatim}
+\end{lstlisting}
 the compiler change the assignment to \n{x = y+3.}. However, this
 violates the re-association rule above, and it ignores any dynamically
 set rounding behavior.
@@ -2181,38 +2277,38 @@ For more discussion, see~\cite{Lionel:reproducibility}.
 
 \Level 0 {More about floating point arithmetic}
 
-\Level 1 {Computing with underflow}
-\label{sec:subcompute}
+%% \Level 1 {Computing with underflow}
+%% \label{sec:subcompute}
 
-Many processors will happily compute with denormals,
-but they have to emulate these computations in \indexterm{micro-code}.
-This severely depresses performance.
+%% Many processors will happily compute with denormals,
+%% but they have to emulate these computations in \indexterm{micro-code}.
+%% This severely depresses performance.
 
-As an example, we compute a geometric sequence $n\mapsto r^n$ with~$r<1$.
-For small enough values~$r$, this sequence underflows, and the computation becomes slow.
-To get macroscopic timings, in this code we actually operate on an array
-of identical numbers.
+%% As an example, we compute a geometric sequence $n\mapsto r^n$ with~$r<1$.
+%% For small enough values~$r$, this sequence underflows, and the computation becomes slow.
+%% To get macroscopic timings, in this code we actually operate on an array
+%% of identical numbers.
 
-\cverbatimsnippet{computedenormal}
+%% \cverbatimsnippet{computedenormal}
 
-The left column shows that the \indextermbus{Intel}{i5} of a MacBook Air
-does not have hardware support for denormals.
-The next two columns shows the \indextermbus{Intel}{Cascade Lake}
-but with two different compiler settings:
-First we use the default behavior of
-\emph{flush-to-zero}\index{floating point numbers!subnormal!flush to zero}:
-any subnormal number is set to zero;
-then we show the slowdown associated with correct handling
-of denormals.
+%% The left column shows that the \indextermbus{Intel}{i5} of a MacBook Air
+%% does not have hardware support for denormals.
+%% The next two columns shows the \indextermbus{Intel}{Cascade Lake}
+%% but with two different compiler settings:
+%% First we use the default behavior of
+%% \emph{flush-to-zero}\index{floating point numbers!subnormal!flush to zero}:
+%% any subnormal number is set to zero;
+%% then we show the slowdown associated with correct handling
+%% of denormals.
 
-\begin{multicols}{3}
-  \scriptsize
-  \verbatiminput{code/hardware/denormal.macbook.runout}
-  \columnbreak
-  \verbatiminput{code/hardware/denormalflush.clxflush.runout}
-  \columnbreak
-  \verbatiminput{code/hardware/denormal.clx.runout}
-\end{multicols}
+%% \begin{multicols}{3}
+%%   \scriptsize
+%%   \verbatiminput{code/hardware/denormal.macbook.runout}
+%%   \columnbreak
+%%   \verbatiminput{code/hardware/denormalflush.clxflush.runout}
+%%   \columnbreak
+%%   \verbatiminput{code/hardware/denormal.clx.runout}
+%% \end{multicols}
 
 \Level 1 {Kahan summation}
 \label{sec:arith-kahan}
@@ -2415,10 +2511,10 @@ which simplifies the chip logic needed, and speeds up calculations.
 Some programming languages have \emph{complex numbers} as a built-in data type,
 others not, and others are in between. For instance, in Fortran you
 can declare
-\begin{verbatim}
+\begin{lstlisting}[language=Fortran]
 COMPLEX z1,z2, z(32)
 COMPLEX*16 zz1, zz2, zz(36)
-\end{verbatim}
+\end{lstlisting}
 A complex number is a pair of real numbers, the real and imaginary
 part, allocated adjacent in memory. The first declaration then uses
 8~bytes to store to \n{REAL*4} numbers, the second one has \n{REAL*8}s

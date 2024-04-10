@@ -5,7 +5,7 @@
 %%%% This text file is part of the source of 
 %%%% `The Science of Computing'
 %%%% volume 1 of The Art of HPC
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% courseformat.tex : common preable for courses
 %%%%
@@ -21,9 +21,12 @@
 \usepackage{pslatex}
 \usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
 
+%% included in slidemacs \input commonmacs
 \input slidemacs
-\input snippetmacs
+\input listingmacs
 \input scimacs
+\input snippetmacs
+%% overwrite some stuff
 
 \excludecomment{answer}
 

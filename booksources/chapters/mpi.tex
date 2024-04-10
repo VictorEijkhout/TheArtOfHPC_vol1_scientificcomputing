@@ -1,9 +1,10 @@
+% -*- latex -*-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -35,21 +36,21 @@ the following categories:
 \end{itemize}
 
 Let us consider how the OpenMP examples can be coded in
-MPI
-\begin{footnoteenv}
-{This is not a course in MPI programming, and consequently
-  the examples will leave out many details of the MPI calls. If you
-  want to learn MPI programming, consult for
-  instance~\cite{Gropp:UsingMPI1,Gropp:UsingMPI2,Gropp:UsingAdvancedMPI}.}
-  \end{footnoteenv}%
-  . First of all, we no longer allocate
-\begin{verbatim}
+MPI.
+Note: this chapter is not a course in MPI programming, and consequently
+the examples will leave out many details of the MPI calls. If you
+want to learn MPI programming, consult for
+instance~\cite{Gropp:UsingMPI1,Gropp:UsingMPI2,Gropp:UsingAdvancedMPI}
+or volume~2 of this series.
+
+First of all, we no longer allocate
+\begin{lstlisting}
 double a[ProblemSize];
-\end{verbatim}
+\end{lstlisting}
 but
-\begin{verbatim}
+\begin{lstlisting}
 double a[LocalProblemSize];
-\end{verbatim}
+\end{lstlisting}
 where the local size is roughly a $1/P$ fraction of the global
 size. (Practical considerations dictate whether you want this
 distribution to be as evenly as possible, or rather biased in some
@@ -58,43 +59,43 @@ way.)
 The parallel loop
 is trivially parallel, with the only difference that it now operates
 on a fraction of the arrays:
-\begin{verbatim}
+\begin{lstlisting}
 for (i=0; i<LocalProblemSize; i++) {
   a[i] = b[i];
 }
-\end{verbatim}
+\end{lstlisting}
 
 However, if the loop involves a calculation based on the iteration
 number, we need to map that to the global value:
-\begin{verbatim}
+\begin{lstlisting}
 for (i=0; i<LocalProblemSize; i++) {
   a[i] = b[i]+f(i+MyFirstVariable);
 }
-\end{verbatim}
+\end{lstlisting}
 (We will assume that each process has somehow calculated the values of
 \n{LocalProblemSize} and \n{MyFirstVariable}.)
 Local variables are now automatically local, because each process has
 its own instance:
-\begin{verbatim}
+\begin{lstlisting}
 for (i=0; i<LocalProblemSize; i++) {
   t = b[i]*b[i];
   a[i] = sin(t) + cos(t);
 }
-\end{verbatim}
+\end{lstlisting}
 However, shared variables are harder to implement. Since each process
 has its own data, the local accumulation has to be explicitly assembled:
-\begin{verbatim}
+\begin{lstlisting}
 for (i=0; i<LocalProblemSize; i++) {
   s = s + a[i]*b[i];
 }
 MPI_Allreduce(s,globals,1,MPI_DOUBLE,MPI_SUM);
-\end{verbatim}
+\end{lstlisting}
 The `reduce' operation sums together all local values~\n{s} into a
 variable \n{globals} that receives an identical value on each
 processor. This is known as a \indexterm{collective operation}.
 
 Let us make the example slightly more complicated:
-\begin{verbatim}
+\begin{lstlisting}
 for (i=0; i<ProblemSize; i++) {
   if (i==0)
     a[i] = (b[i]+b[i+1])/2
@@ -103,20 +104,20 @@ for (i=0; i<ProblemSize; i++) {
   else
     a[i] = (b[i]+b[i-1]+b[i+1])/3
 }
-\end{verbatim}
+\end{lstlisting}
 If we had shared memory, we could write the following parallel code:
-\begin{verbatim}
+\begin{lstlisting}
 for (i=0; i<LocalProblemSize; i++) {
   bleft = b[i-1]; bright = b[i+1];
   a[i] = (b[i]+bleft+bright)/3
 }
-\end{verbatim}
+\end{lstlisting}
 To turn this into valid distributed memory code,
 first we account for the fact that \n{bleft} and \n{bright} need to be
 obtained from a different processor for \n{i==0} (\n{bleft}), and for
 \n{i==LocalProblemSize-1} (\n{bright}). We do this with a exchange
 operation with our left and right neighbor processor:
-\begin{verbatim}
+\begin{lstlisting}
 // get bfromleft and bfromright from neighbor processors, then
 for (i=0; i<LocalProblemSize; i++) {
   if (i==0) bleft=bfromleft;
@@ -125,11 +126,11 @@ for (i=0; i<LocalProblemSize; i++) {
     else bright = b[i+1];
   a[i] = (b[i]+bleft+bright)/3
 }
-\end{verbatim}
+\end{lstlisting}
 Obtaining the neighbor values is done as follows. First we need to
 ask our processor number, so that we can start a communication with
 the processor with a number one higher and lower.
-\begin{verbatim}
+\begin{lstlisting}
 MPI_Comm_rank(MPI_COMM_WORLD,&myTaskID);
 MPI_Sendrecv
    (/* to be sent:  */ &b[LocalProblemSize-1],
@@ -140,11 +141,11 @@ MPI_Sendrecv
    );
 MPI_Sendrecv(&b[0],myTaskID-1,
     &bfromright, /* ... */ );
-\end{verbatim}
+\end{lstlisting}
 There are still two problems with this code. First, the sendrecv
 operations need exceptions for the first and last processors. This can
 be done elegantly as follows:
-\begin{verbatim}
+\begin{lstlisting}
 MPI_Comm_rank(MPI_COMM_WORLD,&myTaskID);
 MPI_Comm_size(MPI_COMM_WORLD,&nTasks);
 if (myTaskID==0) leftproc = MPI_PROC_NULL;
@@ -153,7 +154,7 @@ if (myTaskID==nTasks-1) rightproc = MPI_PROC_NULL;
   else rightproc = myTaskID+1;
 MPI_Sendrecv( &b[LocalProblemSize-1], &bfromleft,  rightproc );
 MPI_Sendrecv( &b[0],                  &bfromright, leftproc);
-\end{verbatim}
+\end{lstlisting}
 
 \begin{exercise}
   There is still a problem left with this code: the boundary
@@ -167,7 +168,7 @@ another. The problem here is that each process executes the same
 executable, so it needs to contain both the send and the receive
 instruction, to be executed depending on what the rank of the process
 is.
-\begin{verbatim}
+\begin{lstlisting}
 if (myTaskID==0) {
   MPI_Send(myInfo,1,MPI_INT,/* to: */ 1,/* labeled: */,0,
     MPI_COMM_WORLD);
@@ -175,7 +176,7 @@ if (myTaskID==0) {
   MPI_Recv(myInfo,1,MPI_INT,/* from: */ 0,/* labeled: */,0,
     /* not explained here: */&status,MPI_COMM_WORLD);
 }   
-\end{verbatim}
+\end{lstlisting}
 
 \Level 2 {Blocking}
 \label{sec:blocking}
@@ -261,12 +262,12 @@ and the sender of that message is waiting for something else.
 Deadlock occurs if two processes are waiting
 for each other, or more generally, if you have a cycle of processes
 where each is waiting for the next process in the cycle. Example:
-\begin{verbatim}
+\begin{lstlisting}
 if ( /* this is process 0 */ )
    // wait for message from 1
 else if ( /* this is process 1 */ )
    // wait for message from 0
-\end{verbatim}
+\end{lstlisting}
 A block receive here leads to deadlock.
 Even without deadlock, they can lead to considerable \indexterm{idle
   time} in the processors, as they wait without performing any useful work.
@@ -282,26 +283,26 @@ corresponding receive. There is a second operation \n{MPI_Wait} that
 will actually block until the receive has been completed. The
 advantage of this decoupling of sending and blocking is that it now
 becomes possible to write:
-\begin{verbatim}
+\begin{lstlisting}
 MPI_ISend(somebuffer,&handle); // start sending, and
     // get a handle to this particular communication
 { ... }  // do useful work on local data
 MPI_Wait(handle); // block until the communication is completed;
 { ... }  // do useful work on incoming data
-\end{verbatim}
+\end{lstlisting}
 With a little luck, the local operations take more time than the
 communication, and you have completely eliminated the communication
 time.
 
 In addition to non-blocking sends, there are non-blocking receives. A
 typical piece of code then looks like
-\begin{verbatim}
+\begin{lstlisting}
 MPI_ISend(sendbuffer,&sendhandle);
 MPI_IReceive(recvbuffer,&recvhandle);
 { ... }  // do useful work on local data
 MPI_Wait(sendhandle); Wait(recvhandle);
 { ... }  // do useful work on incoming data
-\end{verbatim}
+\end{lstlisting}
 
 \begin{exercise}
   Take another look at equation~\eqref{eq:cyclic-add} and give pseudocode that
@@ -362,10 +363,10 @@ Let us take a brief look at one-sided communication in MPI-2, using
 averaging of array values as an example:
 \[ \forall_i\colon a_i\leftarrow (a_i+a_{i-1}+a_{i+1})/3. \]
 The MPI parallel code will look like
-\begin{verbatim}
+\begin{lstlisting}
 // do data transfer
 a_local = (a_local+left+right)/3
-\end{verbatim}
+\end{lstlisting}
 It is clear what the transfer has to accomplish: the \n{a_local}
 variable needs to become the \n{left} variable on the processor with
 the next higher rank, and the \n{right} variable on the one with the
@@ -375,26 +376,26 @@ First of all, processors need to declare explicitly what memory area
 is available for one-sided transfer, the so-called `window'. In this
 example, that consists of the \n{a_local}, \n{left}, and \n{right}
 variables on the processors:
-\begin{verbatim}
+\begin{lstlisting}
 MPI_Win_create(&a_local,...,&data_window);
 MPI_Win_create(&left,....,&left_window);
 MPI_Win_create(&right,....,&right_window);
-\end{verbatim}
+\end{lstlisting}
 The code now has two options: it is possible to push data out
-\begin{verbatim}
+\begin{lstlisting}
 target = my_tid-1;
 MPI_Put(&a_local,...,target,right_window);
 target = my_tid+1;
 MPI_Put(&a_local,...,target,left_window);
-\end{verbatim}
+\end{lstlisting}
 or to pull it in
-\begin{verbatim}
+\begin{lstlisting}
 data_window = a_local;
 source = my_tid-1;
 MPI_Get(&right,...,data_window);
 source = my_tid+1;
 MPI_Get(&left,...,data_window);
-\end{verbatim}
+\end{lstlisting}
 The above code will have the right semantics if the Put and Get calls
 are blocking; see section~\ref{sec:blocking}. However, part of the
 attraction of one-sided communication is that it makes it easier to

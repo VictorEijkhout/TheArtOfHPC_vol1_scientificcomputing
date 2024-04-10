@@ -10,131 +10,185 @@
 %%%% Unported (CC BY 3.0) license and made possible by funding from
 %%%% The Saylor Foundation \url{http://www.saylor.org}.
 %%%%
-%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{mdframed,xcolor}
-
-\def\verbatimsnippet#1{\verbatiminput{snippets/#1}}
-\def\cverbatimsnippet  #1{\lverbatimsnippet{#1}{C}}
-\def\cxxverbatimsnippet#1{\lverbatimsnippet{#1}{C++}}
-\def\fverbatimsnippet  #1{\lverbatimsnippet{#1}{Fortran}}
-\def\lverbatimsnippet#1#2{%
+\usepackage{listings,mdframed,xcolor}
+% optional file name, obligatory snippet name
+\newcommand\verbatimsnippet   [2][]{\verbatiminput{\codesnippetsdir/#2}}
+\newcommand\cverbatimsnippet  [2][]{\lverbatimsnippet{#1}{#2}{C}}
+\newcommand\cxxverbatimsnippet[2][]{\lverbatimsnippet{#1}{#2}{C++}}
+\newcommand\fverbatimsnippet  [2][]{\lverbatimsnippet{#1}{#2}{Fortran}}
+% #1 file name #2 snippet #3 language
+\newcommand\lverbatimsnippet  [3]{%
     \IfFileExists
-        {snippets/#1}
-        {\lstinputlisting[language=#2]{snippets/#1}}
-        {\par MISSING SNIPPET #1\par}
+        {\codesnippetsdir/#2}
+        {\lstinputlisting[language=#3]{\codesnippetsdir/#2}}
+        {\par MISSING SNIPPET #2\par}
 }
-%% in bookmacs: needed for aux files \usepackage{listings,verbatim,xcolor}
-\lstdefinelanguage{CMake}{
-  morekeywords={project,cmake_minimum_required,
-    add_executable,add_library,
-    target_compile_definitions,target_compile_options,add_compile_options,
-    target_include_libraries,target_include_directories,
-    target_link_library,target_link_directories,target_link_libraries,
-    target_compile_features,target_sources,
-    add_subdirectory,
-    find_library,find_package,pkg_check_modules,
-    install,math,message,option,set,
-    if,else,elseif,endif,file,while,endwhile,foreach,endforeach,
-    DIRECTORY,DESTINATION,FILES,GLOB,INTERFACE,MATCHES,
-    NOTICE,VERBOSE,FATAL_ERROR,SEND_ERROR,WARNING,AUTHOR_WARNING,DEPRECATION,
-    STATUS,VERBOSE,DEBUG,TRACE,
-    PRIVATE,PUBLIC,REQUIRED,SHARED,TARGETS,TRUE,VERSION,
-    CMAKE_CXX_COMPILER,CMAKE_C_COMPILER,CMAKE_Fortran_COMPILER,CMAKE_LINKER,
-    CMAKE_CXX_FLAGS,CMAKE_C_FLAGS,CMAKE_LINKER_FLAGS,CMAKE_CXX_STANDARD,
-    CMAKE_BUILD_TYPE,CMAKE_CXX_COMPILE_FEATURES,
-    CMAKE_INSTALL_PREFIX,CMAKE_PREFIX_PATH,CMAKE_MODULE_PATH,CMAKE_SYSTEM_NAME,
-    CMAKE_CURRENT_BINARY_DIR,CMAKE_CURRENT_SOURCE_DIR,CMAKE_SOURCE_DIR,
-    CMAKE_INSTALL_RPATH,CMAKE_INSTALL_RPATH_USE_LINK_PATH,
-    CMAKE_POSITION_INDEPENDENT_CODE,
-    FILES_MATCHING, PATTERN,STREQUALS,
-    LIBRARY_OUTPUT_PATH,
-    PROJECT_SOURCE_DIR,PROJECT_NAME,
-    }
-}
-\lstdefinelanguage{git}{
-  morekeywords={git,add,checkout,clone,commit,remote,revert,
-  log,diff,HEAD,
-    }
-}
-\lstdefinestyle{gitsession}{
-  language=git,
-  basicstyle=\footnotesize\ttfamily,
-  breaklines=true, breakatwhitespace=true,
-  postbreak=\hbox{{$\hookrightarrow$}}, % \textcolor{green}
-}
-\lstset{language=C}
-\lstdefinestyle{reviewcode}{
-  belowcaptionskip=1\baselineskip, breaklines=true,
-  xleftmargin=.5\unitindent, showstringspaces=false,
-  basicstyle=\footnotesize\ttfamily,
-  keywordstyle=\bfseries\color{blue},
-  commentstyle=\color{red!60!black},
-  identifierstyle=\slshape\color{black},
-  stringstyle=\color{green!60!black}, columns=fullflexible,
-  keepspaces=true, }
-\lstdefinestyle{greencode}{
-  belowcaptionskip=1\baselineskip, breaklines=true,
-  xleftmargin=.5\unitindent, showstringspaces=false,
-  basicstyle=\footnotesize\ttfamily,
-  keywordstyle=\bfseries\color{green!30!black},
-  commentstyle=\color{red!60!black},
-  identifierstyle=\slshape\color{black},
-  stringstyle=\color{green!60!black}, columns=fullflexible,
-  keepspaces=true, }
-\lstset{style=reviewcode}
-\newcommand\pyinline[1]{\lstset{language=Python}\lstinline{#1}\lstset{language=C}}
+
 
 \def\codedir{code}
 \newif\ifMakeOut \MakeOutfalse
-\lstdefinestyle{snippetcode}{
-  belowcaptionskip=1\baselineskip,
-  breaklines=true,
-  showstringspaces=false,
-  basicstyle=\footnotesize\ttfamily,
-  keywordstyle=\bfseries\color{blue},
-  commentstyle=\color{red!60!black},
-  stringstyle=\bfseries\color{gray!50!black},
-  identifierstyle=\slshape\color{black},
-  columns=fullflexible,
-  keepspaces=true,
-}
-\lstdefinelanguage{verbatim}{keywords=}
+
 \def\getRunOut#1#2{
-      \ifMakeOut
-        \immediate\write18{
-          cd #1 && make run_#2 > #2.runout 2>&1
-        }
-      \fi
-      \lstinputlisting[language=verbatim,style=snippetcode,frame=none,xleftmargin=0pt]{#1/#2.runout}
+  \IfFileExists
+      {#1/#2.runout}
+      {\lstinputlisting[language=verbatim,style=snippetcode,frame=none,xleftmargin=0pt]
+        {#1/#2.runout}}
+      {\textbf{Missing snippet: #1/#2.runout}}
 }
 
 \makeatletter
+\def\codefraction{.6}
+\def\outputfraction{.35}
+\begin{comment}
 \newcommand{\answerwithoutput}[3]{
-  \message{Code snippet <#1> in directory <#2> running program <#3>}
-  % go into vertical mode
-  \par
-  % make nice two-column layout
   \moveright .5\unitindent
   \hbox{%
-    \begin{minipage}[t]{.6\hsize}
+    \begin{minipage}[t]{\codefraction\hsize}
       \def\verbatim@startline{\verbatim@line{\leavevmode\relax}}
       \footnotesize\textbf{Code:}
       \lstset{xleftmargin=0pt}
-      \lstinputlisting{snippets/#1}
+      \lstinputlisting{\codesnippetsdir/#1}
       \lstset{xleftmargin=.5\unitindent}
     \end{minipage}
-    \begin{minipage}[t]{.3\hsize}
+    \begin{minipage}[t]{\outputfraction\hsize}
       { \footnotesize \raggedright \textbf{Output\\\relax [#2] #3:}\par }
       \getRunOut{#2}{#3}
     \end{minipage}
   }
 }
-\newcommand\snippetwithoutput[4][]{
-  \answerwithoutput{#2}{#3}{#4}
+\end{comment}
+
+\newif\ifMakeOut \MakeOutfalse
+\ifInBook
+    \def\codesize{\ttfamily\footnotesize}
+    \def\verbsize{\ttfamily\footnotesize}
+\else
+    \def\codesize{\ttfamily\scriptsize}
+    \def\verbsize{\ttfamily\scriptsize}
+\fi
+\newcommand\snippetcodefraction{.57}
+\newcommand\snippetanswfraction{.4}
+\def\codesnippet#1{%
+  \IfFileExists
+      {\codesnippetsdir/#1}
+      {\lstinputlisting[style=snippetcode,basicstyle=\codesize]{\codesnippetsdir/#1}}
+      {\textbf{Missing snippet: #1, not found in \codesnippetsdir}}
 }
+\usepackage{mdframed,xcolor}
+
+\newcommand{\answerwithoutput}[3]{
+  \message{Code snippet <#1> in directory <#2> from program <#3>}
+  % go into vertical mode
+  \par
+  % make nice two-column layout
+  \vbox{\leavevmode
+    \begin{minipage}[t]{\snippetcodefraction\hsize}
+      \begin{mdframed}[backgroundcolor=blue!10]%{quote}
+        \def\verbatim@startline{\verbatim@line{\leavevmode\relax}}
+        \codesize\textbf{Code:}
+        \codesnippet{#1}
+      \end{mdframed}
+    \end{minipage}
+    \begin{minipage}[t]{\snippetanswfraction\hsize}
+      \begin{mdframed}[backgroundcolor=yellow!80!white!20]%{quote}
+        \codesize
+        \ifInBook { \raggedright \textbf{Output\\ \relax [#2] #3:}\par }
+        \else     { \raggedright \textbf{Output:}\par }
+        \fi
+        \IfFileExists
+            {\codedir /#2/#3.runout}
+            {\lstinputlisting[language=verbatim,style=verbatimcode,frame=none,xleftmargin=0pt]
+                {\codedir /#2/#3.runout}}
+            {\textbf{missing snippet #2/#3.runout : looking in codedir=\codedir}
+              \textbf{missing snippet #2/#3.runout : looking in codedir=\codedir}}
+      \end{mdframed}
+    \end{minipage}
+  }
+}
+\makeatother
+
+\newcommand{\answerwitherror}[3]{
+  % go into vertical mode
+  \par
+  % make nice two-column layout
+  \vbox{
+  \begin{multicols}{2}
+    \def\verbatim@startline{\verbatim@line{\leavevmode\relax}}
+    \footnotesize\textbf{Code:}
+    \codesnippet{#1}
+    \par\hbox{}\vfill\columnbreak
+        \textbf{Output [#2] #3:}
+    \hbox{}
+    \ifMakeOut
+        \immediate\write18{ cd \codedir /#2 && make error_#3.o > #3.runout 2>&1 }
+    \fi
+    \verbatiminput{\codedir /#2/#3.runout}
+    \par\hbox{}\vfill\hbox{}
+  \end{multicols}
+  }
+}
+
+\newcommand\snippetwitherror[3]{
+  \answerwitherror{#1}{#2}{#3}
+  % record this file as bracketed name
+%%  \ifInBook \addchaptersource{{#2/#3}} \fi
+}
+
+\newcommand{\snippetwithcomment}[2]{
+  % go into vertical mode
+  \par
+  % make nice two-column layout
+  \vbox{
+  \begin{multicols}{2}
+    \def\verbatim@startline{\verbatim@line{\leavevmode\relax}}
+    \footnotesize\textbf{Code:}
+    \codesnippet{#1}
+    \par\hbox{}\vfill\columnbreak
+    { \raggedright\small #2 \par }
+    \par\hbox{}\vfill\hbox{}
+  \end{multicols}
+  }
+}
+
+\generalcomment
+    {inplaceverbatim}
+    {\begingroup
+      \def\ProcessCutFile{}
+      \def\PrepareCutFile{
+        \immediate\write\CommentStream{\noexpand\lstset{language=verbatim}}
+        \immediate\write\CommentStream{\noexpand\begin{lstlisting}}
+        }
+      \def\FinalizeCutFile{\immediate\write\CommentStream
+        {\string\end{lstlisting}}}
+    }
+    {\input{\CommentCutFile}
+      \endgroup
+    }
+
+\let\answerwithcomment\snippetwithcomment
+
+% #1 : optional file name
+% #2 : snippet name
+% #3 : directory
+% #4 : program to run.
+\usepackage{xifthen}
+\newcommand\snippetwithoutput[4][]{
+  \message{snippet <<#1>> <<#2>> <<#3>> <<#4>>}
+  \answerwithoutput{#2}{#3}{#4}
+  \ifthenelse{\isempty{#1}}
+             {\def\snippetfilename{#4}}
+             {\def\snippetfilename{#1}}
+  % record this file as bracketed name
+  %% \ifInBook
+  %% \nobreak
+  %% \textsl{For the source of this example, see section~\ref{lst:#3/\snippetfilename}}\par
+  %% \addchaptersource{{#3/\snippetfilename}}
+  %% \fi
+}
+
 \newcommand\csnippetwithoutput[4][]{
   \begingroup
   \lstset{language=C}
@@ -143,6 +197,7 @@
   \endgroup
 }
 \newcommand\cxxsnippetwithoutput[4][]{
+  \message{cxxsnippetwithoutput <<#1>> <<#2>> <<#3>> <<#4>>}
   \begingroup
   \lstset{language=C++}
   \answerwithoutput{#2}{#3}{#4}
@@ -160,16 +215,67 @@
   \end{minipage}
 }
 \newcommand{\snippetmakeoutput}[2]{
-  \message{In directory <#1> running program <#2>}
   % go into vertical mode
   \par
-  % make nice two-column layout
   \begin{minipage}[t]{.8\hsize}{%
       \footnotesize \raggedright \textbf{Output\\\relax [#1] #2:}\par }
       \getRunOut{#1}{#2}
   \end{minipage}
 }
+
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% tutorial snippets
+%%%%%%%%%%%%%%%%
+
+\def\tutcodefraction{.6}
+\def\tutoutputfraction{.35}
+
+\makeatletter
+\newcommand{\tutorialwithoutput}[3]{
+  \par
+  % make nice two-column layout
+  \moveright .5\unitindent
+  \hbox{%
+    \begin{minipage}[t]{\tutcodefraction\hsize}
+      \def\verbatim@startline{\verbatim@line{\leavevmode\relax}}
+      \footnotesize\textbf{Code:}
+      %\lstset{xleftmargin=0pt}
+      \lstinputlisting{\tutsnippetsdir/#1}
+      \lstset{xleftmargin=.5\unitindent}
+    \end{minipage}
+    \begin{minipage}[t]{\tutoutputfraction\hsize}
+      { \footnotesize \raggedright \textbf{Output\\\relax [#2] #3:}\par }
+      \getRunOut{#2}{#3}
+    \end{minipage}
+  }
+}
 \makeatother
+
+%%
+%% Makefile displays
+%%
+
+\newcommand\makewithoutput[3]{
+  \begingroup
+  \lstset{language=Bash}
+  \def\tutsnippetsdir{#2}
+  \def\codefraction{.3}
+  \def\outputfraction{.65}
+  \tutorialwithoutput{#1}{#2}{#3}
+  \lstset{language=C}
+  \endgroup
+}
+
+\begin{comment}
+  \newcommand\makewithoutput[3]{
+    \begingroup
+    \lstset{language=Bash}
+    \def\snippetsdir{#2}
+    \answerwithoutput{#1}{#2}{#3}
+    \lstset{language=C}
+    \endgroup
+  }
+\end{comment}
 
 %%%%
 %%%% input file without header
@@ -182,5 +288,7 @@
   \IfFileExists
       {#1/#2.stripped.out}
       {\lstinputlisting{#1/#2.stripped.out}}
-      {\message{Could not strip file #1/#2}\lstset{basicstyle=\tiny\ttfamily} \lstinputlisting{#1/#2}}
+      {\message{Could not strip file #1/#2}
+        \lstset{basicstyle=\tiny\ttfamily}
+        \lstinputlisting{#1/#2}}
 }

@@ -1,0 +1,23 @@
+Repeats: 10000
+Associativity: 4
+Time/access: 0.825 nsec
+Associativity: 5
+Time/access: 0.82 nsec
+Associativity: 6
+Time/access: 0.95 nsec
+Associativity: 7
+Time/access: 1.06 nsec
+Associativity: 8
+Time/access: 1.19 nsec
+Associativity: 9
+Time/access: 1.38 nsec
+Associativity: 10
+Time/access: 2.68 nsec
+Associativity: 11
+Time/access: 3.59 nsec
+Associativity: 12
+Time/access: 3.28 nsec
+Associativity: 13
+Time/access: 4.04 nsec
+Associativity: 14
+Time/access: 4.36 nsec

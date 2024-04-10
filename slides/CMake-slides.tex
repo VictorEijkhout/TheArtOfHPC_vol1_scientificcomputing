@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% CMake-slides.tex : cmake slides
 %%%% see hpc_cmake.tex for driver file
@@ -14,8 +14,18 @@
 
 \lstset{language=bash}
 
-\sectionframe{The build/make cycle}
+\subsectionframe{Using a cmake-based library}
 
+\begin{numberedframe}{What are we talking here?}
+  \begin{itemize}
+  \item You have downloaded a library
+  \item It contains a file \n{CMakeLists.txt}
+  \item $\Rightarrow$ you need to install it with CMake.
+  \item \ldots~and then figure out how to use it in your code.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{comment}
 \begin{numberedframe}{Building software the old way}
   Using `GNU Autotools':
 \begin{lstlisting}
@@ -33,12 +43,14 @@ make install
 \end{lstlisting}
 with a location of your choice.
 \end{numberedframe}
+\end{comment}
 
 \begin{numberedframe}{Building with CMake}
   \begin{itemize}
-  \item Either replace only the configure stage
+  \item Use CMake for the configure stage, then make:
 \begin{lstlisting}
-cmake ## arguments
+cmake -D CMAKE_INSTALL_PREFIX=/home/yourname/packages \
+    /home/your/software/package ## source location
 make
 make install
 \end{lstlisting}
@@ -50,7 +62,22 @@ cmake --build ## stuff
 cmake --install ## stuff
 \end{lstlisting}
   \end{itemize}
-(The second one is portable to non-Unix environments.)
+  We focus on the first option;
+  the second one is portable to non-Unix environments.
+\end{numberedframe}
+
+\begin{numberedframe}{What does this buy you?}
+  \begin{enumerate}
+  \item The source directory is untouched
+  \item The build directory contains all temporaries
+  \item 
+    Your install directory (as specified to CMake)
+    now contains executables, libraries, headers~etc.
+
+  You can add these to \n{$PATH}, compiler options,
+  \n{$LD_LIBRARY_PATH}.\\
+  But see later~\ldots
+  \end{enumerate}
 \end{numberedframe}
 
 \begin{numberedframe}{The build/make cycle}
@@ -65,9 +92,7 @@ cmake --install ## stuff
   Only if you add (include) files do you rerun CMake.
 \end{numberedframe}
 
-\endinput
-
-\begin{numberedframe}{Directory structure}
+\begin{numberedframe}{Directory structure: two options}
   \hbox to \textwidth\bgroup
   \begin{minipage}{.45\textwidth}
     \tikzsetnextfilename{cmake-insource}
@@ -94,125 +119,61 @@ cmake --install ## stuff
   \begin{itemize}
   \item In-source build: pretty common
   \item Out-of-source build: cleaner because never touches the source tree
-  \item Some people skip the install, use everything from the build directory.
+  \item Some people skip the install step, and use everything from the build directory.
   \end{itemize}
 \begin{lstlisting}
 \end{lstlisting}
 \end{numberedframe}
 
-\begin{numberedframe}{Out-of-source build}
+\begin{numberedframe}{Out-of-source build: preferred}
   \begin{itemize}
   \item Work from a build directory
   \item Specify prefix and location of \n{CMakeLists.txt}
   \end{itemize}
 \lstset{numbers=left,numberstyle=\tiny}
 \begin{lstlisting}
-ls some_package_1.0.0 # we are outside the source
+ls some_package_1.0.0                # we are outside the source
 ls some_package_1.0.0/CMakeLists.txt # source contains cmake file
-mkdir builddir && cd builddir # goto build location
+mkdir builddir                       # location for temporaries
+cd builddir                          # goto build location
 cmake -D CMAKE_INSTALL_PREFIX=../installdir \
-      ../some_package_1.0.0
-make # make all tmp data in build loc
-make install # move stuff to install loc
+      ../some_package_1.0.0          # cmake invocation
+make                                 # make all tmp data in build loc
+make install                         # move only final products
 \end{lstlisting}
 \end{numberedframe}
 
-\sectionframe{Make your CMake configuration}
+\begin{numberedframe}{Example: eigen}
+  Download from\\
+  \url{https://eigen.tuxfamily.org/index.php}\\
+  and install.
+\end{numberedframe}
 
-\lstset{language=CMake}
-\lstset{style=greencode}
-
-\begin{numberedframe}{The CMakeLists file}
+\begin{numberedframe}{Basic customizations}
+  Compiler settings:
 \begin{lstlisting}
-cmake_minimum_required( VERSION 3.12 )
-project( myproject VERSION 1.0 )
+cmake -D CMAKE_CXX_COMPILER=icpx
 \end{lstlisting}
+Alternatively:
+\begin{lstlisting}
+export CXX=icpx
+cmake .......
+\end{lstlisting}
+Many settings can be done on the commandline:
+\begin{lstlisting}
+    -D BUILD_SHARED_LIBS=ON
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Tracing and logging}
   \begin{itemize}
-  \item Which cmake version is needed for this file?\\
-    (CMake has undergone quite some evolution!)
-  \item Give a name to your project.
+  \item CMake prints some sort of progress messages.
+  \item To see commandlines:
+\begin{lstlisting}[language=bash]
+cmake -D CMAKE_VERBOSE_MAKEFILE=ON ...
+make V=1
+\end{lstlisting}
+\item CMake leaves behind a log and error file, but these are insufficent:
+  \item $\Rightarrow$~use the above verbose mode and capture all output.
   \end{itemize}
 \end{numberedframe}
-
-\begin{numberedframe}{Target philosophy}
-  \begin{itemize}
-  \item Declare a target: something that needs to be built
-  \item specify what is needed for it
-  \end{itemize}
-\begin{lstlisting}
-add_executable( myprogram program.cxx )
-install( TARGETS myprogram DESTINATION . )
-\end{lstlisting}
-Use of macros:
-\begin{lstlisting}
-add_executable( ${PROJECT_NAME} program.cxx )
-\end{lstlisting}
-\end{numberedframe}
-
-\begin{numberedframe}{Example: single source}
-  \lstinputlisting{tutorials/cmake/single/CMakeLists.txt}
-\end{numberedframe}
-
-\begin{numberedframe}{Use of a library}
-First a library that goes into the executable:
-\begin{lstlisting}
-add_library( auxlib aux.cxx aux.h )
-target_link_libraries( program PRIVATE auxlib )
-\end{lstlisting}
-\end{numberedframe}
-
-\begin{numberedframe}{Example: library during build}
-  \lstset{numbers=left,numberstyle=\tiny}
-  \lstinputlisting{tutorials/cmake/privatelib/CMakeLists.txt}  
-\end{numberedframe}
-
-\begin{numberedframe}{Release a library}
-  To have the library released too, use \lstinline{PUBLIC}.\\
-  Add the library target to the \lstinline{install} command.
-\end{numberedframe}
-
-\begin{numberedframe}{Example: released library}
-  \lstset{numbers=left,numberstyle=\tiny}
-  \lstinputlisting{tutorials/cmake/withlib/CMakeLists.txt}  
-\end{numberedframe}
-
-\begin{numberedframe}{More about libraries}
-  Static vs shared libraries.
-  In the configuration file:
-\begin{lstlisting}
-add_library( auxlib STATIC aux.cxx aux.h )
-# or
-add_library( auxlib SHARED aux.cxx aux.h )
-\end{lstlisting}
-  or by adding a runtime flag
-\begin{lstlisting}
-cmake -D BUILD_SHARED_LIBS=TRUE
-\end{lstlisting}
-Related: the \indextermtt{-fPIC} compile option
-is set by \indexcmake{CMAKE_POSITION_INDEPENDENT_CODE}.
-\end{numberedframe}
-
-\begin{numberedframe}{External libraries}
-  \begin{itemize}
-  \item Use \indexunix{LD_LIBRARY_PATH}, or
-  \item use \indexunix{rpath}.
-  \end{itemize}
-  (Apple note: forced to use second option)
-\begin{lstlisting}
-set_target_properties(
-	${PROGRAM_NAME} PROPERTIES
-	BUILD_RPATH   "${CATCH2_LIBRARY_DIRS};${FMTLIB_LIBRARY_DIRS}"
-	INSTALL_RPATH "${CATCH2_LIBRARY_DIRS};${FMTLIB_LIBRARY_DIRS}"
-    )
-\end{lstlisting}
-\end{numberedframe}
-\endinput
-
-\begin{numberedframe}{}
-  \begin{itemize}
-  \item 
-  \end{itemize}
-\begin{lstlisting}
-\end{lstlisting}
-\end{numberedframe}
-

@@ -14,6 +14,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% plotting with tikz
+%%\usepackage{tikz}
+%%\usetikzlibrary{external}
+\usepackage{pgfplots}  
+\usepgfplotslibrary{external}
+\tikzexternalize
+\tikzsetexternalprefix{plots/}
+\pgfplotsset{width=5in,compat=1.7}  
+
 \makeatletter
 %% from https://tex.stackexchange.com/a/34268/38308
 \newcount\dirtree@lvl

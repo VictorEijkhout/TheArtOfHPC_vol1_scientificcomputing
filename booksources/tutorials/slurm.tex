@@ -208,7 +208,10 @@ Directives have the form
 \begin{verbatim}
 #SBATCH -option value
 \end{verbatim}
-Common options are:
+Common options
+(except parallelism related options
+which are discussed in section~\ref{sec:slurm-par-opt})
+are:
 \begin{itemize}
 \item \n{-J}: the jobname. This will be displayed when you call \indextermtt{squeue}.
 \item \n{-o}: name of the output file. This will contain all the stdout output of the script.
@@ -278,6 +281,7 @@ Additionally, slurm defines a number of environment variables,
 such as the job ID, the hostlist, and the node and process count.
 
 \Level 0 {Parallelism handling}
+\label{sec:slurm-par-opt}
 
 We discuss parallelism options separately.
 

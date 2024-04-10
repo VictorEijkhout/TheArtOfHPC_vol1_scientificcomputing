@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -23,10 +23,11 @@ projects: its main task is to facilitate rebuilding only those parts
 of a multi-file project that need to be recompiled or rebuilt.
 This can save lots of time, since it
 can replace a minutes-long full installation by a single file
-compilation. \emph{Make} can also help maintaining multiple
-installations of a program on a single machine, for instance compiling
-a library with more than one compiler, or compiling a program in debug
-and optimized mode.
+compilation.
+%% \emph{Make} can also help maintaining multiple
+%% installations of a program on a single machine, for instance compiling
+%% a library with more than one compiler, or compiling a program in debug
+%% and optimized mode.
 
 \emph{Make} is a Unix utility with a long history, and traditionally
 there are variants with slightly different behavior, 
@@ -40,12 +41,14 @@ very powerful extensions; it is available on all Unix platforms
 \url{http://www.gnu.org/software/make/manual/make.html}, or you can
 read the book~\cite{OReilly-GnuMake}.
 
-There are other build systems, most notably \indexterm{Scons} and
-\indexterm{Bjam}. We will not discuss those here. The examples in this
+%% There are other build systems, most notably \indexterm{Scons} and
+%% \indexterm{Bjam}. We will not discuss those here.
+The examples in this
 tutorial will be for the C and Fortran languages, but \emph{Make} can
 work with any language, and in fact with things like \TeX\ that are
 not really a language at all; see section~\ref{sec:latex-make}.
 
+%%packtsnippet gnumake
 \Level 0 {A simple example}
 
 \begin{purpose}
@@ -55,15 +58,17 @@ In this section you will see a simple example, just to give the flavor of
 
 The files for this section can be found in the repository.
 
-\Level 1 {C++}
+\begin{nopackt}
+  \Level 1 {C++}
+\end{nopackt}
 
 Make the following files:
 
-\ListNamedSource[C++]{foo.cxx}{tutorials/makefiles/1x/foo.cxx}
-\ListNamedSource[C++]{bar.cxx}{tutorials/makefiles/1x/bar.cxx}
-\ListNamedSource[C++]{bar.h}{tutorials/makefiles/1x/bar.h}
+\ListNamedSource[C++]{foo.cxx}{tutorials/makefiles/1x}{foo.cxx}
+\ListNamedSource[C++]{bar.cxx}{tutorials/makefiles/1x}{bar.cxx}
+\ListNamedSource[C++]{bar.h}{tutorials/makefiles/1x}{bar.h}
 and a makefile:
-\ListNamedSource{Makefile}{tutorials/makefiles/1x/Makefile}
+\ListNamedSource{Makefile}{tutorials/makefiles/1x}{Makefile}
 
 The makefile has a number of rules like
 \begin{lstlisting}
@@ -80,7 +85,7 @@ where the rule lines are indented by a \n{TAB} character.
 A rule, such as above, states that a `target' file \n{foo.o} is made
 from a `prerequisite' \n{foo.cxx},
 namely by executing the command \n{icpc -c foo.cxx}.
-(Here we are using the \indextermbus{Inte}{C++ compiler} \indextermtt{icpc};
+(Here we are using the \indextermbus{Intel}{C++ compiler} \indextermtt{icpc};
 your system could have a different compiler,
 such as \indextermtt{clang++} or \indextermtt{g++}.)
 
@@ -163,15 +168,18 @@ needs to be reconstructed.
   but tools such as \n{Make} (or~\n{CMake}) do not have this built in.
 \end{remark}
 
+\begin{nopackt}
+%% remove C/F sections
+  
 \Level 1 {C}
 
 Make the following files:
 
-\ListNamedSource[C]{foo.c}{tutorials/makefiles/1c/foo.c}
-\ListNamedSource[C]{bar.c}{tutorials/makefiles/1c/bar.c}
-\ListNamedSource[C]{bar.h}{tutorials/makefiles/1c/bar.h}
+\ListNamedSource[C]{foo.c}{tutorials/makefiles/1c}{foo.c}
+\ListNamedSource[C]{bar.c}{tutorials/makefiles/1c}{bar.c}
+\ListNamedSource[C]{bar.h}{tutorials/makefiles/1c}{bar.h}
 and a makefile:
-\ListNamedSource{Makefile}{tutorials/makefiles/1c/Makefile}
+\ListNamedSource{Makefile}{tutorials/makefiles/1c}{Makefile}
 
 The makefile has a number of rules like
 \begin{lstlisting}
@@ -253,10 +261,10 @@ needs to be reconstructed.
 
 Make the following files:
 
-\ListNamedSource[Fortran]{foomain.F}{tutorials/makefiles/1f/foomain.F}
-\ListNamedSource[Fortran]{foomod.F}{tutorials/makefiles/1f/foomod.F}
+\ListNamedSource[Fortran]{foomain.F}{tutorials/makefiles/1f}{foomain.F}
+\ListNamedSource[Fortran]{foomod.F}{tutorials/makefiles/1f}{foomod.F}
 and a makefile:
-\ListNamedSource{Makefile}{tutorials/makefiles/1f/Makefile}
+\ListNamedSource{Makefile}{tutorials/makefiles/1f}{Makefile}
 If you call \n{make}, the first rule in the makefile is executed. Do
 this, and explain what happens.
 
@@ -307,6 +315,9 @@ After recompiling \n{foomode.F}, \n{foomode.o} is younger than
 
 \practical{Confirm that the corrected makefile indeed causes
   \n{foomain.F} to be recompiled.}{}{}
+
+%% end of excluded C/F section
+\end{nopackt}
 
 \Level 0 {Some general remarks}
 
@@ -492,15 +503,15 @@ template rule.
 \begin{figure}[t]
   \begin{multicols}{2}
     Source file \n{mainprog.cxx}:
-    \strippedinput{code/make}{mainprog.cxx}
+    \ListStrippedSource{code/make}{mainprog.cxx}
     Source file \n{libf.cxx}:
-    \strippedinput{code/make}{libf.cxx}
+    \ListStrippedSource{code/make}{libf.cxx}
     Source file \n{libg.cxx}:
-    \strippedinput{code/make}{libg.cxx}
+    \ListStrippedSource{code/make}{libg.cxx}
     Header file \n{api.h}:
-    \strippedinput{code/make}{api.h}
+    \ListStrippedSource{code/make}{api.h}
     Header file \n{impl.h}:
-    \strippedinput{code/make}{impl.h}
+    \ListStrippedSource{code/make}{impl.h}
   \end{multicols}
   \caption{Source files for exercise~\ref{ex:make-main-lib}.}
   \label{fig:make-files}
@@ -550,6 +561,7 @@ clang++ -o main libmain.o libf.o libg.o
   \label{fig:make-exercises-f}
 \end{figure}
 
+\begin{nopackt}
 For Fortran we don't have header files so
 we use \emph{modules}\index{Fortran!module}
 everywhere; figure~\ref{fig:make-exercises-f}.
@@ -574,6 +586,7 @@ as the C version.
   For the optimal solution,
   use submodules.
 \end{exercise}
+\end{nopackt}
 
 \Level 1 {Wildcards}
 
@@ -829,10 +842,14 @@ format string. Type the following:
 %
 This can be used in the makefile.
 
+\begin{nopackt}
 \practical {Edit the {\tt cp} command line so that the name of the
   backup file includes the current date.}{Hint: you need the
-  backquote. Consult the Unix tutorial, section~\ref{tut:unix-bq}, if
-  you do not remember what backquotes do.}{}
+  backquote.
+  Consult the Unix tutorial, section~\ref{tut:unix-bq}, if
+  you do not remember what backquotes do.
+}{}
+\end{nopackt}
 
 If you are defining shell variables in the command section of a
 makefile rule, you need to be aware of the following. Extend your
@@ -1084,5 +1101,6 @@ message(STATUS "my variable has value ${myvar}")
 \end{lstlisting}
 \index{Cmake|)}
 
+%%packtsnippet end
 
 % LocalWords:  Eijkhout

@@ -34,18 +34,27 @@ else
 endif
 
 ${TARGET}.so : ${TARGET}.o ${HELLO}.o
-	ls ${TACC_BOOST_LIB}/libboost_python*
-	pythonver=`echo ${TACC_PYTHON_VER} | sed -e 's/\.//'` \
+	@echo "building $@"
+	@ls ${TACC_BOOST_LIB}/libboost_python*
+	@pythonver=`echo ${TACC_PYTHON_VER} | sed -e 's/\.//'` \
 	 && if [ $$pythonver = "3.7" ] ; then pythonver=${pythonver}m ; fi \
 	 && ${CXX} -shared -o $@ $^ \
 	        -Wl,-rpath,${TACC_BOOST_LIB}  -L${TACC_BOOST_LIB}  -lboost_python$${pythonver} \
 	        -Wl,-rpath,${TACC_PYTHON_LIB} -L${TACC_PYTHON_LIB} -lpython3
 %.o : %.cxx
-	pythonver=${TACC_PYTHON_VER} \
+	@echo "compiling $<"
+	@pythonver=${TACC_PYTHON_VER} \
 	 && if [ $$pythonver = "3.7" ] ; then pythonver=$${pythonver}m ; fi \
 	 && cmd="${CXX} -c $< -fPIC \
 	        -I. -I${TACC_BOOST_INC} -I${TACC_PYTHON_INC}/python$${pythonver}" \
-	 && echo $$cmd && eval $$cmd
+	 && if [ ! -z "${ECHO}" ] ; then echo $$cmd ; fi \
+	 && eval $$cmd
+
+info ::
+	@echo "make run"
+.PHONY: run
+run :
+	@python3 ${HELLO}.py
 
 PUBLICEXTS = py cxx h
 include ../../makefiles/Make.public

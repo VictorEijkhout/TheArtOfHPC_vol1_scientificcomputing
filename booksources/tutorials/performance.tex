@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -38,12 +38,12 @@ Here we will discuss
 
 There are various ways of timing your code, but mostly they come down
 to calling a \emph{timer} routine twice that tells you the clock values:
-\begin{verbatim}
+\begin{lstlisting}[language=c++]
   tstart = clockticks()
   ....
   tend = clockticks()
   runtime = (tend-tstart)/ticks_per_sec
-\end{verbatim}
+\end{lstlisting}
 
 Many systems have their own timers:
 \begin{itemize}
@@ -57,12 +57,12 @@ Many systems have their own timers:
 
 For instance, in \emph{Fortran} there is the \n{system_clock}
 routine\index{systemclock@\n{system_clock}}:
-\verbatiminput{code/papi/timers/ftimer.F}
+\lstinputlisting[language=Fortran]{code/papi/timers/ftimer.F}
 with output
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
  Clock frequency:       10000
    1.000000       813802544   813826097   2.000000  
-\end{verbatim}
+\end{lstlisting}
 
 \Level 1 {C}
 \index{timer!routines, C}
@@ -70,12 +70,12 @@ with output
 In \emph{C} there is the \n{clock} function:
 \verbatiminput{papi/timers/ctimer.c}
 with output
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 clock resolution: 1000000
 res: 1.000000e+00
 start/stop: 0.000000e+00,2.310000e+00
 Time: 2.310000e+00
-\end{verbatim}
+\end{lstlisting}
 Do you see a difference between the Fortran and C approaches? Hint:
 what happens in both cases when the execution time becomes long? At
 what point do you run into trouble?
@@ -86,7 +86,7 @@ what point do you run into trouble?
 While C routines are available in~\emph{C++}, there is also a new
 \indextermtt{chrono} library that can do many things, including
 handling different time formats.
-\begin{verbatim}
+\begin{lstlisting}[language=c++]
 std::chrono::system_clock::time_point start_time;
 start_time = std::chrono::system_clock::now();
 // ... code ...
@@ -96,14 +96,14 @@ auto millisec_duration =
     std::chrono::duration_cast<std::chrono::milliseconds>(duration);
 std::cout << "Time in milli seconds: " 
           << .001 * millisec_duration.count() << endl;
-\end{verbatim}
+\end{lstlisting}
 For more details, see \ISPref{sec:chrono}.
 
 \Level 1 {System utilities}
 
 There are unix system calls that can be used for timing:
 \indextermtt{getrusage}
-\begin{verbatim}
+\begin{lstlisting}[language=c++]
 #include <sys/resource.h>                        
 double time00(void)                              
 {                                                
@@ -112,9 +112,9 @@ double time00(void)
    return( (double)(ruse.ru_utime.tv_sec+ruse.ru_utime.tv_usec
     / 1000000.0) );
 }
-\end{verbatim}
+\end{lstlisting}
 and \indextermtt{gettimeofday}
-\begin{verbatim}
+\begin{lstlisting}[language=c++]
 #include <sys/time.h>
 double time00(void)
 {
@@ -122,7 +122,7 @@ double time00(void)
    gettimeofday(&tp, NULL);
    return( (double) (tp.tv_sec + tp.tv_usec/1000000.0) ); /* wall
 }
-\end{verbatim}
+\end{lstlisting}
 These timers have the advantage that they can
 distinguish between user time and system time, that is, exclusively
 timing program execution or giving \indexterm{wallclock time}
@@ -130,7 +130,7 @@ including all system activities.
 
 \index{timer|)}
 
-\Level 0 {Accurate counters}
+\Level 1 {Accurate counters}
 
 The timers in the previous section had a resolution of at best a
 millisecond, which corresponds to several thousand cycles on a modern
@@ -138,7 +138,7 @@ CPU. For more accurate counting it is typically necessary to use
 assembly language, such as the Intel \indexterm{RDTSC} (ReaD Time Stamp
 Counter)
 instruction~\url{http://developer.intel.com/drg/pentiumII/appnotes/RDTSCPM1.HTM}.
-\begin{verbatim}
+\begin{lstlisting}[language=c++]
 static inline void microtime(unsigned *lo, unsigned *hi)
 {
   __asm __volatile (
@@ -147,7 +147,7 @@ static inline void microtime(unsigned *lo, unsigned *hi)
          movl    %%eax,%1          # Low order 32 bits"
                  : "=g" (*hi), "=g" (*lo) :: "eax", "edx");
 }                                                
-\end{verbatim}
+\end{lstlisting}
 However,
 this approach of using processor-specific timers is not portable. For
 this reason, the \indexterm{PAPI} package (\url{http://icl.cs.utk.edu/papi/})
@@ -159,129 +159,6 @@ In addition to timing, hardware counters can give you information about
 such things as cache misses and instruction counters. A~processor typically
 has only a limited number of counters, but they can be assigned to various tasks.
 Additionally, PAPI has the concept of \emph{derived metrics}.
-
-\Level 0 {Parallel timers in MPI and OpenMP}
-
-Many packages have their own timers. For instance for
-\emph{MPI}\index{MPI!timer}\index{timer!MPI}
-\begin{lstlisting}
-double MPI_Wtime(void);
-double MPI_Wtick(void);
-\end{lstlisting}
-See \PCSEref{sec:mpi-timing}.
-
-For
-\emph{OpenMP}\index{OpenMP!timer}\index{timer!OpenMP}
-\begin{lstlisting}
-double omp_get_wtime()
-double omp_get_wtick()
-\end{lstlisting}
-See \PCSEref{sec:omp-timing}.
-
-In neither of these packages are the timers
-likely to be synchronized over the
-parallel processes or threads.
-This means that the timings of one code segment may be widely different
-on two processes/threads/tasks.
-To have a synchronized timer you need
-to use an explicit barrier:
-\begin{lstlisting}
-Barrier();
-tstart = Wtime();
-Barrier();
-duration = Wtime()-tstart;
-\end{lstlisting}
-
-\Level 0 {Profiling tools}
-
-Profiling tools will give you the time spent in various events in the
-program, typically functions and subroutines, or parts of the code
-that you have declared as such. The tool will then report how many
-time the event occurred, total and average time spent, et cetera.
-
-Here we discuss two simple tools:
-\begin{itemize}
-\item \indextermunix{gprof}, which requires instrumentation, and
-\item \indextermunix{perf}, which doesn't.
-\item Intel VTune.
-\end{itemize}
-
-The TAU tool, discussed in section~\ref{tut:tau} for the purposes of tracing,
-also has profiling capabilities, presented in a nice graphic way.
-Finally, we mention that the \indexterm{PETSc} library
-allows you to define your own timers and events.
-
-\Level 1 {gprof}
-
-The profiler of the \indexterm{GNU} compiler, \indextermunixdef{gprof}
-requires recomplication with an extra flag:
-
-\begin{verbatim}
-% gcc  -g -pg ./srcFile.c -o MyProgram
-\end{verbatim}
-
-The program is then run by itself:
-\begin{verbatim}
-% ./MyProgram
-\end{verbatim}
-
-and the results are post-processed and displayed:
-\begin{verbatim}
-% gprof    ./exeFile gmon.out > profile.txt
-% gprof -l ./exeFile gmon.out > profile_line.txt
-% gprof -A ./exeFile gmon.out > profile_anotated.txt
-\end{verbatim}
-
-\Level 1 {perf}
-
-Coming with most Unix distributions,
-\indextermunixdef{perf}
-does not require any instrumentation.
-
-Run:
-\begin{verbatim}
-perf record yourprogram options
-perf record --call-graph fp yourprogram options
-\end{verbatim}
-
-Post-process and display:
-\begin{verbatim}
-perf report
-perf report --demangle ## for C++
-\end{verbatim}
-
-\Level 1 {Intel VTune}
-
-The \indextermbus{Intel}{VTune} profiler also needs no instrumentation.
-\begin{verbatim}
-vtune -collect hotspots yourprogram options
-## result dir something like: r001hs
-vtune -report hotspots -r r001hs
-\end{verbatim}
-
-\Level 1 {MPI profiling}
-
-The MPI library has been designed to make it easy to profile.
-See \PCSEref{sec:mpi-performance}.
-
-\Level 0 {Tracing}
-
-In profiling we are only concerned with aggregate information: how
-many times a routine was called, and with what total/average/min/max
-runtime. However sometimes we want to know about the exact timing of
-events. This is especially relevant in a parallel context when we care
-about \indextermbus{load}{unbalance} and \indexterm{idle time}.
-
-Tools such as Vampyr can collect trace information about
-events and in particular messages, and render them in displays such as
-figure~\ref{fig:vampyr}.
-\begin{figure}[ht]
-  \includegraphics{vampyrtrace}
-  \caption{A Vampyr timeline diagram of a parallel process.}
-  \label{fig:vampyr}
-\end{figure}
-
-%% \TUTORIAL{Timing, tracing}{tracing}
 
 \Level 0 {Parallel timing}
 
@@ -322,9 +199,159 @@ On the non-zero processes we now get a time measurement,
 which we intended to be just the collective operation,
 that includes the setup time of process zero.
 
-The solution is to put a barrier around the section that you want to time;
-see again figure~\ref{fig:time-collective}.
+The solution is to put a barrier around the section that you want to time.
+\begin{lstlisting}
+Barrier();
+tstart = Wtime();
+Barrier();
+duration = Wtime()-tstart;
+\end{lstlisting}
+See also figure~\ref{fig:time-collective}.
 
+\Level 1 {Parallel timers in MPI and OpenMP}
+
+Many packages have their own timers. For instance for
+\emph{MPI}\index{MPI!timer}\index{timer!MPI}
+\begin{lstlisting}
+double MPI_Wtime(void);
+double MPI_Wtick(void);
+\end{lstlisting}
+See \PCSEref{sec:mpi-timing}.
+
+For
+\emph{OpenMP}\index{OpenMP!timer}\index{timer!OpenMP}
+\begin{lstlisting}
+double omp_get_wtime()
+double omp_get_wtick()
+\end{lstlisting}
+See \PCSEref{sec:omp-timing}.
+
+\Level 0 {Profiling tools}
+
+Profiling tools will give you the time spent in various events in the
+program, typically functions and subroutines, or parts of the code
+that you have declared as such. The tool will then report how many
+time the event occurred, total and average time spent, et cetera.
+
+Here we discuss two simple tools:
+\begin{itemize}
+\item \indextermunix{gprof}, which requires instrumentation, and
+\item \indextermunix{perf}, which doesn't.
+\item Intel VTune.
+\end{itemize}
+
+The TAU tool, discussed in section~\ref{tut:tau} for the purposes of tracing,
+also has profiling capabilities, presented in a nice graphic way.
+Finally, we mention that the \indexterm{PETSc} library
+allows you to define your own timers and events.
+
+\Level 1 {gprof}
+
+%%packtsnippet gprof
+The profiler of the \indexterm{GNU} compiler, \indextermunixdef{gprof}
+requires recomplication and linking with an extra flag:
+
+\begin{lstlisting}[language=bash]
+% gcc  -g -pg -c ./srcFile.c 
+% gcc  -g -pg -o MyProgram ./srcFile.o 
+\end{lstlisting}
+
+The program is then run by itself:
+\begin{lstlisting}[language=bash]
+% ./MyProgram
+\end{lstlisting}
+leaving behind a file \indextermtt{gmon.out}.
+This can be post-processed and displayed:
+\begin{lstlisting}[language=bash]
+% gprof    ./exeFile gmon.out > profile.txt
+% gprof -l ./exeFile gmon.out > profile_line.txt
+% gprof -A ./exeFile gmon.out > profile_anotated.txt
+\end{lstlisting}
+%%packtsnippet end
+
+\Level 1 {perf}
+
+%%packtsnippet uperf
+Coming with most Unix distributions,
+\indextermunixdef{perf}
+does not require any instrumentation.
+
+Run:
+\begin{lstlisting}[language=bash]
+perf record myprogram myoptions
+perf record --call-graph fp myprogram myoptions
+\end{lstlisting}
+This gathers event information into a file \n{perf.data},
+or do
+\begin{lstlisting}[language=bash]
+perf record -o myoutputfile myprogram myoptions
+\end{lstlisting}
+for a custom output file.
+
+Post-process and display:
+\begin{lstlisting}[language=bash]
+perf report
+perf report --demangle ## for C++
+perf report -i myoutputfile
+\end{lstlisting}
+The display may be interactive;
+the following gives a pure ascii display,
+limiting to events amount to more than one percent,
+and printing out only the columns of percentage and routine name:
+\begin{lstlisting}[language=bash]
+perf report --stdio \
+    --percent-limit=1 \
+    --fields=Overhead,Symbol
+\end{lstlisting}
+
+Example:
+\begin{lstlisting}[language=bash]
++   14.15%     4.07%  fsm.exe  fsm.exe              [.] std::vector<richdem::dephier::Depression<double>, std::allocator<richdem::dephier::Depression<double> > >::at
++    8.92%     4.58%  fsm.exe  fsm.exe              [.] std::vector<richdem::dephier::Depression<double>, std::allocator<richdem::dephier::Depression<double> > >::_M_range_check
+\end{lstlisting}
+This shows that $14\%$ of the time is spent in indexing with \lstinline{at},
+and that more than half of that went into the range checking.
+%%packtsnippet end
+
+\Level 1 {Intel VTune}
+
+%%packtsnippet vtune
+
+The \indextermbus{Intel}{VTune} profiler also needs no instrumentation.
+\begin{lstlisting}[language=bash]
+vtune -collect hotspots yourprogram options
+## result are in a directory: r000hs
+vtune -report hotspots -r r000hs
+\end{lstlisting}
+For graphical output you can use \indextermtt{vtune-gui}.
+Rather than analyzing results, this lets you set up, run,
+and analyze an application.
+
+%%packtsnippet end
+
+\Level 1 {MPI profiling}
+
+The MPI library has been designed to make it easy to profile.
+See \PCSEref{sec:mpi-performance}.
+
+\Level 0 {Tracing}
+
+In profiling we are only concerned with aggregate information: how
+many times a routine was called, and with what total/average/min/max
+runtime. However sometimes we want to know about the exact timing of
+events. This is especially relevant in a parallel context when we care
+about \indextermbus{load}{unbalance} and \indexterm{idle time}.
+
+Tools such as Vampyr can collect trace information about
+events and in particular messages, and render them in displays such as
+figure~\ref{fig:vampyr}.
+\begin{figure}[ht]
+  \includegraphics{vampyrtrace}
+  \caption{A Vampyr timeline diagram of a parallel process.}
+  \label{fig:vampyr}
+\end{figure}
+
+%% \TUTORIAL{Timing, tracing}{tracing}
 
 % LocalWords:  Eijkhout systemclock chrono unix getrusage wallclock
 % LocalWords:  gettimeofday RDTSC ReaD PAPI MPI OpenMP gprof PETSc cc

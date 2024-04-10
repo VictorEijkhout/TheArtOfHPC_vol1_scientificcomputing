@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -16,30 +16,29 @@
 
 \documentclass[11pt,headernav]{beamer}
 
-\usepackage{beamerthemeTACC}
-\parskip=.5\baselineskip plus .5\baselineskip
-\input semester
-\beamertemplatenavigationsymbolsempty
+\input courseformat
+\input tikzplot
+\def\qrcode{qrvol1}
 
-\usepackage{pslatex}
-\usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
+%% \usepackage{pslatex}
+%% \usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
 
 %\setbeamertemplate{footline}{Eijkhout: HPC intro}
 
-\newdimen\unitindent \unitindent=20pt
-\usepackage[algo2e,noline,noend]{algorithm2e}
+%% \newdimen\unitindent \unitindent=20pt
+%% \usepackage[algo2e,noline,noend]{algorithm2e}
 
-\input slidemacs
-\input snippetmacs
-\input scimacs
+%% \input slidemacs
+%% \input snippetmacs
+%% \input scimacs
 
 \excludecomment{answer}
+\input semester
 
 \begin{document}
-\parskip=10pt plus 5pt minus 3pt
 
 \title{Computer arithmetic}
-\author{\hpcteachers}
+\author[Eijkhout]{Victor Eijkhout}
 \date{\hpcsemester}
 
 \begin{frame}

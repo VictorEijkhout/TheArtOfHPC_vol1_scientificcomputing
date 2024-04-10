@@ -659,6 +659,34 @@ result~$1.9\times 10^{-2}$; almost 100\% error.
   x_-=-c/a$.
 \end{numberedframe}
 
+\begin{numberedframe}{Example}
+Equation
+\[ f(x) = \epsilon x^2 -(1+\epsilon^2) x + \epsilon, \]
+Roots for $\epsilon$~small:
+\[ x_+\approx \epsilon\inv,\qquad x_-\approx \epsilon. \]
+  
+Textbook solution for small~$\epsilon$
+\[ x_-\approx 0, \qquad f(x_-)\approx\epsilon\]
+Accurately: \[ f(x_-)\approx \epsilon^3 \]
+\end{numberedframe}
+
+\begin{numberedframe}{Numerical test}
+\begin{equation}
+  \begin{array}{rrrrr}
+    &\multicolumn{2}{c}{textbook}&\multicolumn{2}{c}{accurate}\\
+    \multicolumn{1}{c}{\epsilon} &\multicolumn{1}{c}{x_-} &\multicolumn{1}{c}{f(x_-)} &\multicolumn{1}{c}{x_-} &\multicolumn{1}{c}{f(x_-)}\\
+    10^{-3}& 1.000\cdot 10^{-03}& -2.876\cdot 10^{-14}&  1.000\cdot 10^{-03}&  -2.168\cdot 10^{-19}\\
+    10^{-4}& 1.000\cdot 10^{-04}&  5.264\cdot 10^{-14}&  1.000\cdot 10^{-04}&   0.000\\
+    10^{-5}& 1.000\cdot 10^{-05}& -8.274\cdot 10^{-13}&  1.000\cdot 10^{-05}&  -1.694\cdot 10^{-21}\\
+    10^{-6}& 1.000\cdot 10^{-06}& -3.339\cdot 10^{-11}&  1.000\cdot 10^{-06}&  -2.118\cdot 10^{-22}\\
+    10^{-7}& 9.992\cdot 10^{-08}&  7.993\cdot 10^{-11}&  1.000\cdot 10^{-07}&   1.323\cdot 10^{-23}\\
+    10^{-8}&  1.110\cdot 10^{-08}& -1.102\cdot 10^{-09}&  1.000\cdot 10^{-08}&   0.000\\
+    10^{-9}&  0.000&  1.000\cdot 10^{-09}&  1.000\cdot 10^{-09}&  -2.068\cdot 10^{-25}\\
+    10^{-10}& 0.000&  1.000\cdot 10^{-10}&  1.000\cdot 10^{-10}&   0.000\\
+  \end{array}
+\end{equation}
+\end{numberedframe}
+
 \begin{numberedframe}{Serious example}
   \small
 

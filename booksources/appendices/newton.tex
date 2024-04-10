@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -17,7 +17,7 @@
 \Level 0 {Descent methods}
 \label{app::descent}
 
-We consider a multivariate function~$f\colon R^N\rightarrow $ and the
+We consider a multivariate function~$f\colon {\cal R}^N\rightarrow $ and the
 problem of finding the vector~$\bar x$ for which is attains its
 minimum. Even for smooth functions we are immediately faced with the
 fact that there are local and global minima; for now we satisfy
@@ -164,6 +164,9 @@ Without proof we state:
 \item The Newton method will converge to the zero if the starting
   point of the iteration is close enough to the zero, and if the
   function is differentiable in the zero.
+\item In many circumstances it shows very fast convergence:
+  convergence is quadratic, which is also described as the number of correct
+  digits doubling in each iteration.
 \item For many functions Newton's method will not converge, but it is
   possible to obtain convergence by introducing damping,
   or doing an inexact update:

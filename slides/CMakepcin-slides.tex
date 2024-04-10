@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% CMake-slides.tex : cmake slides
 %%%% see hpc_cmake.tex for driver file
@@ -14,13 +14,13 @@
 
 \lstset{language=bash}
 
-\sectionframe{Making your package discoverable through pkgconfig}
+\subsectionframe{Making your package discoverable through pkgconfig}
 
 \begin{numberedframe}{How does pkgconfig work?}
 Use the \n{PKG_CONFIG_PATH} variable:
 \begin{lstlisting}
 $ module show cxxopts 2>&1 | grep -i pkg
-prepend_path("PKG_CONFIG_PATH","/work2/00434/eijkhout/cxxopts/intel23/lib64/pkgconfig")
+prepend_path("PKG_CONFIG_PATH","/opt/cxxopts/intel23/lib64/pkgconfig")
 \end{lstlisting}
 \end{numberedframe}
 
@@ -36,21 +36,20 @@ configure_file(
 
 \begin{numberedframe}{Write your own \texttt{.pc} file'}
 The \n{.pc.in} file:
-\begin{lstlisting}
-prefix="@CMAKE_INSTALL_PREFIX@"
-exec_prefix="${prefix}"
-libdir="${prefix}/lib"
-includedir="${prefix}/include"
+\lstinputlisting{tutorials/cmake/pclib/pclib.pc.in}
+Note the initial cap!
 
-Name: @PROJECT_NAME@
-Description: @CMAKE_PROJECT_DESCRIPTION@
-Version: @PROJECT_VERSION@
-Cflags: -I${includedir}
-Libs: -L${libdir} -l@libtarget@
-\end{lstlisting}
 Combination of built-in variables and your own:
 \begin{lstlisting}
 set( libtarget auxlib )
 \end{lstlisting}
 \end{numberedframe}
 
+\begin{numberedframe}{Installing the pc file}
+\begin{lstlisting}
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+    DESTINATION share/pkgconfig
+)
+\end{lstlisting}
+\end{numberedframe}

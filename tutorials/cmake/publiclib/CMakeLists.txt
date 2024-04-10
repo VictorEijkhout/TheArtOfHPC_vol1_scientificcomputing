@@ -4,7 +4,8 @@ project( cmakeprogram VERSION 1.0 )
 set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
 set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
 
-add_executable( program program.cxx )
+add_executable( program )
+target_sources( program PRIVATE program.cxx )
 add_subdirectory( lib )
 target_include_directories(
 	auxlib PUBLIC "${CMAKE_CURRECT_SOURCE_DIR}" )

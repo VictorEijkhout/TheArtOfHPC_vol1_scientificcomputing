@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -14,7 +14,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \lstset{language=CMake}
-\input tikzplot
 
 \begin{table}[p]
   \catcode`\_=12
@@ -26,9 +25,10 @@
     install                    &specify directory where to install targets\\
     \midrule
     \multicolumn{2}{c}{Project building directives}\\
-    add_executable             &specify executable name and source files for it\\
-    add_library                &specify library name and files to go into it\\
+    add_executable             &specify executable name \\
+    add_library                &specify library name \\
     add_subdirectory           &specify subdirectory where cmake also needs to run\\
+    target_sources             &specify sources for a target\\
     target_link_libraries      &specify executable and libraries to link into it\\
     target_include_directories &specify include directories, privately or publicly\\
     find_package               &other package to use in this build\\
@@ -56,52 +56,52 @@ The general workflow is:
 \begin{enumerate}
 \item The configuration stage. Here the \indextermtt{CMakeLists.txt} file
   is parsed, and a \n{build} directory populated. This typically looks like:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 mkdir build
 cd build
 cmake <source location>
-\end{verbatim}
+\end{lstlisting}
 Some people create the build directory in the source tree,
 in which case the \indexterm{CMake} command is
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 cmake ..
-\end{verbatim}
+\end{lstlisting}
 Others put the build directory next to the source, in which case:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 cmake ../src_directory
-\end{verbatim}
+\end{lstlisting}
 \item The build stage. Here the installation-specific compilation
   in the build directory is performed.
   With \indexterm{Make} as the `generator' this would be
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 cd build
 make
-\end{verbatim}
+\end{lstlisting}
 but more generally
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 cmake --build <build directory>
-\end{verbatim}
+\end{lstlisting}
 Alternatively, you could use generators such as \indexterm{ninja},
 \indexterm{Visual Studio}, or \indexterm{XCode}:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 cmake -G ninja
   ## the usual arguments
-\end{verbatim}
+\end{lstlisting}
 \item The install stage. This can move binary files to a permanent
   location, such as putting library files in \n{/usr/lib}:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 make install
-\end{verbatim}
+\end{lstlisting}
 or 
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 cmake --install <build directory>
-\end{verbatim}
+\end{lstlisting}
 However, the install location already has to be set in the configuration stage.
 We will see later in detail how this is done.
 \end{enumerate}
 
 Summarizing, the out-of-source workflow as advocated in this tutorial is
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 ls some_package_1.0.0 # we are outside the source
 ls some_package_1.0.0/CMakeLists.txt # source contains cmake file
 mkdir builddir && cd builddir # goto build location
@@ -109,7 +109,7 @@ cmake -D CMAKE_INSTALL_PREFIX=../installdir \
       ../some_package_1.0.0
 make
 make install
-\end{verbatim}
+\end{lstlisting}
 
 The resulting directory structure is illustrated in figure~\ref{fig:cmake-buildinstall}.
 
@@ -144,14 +144,39 @@ The resulting directory structure is illustrated in figure~\ref{fig:cmake-buildi
 \Level 1 {Target philosophy}
 
 Modern \indexterm{CMake} works through declaring targets and their requirements.
+Targets are things that will be built, and requirements can be such things as
+\begin{itemize}
+\item source files
+\item include paths and other paths
+\item compiler and linker options.
+\end{itemize}
+There is a distinction between build requirements,
+the paths/files/options used during building,
+and usage requirements,
+the paths/files/options that need to be in force
+when your targets are being used.
+
 For requirements during building:
 \begin{lstlisting}
-target_some_requirement( the_target PRIVATE the require ments )
+target_some_requirement( <target> PRIVATE <requirements> )
 \end{lstlisting}
 Usage requirements:
 \begin{lstlisting}
-target_some_requirement( the_target PUBLIC the require ments )
+target_some_requirement( <target> INTERFACE <requirements> )
 \end{lstlisting}
+Combined:
+\begin{lstlisting}
+target_some_requirement( <target> PUBLIC <requirements> )
+\end{lstlisting}
+For future reference, requirements are specified with
+\indexcmake{target_include_directories},
+\indexcmake{target_compile_definitions},
+\indexcmake{target_compile_options},
+\indexcmake{target_compile_features},
+\indexcmake{target_sources},
+\indexcmake{target_link_libraries},
+\indexcmake{target_link_options},
+\indexcmake{target_link_directories}.
 
 \Level 1 {Languages}
 
@@ -187,10 +212,10 @@ of the (minimum) required version:
 cmake_minimum_required( VERSION 3.12 )
 \end{lstlisting}
 You can query the version of your \indexterm{CMake} executable:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ cmake --version
 cmake version 3.19.2
-\end{verbatim}
+\end{lstlisting}
 
 You also need to declare a project name and version,
 which need not correspond to any file names:
@@ -209,7 +234,8 @@ project( myproject VERSION 1.0 )
   \toprule
   Commands learned in this section\\
   \midrule
-  \lstinline+add_executable+&declare an executable and its sources\\
+  \lstinline+add_executable+&declare an executable as target\\
+  \lstinline+target_sources+&specify sources for a target\\
   \lstinline+install+&indicate location where to install this project\\
   \lstinline+PROJECT_NAME+&macro that expands to the project name \\
   \bottomrule
@@ -238,14 +264,23 @@ project( myproject VERSION 1.0 )
 If you have a project that is supposed to deliver an executable,
 you declare in your \texttt{CMakeLists.txt}:
 \begin{lstlisting}
-add_executable( myprogram program.cxx )
+add_executable( myprogram )
+target_sources( myprogram PRIVATE program.cxx )
 \end{lstlisting}
 Often, the name of the executable is the name of the project,
 so you'd specify:
 \begin{lstlisting}
-add_executable( ${PROJECT_NAME} program.cxx )
+add_executable( ${PROJECT_NAME} )
 \end{lstlisting}
 %
+\begin{remark}
+  An older usage is to specify the sources files directly
+  with the executable. The above usage is preferred.
+\begin{lstlisting}
+add_executable( myprogram program.cxx )
+\end{lstlisting}  
+\end{remark}
+
 In order to move the executable to the install location,
 you need a clause
 \begin{lstlisting}
@@ -253,7 +288,7 @@ install( TARGETS myprogram DESTINATION . )
 \end{lstlisting}
 Without the \indexcmake{DESTINATION} clause, a default \n{bin} directory
 will be created; specifying \indexcmake{DESTINATION foo} will put the
-program in a \n{foo} sub-directory of the installation directory.
+target in a \n{foo} sub-directory of the installation directory.
 
 \begin{floatingfigure}[r]{2.5in}\begin{minipage}{2.5in}\hbox{}\vskip 4in\hbox{}\end{minipage}\end{floatingfigure}%pyskip
 %
@@ -271,16 +306,19 @@ Here is the full \n{CMakeLists.txt}:
 \newpage
 \Level 1 {Making libraries}
 
-(The files for this examples are in \n{tutorials/cmake/multiple}.)
-
 \begin{tabular}{lp{3in}}
   \toprule
   Commands learned in this section\\
   \midrule
+  \lstinline+target_include_directories+&indicate location of include files\\
   \lstinline+add_library+&declare a library and its sources\\
   \lstinline+target_link_libraries+&indicate that the library belong with an executable\\
   \bottomrule
 \end{tabular}
+
+\Level 2 {Multiple files}
+
+(The files for this example are in \n{tutorials/cmake/multiple}.)
 
 \begin{floatingfigure}[r]{2.5in}
   \begin{minipage}{2.5in}
@@ -290,8 +328,10 @@ Here is the full \n{CMakeLists.txt}:
       child { node {src}
         child { node {CMakeLists.txt} }
         child { node {program.cxx} }
-        child { node {aux.cxx} }
-        child { node {aux.h} }
+        child { node {lib}
+          child { node {aux.cxx} }
+          child { node {aux.h} }
+          }
       }
       child { node {install}
         child { node {program} }
@@ -304,10 +344,28 @@ Here is the full \n{CMakeLists.txt}:
 \end{floatingfigure}
 %
 If there is only one source file, the previous section is all you need.
-However, often you will build libraries.
-You declare those with an \indexcmake{add_library} clause:
+If there are multiple files, you could write
 \begin{lstlisting}
-add_library( auxlib aux.cxx aux.h )
+add_executable( program )
+target_sources( program PRIVATE program.cxx aux.cxx aux.h )
+\end{lstlisting}
+You can also put the non-main source files in a separate directory:
+\begin{lstlisting}
+add_executable( program )
+target_sources( program PRIVATE program.cxx lib/aux.cxx lib/aux.h )
+\end{lstlisting}
+
+However, often you will build libraries.
+We start by making a \n{lib} directory and indicating that header files
+need to be found there:
+\begin{lstlisting}
+target_include_directories( program PRIVATE lib )
+\end{lstlisting}
+
+The actual library is declared with an \indexcmake{add_library} clause:
+\begin{lstlisting}
+add_library( auxlib )
+target_sources( auxlib PRIVATE aux.cxx aux.h )
 \end{lstlisting}
 Next, you need to link that library into the program:
 \begin{lstlisting}
@@ -340,6 +398,7 @@ needs to be recompiled too:
 %
 \verbatiminput{tutorials/cmake/multiple-touch1.txt}
 
+\newpage
 \Level 2 {Making a library for release}
 \label{sec:cmake-public-lib}
 
@@ -381,12 +440,12 @@ and we link it into the target program with \indexcmake{target_link_libraries}.
 By default the library is build as a static \texttt{.a} file,
 but adding
 \begin{lstlisting}
-add_library( auxlib SHARED aux.cxx aux.h )
+add_library( auxlib SHARED )
 \end{lstlisting}
 or adding a runtime flag
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 cmake -D BUILD_SHARED_LIBS=TRUE
-\end{verbatim}
+\end{lstlisting}
 changes that to a shared \texttt{.so} type.
 
 Related: the \indextermtt{-fPIC} compile option
@@ -395,6 +454,11 @@ is set by \indexcmake{CMAKE_POSITION_INDEPENDENT_CODE}.
 The full \indexterm{CMake} file:
 %
 \lstinputlisting{tutorials/cmake/withlib/CMakeLists.txt}
+
+Note that we give a path to the library files.
+This is interpreted relative to the current directory,
+(as of \cmakestandard{3.13});
+this current directory is available as \indexcmake{CMAKE_CURRENT_SOURCE_DIR}.
 
 \newpage
 \Level 1 {Using subdirectories during the build}
@@ -446,9 +510,9 @@ The main program would have
 \lstinputlisting{tutorials/cmake/includedir/program.cxx}
 \endgroup
 and which is compiled as:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 cc -c program.cxx -I./inc
-\end{verbatim}
+\end{lstlisting}
 To make sure the header file gets found during the build,
 you specify that include path with \indexcmake{target_include_directories}:
 \begin{lstlisting}
@@ -487,7 +551,7 @@ Complete \indexterm{CMake} file:
 \lstinputlisting{tutorials/cmake/includedir/CMakeLists.txt}
 
 \newpage
-\Level 1 {Libraries for release; rpath}
+\Level 1 {Recursive building; rpath}
 \label{sec:cmake-install-dirs}
 \label{sec:cmake-rpath}
 
@@ -566,6 +630,7 @@ One problem is to tell the executable where to find the library.
 For this we use the
 \emph{rpath}\index{rpath!in CMake}
 mechanism.
+(See section~\ref{sec:ld_rpath}.)
 By default, \indexterm{CMake} sets it so that the executable in the build location
 can find the library.
 If you use a non-trivial install prefix, the following lines work:
@@ -614,6 +679,8 @@ set_target_properties(
 
 Use the \indexcmake{INTERFACE} keyword.
 
+\message{TODO make example of header-only lib}
+
 \Level 0 {Finding and using external packages}
 \label{sec:cmake-external}
 
@@ -644,7 +711,7 @@ Example \indexterm{CMake} file:
   Commands learned in this section\\
   \midrule
   \lstinline+find_library+&find a library with a \n{FOOConfig.cmake} file\\
-  \lstinline+CMAKE_PREFIX_PATH+&location for \n{FOOConfig.cmake} files\\
+  \lstinline+CMAKE_PREFIX_PATH+&used for finding \n{FOOConfig.cmake} files\\
   \lstinline+find_package+&find a library with a \n{FindFOO} module\\
   \lstinline+CMAKE_MODULE_PATH+&location for \n{FindFOO} modules\\
   \bottomrule
@@ -669,7 +736,10 @@ endif()
 Some libraries come with a \n{FOOConfig.cmake} file,
 which is searched on the \indexcmake{CMAKE_PREFIX_PATH}
 through \indexcmake{find_library}.
-If it is found, you can test the variable it is supposed to set:
+You typically set this variable to the root of the package installation,
+and CMake will find the directory of the \n{.cmake} file.
+
+You can test the variables set:
 \begin{lstlisting}
 find_library( FOOLIB foo )
 if (FOOLIB)
@@ -678,6 +748,72 @@ else()
   # throw an error
 endif()
 \end{lstlisting}
+
+\Level 2 {Example: Range-v3}
+
+\begin{lstlisting}
+find_package( range-v3 REQUIRED )
+target_link_libraries( ${PROGRAM_NAME} PUBLIC range-v3::range-v3 )
+\end{lstlisting}
+
+\Level 1 {Use of other packages through `pkg config'}
+
+These days, many package support the \indextermunix{pkgconfig} mechanism.
+\begin{enumerate}
+\item Suppose you have a library \n{mylib}, installed in \n{/opt/local/mylib}.
+\item If \n{mylib} supports \n{pkgconfig}, there is most likely a path
+  \n{/opt/local/mylib/lib/pkgconfig}, containing a file \n{mylib.pc}.
+\item Add the path that contains the \indextermunix{.pc} file to the
+  \indextermunix{PKG_CONFIG_PATH} environment variable.
+\end{enumerate}
+Cmake is now able to find \n{mylib}:
+\begin{lstlisting}
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( MYLIBRARY REQUIRED mylib )
+\end{lstlisting}
+
+This defines variables
+\begin{lstlisting}[language=bash]
+MYLIBRARY_INCLUDE_DIRS
+MYLIBRARY_LIBRARY_DIRS
+MYLIBRARY_LIBRARIES
+\end{lstlisting}
+which you can then use in the
+\indexcmake{target_include_directories}
+and
+\indexcmake{target_link_directories}~\
+\indexcmake{target_link_libraries}
+commands.
+
+\Level 1 {Writing your own pkg config}
+
+We extend the configuration of section~\ref{sec:cmake-install-dirs}
+to generate a \n{.pc} file.
+
+First of all we need a template for the \n{.pc} file:
+%
+\lstinputlisting{tutorials/cmake/pclib/pclib.pc.in}
+%
+Here the at-signs delimit CMake macros that will be substituted
+when the \n{.pc} file is generated;
+Dollar macros go into the file unchanged.
+
+Generating the file is done by the following lines in the CMake configuration:
+%
+\begin{lstlisting}
+set( libtarget auxlib )
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+    @ONLY
+)  
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+    DESTINATION share/pkgconfig
+)
+\end{lstlisting}
+
+\Level 1 {Libraries}
 
 \Level 2 {Example: MPI}
 \index{MPI!cmake integration|(}
@@ -689,6 +825,8 @@ it's better to use the FindMPI module.
 This package defines a number of variables
 that can be used to query the MPI found;
 for details see \url{https://cmake.org/cmake/help/latest/module/FindMPI.html}
+Sometimes it's necessary to set the \indextermtt{MPI_HOME}
+environment variable to aid in discovery of the MPI package.
 
 C version:
 %
@@ -698,9 +836,23 @@ Fortran version:
 %
 \lstinputlisting{tutorials/cmake/mpiprogf/CMakeLists.txt}
 
+The \emph{MPL}\index{MPL!CMake integration} package also uses \indexcmake{find_package}:
+\begin{lstlisting}
+find_package( mpl REQUIRED )
+add_executable( ${PROJECT_NAME} )
+target_sources( ${PROJECT_NAME} PRIVATE ${PROJECT_NAME}.cxx )
+target_include_directories(
+        ${PROJECT_NAME} PUBLIC
+        mpl::mpl )
+target_link_libraries(
+        ${PROJECT_NAME} PUBLIC
+        mpl::mpl )
+\end{lstlisting}
+
 \index{MPI!cmake integration|)}
 
 \Level 2 {Example: OpenMP}
+\label{sec:cmake-omp}
 \index{OpenMP!cake integration|(}
 
 \begin{lstlisting}
@@ -724,6 +876,20 @@ target_link_libraries( ${program} PUBLIC OpenMP::OpenMP_Fortran )
 
 \index{OpenMP!cake integration|)}
 
+\Level 2 {CUDA}
+
+\begin{verbatim}
+FindCUDA
+
+Changed in version 3.27: This module is available only if policy CMP0146 is not set to NEW. Port projects to CMake's first-class CUDA language support.
+
+Deprecated since version 3.10: Do not use this module in new code.
+
+It is no longer necessary to use this module or call find_package(CUDA) for compiling CUDA code. Instead, list CUDA among the languages named in the top-level call to the project() command, or call the enable_language() command with CUDA. Then one can add CUDA (.cu) sources directly to targets similar to other languages.
+
+New in version 3.17: To find and use the CUDA toolkit libraries manually, use the FindCUDAToolkit module instead. It works regardless of the CUDA language being enabled.
+\end{verbatim}
+
 \Level 2 {Example: MKL}
 \index{MKL!cake integration|(}
 
@@ -740,35 +906,6 @@ The following configuration file lists the various options and such:
 \lstinputlisting{tutorials/cmake/mklcmake/CMakeLists.txt}
 
 \index{MKL!cake integration|)}
-
-\Level 1 {Use of other packages through `pkg config'}
-
-These days, many package support the \indextermunix{pkgconfig} mechanism.
-\begin{enumerate}
-\item Suppose you have a library \n{mylib}, installed in \n{/opt/local/mylib}.
-\item If \n{mylib} supports \n{pkgconfig}, there is most likely a path
-  \n{/opt/local/mylib/lib/pkgconfig}, containing a file \n{mylib.pc}.
-\item Add the path that contains the \indextermunix{.pc} file to the
-  \indextermunix{PKG_CONFIG_PATH} environment variable.
-\end{enumerate}
-Cmake is now able to find \n{mylib}:
-\begin{lstlisting}
-find_package( PkgConfig REQUIRED )
-pkg_check_modules( MYLIBRARY REQUIRED mylib )
-\end{lstlisting}
-
-This defines variables
-\begin{verbatim}
-MYLIBRARY_INCLUDE_DIRS
-MYLIBRARY_LIBRARY_DIRS
-MYLIBRARY_LIBRARIES
-\end{verbatim}
-which you can then use in the
-\indexcmake{target_include_directories}
-and
-\indexcmake{target_link_directories}~\
-\indexcmake{target_link_libraries}
-commands.
 
 \Level 2 {Example: PETSc}
 \index{PETSc!cmake integration|(}
@@ -832,30 +969,6 @@ Library file:
 
 \index{fmtlib!cmake integration|)}
 
-\Level 1 {Writing your own pkg config}
-
-We extend the configuration of section~\ref{sec:cmake-install-dirs}
-to generate a \n{.pc} file.
-
-First of all we need a template for the \n{.pc} file:
-%
-\lstinputlisting{tutorials/cmake/pclib/pclib.pc.in}
-
-and we transform this by:
-%
-\begin{lstlisting}
-set( libtarget auxlib )
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
-    @ONLY
-)  
-install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
-    DESTINATION share/pkgconfig
-)
-\end{lstlisting}
-
 \Level 0 {Customizing the compilation process}
 
 \begin{tabular}{lp{3in}}
@@ -875,6 +988,16 @@ otherwise it may find some default gcc version that came with your system.
 Use the variables \indexcmake{CMAKE_CXX_COMPILER}, \indexcmake{CMAKE_C_COMPILER},
 \indexcmake{CMAKE_Fortran_COMPILER},
 \indexcmake{CMAKE_LINKER}.
+
+Alternatively, set environment variables
+\indexunix{CC}, \indexunix{CXX}, \indexunix{FC}
+by the explicit paths of the compilers.
+For examples, for Intel compilers:
+\begin{lstlisting}
+export CC=`which icc`
+export CXX=`which icpc`
+export FC=`which ifort`
+\end{lstlisting}
 
 \Level 1 {Global and target flags}
 
@@ -922,9 +1045,11 @@ Optimization flags can be set by specifying the \indexcmake{CMAKE_BUILD_TYPE}:
     \indexcmake{RelWithDebInfo} corresponds to \n{-O2 -g -DNDEBUG}.
 \end{itemize}
 This variable will often be set from the commandline:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 cmake .. -DCMAKE_BUILD_TYPE=Release
-\end{verbatim}
+\end{lstlisting}
+Unfortunately, this seems to be the only way to influence optimization flags,
+other than explicitly setting compiler flags; see next point.
 
 \Level 2 {Custom compiler flags}
 
@@ -1004,9 +1129,9 @@ message( STATUS "We are rolling!")
 Instead of \indexcmake{STATUS} you can specify other logging levels
 (this parameter is actually called `mode' in the documentation);
 running for instance
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 cmake --log-level=NOTICE
-\end{verbatim}
+\end{lstlisting}
 will display only messages of `notice' status or higher.
 
 The possibilities here are: \indexcmake{FATAL_ERROR}, \indexcmake{SEND_ERROR},
@@ -1020,9 +1145,9 @@ For a complete trace of everything \indexterm{CMake} does, use
 the commandline option \n{--trace}.
 
 You can get a verbose make file by using the option
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 -D CMAKE_VERBOSE_MAKEFILE=ON
-\end{verbatim}
+\end{lstlisting}
 on the \indexterm{CMake} invocation. You still need \n{make V=1}.
 
 \Level 1 {Variables}
@@ -1105,13 +1230,14 @@ foreach ( idx RANGE 5 10 2 )
 endforeach()
 \end{lstlisting}
 
-\Level 2 {Things not to do}
+%% \Level 2 {Things not to do}
 
-Do not use macros that affect all targets: \indexcmake{include_directories},
-\indexcmake{add_definitions}, \indexcmake{link_libraries}.
+%% Do not use macros that affect all targets: \indexcmake{include_directories},
+%% \indexcmake{add_definitions}, \indexcmake{link_libraries}.
 
-Do not use \indexcmake{target_include_directories} outside your project:
-that should be found through some of the above mechanisms.
+%% Do not use \indexcmake{target_include_directories} outside your project:
+%% that should be found through some of the above mechanisms.
+
 
 % LocalWords:  Eijkhout CMake workflow CMakeLists txt cmake mylibrary
 % LocalWords:  programmain libsource libheader lib hellolibdir

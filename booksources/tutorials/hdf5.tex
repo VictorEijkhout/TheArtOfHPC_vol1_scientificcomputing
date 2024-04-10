@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012/3/4/5
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -13,6 +13,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%packtsnippet hdf5intro
 There are many ways of storing data, in particular data that comes in
 arrays. A~surprising number of people stores data in spreadsheets,
 then exports them to ascii files with comma or tab delimiters, and expects other
@@ -46,7 +47,9 @@ format:
   what the sizes of the objects are?
 \end{itemize}
 This tutorial will introduce the HDF5 library, which fulfills these
-requirements. HDF5 is a large and complicated library, so this
+requirements.
+%%packtsnippet end
+HDF5 is a large and complicated library, so this
 tutorial will only touch on the basics. For
 further information, consult \url{http://www.hdfgroup.org/HDF5/}.
 While you do this tutorial, keep your browser open on
@@ -55,7 +58,7 @@ While you do this tutorial, keep your browser open on
 for the exact
 syntax of the routines.
 
-\Level 0 {Introduction to HDF5}
+\Level 0 {Setup}
 
 As described above, HDF5 is a file format that is machine-independent
 and self-documenting. Each HDF5 file is set up like a directory tree,
@@ -64,10 +67,7 @@ data. This means that data can be found in a file by referring to its
 name, rather than its location in the file. In this section you will
 learn to write programs that write to and read from HDF5 files. In
 order to check that the files are as you intend, you can use the
-\n{h5dump} utility on the command line.\footnote{In order to do the
-  examples, the \n{h5dump} utility needs to be in your path, and you
-  need to know the location of the \n{hdf5.h} and \n{libhdf5.a} and
-  related library files.}
+\n{h5dump} utility on the command line.
 
 Just a word about compatibility. The HDF5 format is not compatible
 with the older version HDF4, which is no longer under development. You
@@ -75,6 +75,57 @@ can still come across people using hdf4 for historic reasons. This
 tutorial is based on HDF5 version~1.6. Some interfaces changed in the
 current version~1.8; in order to use 1.6 APIs with 1.8 software, add a
 flag \n{-DH5_USE_16_API} to your compile line.
+
+\Level 1 {Compilation}
+
+Include file for C:
+\begin{lstlisting}[language=C]
+#include <netcdf.h>
+\end{lstlisting}
+CMake for C:
+\begin{lstlisting}[language=CMake]
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( NETCDF REQUIRED netcdf )
+
+target_include_directories(
+        ${PROJECTNAME} PUBLIC
+        ${NETCDF_INCLUDE_DIRS} )
+target_link_libraries(
+        ${PROJECTNAME} PUBLIC
+        ${NETCDF_LIBRARIES} )
+target_link_directories(
+        ${PROJECTNAME} PUBLIC
+	${NETCDF_LIBRARY_DIRS} )
+target_link_libraries(
+        ${PROJECTNAME} PUBLIC netcdf )
+\end{lstlisting}
+Include for Fortran:
+\begin{lstlisting}[language=Fortran]
+use netcdf
+\end{lstlisting}
+CMake for Fortran:
+\begin{lstlisting}[language=CMake]
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( NETCDFF REQUIRED netcdf-fortran )
+pkg_check_modules( NETCDF REQUIRED netcdf )
+
+target_include_directories(
+        ${PROJECTNAME} PUBLIC
+        ${NETCDFF_INCLUDE_DIRS}
+	)
+target_link_libraries(
+        ${PROJECTNAME} PUBLIC
+        ${NETCDFF_LIBRARIES} ${NETCDF_LIBRARIES}
+	)
+target_link_directories(
+        ${PROJECTNAME} PUBLIC
+	${NETCDFF_LIBRARY_DIRS}	${NETCDF_LIBRARY_DIRS}
+	)
+target_link_libraries(
+        ${PROJECTNAME} PUBLIC netcdf )
+\end{lstlisting}
+
+\Level 1 {General design}
 
 Many HDF5 routines are about creating objects: file handles, members
 in a dataset, et cetera. The general syntax for that is
@@ -125,9 +176,10 @@ like a directory tree.
   the include and library directories, respectively.
 \end{tacc}
 
-{\small \verbatiminput{tutorials/hdf5/create.c} }
+\ListStrippedSource{tutorials/hdf5}{create.c}
 
-You can display the created file on the commandline:
+%%packtsnippet h5dump
+You can display hdf5 files on the commandline:
 \begin{verbatim}
 %% h5dump file.h5
 HDF5 "file.h5" {
@@ -137,6 +189,7 @@ GROUP "/" {
 \end{verbatim}
 Note that an empty file corresponds to just the root of the directory
 tree that will hold the data.
+%%packtsnippet end
 
 \Level 0 {Datasets}
 
@@ -156,7 +209,7 @@ Note that datasets and dataspaces need to be closed, just like files.
   code below}{This creates a file \n{dset.h} that can be displayed
   with \n{h5dump}.}{}
 
-{\small \verbatiminput{tutorials/hdf5/dataset.c} }
+\ListStrippedSource{tutorials/hdf5}{dataset.c}
 
 We again view the created file online:
 \begin{verbatim}
@@ -193,7 +246,7 @@ parameter was it generated.
   running the \n{parmwrite.c} code below.}{A new file \n{wdset.h5}
   is created.}{}
 
-{\small \verbatiminput{tutorials/hdf5/parmdataset.c} }
+\ListStrippedSource{tutorials/hdf5}{parmdataset.c}
 
 \begin{verbatim}
 %% h5dump wdset.h5 
@@ -239,7 +292,7 @@ status = H5Dwrite
    &parm);
 \end{verbatim}
 
-\verbatiminput{tutorials/hdf5/parmwrite.c}
+\ListStrippedSource{tutorials/hdf5}{parmwrite.c}
 
 \begin{verbatim}
 %% h5dump wdset.h5     
@@ -295,7 +348,7 @@ corresponding \n{H5Dwrite}.
   \n{(1,2)} data point of the array.}{Make sure that you run
   \n{parmwrite} to create the input file.}
 
-{\small \verbatiminput{tutorials/hdf5/allread.c} }
+\ListStrippedSource{tutorials/hdf5}{allread.c}
 
 \begin{verbatim}
  %% ./allread

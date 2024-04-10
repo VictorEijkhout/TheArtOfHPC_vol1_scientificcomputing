@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -52,7 +52,7 @@
 
 \title{Introduction to Unix}
 \author{Victor Eijkhout}
-\date{2021}
+\date{2023}
 
 \begin{frame}
   \titlepage
@@ -183,6 +183,8 @@
     \item Relative path: does not start with slash
     \item Absolute path (such as \n{pwd} output): starts at root
     \end{itemize}
+  \item Create multiple directories:\\
+    \n{mkdir -p sub1/sub2/sub3} (\n{p}~for `parent')
   \end{itemize}
 \end{numberedframe}
 
@@ -196,7 +198,8 @@
   \item Path to your home directory: tilde
     \n{cd ~}
   \item Current directory:~\n{.}
-  \item Going out of a directory:~\n{cd ..}\\
+  \item One level back:~\n{..}\\
+    Example: going out of a directory:~\n{cd ..}\\
     (confusing: do you call this a level up or down?)
   \item You can use this in paths: \n{ls newdir/subdir1/../subdir2}
   \end{itemize}
@@ -223,12 +226,50 @@ for instance for the \n{ls} command.\\
 Same after doing \n{cd somedir}
 \end{exercise}
 
+\begin{exercise}{Relative moving}
+\begin{verbatim}
+mkdir -p sub1/sub2/sub3
+cd sub1/sub2/sub3
+touch a
+\end{verbatim}
+You now have a file \n{sub1/sub2/sub3/a}\\
+\begin{enumerate}
+\item
+  How do you move it to \n{sub1/sub2/a}?
+\item Go: \n{cd sub1/sub2}\\
+  How do you now move the file to \n{sub1/a}?
+\end{enumerate}
+\end{exercise}
+
 \Level 0 {Redirection, pipes}
 
 \begin{numberedframe}{In/Output redirection}
+Output into a file:
+\begin{verbatim}
+ls -l > listing
+\end{verbatim}
+Append:
+\begin{verbatim}
+ls dir1 > dirlisting  
+ls dir2 >> dirlisting  
+\end{verbatim}
+Input:
+\begin{verbatim}
+myprogram < myinput
+\end{verbatim}
+\end{numberedframe}
+
+\begin{exercise}{}
+  Make a copy of a file, using redirection (so no \n{cp} command).
+
+  Can you use both \verb+>+ and \verb+<+?
+\end{exercise}
+
+\begin{numberedframe}{Redirection, formal aspects}
   \label{sl-lnx:redirect}
   \begin{itemize}
-  \item There are three standard files: \n{stdin}, \n{stdout}, \n{stderr}
+  \item There are three standard files: `standard input/output/error'
+    (available in~C/C++ as \n{stdin}, \n{stdout}, \n{stderr})
   \item Normally connected to keyboard, screen, and screen respectively.
   \item Redirection: standard out to file:\\
     \n{ls > directorycontents}\\
@@ -238,10 +279,6 @@ Same after doing \n{cd somedir}
     (actually, the keyboard is also a file, so again \textbf{re}direction)
   \end{itemize}
 \end{numberedframe}
-
-\begin{exercise}{}
-  Make a copy of a file, using redirection (so no \n{cp} command).
-\end{exercise}
 
 \begin{numberedframe}{Advanced: splitting out and err}
   \label{sl-lnx:stderr}
@@ -269,16 +306,33 @@ Same after doing \n{cd somedir}
   \label{sl-lnx:backtick}
   More complicated case of one command providing input for another:
 \begin{verbatim}
-echo The line count is wc -l foo
+echo "The line count is wc -l foo"
 \end{verbatim}
 where \n{foo} is the name of an existing file.
 
 Use backquotes or command macro:
 \begin{verbatim}
-echo The line count is `wc -l foo`
+echo "The line count is `wc -l foo`"
 echo "There are $( wc -l foo ) lines"
 \end{verbatim}
 \end{numberedframe}
+
+\begin{exercise}{All the pieces together}
+  Generate a text file that contains your information:
+\begin{verbatim}
+My user name is:
+eijkhout
+My home directory is:
+/users/eijkhout
+I made this script on:
+isp.tacc.utexas.edu
+\end{verbatim}
+where you use the commands \n{whoami}, \n{pwd}, \n{hostname}.
+Also cut and paste into another file the part of your terminal session that
+generated this.
+
+Bonus points if you can get the `prompt' and output on the same line.
+\end{exercise}
 
 \begin{exercise}{}
   This way \n{wc} prints the file name.

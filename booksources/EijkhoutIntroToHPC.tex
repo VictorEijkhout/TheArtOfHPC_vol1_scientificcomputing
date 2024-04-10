@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -21,7 +21,8 @@
 \documentclass[11pt,fleqn,letterpaper,twoside,openany]{boek3}
 
 %pyskipbegin
-\usepackage{comment,verbatim}
+\input macros/comment.sty % use our own prerelease
+\usepackage{verbatim}
 \makeatletter
 \def\verbatim@startline{\verbatim@line{\leavevmode\kern.5\unitindent\relax}}
 \makeatother
@@ -114,7 +115,6 @@
  \SetBaseLevel 0
 }}
 
-\newwrite\nx
 \newcommand\APPLICATION[2]{
 \Level 0 {#1}\label{app:#2}
 \def\chapshortname{#2}
@@ -168,11 +168,19 @@
 }
 \renewcommand\maillink[3]{}
 
+\newif\ifInBook \InBooktrue
 \input scimacs
+\input acromacs
+\input blockmacs
 \input bookmacs
 \externaldocument[CARP-]{scicomptutorials}
+\input listingmacs
+\def\codesnippetsdir{snippets.code}
+\def\tutsnippetsdir{snippets}
 \input snippetmacs
 \input tutmacs
+\input idxmacs
+\input tikzplot
 
 \begin{notlulu}
   \usepackage[xetex,colorlinks,pagebackref=true]{hyperref}
@@ -191,6 +199,7 @@
 \end{lulu}
 
 \makeindex
+
 %\tracingmacros=2
 %\tracingcommands=2
 
@@ -240,6 +249,7 @@
 \CHAPTER{Computer Arithmetic}{arithmetic}
 \CHAPTER{Numerical treatment of differential equations}{odepde}
 \CHAPTER{Numerical linear algebra}{linear}
+\CHAPTER{Programming for performance}{performance}
 \CHAPTER{High performance linear algebra}{parallellinear}
 
 \part{Applications}
@@ -271,6 +281,7 @@
 
 % not for public consumption
 \begin{notready}
+%% https://scicomp.stackexchange.com/questions/42997/lattice-boltzmann-method-parallelization/43011#43011
 \APPLICATION{Other physics applications}{lbm}
 \end{notready}
 
@@ -334,8 +345,9 @@ that feature a combination of coding and analysis.
 \index{modified Gramm-Schmidt|see{Gram-Schmidt, modified}}
 \index{parallel prefix|see{prefix operation}}
 \index{Roadrunner|see{IBM!Roadrunner}}
+
 \begin{multicols}{2}
-\printindex
+  \printindex
 \end{multicols}
 
 \Level 0 {List of acronyms}

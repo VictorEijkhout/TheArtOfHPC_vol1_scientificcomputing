@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% CMake-slides.tex : cmake slides
 %%%% see hpc_cmake.tex for driver file
@@ -14,61 +14,135 @@
 
 \lstset{language=bash}
 
-\sectionframe{Using packages through pkgconfig}
+\subsectionframe{Using CMake packages through pkgconfig}
+
+\begin{numberedframe}{What are we talking here?}
+  You have just installed a CMake-based library.
+
+  Now you need it in your own code, or in another library.
+
+  How easy can we make that?
+\end{numberedframe}
 
 \begin{numberedframe}{Problem}
-  You want to install a package/application\\
+  You want to install an application/package\\
   \dots~which needs 2 or 3 other packages.
 \lstset{language=Bash}
+\begin{lstlisting}
+gcc -o myprogram myprogram.c \
+    -I/users/my/package1/include \ 
+    -L/users/my/package1/lib \
+    -I/users/my/package2/include/package \ 
+    -L/users/my/package2/lib64
+\end{lstlisting}
+or:
 \begin{lstlisting}
 cmake \
     -D PACKAGE1_INC=/users/my/package1/include \ 
     -D PACKAGE1_LIB=/users/my/package1/lib \ 
-    -D PACKAGE2_INC=/users/my/package2/include/packaage \ 
+    -D PACKAGE2_INC=/users/my/package2/include/package \ 
     -D PACKAGE2_LIB=/users/my/package2/lib64 \ 
     ../newpackage
 \end{lstlisting}
-Can this be make simpler?
+Can this be made simpler?
 \end{numberedframe}
 
 \begin{numberedframe}{Finding packages with `pkg config'}
   \begin{itemize}
   \item Many packages come with a \n{package.pc} file
   \item Add that location to \n{PKG_CONFIG_PATH}
-  \item That defines variables in your own cmake file
+  \item The package can now be found by other CMake-based packages.
   \end{itemize}
-Example: PETSc\\
-add \verb+$PETSC_DIR/$PETSC_ARCH/lib/pkgconfig+ to config path,
-then
-\begin{lstlisting}
-find_package( PkgConfig REQUIRED )
-pkg_check_modules( PETSC REQUIRED petsc )
-target_include_directories(
-	program PUBLIC
-	${PETSC_INCLUDE_DIRS} )
+\end{numberedframe}
+
+\begin{numberedframe}{Package config settings}
+ Let's say you've installed a library with CMake.
+  
+Somewhere in the installation is a \n{.pc} file:
+\begin{lstlisting}[language=bash]
+find $TACC_SMTHNG_DIR -name \*.pc
+${TACC_SMTHNG_DIR}/share/pkgconfig/smthng3.pc    
+\end{lstlisting}
+That location needs to be on the \n{PKG_CONFIG_PATH}:
+\begin{lstlisting}[language=bash]
+export PKG_CONFIG_PATH=${TACC_SMTHNG_DIR}/share/pkgconfig:${PKG_CONFIG_PATH}
 \end{lstlisting}
 \end{numberedframe}
 
-\begin{numberedframe}{Eigen}
+\begin{numberedframe}{Example: eigen}
+  Can you find the \lstinline{.pc} file
+  in the Eigen installation?
+\end{numberedframe}
+
+\begin{numberedframe}{Scenario 1: finding without cmake}
+
+  Packages with a \n{.pc} file can be found
+  through the \indexunix{pkg-config} command:
+  
+\begin{lstlisting}
+gcc -o myprogram myprogram.c \
+    $( pkg-config --cflags package1 ) \ 
+    $( pkg-config --libs package1 )
+\end{lstlisting}
+
+In a makefile:
+\begin{lstlisting}
+CFLAGS = -g -O2 $$( pkg-config --cflags package1 )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Example: eigen}
+\begin{lstlisting}
+#include "Eigen/Core"
+int main(int argc,char **argv) {
+  return 0;
+}
+\end{lstlisting}
+Can you compile this on the commandline, using \lstinline{pkg-config}?
+Small problem: `eigen' wants to be called `eigen3'.
+\end{numberedframe}
+
+\begin{numberedframe}{Scenario 2: finding from CMake}
+  You are installing a CMake-based library\\
+  and it needs Eigen, which is also CMake-based
+  \begin{enumerate}
+  \item you install Eigen with CMake, as above
+  \item you add the location of \n{eigen.pc} to
+    \n{PKG_CONFIG_PATH}
+  \item you run the installation of the higher library:\\
+    this works because it can now find Eigen.
+  \end{enumerate}
+\end{numberedframe}
+
+\begin{numberedframe}{Lifting the veil}
+  So how does a CMake install find libraries such as Eigen?
+
   \lstset{numbers=left,numberstyle=\tiny}
   \lstinputlisting{tutorials/cmake/eigen/CMakeLists.txt}
+  Note 1: header-only so no library, otherwise
+  \n{PACKAGE_LIBRARY_DIRS} and \n{PACKAGE_LIBRARIES} defined.
+
+  Note 2: you will learn how to write these configurations
+  in the second part.
 \end{numberedframe}
 
-\begin{numberedframe}{Where do these settings come from?}
+\begin{numberedframe}{Summary for now}
+  \begin{itemize}
+  \item You can use CMake to install libraries;
+  \item You can use these libraries from commandline~/ makefile;
+  \item You can let other CMake-based libraries find them.
+  \end{itemize}
+\end{numberedframe}
+
+\endinput
+
+\begin{numberedframe}{OpenMP from Fortran}
 \begin{lstlisting}
-find $TACC_EIGEN_DIR -name \*.pc
-${TACC_EIGEN_DIR}/share/pkgconfig/eigen3.pc    
 \end{lstlisting}
 \end{numberedframe}
 
-\begin{numberedframe}{Pkgconfig outside CMake}
-\n{.pc} files are also useful outside CMake:
+\begin{numberedframe}{OpenMP from Fortran}
 \begin{lstlisting}
-$ pkg-config --cflags tbb
--I/opt/intel//oneapi/tbb/latest/lib/pkgconfig/../..//include
-$ pkg-config --libs tbb
--L/opt/intel//oneapi/tbb/latest/lib/pkgconfig/../..//lib/intel64/gcc4.8 -ltbb
 \end{lstlisting}
-(useful for packages where there is no module)
 \end{numberedframe}
 

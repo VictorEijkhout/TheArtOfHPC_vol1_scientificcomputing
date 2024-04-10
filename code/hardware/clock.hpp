@@ -3,7 +3,7 @@
  **** This code is part of the book
  **** Introduction to High Performance Scientific Programming
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
- **** copyright 2010-2022
+ **** copyright 2010-2024
  ****
  **** Programs for hardware exploration
  ****
@@ -14,12 +14,11 @@
 #ifndef CLOCK_HPP
 #define CLOCK_HPP
 
+#include <functional>
 #include <string>
 #include <tuple>
 
 #include <chrono>
-#include <functional>
-
 using Clock = std::chrono::high_resolution_clock ;
 
 std::string clock_init();

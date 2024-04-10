@@ -4,14 +4,22 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
-%%%% bookmacs : macros specifically for the book version
+%%%% slidemacs : macros specifically for the slides
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{listings,verbatim,xcolor}% needed for parsing some aux files
+\input commonmacs
+\newif\ifInBook \InBookfalse
+
+%% index replacements?
+\let\indextermtt\n
+\let\indextermttdef\n
+\let\indexcmake\n
+\let\indexunix\n
+\def\indextermbus#1#2{#1 #2}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
@@ -22,11 +30,14 @@
 \OutlineLevelStart
     0
     {
-      \addcontentsline{toc}{part}{#1}
+      \section{#1}%%\addcontentsline{toc}{part}{#1}
       \begin{frame}\Huge\bf #1\relax\end{frame}
     }
 \OutlineLevelStart 1{\section{#1}
   \frame{\begin{shaded}\Large\bf #1\end{shaded}}}
+\newcounter{beamerpart}
+\def\partframe#1{\frame{\refstepcounter{beamerpart}
+    \Huge Part~\arabic{beamerpart}\par #1}}
 \def\sectionframe{\Level 0}
 \usepackage{framed}
 \colorlet{shadecolor}{blue!15}

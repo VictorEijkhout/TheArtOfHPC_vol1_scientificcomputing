@@ -3,13 +3,16 @@
  **** This code is part of the book
  **** Introduction to High Performance Scientific Programming
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
- **** copyright 2010-2022
+ **** copyright 2010-2024
  ****
  **** Programs for hardware exploration
  ****
  **** clock.cxx : timing
  ****
  ****************************************************************/
+
+#include <chrono>
+using Clock = std::chrono::high_resolution_clock ;
 
 #include "clock.hpp"
 

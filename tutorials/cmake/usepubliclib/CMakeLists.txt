@@ -9,7 +9,8 @@ project( pkgconfiglib VERSION 1.0 )
 option( AUX_INCLUDE_DIR "include dir for auxlib" )
 option( AUX_LIBRARY_DIR   "lib dir for auxlib" )
 
-add_executable( program program.cxx )
+add_executable( program )
+target_sources( program PRIVATE program.cxx )
 target_include_directories(
 	program PUBLIC
 	${AUX_INCLUDE_DIR} )

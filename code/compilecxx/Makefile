@@ -7,7 +7,7 @@
 #### by Victor Eijkhout
 #### copyright 2010-2023
 ####
-#### makefile for code/compile in cxx
+#### makefile for code/compilecxx
 ####
 ################################################################
 ################################################################
@@ -31,41 +31,22 @@ info ::
 	@echo "%%%% illustration of compilation and linking"
 	@echo "make run_makeoneprogram run_makeseparatecompile"
 	@echo
-.PHONY: run_makeoneprogram run_makeseparatecompile
 RUNS += run_makeoneprogram run_makeseparatecompile
 run_makeoneprogram : example_clean
 	${CLINKER} -o oneprogram fooprog.c foosub.c
 	./oneprogram
-.PHONY: run_makeseparatecompile
 run_makeseparatecompile : example_clean
 	@make --no-print-directory oneprogram
 	./oneprogram
 
 include ../../makefiles/Make.run
 
-####
-#### use of libraries
-####
-info ::
-	@echo "%%%% use of libraries"
-	@echo "make staticprogram"
-PROGRAMS += staticprogram
-LIBS += libs/libfoo.a
-staticprogram : fooprog.o makestaticlib
-	${LINKER}  -o $@ $< -Llibs -lfoo
-	@ls -l $@
-libs/libfoo.a : foosub.o
-	@mkdir -p libs
-	@rm -f $@
-	for o in $^ ; do \
-	  ar cr $@ $${o} ; \
-	done
-.PHONY: makestaticlib
-PRINT = 1
-makestaticlib : example_clean
-	@if [ ${PRINT} = "1" ] ; then \
-	    echo && echo "==== Making static library ====" && echo ; fi
-	@make --no-print-directory libs/libfoo.a
+################
+################ library rules
+################
+NMFLAGS = -C
+include ../Make.libs
+
 info ::
 	@echo "make dynamicprogram"
 PROGRAMS += dynamicprogram
@@ -79,7 +60,7 @@ rpathprogram : fooprog.o  makedynamiclib
 	${LINKER} -o $@ fooprog.o -Wl,-rpath=./libs -Llibs -lfoo
 	@ls -l $@
 SHAREOPTION = -shared
-.PHONY: makedynamiclib run_makedynamiclib
+.PHONY: makedynamiclib 
 RUNS += run_makedynamiclib
 makedynamiclib : example_clean 
 	@make --no-print-directory PIC_OPTION=-fPIC libs/libfoo.so
@@ -99,19 +80,19 @@ info ::
 	@echo "%%%% illustration of static libraries"
 	@echo "make run_staticprogram"
 	@echo
-.PHONY: run_staticprogram
 RUNS += run_staticprogram
 run_staticprogram : example_clean 
-	@echo ; echo "==== Use of static library ====" ; echo
-	@make --no-print-directory staticprogram PRINT=0
-	@echo ; echo ".. running:" ; echo
-	@./staticprogram
+	@echo && echo "==== Use of static library ===="  && echo \
+	 && make --no-print-directory staticprogram \
+	 && echo && echo "---- running:" \
+	 && ./staticprogram \
+	 && echo "---- done"
+# || echo ignoring >/dev/null 2>&1
 
 info ::
 	@echo "%%%% illustration of dynamic libraries"
 	@echo "make run_dynamicprogram run_rpathprogram"
 	@echo 
-.PHONY: run_dynamicprogram
 RUNS += run_dynamicprogram
 run_dynamicprogram : example_clean
 	@echo ; echo "Linking to shared library" ; echo
@@ -135,7 +116,7 @@ run_dynamicprogram : example_clean
 	 && eval $$cmd
 	@echo ; echo ".. running with updated library path:" ; echo
 	@make --no-print-directory run_shared_right
-.PHONY: run_shared_wrong run_shared_right shared_wrong shared_right
+.PHONY: shared_wrong shared_right
 RUNS += run_shared_wrong run_shared_right
 run_shared_wrong : dynamicprogram
 	@./dynamicprogram || /bin/true
@@ -143,7 +124,6 @@ run_shared_right : dynamicprogram
 	@cmd="LD_LIBRARY_PATH=\$${LD_LIBRARY_PATH}:./libs dynamicprogram" \
 	 && echo $$cmd \
 	 && eval $$cmd
-.PHONY: run_rpathprogram
 RUNS += run_rpathprogram
 run_rpathprogram : rpathprogram
 	./rpathprogram
@@ -160,7 +140,6 @@ gcc_OPT_REPORT = -fopt-info
 intel_OPT_REPORT = -qopt-report=4
 OPT_REPORT = ${${TACC_FAMILY_COMPILER}_OPT_REPORT}
 RUNS += run_rotate
-.PHONY: run_rotate
 run_rotate :
 	@if [ -z "${PROGRAM}" ] ; then \
 	    echo "Please supply variable PROGRAM" && exit 1 ; fi
@@ -173,6 +152,8 @@ run_rotate :
 	                ECHO=${ECHO} OPTLEVEL=$$opt OPT_REPORT=${OPT_REPORT} \
 	         && ./$${program} \
 	    ; done
+
+.PHONY: ${RUNS}
 
 ##
 ## code stripping

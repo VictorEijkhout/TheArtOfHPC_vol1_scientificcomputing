@@ -1,0 +1,8 @@
+Compile: g++ -g -O2 -std=c++17                 -c undefined.cxx
+Link line: g++ -Wl,-demangle      -o undefined undefined.o 
+Undefined symbols for architecture arm64:
+  "f(int, int)", referenced from:
+      _main in undefined.o
+ld: symbol(s) not found for architecture arm64
+collect2: error: ld returned 1 exit status
+make[2]: *** [undefined] Error 1

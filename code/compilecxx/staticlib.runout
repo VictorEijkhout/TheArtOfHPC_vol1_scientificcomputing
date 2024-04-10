@@ -1,0 +1,15 @@
+
+foosub.o:
+                 U __cxa_atexit
+0000000000000000 N .debug_info_seg
+                 U __dso_handle
+                 U __gxx_personality_v0
+0000000000000010 t __sti__$E
+0000000000000000 T bar(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+0000000000000000 b _INTERNALaee936d8::std::__ioinit
+0000000000000000 W std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::data() const
+0000000000000000 W std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::size() const
+                 U std::ios_base::Init::Init()
+                 U std::ios_base::Init::~Init()
+                 U std::cout
+                 U std::basic_ostream<char, std::char_traits<char> >& std::operator<< <char, std::char_traits<char>, std::allocator<char> >(std::basic_ostream<char, std::char_traits<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)

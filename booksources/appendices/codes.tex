@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -16,7 +16,7 @@
 
 This section contains several simple codes that illustrate various
 issues relating to the performance of a single CPU. The explanations
-can be found in section~\ref{sec:performance-programming}.
+can be found in chapter~\ref{ch:performance}.
 
 \Level 1 {Preliminaries}
 
@@ -121,7 +121,7 @@ data is found in L1 cache, than in L2, L3, or main memory. To make
 sure we do not measure any unintended data movement, we perform one
 iteration to bring data in the cache before we start the timers.
 
-\ListNamedSource[C]{size.c}{code/papi/size.c}
+\ListNamedSource[C]{size.c}{code/papi}{size.c}
 %%\begingroup\small
 %%\verbatiminput{papi/size.c}
 %%\endgroup
@@ -152,7 +152,7 @@ result, the array is guaranteed not to be in cache.
 %% \begingroup\small
 %% \verbatiminput{papi/line.c}
 %% \endgroup
-\ListNamedSource[C]{line.c}{code/papi/line.c}
+\ListNamedSource[C]{line.c}{code/papi}{line.c}
 
 \Level 1 {Cache associativity}
 \label{sec:assoc-code}
@@ -167,7 +167,7 @@ enough, cache associativity will resolve these conflicts; for higher
 values of~\n{m} the runtime will quickly increase. By allocating the
 vectors with a larger size, the cache conflicts go away.
 
-\ListNamedSource[C]{assoc.c}{code/papi/assoc.c}
+\ListNamedSource[C]{assoc.c}{code/papi}{assoc.c}
 
 \index{cache!associativity!practical tests|)}
 
@@ -185,5 +185,5 @@ size. Striding through the array by the $j$ coordinate will have each
 next element hitting a new page, so TLB misses will ensue when the
 number of columns is larger than the number of TLB entries.
 
-\ListNamedSource[C]{tlb.c}{code/papi/tlb.c}
+\ListNamedSource[C]{tlb.c}{code/papi}{tlb.c}
 

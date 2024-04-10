@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -33,7 +33,7 @@ however, there is not just one Unix:
   The differences between
   these are deep down and if you are taking this tutorial you probably
   won't see them for quite a while.
-\item Within Linux there are various \indextermbus{Linux}{distributions}
+\item Within Linux there are various \indextermbus{Linux}{distribution}s
   such as \indexterm{Red Hat} or \indexterm{Ubuntu}. These mainly differ
   in the organization of system files and again you probably need not worry
   about them.
@@ -204,7 +204,7 @@ The \indexunix{man} command
 The \indexunix{touch} command creates an empty file, or updates the timestamp of
 a file if it already exists. Use \n{ls -l} to confirm this behavior.
 
-\Level 2 {\texttt{cp, mv, rm}}
+\Level 2 {\texttt{cp, mv, rm, ln}}
 
 The \indexunix{cp} can be used for copying a file (or directories,
 see below): \n{cp file1 file2} makes a copy of \n{file1} and names it
@@ -237,8 +237,26 @@ Files are deleted with \n{rm}. This command is dangerous: there is no
 undo.
 For this reason you can do \n{rm -i} (for `interactive') which
 asks your confirmation for every file.
-
 See section~\ref{sec:shell-wildcard} for more aggressive removing.
+
+Sometimes you want to refer to a file from two locations.
+This is not the same as having a copy: you want to be able
+to edit either one, and have the other one change too.
+This can be done with \indexunix{ln}: `link'.
+
+This snippet creates a file and a link to it:
+\begin{lstlisting}
+$ echo contents > arose
+$ cd mydir
+$ ln ../arose anyothername
+$ cat anyothername
+contents
+$ echo morestuff >> anyothername
+$ cd ..
+$ cat arose
+contents
+morestuff
+\end{lstlisting}
 
 \Level 2 {\texttt{head, tail}}
 
@@ -348,6 +366,22 @@ The command for making a new directory is \indexunix{mkdir}.
     \dirdisplay{.1 /home/you/. .2 newdir/\DTcomment{the new directory}. }
 \end{outcome}
 
+\begin{remark}
+  If you need to create a directory several levels deep, you could
+\begin{verbatim}
+mkdir sub1
+cd sub1
+mkdir sub2
+cd sub2
+## et cetera
+\end{verbatim}
+but it's shorter to use the \n{-p} option (for `parent') and write:
+\begin{verbatim}
+mkdir -p sub1/sub2/sub3
+\end{verbatim}
+which creates any needed intermediate levels.
+\end{remark}
+
 The command for going into another directory, that is, making it your
 working directory, is \indexunix{cd} (`change directory'). It can be used in
 the following ways:
@@ -426,6 +460,26 @@ there.
   other users.
 \end{outcome}
 
+Let's practice the use of the single and double dot directory shortcuts.
+
+\begin{exercise}
+From your home directory:
+\begin{verbatim}
+mkdir -p sub1/sub2/sub3
+cd sub1/sub2/sub3
+touch a
+\end{verbatim}
+You now have a file \n{sub1/sub2/sub3/a}\\
+\begin{enumerate}
+\item
+  How do you move it to \n{sub1/sub2/a}?
+\item Go: \n{cd sub1/sub2}\\
+  How do you now move the file to \n{sub1/a}?
+\item Go to your home directory:~\n{cd}\\
+  How do you move \n{sub1/a} to here?
+\end{enumerate}
+\end{exercise}
+
 %\practical
 \begin{exercise}
   Can you use \n{ls} to see the contents of someone else's home
@@ -453,10 +507,11 @@ flag to indicate that you recursively copy the contents: \n{cp
 
 What is the difference between
 \n{cp -r newdir somedir}
+where \n{somedir} is an exiting directory,
 and
 \n{cp -r newdir thirddir}
 where \n{thirddir} is not an
-existing directory name?
+existing directory?
 
 \Level 1 {Permissions}
 \label{sec:unix-permissions}
@@ -607,7 +662,7 @@ rm -r foo    ## remove directory foo with everything in it
 rm -rf foo/* ## delete all contents of foo
 \end{lstlisting}
 
-\begin{zshnote}{No match}
+\begin{zshnote}
   Removing with a wildcard \n{rm foo*}
   is an error of there are no such files.
   Set \n{setopt +o nomatch} to allow no matches to occur.
@@ -1227,6 +1282,23 @@ overwritten. (To append, use \n{grep text yourfile >> outfile}.)
   file, it gives a zero size file. Check this with \n{ls} and \n{wc}.
 \end{outcome}
 
+\begin{exercise}
+  Generate a text file that contains your information:
+\begin{verbatim}
+My user name is:
+eijkhout
+My home directory is:
+/users/eijkhout
+I made this script on:
+isp.tacc.utexas.edu
+\end{verbatim}
+where you use the commands \n{whoami}, \n{pwd}, \n{hostname}.
+
+Bonus points if you can get the `prompt' and output on the same line.
+
+Hint: see section~\ref{tut:unix-backquote}.
+\end{exercise}
+
 Sometimes you want to run a program, but ignore the output.
 For that, you can redirect your output to the system
 \indextermsub{null}{device}: \indextermtt{/dev/null}.
@@ -1617,6 +1689,52 @@ respect to double quotes. Let's say we evaluate
   \verb+myscript "1 2" 3+.
 \end{itemize}
 
+\Level 1 {Error handling}
+
+Scripts, like any other type of program,
+can fail with some runtime condition.
+
+\begin{enumerate}
+\item
+  If there is no clear error message,
+  you can at least rerun your script with a line
+\begin{lstlisting}
+set -x
+\end{lstlisting}
+which echoes each command to the terminal before execution
+\item Each script has a return code,
+  contained in the variable~\lstinline+$?+
+  which you can inspect.
+\item It is also possible that some command in the script
+fails, but the script continues running.
+You can prevent this with 
+\begin{lstlisting}
+set -e
+\end{lstlisting}
+which makes the script abort if any command fails.
+The additional option 
+\begin{lstlisting}
+set -o pipefail
+\end{lstlisting}
+will catch errors in a pipeline.
+\end{enumerate}
+
+Here is an idiom for being a little more informative
+about errors:
+\begin{lstlisting}
+errcode=0
+some_command || errcode=$?
+if [ $errcode -ne 0 ] ; then
+  echo "ERROR: some_command failed with code=$errcode"
+  exit $errcode
+fi
+\end{lstlisting}
+The crucial second line contains an `or' condition:
+either \lstinline{some_command} succeeds,
+or you set \lstinline{errcode} to its exit code.
+This conjunction always succeeds, so now you can inspect
+the exit code.
+
 \Level 0 {Expansion}
 \label{tut:unix-expansion}
 
@@ -1824,6 +1942,62 @@ so that the shell will not expand it. For instance, \n{find . -name
 \Level 0 {The system and other users}
 \label{sec:users}
 
+\Level 1 {System information}
+
+Most of the above material holds for any Unix or Linux system.
+Sometimes you need to know detailed information about the system.
+The following tell you something about what's going on:
+\begin{itemize}
+\item [\indexunix{top}] which processes are running on the system; use
+  \n{top -u} to get this sorted the amount of cpu time they are
+  currently taking. (On Linux, try also the \n{vmstat} command.)
+\item [\indexunix{uptime}] how long has it been since your last reboot?
+\end{itemize}
+
+Sometimes you want to know what system you are actually using.
+Usually you can get some information out of \indexunix{uname}:
+\begin{lstlisting}
+$ uname -a
+Linux staff.frontera.tacc.utexas.edu 3.10.0-1160.45.1.el7.x86_64 #1 SMP Wed Oct 13 17:20:51 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+\end{lstlisting}
+This still doesn't tell you what \indextermbus{Linux}{distribution} you are on.
+For that, some of the following may work:
+\begin{lstlisting}
+$ lsb_release -a
+LSB Version:	:core-4.1-amd64:core-4.1-noarch:cxx-4.1-amd64:cxx-4.1-noarch:desktop-4.1-amd64:desktop-4.1-noarch:languages-4.1-amd64:languages-4.1-noarch:printing-4.1-amd64:printing-4.1-noarch
+Distributor ID:	CentOS
+Description:	CentOS Linux release 7.9.2009 (Core)
+Release:	7.9.2009
+Codename:	Core
+\end{lstlisting}
+or
+\begin{lstlisting}
+$ ls /etc/*release
+/etc/centos-release  /etc/os-release@  /etc/redhat-release@  /etc/system-release@
+$ cat /etc/*release
+CentOS Linux release 7.9.2009 (Core)
+NAME="CentOS Linux"
+VERSION="7 (Core)"
+ID="centos"
+ID_LIKE="rhel fedora"
+VERSION_ID="7"
+PRETTY_NAME="CentOS Linux 7 (Core)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:centos:centos:7"
+HOME_URL="https://www.centos.org/"
+BUG_REPORT_URL="https://bugs.centos.org/"
+
+CENTOS_MANTISBT_PROJECT="CentOS-7"
+CENTOS_MANTISBT_PROJECT_VERSION="7"
+REDHAT_SUPPORT_PRODUCT="centos"
+REDHAT_SUPPORT_PRODUCT_VERSION="7"
+
+CentOS Linux release 7.9.2009 (Core)
+CentOS Linux release 7.9.2009 (Core)
+\end{lstlisting}
+
+\Level 1 {Users}
+
 Unix is a multi-user operating system. Thus, even if you use it
 on your own personal machine, you are a user with an \emph{account}\index{Unix!user account}
 and you may occasionally
@@ -1839,10 +2013,6 @@ users. Here are some commands relating to them.
 \item [\indexunix{finger} {\tt otheruser}] get information about another user;
   you can specify a user's login name here, or their real name,
   or other identifying information the system knows about.
-\item [\indexunix{top}] which processes are running on the system; use
-  \n{top -u} to get this sorted the amount of cpu time they are
-  currently taking. (On Linux, try also the \n{vmstat} command.)
-\item [\indexunix{uptime}] how long has it been since your last reboot?
 \end{itemize}
 
 \Level 1 {Groups and ownership}

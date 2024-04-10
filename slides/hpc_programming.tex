@@ -21,13 +21,13 @@
 \input semester
 
 \setcounter{tocdepth}{1}
-\AtBeginSection[]
-{
-  \begin{numberedframe}
-    \frametitle{Table of Contents}
-    \tableofcontents[currentsection]
-  \end{numberedframe}
-}
+%% \AtBeginSection[]
+%% {
+%%   \begin{numberedframe}
+%%     \frametitle{Table of Contents}
+%%     \tableofcontents[currentsection]
+%%   \end{numberedframe}
+%% }
 
 \usepackage{pslatex}
 \usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
@@ -176,13 +176,13 @@ hello world
 \begin{numberedframe}{Exercise 1, C++ version}
   Create a file with these contents, and make sure you can compile it:
   
-  \strippedinput{../code/compilecxx}{hello.cxx}
+  \ListStrippedSource{../code/compilecxx}{hello.cxx}
 \end{numberedframe}
 
 \begin{numberedframe}{Exercise 1, C version}
   Create a file with these contents, and make sure you can compile it:
   
-  \strippedinput{../code/compilec}{hello.c}
+  \ListStrippedSource{../code/compilec}{hello.c}
 \end{numberedframe}
 
 \begin{numberedframe}{Separate compilation}
@@ -201,10 +201,10 @@ hello world
 Make the following files:
 \begin{multicols}{2}
   Main program: \n{fooprog.cxx}
-  \strippedinput{../code/compilecxx}{fooprog.cxx}
+  \ListStrippedSource{../code/compilecxx}{fooprog.cxx}
   \columnbreak
   Subprogram: \n{foosub.cxx}
-  \strippedinput{../code/compilecxx}{foosub.cxx}
+  \ListStrippedSource{../code/compilecxx}{foosub.cxx}
 \end{multicols}
 \endgroup
 \end{numberedframe}
@@ -215,10 +215,10 @@ Make the following files:
 Make the following files:
 \begin{multicols}{2}
   Main program: \n{fooprog.c}
-  \strippedinput{../code/compilec}{fooprog.c}
+  \ListStrippedSource{../code/compilec}{fooprog.c}
   \columnbreak
   Subprogram: \n{foosub.c}
-  \strippedinput{../code/compilec}{foosub.c}
+  \ListStrippedSource{../code/compilec}{foosub.c}
 \end{multicols}
 \endgroup
 \end{numberedframe}

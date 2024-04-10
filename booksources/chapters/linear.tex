@@ -131,7 +131,9 @@ The linear system then becomes
   \begin{array}{rrr@{{}={}}r}
       6x_1&-2x_2&+2x_3&16\\ 0x_1&-4x_2&+2x_3&-6\\ 0x_1&-12x_2&+2x_3&-27
   \end{array}
-\]
+  \]
+Convince yourself that this system still has the same solution as the original one.
+
 Finally, we eliminate $x_2$ from the third equation by multiplying
 the second equation by~3, and subtracting the result from the third equation:
 \[
@@ -144,7 +146,8 @@ in the second equation, we get $-4x_2=-6-2x_2=-21/2$ so
 $x_2=21/8$. Finally, from the first equation $6x_1=16+2x_2-2x_3=
 16+21/4-9/2=76/4$ so $x_1=19/6$.
 
-We can write this more compactly by omitting the $x_i$ coefficients. Write
+We can write elimination process
+this more compactly by omitting the $x_i$ coefficients. Write
 \[ 
 \begin{pmatrix}
   6&-2&2\\ 12&-8&6\\ 3&-13&3

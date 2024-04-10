@@ -5,7 +5,7 @@
 #### This Makefile belong with the sources
 #### for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-2021
+#### copyright 2010-2023
 ####
 #### make include file for code output generation
 ####
@@ -17,17 +17,18 @@ info ::
 	@echo "make runs : compile and run everything and generate output file"
 	@echo "    RUNS=${RUNS}"
 	@echo "    [ OUTARCH=.... (default: null) for arch-dep runout files ]"
-.PHONY: runs
-runs :
+.PHONY: runs runouts
+runs runouts :
 	@for r in ${RUNS} ; do \
 	    echo "---------------- Test run: $$r ----------------" \
 	     && runname=$${r##run_} \
 	     && if [ -z "${OUTARCH}" ] ; then \
-	            outname=$$runname.runout \
+	            outname=$$( pwd )/$$runname.runout \
 	        ; else \
-	            outname=$$runname.${OUTARCH}.runout \
+	            outname=$$( pwd )/$$runname.${OUTARCH}.runout \
 	        ; fi \
-	     && make --no-print-directory $$r \
+	     && echo "    output in: $$outname" \
+	     && make --no-print-directory $$r ECHO=${ECHO} \
 	           EXTRALIBS=${EXTRALIBS} OPTIONS=${OPTIONS} OPTLEVEL=${OPTLEVEL} \
 	        2>&1 | tee $$outname \
 	     && git add $$outname \

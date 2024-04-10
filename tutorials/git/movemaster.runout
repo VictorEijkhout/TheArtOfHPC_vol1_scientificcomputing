@@ -1,15 +1,3 @@
-==== Branch renaming
-%%
-%% See what the main branch is
-%%
-Cmd >> git status
-Out >>
-On branch master
-No commits yet
-nothing to commit (create/copy files and use "git add" to track)
-%%
-%% Rename this branch
-%%
 Cmd >> git branch -m main
 Cmd >> git status
 Out >>

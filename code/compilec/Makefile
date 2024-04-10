@@ -7,7 +7,7 @@
 #### by Victor Eijkhout
 #### copyright 2010-2023
 ####
-#### makefile for code/compile
+#### makefile for code/compilec
 ####
 ################################################################
 ################################################################
@@ -23,6 +23,12 @@ include ../../makefiles/Make.compile
 include ../../makefiles/Make.run
 
 include ../Make.rotate
+
+################
+################ library rules
+################
+NMFLAGS = 
+include ../Make.libs
 
 ##
 ## public copy

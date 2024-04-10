@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -223,7 +223,13 @@ You can save yourself a lot of typing by writing
 ....
 ierr = compute(value,&result); CHECK_FOR_ERROR(ierr);
 \end{verbatim}
-Using some cpp macros you can even define
+
+%%packtsnippet cpplinefile
+
+The \ac{CPP} has built-in macros that lend themselves
+to informative error reporting.
+The following macro not only checks on an error condition,
+but also reports where the error occurred:
 \begin{verbatim}
 #define CHECK_FOR_ERROR(ierr) \
   if (ierr!=0) { \
@@ -231,6 +237,9 @@ Using some cpp macros you can even define
            ierr,__LINE__,__FILE__); \
     return -1 ; }
 \end{verbatim}
+
+%%packtsnippet end
+
 Note that this macro not only prints an error message, but also does a
 further return. This means that, if you adopt this use of error codes
 systematically, you will get a full backtrace of the calling tree if

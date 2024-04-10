@@ -1,0 +1,206 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of slides for
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2024
+%%%%
+%%%% CMakedesign-slides.tex : cmake slides for making CMakeLists.txt
+%%%% see hpc_cmake.tex for driver file
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsectionframe{Make your own CMake configuration}
+
+\begin{numberedframe}{What are we talking here?}
+  You have a code that you want to distribute in source form
+  for easy installation.
+
+  You decide to use CMake for portability.
+
+  You think that using CMake might make life easier.
+
+  $\Rightarrow$~To do: write the \n{CMakeLists.txt} file.
+\end{numberedframe}
+
+\lstset{language=CMake}
+\lstset{style=greencode}
+
+\begin{numberedframe}{The CMakeLists file}
+\begin{lstlisting}
+cmake_minimum_required( VERSION 3.12 )
+project( myproject VERSION 1.0 )
+\end{lstlisting}
+  \begin{itemize}
+  \item Which cmake version is needed for this file?\\
+    (CMake has undergone quite some evolution!)
+  \item Give a name to your project.
+  \item Maybe pick a language.\\
+    C~and C++ available by default, or:
+\begin{lstlisting}
+enable_language(Fortran)
+\end{lstlisting}
+(list: \lstinline{C}, \lstinline{CXX}, \lstinline{CSharp}, \lstinline{CUDA}, \lstinline{OBJC},
+\lstinline{OBJCXX}, \lstinline{Fortran}, \lstinline{HIP}, \lstinline{ISPC}, \lstinline{Swift},
+and a couple of variants of \lstinline{ASM})
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Target philosophy}
+  \begin{itemize}
+  \item Declare a target: something that needs to be built,
+    and specify what is needed for it
+\begin{lstlisting}
+add_executable( myprogram )
+target_sources( myprogram PRIVATE program.cxx )
+\end{lstlisting}
+Use of macros:
+\begin{lstlisting}
+add_executable( ${PROJECT_NAME} )
+\end{lstlisting}
+\item Do things with the target, for instance state where it
+  is to be installed:
+\begin{lstlisting}
+install( TARGETS myprogram DESTINATION . )
+\end{lstlisting}
+relative to the prefix location.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Example: single source}
+  Build an executable from a single source file:
+  
+  \lstinputlisting{tutorials/cmake/single/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{Deprecated usage}
+\begin{lstlisting}
+add_executable( myprogram myprogram.c myprogram.h )
+\end{lstlisting}
+Prefer `target' design.
+\end{numberedframe}
+
+\begin{numberedframe}{Exercise}
+  \begin{itemize}
+  \item Write a `hello world' program;
+  \item Make a CMake setup to compile and install it;
+  \item Test it all.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Exercise: using the Eigen library}
+This is a short program using Eigen:
+\begin{lstlisting}
+#include <iostream>
+#include <Eigen/Dense>
+
+int main() {
+    // Define a 3x3 matrix
+    Eigen::Matrix3d matrix;
+    matrix << 1, 2, 3,
+              4, 5, 6,
+              7, 8, 9;
+    std::cout << "Original matrix:\n" << matrix << std::endl;
+    return 0;
+}
+\end{lstlisting}
+  \begin{itemize}
+  \item Make a CMake setup to compile and install it;
+  \item Test it.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Make your own library}
+First a library that goes into the executable:
+\begin{lstlisting}
+add_library( auxlib )
+target_sources( auxlib PRIVATE aux.cxx aux.h )
+target_link_libraries( program PRIVATE auxlib )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Library during build, setup}
+  Full configuration for an executable that uses a library:
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/privatelib/CMakeLists.txt}  
+  Library shared by default; see later.
+\end{numberedframe}
+
+\begin{numberedframe}{Shared and static libraries}
+  In the configuration file:
+\begin{lstlisting}
+add_library( auxlib STATIC )
+# or
+add_library( auxlib SHARED )
+\end{lstlisting}
+(default shared if left out),
+  or by adding a runtime flag
+\begin{lstlisting}
+cmake -D BUILD_SHARED_LIBS=TRUE
+\end{lstlisting}
+Build both by having two lines, one for shared,  one for static.
+
+Related: the \indextermtt{-fPIC} compile option
+is set by \indexcmake{CMAKE_POSITION_INDEPENDENT_CODE}:
+\begin{lstlisting}
+cmake -D CMAKE_POSITION_INDEPENDENT_CODE=ON
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Release a library}
+  To have the library released too, use \lstinline{PUBLIC}.\\
+  Add the library target to the \lstinline{install} command.
+\end{numberedframe}
+
+\begin{numberedframe}{Example: released library}
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/withlib/CMakeLists.txt}  
+  Note the separate destination directories.
+\end{numberedframe}
+
+\begin{numberedframe}{We are getting realistic}
+  The previous setup was messy\\
+  Better handle the library through a recursive cmake\\
+  and make the usual \n{lib} \n{include} \n{bin} setup
+\end{numberedframe}
+
+\begin{numberedframe}{Recursive setup, main directory}
+  Declare that there is a directory to do recursive make:
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/recursive/CMakeLists.txt}
+  (Note that the name of the library comes from the subdirectory)
+\end{numberedframe}
+
+\begin{numberedframe}{Recursive setup, subdirectory}
+  Installs into \n{lib} and \n{include}
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/recursive/lib/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{External libraries}
+  \begin{itemize}
+  \item Use \indexunix{LD_LIBRARY_PATH}, or
+  \item use \indexunix{rpath}.
+  \end{itemize}
+  (Apple note: forced to use second option)
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
+set_target_properties(
+    ${PROGRAM_NAME} PROPERTIES
+    BUILD_RPATH   "${CATCH2_LIBRARY_DIRS};${FMTLIB_LIBRARY_DIRS}"
+    INSTALL_RPATH "${CATCH2_LIBRARY_DIRS};${FMTLIB_LIBRARY_DIRS}"
+    )
+\end{lstlisting}
+\end{numberedframe}
+
+\endinput
+
+\begin{numberedframe}{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\begin{lstlisting}
+\end{lstlisting}
+\end{numberedframe}
+

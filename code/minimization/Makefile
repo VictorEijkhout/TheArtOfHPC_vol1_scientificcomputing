@@ -18,7 +18,7 @@ info ::
 # libraries
 vectorlib.o : vectorlib.h
 minimlib.o : minimlib.h vectorlib.h
-INCLUDES = -I${HOME}/Installation/cli11/installation/include -I${TACC_CXXOPTS_INC}
+EXTRA_INCLUDES = -I${HOME}/Installation/cli11/installation/include -I${TACC_CXXOPTS_INC}
 LANGUAGE = CXX
 
 # ellipse program

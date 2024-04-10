@@ -1,0 +1,40 @@
+make[1]: `abc' is up to date.
+================
+coefficients 1.00e-03 -1.00e+00 1.00e-03
+textbook zeros 1.013e-03 1.000e+03 evaluate to -1.328e-05 -3.617e-05, error  1.328e-02 7.457e-08
+accurate zeros 1.000e-03 1.000e+03 evaluate to  0.000e+00 -3.617e-05, error  1.164e-07 7.457e-08
+================
+coefficients 1.00e-04 -1.00e+00 1.00e-04
+.... underflow in b coefficient!
+textbook zeros 2.980e-04 1.000e+04 evaluate to -1.980e-04  1.000e-04, error  1.980e+00 2.526e-08
+accurate zeros 1.000e-04 1.000e+04 evaluate to  0.000e+00  1.000e-04, error  0.000e+00 2.526e-08
+================
+coefficients 1.00e-05 -1.00e+00 1.00e-05
+.... underflow in b coefficient!
+textbook zeros 0.000e+00 1.000e+05 evaluate to  1.000e-05  1.000e-05, error  1.000e+00 2.526e-08
+accurate zeros 1.000e-05 1.000e+05 evaluate to  0.000e+00  1.000e-05, error  0.000e+00 2.526e-08
+================
+coefficients 1.00e-06 -1.00e+00 1.00e-06
+.... underflow in b coefficient!
+textbook zeros 0.000e+00 1.000e+06 evaluate to  1.000e-06  1.000e-06, error  1.000e+00 2.525e-09
+accurate zeros 1.000e-06 1.000e+06 evaluate to  0.000e+00  1.000e-06, error  0.000e+00 2.525e-09
+================
+coefficients 1.00e-07 -1.00e+00 1.00e-07
+.... underflow in b coefficient!
+textbook zeros 0.000e+00 1.000e+07 evaluate to  1.000e-07  1.000e-07, error  1.000e+00 1.169e-08
+accurate zeros 1.000e-07 1.000e+07 evaluate to  0.000e+00  1.000e-07, error  0.000e+00 1.169e-08
+================
+coefficients 1.00e-08 -1.00e+00 1.00e-08
+.... underflow in b coefficient!
+textbook zeros 0.000e+00 1.000e+08 evaluate to  1.000e-08  1.000e-08, error  1.000e+00 6.077e-09
+accurate zeros 1.000e-08 1.000e+08 evaluate to  0.000e+00  1.000e-08, error  0.000e+00 6.077e-09
+================
+coefficients 1.00e-09 -1.00e+00 1.00e-09
+.... underflow in b coefficient!
+textbook zeros 0.000e+00 1.000e+09 evaluate to  1.000e-09  1.000e-09, error  1.000e+00 2.828e-08
+accurate zeros 1.000e-09 1.000e+09 evaluate to  0.000e+00  1.000e-09, error  0.000e+00 2.828e-08
+================
+coefficients 1.00e-10 -1.00e+00 1.00e-10
+.... underflow in b coefficient!
+textbook zeros 0.000e+00 1.000e+10 evaluate to  1.000e-10  1.000e-10, error  1.000e+00 1.335e-08
+accurate zeros 1.000e-10 1.000e+10 evaluate to  0.000e+00  1.000e-10, error  0.000e+00 1.335e-08

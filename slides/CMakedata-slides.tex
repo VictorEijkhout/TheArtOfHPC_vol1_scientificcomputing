@@ -1,0 +1,194 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of slides for
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2024
+%%%%
+%%%% CMakedata-slides.tex : cmake slides for data packages
+%%%% see hpc_cmake.tex for driver file
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sectionframe{Data packages}
+
+\begin{numberedframe}{Hdf5}
+C:
+\begin{lstlisting}[language=CMake]
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( HDF REQUIRED hdf5 )
+message( STATUS "Hdf5 includes: ${HDF_INCLUDE_DIRS}" )
+
+target_include_directories(
+        ${PROJECTNAME} PUBLIC
+        ${HDF_INCLUDE_DIRS}
+	)
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Netcdf}
+C:
+\begin{lstlisting}[language=CMake]
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( NETCDF REQUIRED netcdf )
+
+target_include_directories(
+        ${PROJECTNAME} PUBLIC
+        ${NETCDF_INCLUDE_DIRS} )
+target_link_libraries(
+        ${PROJECTNAME} PUBLIC
+        ${NETCDF_LIBRARIES} )
+target_link_directories(
+        ${PROJECTNAME} PUBLIC
+	${NETCDF_LIBRARY_DIRS} )
+target_link_libraries(
+        ${PROJECTNAME} PUBLIC netcdf )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Hdf5, Fortran}
+\begin{lstlisting}[language=CMake]
+find_package( PkgConfig REQUIRED )
+pkg_check_modules( NETCDFF REQUIRED netcdf-fortran )
+pkg_check_modules( NETCDF REQUIRED netcdf )
+
+target_include_directories(
+        ${PROJECTNAME} PUBLIC
+        ${NETCDFF_INCLUDE_DIRS}
+	)
+target_link_libraries(
+        ${PROJECTNAME} PUBLIC
+        ${NETCDFF_LIBRARIES} ${NETCDF_LIBRARIES}
+	)
+target_link_directories(
+        ${PROJECTNAME} PUBLIC
+	${NETCDFF_LIBRARY_DIRS}	${NETCDF_LIBRARY_DIRS}
+	)
+target_link_libraries(
+        ${PROJECTNAME} PUBLIC netcdf )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{HighFive}
+  Third party C++ interface to hdf5
+\begin{lstlisting}
+find_package( HighFive REQUIRED )
+target_link_libraries( ${PROJECTNAME} HighFive)
+\end{lstlisting}
+\end{numberedframe}
+
+\endinput
+
+\begin{numberedframe}{MPI from C++}
+\begin{lstlisting}
+find_package( MPI )
+target_include_directories(
+        ${PROJECT_NAME} PUBLIC
+        ${MPI_CXX_INCLUDE_DIRS} )
+target_link_libraries(
+        ${PROJECT_NAME} PUBLIC
+        ${MPI_CXX_LIBRARIES} )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{MPI from Fortran90}
+\begin{lstlisting}
+find_package( MPI )
+target_include_directories(
+        ${PROJECT_NAME} PUBLIC
+        ${MPI_INCLUDE_DIRS} )
+target_link_directories(
+        ${PROJECT_NAME} PUBLIC
+        ${MPI_LIBRARY_DIRS} )
+target_link_libraries(
+        ${PROJECT_NAME} PUBLIC
+        ${MPI_Fortran_LIBRARIES} )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{MPI from Fortran2008}
+\begin{lstlisting}
+if( MPI_Fortran_HAVE_F08_MODULE )
+else()
+  message( FATAL_ERROR "No f08 module for this MPI" )
+endif()
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{MPL}
+\begin{lstlisting}
+find_package( mpl REQUIRED )
+target_include_directories(
+	${PROJECT_NAME} PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}
+	mpl::mpl )
+target_link_libraries(
+	${PROJECT_NAME} PUBLIC 
+	mpl::mpl )
+\end{lstlisting}
+\end{numberedframe}
+
+\sectionframe{OpenMP}
+
+\begin{numberedframe}{OpenMP from C}
+\begin{lstlisting}
+find_package(OpenMP)
+target_link_libraries(
+    ${PROJECT_NAME}
+    PUBLIC OpenMP::OpenMP_C )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{OpenMP from C++}
+\begin{lstlisting}
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+else()
+        message( FATAL_ERROR "Could not find OpenMP" )
+endif()
+target_link_libraries(
+    ${PROJECT_NAME}
+    PUBLIC OpenMP::OpenMP_CXX )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{OpenMP from Fortran}
+\begin{lstlisting}
+enable_language(Fortran)
+find_package(OpenMP)
+target_link_libraries(
+    ${PROJECT_NAME}
+    PUBLIC OpenMP::OpenMP_Fortran )
+\end{lstlisting}
+\end{numberedframe}
+
+\sectionframe{TBB}
+
+\begin{numberedframe}{TBB}
+\begin{lstlisting}
+find_package(TBB REQUIRED)
+target_link_libraries( ${PROJECT_NAME} PUBLIC TBB::tbb)
+\end{lstlisting}
+\end{numberedframe}
+
+\endinput
+
+\begin{numberedframe}{MPI from C}
+  \tiny
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/mpiprog/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{MPI from Fortran}
+  \tiny
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/mpiprogf/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{OpenMP}
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/openmp/CMakeLists.txt}
+\end{numberedframe}
+

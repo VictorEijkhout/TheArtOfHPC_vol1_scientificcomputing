@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% This text file is part of the source of 
-%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% `The Art of HPC, vol 4: HPC Carpentry
 %%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
@@ -17,6 +17,7 @@
 \documentclass[10pt]{beamer}
 
 \input courseformat
+\input tikzplot
 \def\qrcode{qrvol1}
 
 \begin{document}
@@ -34,8 +35,28 @@
   Also usable with C and Fortran.
 \end{frame}
 
+\begin{frame}{Table of contents}
+  \tableofcontents
+\end{frame}
+
+%% part 1: use cmake-based library
+\sectionframe{Help! This software uses CMake!}
 \input CMake-slides
 \input CMakepc-slides
 \input CMakefind-slides
+
+%% part 2: make your own cmake setup
+\sectionframe{Help! I want to write CMake myself!}
+\input CMakedesign-slides
+\input CMakeother-slides
+
+%% part 3: miscellaneous
+\sectionframe{Help! I want people to use my CMake package!}
+\input CMakepcin-slides
+
+\sectionframe{Example libraries}
+\input CMakempiomp-slides.tex
+\input CMakedata-slides.tex
+\input CMakeexamples-slides
 
 \end{document}

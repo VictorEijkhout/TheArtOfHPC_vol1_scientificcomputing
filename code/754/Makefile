@@ -21,7 +21,7 @@ XPROGRAMS = bitprint fake
 PROGRAMS = ${CPROGRAMS} ${XPROGRAMS}
 
 LANGUAGE = CXX
-INCLUDES = -I${TACC_FMTLIB_INC}
+EXTRA_INCLUDES = -I${TACC_FMTLIB_INC}
 EXTRALIBS = -L${TACC_FMTLIB_LIB} -lfmt
 include ../../makefiles/Make.compile
 

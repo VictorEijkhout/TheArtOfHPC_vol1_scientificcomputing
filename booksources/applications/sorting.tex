@@ -43,7 +43,8 @@ elements, how many operations does it take to sort them, as a function
 of~$n$. 
 
 Theoretically one can show that a sorting algorithm has to have at
-least complexity~$O(n\log n)$\footnote{One can consider a sorting
+least complexity~$O(n\log n)$.
+Consider a sorting
   algorithm as a decision tree: a first comparison is made, depending
   on it two other comparisons are made, et cetera. Thus, an actual
   sorting becomes a path through this decision tree. If every path has
@@ -51,7 +52,9 @@ least complexity~$O(n\log n)$\footnote{One can consider a sorting
   elements can be ordered in $n!$ ways, the tree needs to have enough
   paths to accomodate all of these; in other words, $2^h\geq
   n!$. Using Stirling's formula, this means that $n\geq O(n\log
-  n)$}. There are indeed several algorithms that are guaranteed to
+  n)$.
+
+There are indeed several algorithms that are guaranteed to
 attain this complexity, but a very popular algorithm, called
 \emph{Quicksort}\index{sorting!quicksort!complexity} has only an
 `expected' complexity of~$O(n\log n)$, and a worst case complexity

@@ -3,6 +3,8 @@
 ####
 #### Makefile for git lab
 ####
+#### copyright Victor Eijkhout 2011-2024
+####
 ################################################################
 
 .PHONY: info
@@ -30,7 +32,6 @@ MAIN = 1
 OUTEXT = runout
 info ::
 	@echo "make init"
-.PHONY: init
 ALLOUTS += init
 init :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -55,18 +56,25 @@ process :
 	    ; fi
 
 info ::
+	@echo "make listmaster DIR=... : show offensive branch"
+ALLOUTS += listmaster
+listmaster :
+	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
+	 && make --no-print-directory newrepo MAIN=0 >/dev/null 2>&1 \
+	 && ( source dodef \
+	     && cd newrepo \
+	     && do_cmd "git status" \
+	     ) 2>&1 | sed '/^$$/d' | tee $@.$$ext \
+	 && make --no-print-directory process TGT=$@.$$ext
+
+info ::
 	@echo "make movemaster DIR=... : rename offensive branch"
-.PHONY: movemaster
 ALLOUTS += movemaster
 movemaster :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
 	 && make --no-print-directory newrepo MAIN=0 >/dev/null 2>&1 \
 	 && ( source dodef \
 	     && cd newrepo \
-	     && echo "==== Branch renaming" \
-	     && note "See what the main branch is" \
-	     && do_cmd "git status" \
-	     && note "Rename this branch" \
 	     && do_cmd "git branch -m main" \
 	     && do_cmd "git status" \
 	     ) 2>&1 | sed '/^$$/d' | tee $@.$$ext \
@@ -75,7 +83,6 @@ movemaster :
 EMPTYURL = https://github.com/TACC/empty.git
 info ::
 	@echo "make emptyclone"
-.PHONY: emptyclone
 ALLOUTS += emptyclone
 emptyclone :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -94,7 +101,6 @@ clean ::
 
 info ::
 	@echo "make firstfile"
-.PHONY: firstfile
 ALLOUTS += firstfile
 firstfile :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -120,7 +126,6 @@ firstfile :
 
 info ::
 	@echo "make changefirst"
-.PHONY: changefirst
 ALLOUTS += changefirst
 changefirst :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -146,7 +151,6 @@ changefirst :
 
 info ::
 	@echo "make undofirst"
-.PHONY: undofirst
 ALLOUTS += undofirst
 undofirst :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -169,7 +173,6 @@ undofirst :
 
 info ::
 	@echo "make revertfirst"
-.PHONY: revertfirst
 ALLOUTS += revertfirst
 revertfirst :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -194,7 +197,6 @@ revertfirst :
 
 info ::
 	@echo "make cfile"
-.PHONY: cfile
 ALLOUTS += cfile
 cfile :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -220,7 +222,6 @@ cfile :
 TINKERURL = git@github.com:TACC/tinker.git
 info ::
 	@echo "make remotefile"
-.PHONY: remotefile
 ALLOUTS += remotefile
 remotefile :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -257,7 +258,6 @@ remotefile :
 
 info ::
 	@echo "make collab"
-.PHONY: collab
 ALLOUTS += collab
 collab :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -279,7 +279,6 @@ clean ::
 
 info ::
 	@echo "make merge"
-.PHONY: merge
 ALLOUTS += merge
 merge :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -310,7 +309,6 @@ merge :
 
 info ::
 	@echo "make conflict"
-.PHONY: conflict
 ALLOUTS += conflict
 conflict :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -339,7 +337,6 @@ conflict :
 
 info ::
 	@echo "make devbranch"
-.PHONY: devbranch
 ALLOUTS += devbranch
 devbranch :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -367,7 +364,6 @@ devbranch :
 
 info ::
 	@echo "make devmerge"
-.PHONY: devmerge
 ALLOUTS += devmerge
 devmerge :
 	@if [ ${MAIN} = 1 ] ; then make clean ; export ext=runout ; else export ext=out ; fi \
@@ -407,7 +403,7 @@ devmerge :
 ####
 info ::
 	@echo "================" && echo "make allouts"
-.PHONY: allouts
+.PHONY: allouts ${ALLOUTS}
 allouts :
 	@for a in ${ALLOUTS} ; do \
 	    make --no-print-directory $$a \

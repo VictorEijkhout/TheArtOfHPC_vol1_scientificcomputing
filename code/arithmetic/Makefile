@@ -5,7 +5,7 @@
 #### for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
 ####
-#### copyright 2010-2020
+#### copyright 2010-2023
 ####
 #### makefile for computer arithmetic examples
 ####
@@ -19,16 +19,27 @@ info ::
 info ::
 	@echo "make PROGRAM (in ${APPS})"
 CPROGRAMS = bits   intc   oddeven   power
+CXXPROGRAMS = 
 EXERCISES = bits.c intc.c oddeven.c power.c bitp.py
-APPS = ${CPROGRAMS} ${FPROGRAMS}
+APPS = ${CPROGRAMS} ${CXXPROGRAMS} ${FPROGRAMS}
 
-LANGUAGE = C
+LANGUAGE = CXX
 MODE = seq
 include ../../makefiles/Make.compile
 
 info ::
 	@echo "make run_PROGRAM (in ${RUNS})"
 RUNS =
+
+RUNS += run_abc
+run_abc :
+	@make CXXPROGRAMS=abc abc \
+	  MODULES=fmtlib \
+	    INCLUDES="-I${TACC_FMTLIB_INC}" \
+	    EXTRALIBS="-L${TACC_FMTLIB_LIB} -lfmt" \
+	    RPATH="${TACC_FMTLIB_LIB}"
+	@./abc
+
 RUNS += run_bits
 .PHONY: run_bits
 run_bits : bits
