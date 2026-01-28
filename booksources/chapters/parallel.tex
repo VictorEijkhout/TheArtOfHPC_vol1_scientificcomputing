@@ -199,7 +199,7 @@ issues in various guises throughout this chapter.
 From the above introduction we can describe parallelism as finding
 independent operations in the execution of a program. In all of the examples
 these independent operations were in fact identical operations, but applied to
-different data items. We could call this\indexterm{data parallelism}: the same
+different data items. We could call this \indexterm{data parallelism}: the same
 operation is applied in parallel to many data elements.
 This is in fact a common scenario in scientific computing: parallelism
 often stems from the fact that a data set (vector, matrix,
@@ -222,7 +222,7 @@ see section~\ref{sec:task-parallel}.
 
 Some examples of functional parallelism are Monte Carlo simulations,
 and other algorithms that traverse a parametrized search space,
-such as boolean \indexterm{satisfyability} problems.
+such as boolean \indexterm{satisfiability} problems.
 
 \Level 1 {Parallelism in the algorithm versus in the code}
 
@@ -401,7 +401,7 @@ Let $F_s$ be the
 $F_p$ be the \indexterm{parallel fraction} 
 (or more strictly: the `parallelizable'
 fraction) of a code, respectively. Then $F_p+F_s=1$. The parallel
-execution time $T_p$ on $p$ processors
+execution time $T_p$ on $P$ processors
 is the sum of the part that is sequential
 $T_1F_s$ and the part that can be parallelized $T_1F_p/P$:
 \begin{equation}
@@ -411,7 +411,7 @@ $T_1F_s$ and the part that can be parallelized $T_1F_p/P$:
 (see figure~\ref{fig:amdahl})
 As the number of processors grows
 $P\rightarrow\infty$, the parallel execution time now approaches that
-of the sequential fraction of the code: $T_P\downarrow
+of the sequential fraction of the code: $T_P\rightarrow
 T_1F_s$. We conclude that speedup is limited by $S_P\leq 1/F_s$ and
 efficiency is a decreasing function $E\sim 1/P$.
 
@@ -2547,7 +2547,7 @@ As a co-processor, the Xeon Phi has both differences and similarities with \acp{
 \index{heterogeneous computing|)}
 
 % LocalWords:  Eijkhout superstep supersteps ILP Monte Carlo rhs Iso
-% LocalWords:  parametrized satisfyability runtimes superlinear iso
+% LocalWords:  parametrized satisfiability runtimes superlinear iso
 % LocalWords:  bitonic parallelizable Asymptotics Gustafson's Brent's
 % LocalWords:  discretization submatrices PDE multicore Flynn's SISD
 % LocalWords:  MISD MasPar ICL DAP MPP GPU CUDA Xeon co Cyber NEC SX
