@@ -785,7 +785,7 @@ rather than from main memory.
 %%packtsnippet streaming
 The worst case, performancewise speaking, of an operation
 is a so-called `streaming' kernel.
-Here, data streams from and to memory, with effectiy no use of caches
+Here, data streams from and to memory, with effectively no use of caches
 to increase performance.
 As an example, consider the vector addition:
 \begin{lstlisting}
@@ -1545,7 +1545,7 @@ line. Since these cache lines are now brought from memory well before
 they are needed, prefetch has the possibility of eliminating the
 latency for all but the first couple of data items.
 
-Preffetch streams typically can not cross
+Prefetch streams typically can not cross
 \indextermsub{small}{page} boundaries, so it pays to
 have data be aligned on small page boundaries.
 Typically this means having a starting address at a multiple of~4K;
@@ -2207,7 +2207,7 @@ for (int i=0; i<N; i++)
 Because of first-touch, the array is allocated completely in the
 memory of the socket of the main thread.
 In the subsequent parallel
-loop the cores of the other socket will then have slower access to the
+loop, the cores of the other socket will then have slower access to the
 memory they operate on.
 
 The solution here is to also make the initialization loop parallel,
@@ -2727,7 +2727,7 @@ The following issues are at play here.
 \Level 1 {Operating system effects}
 
 HPC practitioners typically don't worry much about the
-\indexacdef{OS}. However, sometimes the presence of the \ac{OS} can be
+\indexacf{OS}. However, sometimes the presence of the \ac{OS} can be
 felt, influencing performance. The reason for this is the
 \indextermsubdef{periodic}{interrupt}, where the operating system upwards
 of 100~times per second interrupts the current process to let another
