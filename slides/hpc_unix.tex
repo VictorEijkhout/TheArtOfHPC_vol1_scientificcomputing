@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -16,18 +16,21 @@
 
 \documentclass[11pt,headernav]{beamer}
 
-\usepackage{beamerthemeTACC}
-\parskip=.5\baselineskip plus .5\baselineskip
+\usepackage{comment}
+\excludecomment{packt}
+\includecomment{nopackt}
+
+\input courseformat
+\lstset{style=verbatimcode,numbers=none}
+\lstset{language=shell}
+
+\input tikzplot
+\def\qrcode{qrvol1}
+
+%% \newcommand\event[1]{}%%hack
 \input semester
 
 \setcounter{tocdepth}{1}
-%% \AtBeginSection[]
-%% {
-%%   \begin{numberedframe}
-%%     \frametitle{Table of Contents}
-%%     %\tableofcontents[currentsection]
-%%   \end{numberedframe}
-%% }
 
 \usepackage{pslatex}
 \usepackage{amsmath,multicol}
@@ -38,27 +41,18 @@
 
 \newdimen\unitindent \unitindent=20pt
 
-\usepackage{comment}
-
-\input slidemacs
-
-\input scimacs
-
-%\usepackage{makeidx}
-%\makeindex
-
 \begin{document}
 \parskip=10pt plus 5pt minus 3pt
 
 \title{Introduction to Unix}
 \author{Victor Eijkhout}
-\date{2023}
+\date{2025}
 
 \begin{frame}
   \titlepage
 \end{frame}
 
-\tocslide
+%% \tocslide
 
 \begin{numberedframe}{Justification}
   Unix, in particular Linux, is the \textsl{de facto}
@@ -70,10 +64,10 @@
 \begin{numberedframe}{\texttt{ls}, \texttt{touch}}
   \label{sl-lnx:ls}
   \begin{itemize}
-  \item List files: \n{ls}
-  \item Maybe your account is still empty: do \n{touch newfile},
-    then \n{ls} again.
-  \item Options: \n{ls -l} or for specific file \n{ls -l newfile}.
+  \item List files: \lstinline{ls}
+  \item Maybe your account is still empty: do \lstinline{touch newfile},
+    then \lstinline{ls} again.
+  \item Options: \lstinline{ls -l} or for specific file \lstinline{ls -l newfile}.
   \end{itemize}
 \end{numberedframe}
 
@@ -88,12 +82,12 @@
 \begin{numberedframe}{Display / add to file: \texttt{cat}}
   \label{sl-lnx:cat}
   \begin{itemize}
-  \item Display a file: \n{cat myfile}
-  \item Put something in a file: \n{cat > myfile}\\
+  \item Display a file: \lstinline{cat myfile}
+  \item Put something in a file: \lstinline{cat > myfile}\\
     end with Control-D.\\
     Or use an editor, but this is sometimes still useful.
-  \item Now \n{cat} it again.
-  \item Do \n{cat >> myfile} and enter some text.
+  \item Now \lstinline{cat} it again.
+  \item Do \lstinline{cat >> myfile} and enter some text.
     What did this do?
   \end{itemize}
 \end{numberedframe}
@@ -109,11 +103,11 @@
 \begin{numberedframe}{\texttt{cp}, \texttt{mv}, \texttt{rm}}
   \label{sl-lnx:cpmv}
   \begin{itemize}
-  \item Copy: \n{cp file1 file2}\\
+  \item Copy: \lstinline{cp file1 file2}\\
     Do this, check that it's indeed a copy.
-  \item Rename or `move': \n{mv file1 file2}\\
+  \item Rename or `move': \lstinline{mv file1 file2}\\
     check that the original file doesn't exist any more.
-  \item Remove: \n{rm myfile}\\
+  \item Remove: \lstinline{rm myfile}\\
     This is irrevocable!
   \end{itemize}
 \end{numberedframe}
@@ -134,10 +128,10 @@
   \label{sl-lnx:headtail}
   \begin{itemize}
   \item If a file is larger than your screen:\\
-    \n{less yourfile}
+    \lstinline{less yourfile}
   \item If the start or end is interesting enough:\\
-    \n{head yourfile}, \n{tail yourfile}
-  \item Explore options: \n{head -n 5 yourfile}
+    \lstinline{head yourfile}, \lstinline{tail yourfile}
+  \item Explore options: \lstinline{head -n 5 yourfile}
   \end{itemize}
 \end{numberedframe}
 
@@ -149,20 +143,20 @@
 %%   \includegraphics[scale=.4]{unixshots/9 head lorem}
 %% \end{numberedframe}
 
-\begin{exercise}{Put the pieces together}
+\begin{exerciseframe}{Put the pieces together}
   How would you display the 3rd line of a file?
-\end{exercise}
+\end{exerciseframe}
 
 \Level 0 {Directories}
 
 \begin{numberedframe}{Directories}
   \label{sl-lnx:cd}
   \begin{itemize}
-  \item Make a subdirectory `folder': \n{mkdir newdir}
-  \item Check where you are: \n{pwd}
-  \item Now go to the new directory: \n{cd newdir} and \n{pwd}\\
+  \item Make a subdirectory `folder': \lstinline{mkdir newdir}
+  \item Check where you are: \lstinline{pwd}
+  \item Now go to the new directory: \lstinline{cd newdir} and \lstinline{pwd}\\
     `change directory' and `present working directory'
-  \item Back to your home directory: \n{cd} without further arguments.
+  \item Back to your home directory: \lstinline{cd} without further arguments.
   \end{itemize}
 \end{numberedframe}
 
@@ -175,16 +169,16 @@
   \begin{itemize}
   \item Do:
     \begin{enumerate}
-    \item \n{cd newdir} \item \n{touch nested_file} \item \n{cd}
+    \item \lstinline{cd newdir} \item \lstinline{touch nested_file} \item \lstinline{cd}
     \end{enumerate}
-  \item Now: \n{ls newdir/nested_file}
+  \item Now: \lstinline{ls newdir/nested_file}
   \item That is called a path
     \begin{itemize}
     \item Relative path: does not start with slash
-    \item Absolute path (such as \n{pwd} output): starts at root
+    \item Absolute path (such as \lstinline{pwd} output): starts at root
     \end{itemize}
   \item Create multiple directories:\\
-    \n{mkdir -p sub1/sub2/sub3} (\n{p}~for `parent')
+    \lstinline{mkdir -p sub1/sub2/sub3} (\lstinline{p}~for `parent')
   \end{itemize}
 \end{numberedframe}
 
@@ -196,12 +190,12 @@
   \label{sl-lnx:morepath}
   \begin{itemize}
   \item Path to your home directory: tilde
-    \n{cd ~}
-  \item Current directory:~\n{.}
-  \item One level back:~\n{..}\\
-    Example: going out of a directory:~\n{cd ..}\\
+    \lstinline{cd ~}
+  \item Current directory:~\lstinline{.}
+  \item One level back:~\lstinline{..}\\
+    Example: going out of a directory:~\lstinline{cd ..}\\
     (confusing: do you call this a level up or down?)
-  \item You can use this in paths: \n{ls newdir/subdir1/../subdir2}
+  \item You can use this in paths: \lstinline{ls newdir/subdir1/../subdir2}
   \end{itemize}
   %% Exercise: copy the lorem ipsum file from the repo to a new directory.
 \end{numberedframe}
@@ -214,68 +208,68 @@
 %%   \includegraphics[scale=.4]{unixshots/13 dot path}
 %% \end{numberedframe}
 
-\begin{exercise}{Paths}
+\begin{exerciseframe}{Paths}
   After the following commands:
-\begin{verbatim}
+\begin{lstlisting}
 mkdir somedir
 touch somedir/somefile
-\end{verbatim}
-Give at least two ways of specifying the path to \n{somefile}
+\end{lstlisting}
+Give at least two ways of specifying the path to \lstinline{somefile}
 from the current directory
-for instance for the \n{ls} command.\\
-Same after doing \n{cd somedir}
-\end{exercise}
+for instance for the \lstinline{ls} command.\\
+Same after doing \lstinline{cd somedir}
+\end{exerciseframe}
 
-\begin{exercise}{Relative moving}
-\begin{verbatim}
+\begin{exerciseframe}{Relative moving}
+\begin{lstlisting}
 mkdir -p sub1/sub2/sub3
 cd sub1/sub2/sub3
 touch a
-\end{verbatim}
-You now have a file \n{sub1/sub2/sub3/a}\\
+\end{lstlisting}
+You now have a file \lstinline{sub1/sub2/sub3/a}\\
 \begin{enumerate}
 \item
-  How do you move it to \n{sub1/sub2/a}?
-\item Go: \n{cd sub1/sub2}\\
-  How do you now move the file to \n{sub1/a}?
+  How do you move it to \lstinline{sub1/sub2/a}?
+\item Go: \lstinline{cd sub1/sub2}\\
+  How do you now move the file to \lstinline{sub1/a}?
 \end{enumerate}
-\end{exercise}
+\end{exerciseframe}
 
 \Level 0 {Redirection, pipes}
 
 \begin{numberedframe}{In/Output redirection}
 Output into a file:
-\begin{verbatim}
+\begin{lstlisting}
 ls -l > listing
-\end{verbatim}
+\end{lstlisting}
 Append:
-\begin{verbatim}
+\begin{lstlisting}
 ls dir1 > dirlisting  
 ls dir2 >> dirlisting  
-\end{verbatim}
+\end{lstlisting}
 Input:
-\begin{verbatim}
+\begin{lstlisting}
 myprogram < myinput
-\end{verbatim}
+\end{lstlisting}
 \end{numberedframe}
 
-\begin{exercise}{}
-  Make a copy of a file, using redirection (so no \n{cp} command).
+\begin{exerciseframe}{}
+  Make a copy of a file, using redirection (so no \lstinline{cp} command).
 
   Can you use both \verb+>+ and \verb+<+?
-\end{exercise}
+\end{exerciseframe}
 
 \begin{numberedframe}{Redirection, formal aspects}
   \label{sl-lnx:redirect}
   \begin{itemize}
   \item There are three standard files: `standard input/output/error'
-    (available in~C/C++ as \n{stdin}, \n{stdout}, \n{stderr})
+    (available in~C/C++ as \lstinline{stdin}, \lstinline{stdout}, \lstinline{stderr})
   \item Normally connected to keyboard, screen, and screen respectively.
   \item Redirection: standard out to file:\\
-    \n{ls > directorycontents}\\
+    \lstinline{ls > directorycontents}\\
     (actually, screen is a file, so it is really a \textbf{re}direct)
   \item Standard in from file:
-    \n{mail < myfile}\\
+    \lstinline{mail < myfile}\\
     (actually, the keyboard is also a file, so again \textbf{re}direction)
   \end{itemize}
 \end{numberedframe}
@@ -284,10 +278,10 @@ myprogram < myinput
   \label{sl-lnx:stderr}
   \begin{itemize}
   \item Sometimes you want to split standard out and error:
-  \item Use \n{stdout}$=1$ and \n{stderr}$=2$:\\
-    \n{myprogram 1>results.out 2>results.err}
+  \item Use \lstinline{stdout}$=1$ and \lstinline{stderr}$=2$:\\
+    \lstinline{myprogram 1>results.out 2>results.err}
   \item Very useful: get rid of errors:\\
-    \n{myprogram 2>/dev/null}
+    \lstinline{myprogram 2>/dev/null}
   \end{itemize}
 \end{numberedframe}
 
@@ -296,7 +290,7 @@ myprogram < myinput
   \begin{itemize}
   \item Redirection is command-to-file.
   \item Pipe: command-to-command\\
-    \n{ls | wc -l}\\
+    \lstinline{ls | wc -l}\\
     (what does this do?)
   \item Unix philosophy: small building blocks, put together.
   \end{itemize}
@@ -305,39 +299,39 @@ myprogram < myinput
 \begin{numberedframe}{More command sequencing}
   \label{sl-lnx:backtick}
   More complicated case of one command providing input for another:
-\begin{verbatim}
+\begin{lstlisting}
 echo "The line count is wc -l foo"
-\end{verbatim}
-where \n{foo} is the name of an existing file.
+\end{lstlisting}
+where \lstinline{foo} is the name of an existing file.
 
 Use backquotes or command macro:
-\begin{verbatim}
+\begin{lstlisting}
 echo "The line count is `wc -l foo`"
 echo "There are $( wc -l foo ) lines"
-\end{verbatim}
+\end{lstlisting}
 \end{numberedframe}
 
-\begin{exercise}{All the pieces together}
+\begin{exerciseframe}{All the pieces together}
   Generate a text file that contains your information:
-\begin{verbatim}
+\begin{lstlisting}
 My user name is:
 eijkhout
 My home directory is:
 /users/eijkhout
 I made this script on:
 isp.tacc.utexas.edu
-\end{verbatim}
-where you use the commands \n{whoami}, \n{pwd}, \n{hostname}.
+\end{lstlisting}
+where you use the commands \lstinline{whoami}, \lstinline{pwd}, \lstinline{hostname}.
 Also cut and paste into another file the part of your terminal session that
 generated this.
 
 Bonus points if you can get the `prompt' and output on the same line.
-\end{exercise}
+\end{exerciseframe}
 
-\begin{exercise}{}
-  This way \n{wc} prints the file name.
+\begin{exerciseframe}{}
+  This way \lstinline{wc} prints the file name.
   Can you figure out a way to prevent that from happening?
-\end{exercise}
+\end{exerciseframe}
 
 \Level 0 {Permissions}
 
@@ -351,17 +345,17 @@ Bonus points if you can get the `prompt' and output on the same line.
     \hline user&group&other\\ \hline rwx&rwx&rwx \\ \hline
   \end{array}
   \]
-  Example: \n{rw-r-----}:\\
+  Example: \lstinline{rw-r-----}:\\
   owner read-write, group read, world nothing
 \end{numberedframe}
 
 \begin{numberedframe}{Permission setting}
   \label{sl-lnx:755}
   \begin{itemize}
-  \item Add permissions \n{chmod g+w myfile}
-  \item recursively: \n{chmod -R o-r mydirectory}
+  \item Add permissions \lstinline{chmod g+w myfile}
+  \item recursively: \lstinline{chmod -R o-r mydirectory}
   \item Permissions are an octal number:
-    \n{chmod 644 myfile}
+    \lstinline{chmod 644 myfile}
   \end{itemize}
 \end{numberedframe}
 
@@ -372,60 +366,73 @@ Bonus points if you can get the `prompt' and output on the same line.
 \begin{numberedframe}{Share files}
   \label{sl-lnx:share}
   \begin{itemize}
-  \item Make a file in your \n{$WORK} file system,
+  \item Make a file in your \lstinline{$WORK} file system,
     and make it visible to the world.
   \item Ask a fellow student to view it.
-  \item $\Rightarrow$ also necessary to make \n{$WORK} readable.\\
-    (Not a good idea to make \n{$HOME} readable.)
+  \item $\Rightarrow$ also necessary to make \lstinline{$WORK} readable.\\
+    (Not a good idea to make \lstinline{$HOME} readable.)
   \end{itemize}
 \end{numberedframe}
 
 \begin{numberedframe}{The \texttt{x} bit}
   \label{sl-lnx:x}
-  The \n{x} bit has two meanings:
+  The \lstinline{x} bit has two meanings:
   \begin{itemize}
   \item For regular files: executable.
   \item For directories: you can go into them.
   \item Make all directories viewable:\\
-    \n{chmod -R g+X,o+X rootdir}
+    \lstinline{chmod -R g+X,o+X rootdir}
   \end{itemize}
 \end{numberedframe}
 
-\Level 0 {Shell programming}
+\Level 0 {Command execution}
 
 \begin{numberedframe}{Command execution}
   \label{sl-lnx:execute}
   \begin{itemize}
   \item Some shell commands are built-in, however most are programs.
-  \item \n{which ls}
-  \item Exercise: what can you find out about the \n{ls} program?
-  \item Programs can be called directly: \n{/bin/ls}
-    or found along the search path \n{$PATH}:\\
-    \n{echo $PATH}
+  \item \lstinline{which ls}
+  \item Exercise: what can you find out about the \lstinline{ls} program?
+  \item Programs can be called directly: \lstinline{/bin/ls}
+    or found along the search path \lstinline{$PATH}:\\
+    \lstinline{echo $PATH}
   \end{itemize}
 \end{numberedframe}
 
 \begin{numberedframe}{The PATH variable}
   \begin{itemize}
-  \item The \n{PATH} variable is set by the system
-  \item You can add in the \n{.bashrc} file
-  \item TACC module system~\ldots
-  \item Temporary:
-\begin{verbatim}
+  \item The \lstinline{PATH} variable is set by the system
+  \item You can set it in the \lstinline{.bashrc} file
+  \item The TACC module system sets it.
+  \item Temporary changes:
+\begin{lstlisting}
 export PATH=/my/bin/dir:${PATH}
-\end{verbatim}
-\item Changes to \n{.bashrc} take effect next time you log in\\
-  or \n{source .bashrc} for immediate results.
+\end{lstlisting}
+\item Changes to \lstinline{.bashrc} take effect next time you log in\\
+  or \lstinline{source .bashrc} for immediate results.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Your \texttt{bin} directory}
+  Common practice:
+  \begin{itemize}
+  \item Have a directory \lstinline+${HOME}/bin+
+  \item Put your own scripts there
+  \item Set
+\begin{lstlisting}
+export PATH=${HOME}/bin:${PATH}
+\end{lstlisting}
+        in your \lstinline{.bashrc}
   \end{itemize}
 \end{numberedframe}
 
 \begin{numberedframe}{Things that look like commands}
   \label{sl-lnx:alias}
   \begin{itemize}
-  \item Use \n{alias} to give a new name to a command:\\
-    \n{alias ls='ls -F'}\\
-    \n{alias rm='rm -i'}
-  \item There is a shell level \n{function} mechanism,
+  \item Use \lstinline{alias} to give a new name to a command:\\
+    \lstinline{alias ls='ls -F'}\\
+    \lstinline{alias rm='rm -i'}
+  \item There is a shell level \lstinline{function} mechanism,
     not explained here.
   \end{itemize}
 \end{numberedframe}
@@ -434,50 +441,52 @@ export PATH=/my/bin/dir:${PATH}
   \label{sl-lnx:ps}
 \begin{tabular}{ll}
   \toprule
-  \n{ps}&list (all) processes\\
-  \n{kill}&kill a process\\
+  \lstinline{ps}&list (all) processes\\
+  \lstinline{kill}&kill a process\\
   \verb+CTRL-c+&kill the foreground job\\
   \verb+CTRL-z+&suspect the foreground job\\
-  \n{jobs}&give the status of all jobs\\
-  \n{fg}&bring the last suspended job to the foreground\\
+  \lstinline{jobs}&give the status of all jobs\\
+  \lstinline{fg}&bring the last suspended job to the foreground\\
   \verb+fg %3+&bring a specific job to the foreground\\
-  \n{bg}&run the last suspended job in the background\\
+  \lstinline{bg}&run the last suspended job in the background\\
   \bottomrule
 \end{tabular}
 
 Exercise: how many programs do you have running?
 \end{numberedframe}
 
+\Level 0 {Shell programming}
+
 \begin{numberedframe}{Variables}
   \label{sl-lnx:var}
   \begin{itemize}
-  \item \n{PATH} is a variable, built-in to the shell
+  \item \lstinline{PATH} is a variable, built-in to the shell
     \item you can make your own variables:
-\begin{verbatim}
+\begin{lstlisting}
 a=5
 echo $a
-\end{verbatim}
+\end{lstlisting}
 No spaces around the equals!
   \end{itemize}
 Exercise: what happens when you try to add two variables together?
-\begin{verbatim}
+\begin{lstlisting}
 a=3
 b=5
-\end{verbatim}
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Variable manipulation}
   \begin{itemize}
   \item Often you want to strip prefixes or suffixes from a variable:\\
-    \n{program.c} $\Rightarrow$ \n{program}\\
-    \n{/usr/bin/program} $\Rightarrow$ \n{program}
+    \lstinline{program.c} $\Rightarrow$ \lstinline{program}\\
+    \lstinline{/usr/bin/program} $\Rightarrow$ \lstinline{program}
   \item Parameter expansion:
-\begin{verbatim}
+\begin{lstlisting}
 a=program.c
 echo ${a%%.c}
 a=/foo/bar/program.c
 eecho ${a##*/}
-\end{verbatim}
+\end{lstlisting}
   \end{itemize}
 \end{numberedframe}
 
@@ -485,18 +494,18 @@ eecho ${a##*/}
   \label{sl-lnx:if}
 \begin{itemize}
   \item Mostly text-based tests:
-\begin{verbatim}
+\begin{lstlisting}
 if [ $a = "foo" ] ; then
   echo "that was foo"
 else
   echo "that was $a"
 fi
-\end{verbatim}
+\end{lstlisting}
 \item Single line:
 {  \footnotesize
-\begin{verbatim}
+\begin{lstlisting}
 if [ $a = "foo" ] ; then echo "foo" ; else echo "something" ; fi
-\end{verbatim}
+\end{lstlisting}
 }
 Note the semicolons!\\
 also spaces around square brackets.
@@ -506,15 +515,15 @@ also spaces around square brackets.
 \begin{numberedframe}{Other conditionals}
   \begin{itemize}
 \item Numerical tests:/
-\begin{verbatim}
+\begin{lstlisting}
 if [ $a -gt 2 ] ....
-\end{verbatim}
-\item File and directory:
+\end{lstlisting}
+\item Test for existence of file and directory:
 { \footnotesize
-\begin{verbatim}
+\begin{lstlisting}
 if [ -f $HOME ] ; then echo "exists" ; else echo "no such" ; fi
 if [ -d $HOME ] ; then echo "directory!" ; else echo "file" ; fi
-\end{verbatim}
+\end{lstlisting}
 }
   \end{itemize}
 \end{numberedframe}
@@ -524,13 +533,13 @@ if [ -d $HOME ] ; then echo "directory!" ; else echo "file" ; fi
   \begin{itemize}
   \item Loop: for item in list\\
     the item is available as macro
-\begin{verbatim}
+\begin{lstlisting}
 for letter in a b c ; do echo $letter ; done
-\end{verbatim}
+\end{lstlisting}
 \item Loop over files:
-\begin{verbatim}
+\begin{lstlisting}
 for file in * ; do echo $file ; done
-\end{verbatim}
+\end{lstlisting}
   \end{itemize}
   Exercises:
   \begin{enumerate}
@@ -540,12 +549,21 @@ for file in * ; do echo $file ; done
   \end{enumerate}
 \end{numberedframe}
 
+\begin{exerciseframe}{Loop over files}
+  \begin{itemize}
+  \item
+    Write a loop over all items in your directory.
+  \item Only for directories print out a message\\
+    \lstinline{foo is a directory}
+  \end{itemize}
+\end{exerciseframe}
+
 \begin{numberedframe}{Numerical looping}
 
   \begin{itemize}
-  \item Type \n{seq 1 5}
+  \item Type \lstinline{seq 1 5}
   \item Exercise: can you figure out how to loop $1\ldots5$?
-\begin{verbatim}
+\begin{lstlisting}
 n=12
 ## input
 for i in ....... ; do echo $i ; done
@@ -553,20 +571,34 @@ for i in ....... ; do echo $i ; done
 1
 ....
 12
-\end{verbatim}
+\end{lstlisting}
   \end{itemize}
 \end{numberedframe}
 
 \Level 0 {Scripting}
 
+\begin{numberedframe}{Sourcing}
+  \begin{itemize}
+  \item Make a file with Unix commands;
+  \item `source' it:
+\begin{lstlisting}
+source my_commands.txt      
+\end{lstlisting}
+  \end{itemize}
+  As if you had typed the commands yourself.
+
+  This is not a script: it affects your shell.
+  Example: put \lstinline{cd} in your commands file.
+\end{numberedframe}
+
 \begin{numberedframe}{Script execution}
   \label{sl-lnx:script}
   \begin{itemize}
-  \item Create a script \n{script.sh}:
-\begin{verbatim}
+  \item Create a script \lstinline{script.sh}:
+\begin{lstlisting}
 #!/bin/bash
 echo foo
-\end{verbatim}
+\end{lstlisting}
 \item Can you execute this? Does the error suggest a remedy?
 \item What is the remaining problem?
   \end{itemize}
@@ -575,38 +607,63 @@ echo foo
 \begin{numberedframe}{Arguments}
 
   \begin{itemize}
-  \item You want to call \n{./script.sh myfile}
-    \item Parameters are \n{$1} et cetera:
-\begin{verbatim}
+  \item You want to call \lstinline{./script.sh myfile}
+    \item Parameters are \lstinline{$1} et cetera:
+\begin{lstlisting}
 #!/bin/bash
 echo "$1 is a file"
-\end{verbatim}
-\item How many arguments: \n{$#}
+\end{lstlisting}
+\item How many arguments: \lstinline{$#}
   \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}{Exercise}
+\begin{exerciseframe}{Script with argument parsing}
+  Take a program you have written that takes input,
+  meaning that it has something like 
+\begin{lstlisting}
+int n;
+cin >> n;
+\end{lstlisting}
+  For instance your \lstinline{fizzbuzz} program.
 
-  Write a script that takes as input a file name argument, and reports how many
-  lines are in that file.
+   Write a script that runs this program.
+   \begin{itemize}
+   \item
+     If you call the script without arguments,
+     you should report an error.
+   \item If you call the script with a negative number
+     it should also report an error.
+   \item If you call the script with an option \lstinline{-h}
+     you should print a messsage
+\begin{lstlisting}
+Usage: ./script.sh n
+  where `n' is any positive number.
+\end{lstlisting}
+   \end{itemize}
+\end{exerciseframe}
 
-  Edit your script to test whether the file has less than 10 lines
-  (use the \n{foo -lt bar} test), and if it does, \n{cat} the
-  file. 
+%% \begin{numberedframe}{Exercise}
 
-  Add a
-  test to your script so that it will give a helpful message if you call
-  it without any arguments.
+%%   Write a script that takes as input a file name argument, and reports how many
+%%   lines are in that file.
 
-\end{numberedframe}
+%%   Edit your script to test whether the file has less than 10 lines
+%%   (use the \lstinline{foo -lt bar} test), and if it does, \lstinline{cat} the
+%%   file. 
 
-\begin{numberedframe}{Exercise}
+%%   Add a
+%%   test to your script so that it will give a helpful message if you call
+%%   it without any arguments.
+
+%% \end{numberedframe}
+
+\begin{exerciseframe}{Plagiarism detector}
   \label{sl-lnx:plag}
   Write a `plagiarism detector'.
   \begin{itemize}
   \item Write a script that accepts two argument: one text file and one directory\\
-    \n{./yourscript.sh myfile targetdir}\\
-    (the \n{.sh} extension is required for this exercise)
+    \lstinline{./yourscript.sh myfile targetdir}\\
+    (the \lstinline{.sh} extension is required for this exercise)
   \item Your script should compare the text file to the contents of the directory:
     \begin{itemize}
     \item If the file is different from anything in the directory, it
@@ -614,29 +671,45 @@ echo "$1 is a file"
       the script should not produce any output in this case.
     \item If the file is the same as a file in the directory,
       the script should complain.
-    \item The test whether files are `the same' should be made with the \n{diff}
-      command. Explore options that allow \n{diff} to ignore differences that
+    \item The test whether files are `the same' should be made with the \lstinline{diff}
+      command. Explore options that allow \lstinline{diff} to ignore differences that
       are only in whitespace.
     \end{itemize}
   \end{itemize}
+\end{exerciseframe}
+
+\begin{comment}
+  \begin{numberedframe}{Turn it in!}
+    \label{sl-lnx:plag-test}
+    Here is how you submit your homework.
+    \begin{itemize}
+    \item There is a test/submit script:\\
+      \lstinline{sds_plagiarism yourscript.sh}\\
+      This tests the correctness of your script.
+    \item If your script passes the test, use the \lstinline{-s} option to submit:\\
+      \lstinline{sds_plagiarism -s yourscript.sh}\\
+      or use the \lstinline{-i} option to submit incomplete:\\
+      \lstinline{sds_plagiarism -i yourscript.sh}
+    \item Add the \lstinline{-d} option for some debugging output:\\
+      \lstinline{sds_plagiarism -d yourscript.sh}
+    \item (after you run the script once, you'll see in your directory
+      the files that are used for testing)
+    \end{itemize}
+  \end{numberedframe}
+\end{comment}
+
+\Level 0 {System}
+
+\begin{numberedframe}{Connecting}
+\begin{lstlisting}
+ssh yourname@othermachine.otheruniversity.edu
+\end{lstlisting}
 \end{numberedframe}
 
-\begin{numberedframe}{Turn it in!}
-  \label{sl-lnx:plag-test}
-  Here is how you submit your homework.
-  \begin{itemize}
-  \item There is a test/submit script:\\
-    \n{sds_plagiarism yourscript.sh}\\
-    This tests the correctness of your script.
-  \item If your script passes the test, use the \n{-s} option to submit:\\
-    \n{sds_plagiarism -s yourscript.sh}\\
-    or use the \n{-i} option to submit incomplete:\\
-    \n{sds_plagiarism -i yourscript.sh}
-  \item Add the \n{-d} option for some debugging output:\\
-    \n{sds_plagiarism -d yourscript.sh}
-  \item (after you run the script once, you'll see in your directory
-    the files that are used for testing)
-  \end{itemize}
+\begin{numberedframe}{Copying}
+\begin{lstlisting}
+scp localfile yourname@othercomputer:otherdirectory
+\end{lstlisting}
 \end{numberedframe}
 
 \end{document}

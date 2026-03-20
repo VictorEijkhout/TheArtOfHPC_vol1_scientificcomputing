@@ -5,7 +5,7 @@
 #### for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
 ####
-#### copyright 2010-2021 Victor Eijkhout
+#### copyright 2010-2025 Victor Eijkhout
 ####
 #### makefile for graph computations
 ####     code/shell
@@ -20,14 +20,15 @@ RUNS =
 info ::
 	@echo "make RUN (where RUN in: ${RUNS})"
 
+include ../../makefiles/Make.compile
+LANGUAGE = bash
+
 RUNS += run_arguments
-.PHONY: arguments run_arguments
 arguments :
 run_arguments :
 	./arguments.sh the quick "brown fox" jumps
 
 RUNS += run_hello
-.PHONY: hello run_hello
 run_hello :
 	@echo "once:" && ./hello.sh
 	@echo "twice:" && ./hello.sh -n 2
@@ -35,13 +36,14 @@ run_hello :
 	@echo "error" && ./hello.sh -e
 
 RUNS += run_submission
-.PHONY: submission run_submission
 submission:
 run_submission :
 	./submit.sh student1
 	./submit.sh student2
 	./submit.sh cheat1
 	./submit.sh cheat2
+
+.PHONY: ${RUNS}
 
 include ../../makefiles/Make.run
 

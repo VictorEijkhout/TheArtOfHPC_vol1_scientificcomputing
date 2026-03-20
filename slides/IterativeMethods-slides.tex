@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-8
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,6 +30,7 @@
 
 \sectionframe{Stationary iteration}
 
+\begin{longstory}
 \frame{\frametitle{Iterative methods}
   Choose any $x_0$ and repeat
   \[ x^{k+1}=Bx^k+c \]
@@ -111,6 +112,8 @@ Exact system solving: $O(n^3)$ cost; iteration: $O(n^2)$ per
 iteration. Potentially cheaper if the number of iterations is low.
 }
 \end{comment}
+\end{longstory}
+
 
 \frame{\frametitle{Abstract presentation}
 
@@ -135,6 +138,8 @@ Iterative scheme:
   \item solving with $K$
   \end{itemize}
 \end{frame}
+
+\begin{longstory}
 
 \frame{\frametitle{Error analysis}
 
@@ -288,6 +293,8 @@ When to stop converging? Can size of the error be guaranteed?
   \end{itemize}
   Without proof: both imply that the error is less than some
   other~$\epsilon'$.  }
+
+\end{longstory}
 
 \sectionframe{Polynomial iterative methods}
 
@@ -491,6 +498,8 @@ $\Rightarrow$ convergence theory
   \end{itemize}
 \end{frame}
 
+\begin{longstory}
+
 \frame{\frametitle{Orthogonality}
 Idea one:
 
@@ -555,6 +564,8 @@ Related concepts:
   \end{itemize}  
 \end{frame}
 
+\end{longstory}
+
 \begin{frame}{Takeaway}
   Each iteration involves:
   \begin{itemize}
@@ -563,6 +574,8 @@ Related concepts:
   \item inner products!
   \end{itemize}
 \end{frame}
+
+\begin{longstory}
 
 \frame{\frametitle{Coupled recurrences form}
 
@@ -594,8 +607,10 @@ Split recurrences:
     p_i = K\inv r_i+\sum_{j<i}\gamma_{ij} p_j,
   \end{cases}
 \]
-Residuals and search directions
+Residuals:~$r_i$; search directions:~$p_i$
 }
+
+\end{longstory}
 
 \frame{\frametitle{Symmetric Positive Definite case}
   Three term recurrence is enough:
@@ -605,6 +620,9 @@ Residuals and search directions
     r_{i+1}=r_i-\delta_iA p_i \\
     p_{i+1} = K\inv r_{i+1}+\gamma_i p_i
   \end{cases}
+\]
+\[ \gamma_i = \frac{r_{i+1}^tr_{i+1}}{r_i^tr_i},
+   \delta_i = \frac{r_i^tr_i}{p_i^tAp_i}
 \]
 }
 
@@ -632,6 +650,8 @@ Residuals and search directions
     \item BiCGstab and QMR: relax the orthogonality
   \end{itemize}
 }
+
+\begin{longstory}
 
 \frame{\frametitle{CG derived from minimization}
 Special case of SPD:
@@ -673,6 +693,5 @@ New: error of neural net
   \end{itemize}
 \end{frame}
 
-%\end{document}
-
+\end{longstory}
 

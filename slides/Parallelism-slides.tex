@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -282,20 +282,20 @@ for (i=0; i<1000000; i++)
 \end{numberedframe}
 
 \begin{numberedframe}{Task-level parallelism}
-  \begin{displayprocedure}{SearchInTree}{root}
-  \SetKw{optimal}{optimal}\SetKw{exit}{exit}\SetKw{search}{SearchInTree}\SetKw{parl}{parallel}
-  \eIf{\optimal(root)}{\exit}
-  {\parl: \search(leftchild),\search(rightchild)}
-\end{displayprocedure}
+%%   \begin{displayprocedure}{SearchInTree}{root}
+%%   \SetKw{optimal}{optimal}\SetKw{exit}{exit}\SetKw{search}{SearchInTree}\SetKw{parl}{parallel}
+%%   \eIf{\optimal(root)}{\exit}
+%%   {\parl: \search(leftchild),\search(rightchild)}
+%% \end{displayprocedure}
 
 Unsynchronized tasks: fork-join\\
 general scheduler
 
-\begin{displayalgorithm}
-  \While{there are tasks left}{
-    wait until a processor becomes inactive;\\
-    spawn a new task on it}
-\end{displayalgorithm}
+%% \begin{displayalgorithm}
+%%   \While{there are tasks left}{
+%%     wait until a processor becomes inactive;\\
+%%     spawn a new task on it}
+%% \end{displayalgorithm}
 \end{numberedframe}
 
 \begin{numberedframe}{Conveniently parallel}
@@ -341,9 +341,9 @@ for (i=my_lower_bound; i<my_upper_bound; i++)
 \]
 \end{numberedframe}
 
-\begin{exercise}{Critical path}
+\begin{exerciseframe}{Critical path}
   \input{ex:gauss-critical}
-\end{exercise}
+\end{exerciseframe}
 
 \begin{numberedframe}{Subblock update}
 \begin{tabbing}
@@ -356,9 +356,9 @@ for (i=my_lower_bound; i<my_upper_bound; i++)
 How many processors can you use maximally in step~$k$?
 \end{numberedframe}
 
-\begin{exercise}{Parallel execution}
+\begin{exerciseframe}{Parallel execution}
   \input{ex:gauss-n2parallel}  
-\end{exercise}
+\end{exerciseframe}
 
 \begin{numberedframe}{Application scaling}
   Single processor.
@@ -368,9 +368,9 @@ How many processors can you use maximally in step~$k$?
   where $f$ is processor frequency.
 \end{numberedframe}
 
-\begin{exercise}{Memory scaling, case 1: Faster processor}
+\begin{exerciseframe}{Memory scaling, case 1: Faster processor}
   \input{ex:gauss-f2f}
-\end{exercise}
+\end{exerciseframe}
 
 \begin{numberedframe}{More processors}
   Keep frequency constant, but vary number of processors~$p$:
@@ -378,9 +378,9 @@ How many processors can you use maximally in step~$k$?
   Each processor now stores $M_p=N^2/p$ elements.  
 \end{numberedframe}
 
-\begin{exercise}{Memory scaling, case 2: More processors}
+\begin{exerciseframe}{Memory scaling, case 2: More processors}
   \input{ex:gauss-p2p}
-\end{exercise}
+\end{exerciseframe}
 
 \Level 1 {The SIMD/MIMD/SPMD/SIMT model for parallelism}
 
@@ -557,9 +557,9 @@ This needs aligned data (\verb+posix_memalign+)
   \end{itemize}
 \end{numberedframe}
 
-\begin{exercise}{Broadcast algorithm}
+\begin{exerciseframe}{Broadcast algorithm}
   Flip last bit, flip one before,~\ldots
-\end{exercise}
+\end{exerciseframe}
 
 \begin{numberedframe}{Design 3: 2/3-D arrays}
   \begin{itemize}
@@ -666,14 +666,14 @@ $}
   }
 \end{numberedframe}
 
-\begin{exercise}{Switch contention}
+\begin{exerciseframe}{Switch contention}
   Suppose the number of processor~$p$ is larger than the number of wires~$w$.\\
   Write a simulation that investigates the probability of contention if you
   send $m\leq w$ message to distinct processors.\\
   Can you do a statistical analysis, starting with a simple case?
 
   \includegraphics[scale=.3]{switchcontention}
-\end{exercise}
+\end{exerciseframe}
 
 \begin{numberedframe}{Mesh clusters}
   \includegraphics[scale=.45]{bluegenellnl}

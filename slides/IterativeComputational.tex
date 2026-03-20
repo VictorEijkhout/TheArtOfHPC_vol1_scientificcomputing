@@ -62,6 +62,8 @@
 
 \end{frame}
 
+\begin{longstory}
+
 \begin{frame}{Inner products}
   \begin{itemize}
   \item Only operation that intrinsically has a $p$ dependence
@@ -155,7 +157,43 @@
   \end{frame}
 \end{comment}
 
+\end{longstory}
+
 \Level 2 {Matrix-vector product}
+
+\begin{frame}{Parallelization}
+  Assume each process has the matrix values and vector values in part
+  of the domain.
+
+  \includegraphics[scale=.3]{pmvp-1d}
+
+  Processor needs to get values from neighbors.
+  
+\end{frame}
+
+\begin{frame}{Second order PDEs; 2D case}
+  \[
+  \begin{cases}
+    -u_{xx}(\bar x)-u_{yy}(\bar x)=f(\bar x)&x\in\Omega=[0,1]^2\\
+    u(\bar x)=u_0&\bar x\in\delta\Omega
+  \end{cases}
+  \]
+  Now using central differences in both $x$ and $y$ directions:
+  \[ 4u(x,y) - u(x+y,y) - u(x-h,y) - u(x,y+h) -u(x,y-h) \]
+\end{frame}
+
+\begin{frame}{The stencil view of things}
+  \hbox\bgroup
+  \includegraphics[scale=.09]{laplacedomain}
+  \( \begin{matrix}  &-1&\\ -1&4&-1\\ &-1& \\ \end{matrix} \)
+  \egroup
+\end{frame}
+
+\frame{\frametitle{Operator view of spmvp}
+Difference stencil
+
+\includegraphics[scale=.09]{laplaceparallel}
+}
 
 \begin{frame}{PDE, 2D case}
     A difference stencil applied to a two-dimensional square
@@ -165,28 +203,14 @@
     \includegraphics[scale=.1]{laplaceparallel}
 \end{frame}
 
-\begin{frame}{Parallelization}
-  Assume each process has the matrix values and vector values in part
-  of the domain.
-
-  \includegraphics[scale=.3]{pmvp-1d}
-
-  \onslide<2->{Processor needs to get values from neighbors.}
-  
-\end{frame}
-
-\begin{frame}{Halo region}
-  The `halo' region of a process, induced by a stencil
-
-  \includegraphics[scale=.1]{laplaceghost}
-\end{frame}
-
 \begin{frame}{Matrices in parallel}
   \[ y\leftarrow Ax\]
   and $A,x,y$ all distributed:
 
   \includegraphics[scale=.12]{distmvp}
 \end{frame}
+
+\begin{longstory}
 
 \begin{frame}{Matrix-vector product performance}
   \begin{itemize}
@@ -205,6 +229,36 @@
   Beware of optimizations that change the math!
 \end{frame}
 
+\begin{exerciseframe}
+    Show that a one-dimensional partitioning of the domain leads to a
+  partitioning of the matrix into block rows
+  with a contiguous block for each process.
+  Show that a two-dimensional
+  partitioning of the domain does not give this structure.
+\end{exerciseframe}
+
+\begin{exerciseframe}
+  Machine:
+    \begin{itemize}
+  \item Network {\it Latency:} $\alpha=1\mu s=10^{-6}s$.
+  \item Network {\it Bandwidth:} $1Gb/s$ corresponds to $\beta=10^{-9}$.
+  \item {\it Computation rate:} A per-core flops rate of $1G$flops
+    means $\gamma=10^{-9}$. 
+  \end{itemize}
+    Case 1. divide the domain, by horizontal slabs of size $n\times (n/p)$.
+    Analyze communication and compuputation complexity
+    and weak scaling efficiency. Show that this does not scale weakly.
+    
+  Case 2. Divide the domain into patches of size
+  %
+  $(n/\sqrt p)\times (n/\sqrt p)$.
+  %
+  Show that this case does scale weakly.
+
+  For the proposed machine above, derive concrete numbers
+  for a domain of one-million-by-one-million points over one thousand processors.
+\end{exerciseframe}
+
 \Level 2 {Preconditioners}
 
 \begin{frame}{Preconditioners}
@@ -217,3 +271,4 @@
   \end{itemize}
 \end{frame}
 
+\end{longstory}

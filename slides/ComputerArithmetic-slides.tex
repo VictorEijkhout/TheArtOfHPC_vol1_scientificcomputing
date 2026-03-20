@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2020
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,14 +62,17 @@ i_mod_8 = i & 7
 \end{lstlisting}
 (How does that last one work?)
   \end{itemize}
-
 \end{numberedframe}
 
-\begin{exercise}{Bit operations}
+\begin{numberedframe}{Bit operations}
+  \input{frames/sl:bit-and-or}
+\end{numberedframe}
+
+\begin{exerciseframe}{Bit operations}
   \label{ex:bit-even}
   Use bit operations to test whether a number is odd or even.\\
   Can you think of more than one way?
-\end{exercise}
+\end{exerciseframe}
 
 \Level 1 {Integers}
 
@@ -106,13 +109,13 @@ Specify the number of decimal digits with \n{selected_int_kind(n)}.
 
 \end{numberedframe}
 
-\begin{exercise}{Powers of two}
+\begin{exerciseframe}{Powers of two}
   \label{ex:two-powers}
   Print $2^n$ for $n=0,\ldots,31$. There are at least two ways of
   generating these powers.
 
   Also print the bit pattern. What is unexpected?
-\end{exercise}
+\end{exerciseframe}
 
 \begin{numberedframe}{Negative integers}
   Problem:
@@ -266,14 +269,14 @@ Subtraction $m-n$:
   This is not a fatal error: your program continues with the wrong result.
 \end{numberedframe}
 
-\begin{exercise}{Integer overflow}
+\begin{exerciseframe}{Integer overflow}
   Investigate what happens when you perform an integer calculation
   that leads to overflow. What
   does your compiler say if you try to write down a nonrepresentible
   number explicitly, for instance in a declaration or assignment statement?
 
   Language lawyer remark: signed integer overflow is Undefined Behavior in C/C++.
-\end{exercise}
+\end{exerciseframe}
 
 \Level 1 {Floating point numbers}
 
@@ -333,13 +336,13 @@ Analogous to scientific notation $x=6.022\cdot 10^{23}$:
 \end{numberedframe}
 
 
-\begin{exercise}{Floating point overflow}
+\begin{exerciseframe}{Floating point overflow}
   For real numbers $x,y$, the quantity $g=\sqrt{(x^2+y^2)/2}$ satisfies
   \[ g\leq \max\{|x|,|y|\} \]
   so it is representable if $x$ and~$y$ are.
   What can go wrong if you compute $g$ using the above formula?
   Can you think of a better way?
-\end{exercise}
+\end{exerciseframe}
 
 \begin{numberedframe}{Other exceptions}
   Overflow: \texttt{Inf}
@@ -382,7 +385,7 @@ $1\cdot\beta^L$;\\
     \hline
     \hbox{sign}&\hbox{exponent}&\hbox{mantissa}\\
     \hline
-    p&e=e_1\cdots e_8 &s=s_1\dots s_{23}\\
+    &e=e_1\cdots e_8 &s=s_1\dots s_{23}\\
     \hline
     31&30\cdots 23&22\cdots 0\\
     \hline
@@ -431,15 +434,17 @@ $1\cdot\beta^L$;\\
   \]
 \end{numberedframe}
 
-\begin{exercise}{Float vs Int}
+\begin{exerciseframe}{Float vs Int}
   Note that the exponent doesn't come at the end. This has an interesting consequence.
 
   What is the interpretation of
   \[ 0\cdots 0\,1\,1\,1 \]
   as int? What as float?
+\end{exerciseframe}
 
-  What is the largest integer that is representible as float?
-\end{exercise}
+\begin{exerciseframe}
+    What is the largest integer that is representible as float?
+\end{exerciseframe}
 
 \begin{numberedframe}{Other precisions}
   \begin{itemize}
@@ -477,7 +482,7 @@ for instance $1.256\cdot 10^{12}$?
 \end{numberedframe}
 
 
-\begin{exercise}{Round-off}
+\begin{exerciseframe}{Round-off}
   \input{ex:e-compute}
 %%   The number $e\approx 2.72$, the base for the natural logarithm, has
 %%   various definitions. One of them is 
@@ -489,7 +494,7 @@ for instance $1.256\cdot 10^{12}$?
 
 %%   Can you come up with a better way of computing~$e$?
 %%   How is this number actually computed?
-\end{exercise}
+\end{exerciseframe}
 \begin{answer}
   \snippetwithoutput{elimit}{code/754}{elimit}
 \end{answer}
@@ -512,7 +517,7 @@ for instance $1.256\cdot 10^{12}$?
   $1+\epsilon>1$.
 \end{numberedframe}
 
-\begin{exercise}{Machine epsilon}
+\begin{exerciseframe}{Machine epsilon}
   Write a small program that computes the machine epsilon for both
   single and double precision. Does it
   make any difference if you set the
@@ -520,7 +525,19 @@ for instance $1.256\cdot 10^{12}$?
 
   (For C++ programmers: can you write a templated program that works
   for single and double precision?)
-\end{exercise}
+\end{exerciseframe}
+
+\begin{numberedframe}{Limits header}
+  \input{frames/sl:stl-limits}
+\end{numberedframe}
+
+\begin{numberedframe}{Int limits}
+  \input{frames/sl:std-limit-int}
+\end{numberedframe}
+
+\begin{numberedframe}{Float limits}
+  \input{frames/sl:float-limits}
+\end{numberedframe}
 
 \begin{numberedframe}{Addition}
   \begin{enumerate}
@@ -779,7 +796,7 @@ Operations with ``same'' outcomes are not equally stable:\\
 matrix inversion is unstable, elimination is stable
 \end{numberedframe}
 
-\begin{exercise}{Fixed-point iteration}
+\begin{exerciseframe}{Fixed-point iteration}
   Consider the iteration
   \[ x_{n+1}=f(x_n) = \
   \begin{cases}
@@ -792,7 +809,7 @@ matrix inversion is unstable, elimination is stable
 
   Now code this function and see what happens with various starting
   points~$x_0$. Can you explain this?
-\end{exercise}
+\end{exerciseframe}
 
 \Level 1 {More}
 
@@ -815,7 +832,9 @@ Arbitrary precision: GMPlib
 
 Interval arithmetic
 
-Half precision bfloat16
+Half and quad precision,
+
+bfloat16 and other exotic formats
 \end{numberedframe}
 
 

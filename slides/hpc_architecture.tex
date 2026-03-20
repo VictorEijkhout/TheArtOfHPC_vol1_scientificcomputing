@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -16,23 +16,20 @@
 
 \documentclass[11pt,headernav]{beamer}
 
+\newif\ifFormatAsBook \FormatAsBookfalse
 \input courseformat
-
-%% \input idxmacs
-\newcommand\indexterm[1]{#1}
-\newcommand\indexac[1]{\ac{#1}}
-\input acmacs
-
 \input tikzplot
 \def\qrcode{qrvol1}
 
-\excludecomment{answer}
-\input semester
+\newcommand\indexterm[1]{#1}
+\newcommand\indextermbus[2]{#1 #2}
+\newcommand\indexac[1]{\ac{#1}}
 
+\input semester
 \begin{document}
 
 \title{Processor Architecture}
-\author[Eijkhout]{Victor Eijkhout}
+\author{Victor Eijkhout}
 \date{\hpcsemester}
 
 \begin{frame}

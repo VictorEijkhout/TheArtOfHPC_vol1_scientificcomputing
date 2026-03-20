@@ -4,7 +4,7 @@
  **** Introduction to High Performance Scientific Programming
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright 2010-2020
+ **** copyright 2010-2024
  ****
  **** Programs for hardware exploration
  ****
@@ -131,7 +131,7 @@ int main(int argc,char ** argv) {
     int microsec_duration;
     auto start_time = Clock::now();
     float nwrites{0.};
-#pragma omp parallel shared(nwrites,write_array)
+    #pragma omp parallel shared(nwrites,write_array)
     {
       float nw{0.};
       int iproc = omp_get_thread_num();

@@ -17,10 +17,14 @@
 %%packtsnippet top500
 
 There are several informal ways of measuring just `how big' a computer
-is. The most popular is the TOP500 list, maintained at
+is.
+The most popular is the TOP500 list, maintained at
 \url{http://www.top500.org/}, which records a computer's performance
-on the \indextermbus{Linpack}{benchmark}. \indexterm{Linpack} is a
-package for linear algebra operations, and no longer in use, since it
+on the 
+\indextermbus{Linpack}{benchmark}~\cite{Dongarra1987LinpackBenchmark}.
+%
+\indexterm{Linpack} is a
+package for linear algebra operations, no longer in common use, since it
 has been superseded by \indexterm{Lapack} for shared memory and
 \indexterm{Scalapack} for distributed memory computers. The benchmark
 operation is the solution of a (square, nonsingular, dense) linear
@@ -29,24 +33,30 @@ forward and backward solution.
 
 The LU factorization operation is one that has great opportunity for
 cache reuse, since it is based on the matrix-matrix multiplication
-kernel discussed in section~\ref{sec:gemm}. It also has the property
-that the amount of work outweighs the amount of communication:
+kernel discussed in section~\ref{sec:gemm}.
+(Subsequently using the factorization to solve a linear system
+involves recursion and is therefore harder to optimize;
+however, it is of a lower order of complexity, so of lesser importance,
+and consequently not discussed in this book.)
+It also has the property
+that the amount of work outweighs the amount of
+memory traffic and network communication:
 $O(n^3)$ versus~$O(n^2)$.  As a result, the Linpack benchmark is
 likely to run at a substantial fraction of the peak speed of the
 machine. Another way of phrasing this is to say that the Linpack
 benchmark is a \emph{CPU-bound} or \indexterm{compute-bound}
 algorithm.
 
-%%packtsnippet end
-
 Typical efficiency figures are between 60 and 90 percent. However, it
 should be noted that many scientific codes do not feature the dense
 linear solution kernel, so the performance on this benchmark is not
 indicative of the performance on a typical code. Linear system
-solution through iterative methods (section~\ref{sec:iterative}), for
-instance, is much less efficient in a flops-per-second sense, being
-dominated by the bandwidth between CPU and memory
-(a~\indexterm{bandwidth-bound}  algorithm).
+solution through iterative 
+  methods (section~\ref{sec:iterative}),
+for instance, is much less efficient in a flops-per-second sense, being
+dominated by the bandwidth between CPU and memory.
+
+%%packtsnippet end
 
 One implementation of the Linpack benchmark that is often used is
 `High-Performance LINPACK'

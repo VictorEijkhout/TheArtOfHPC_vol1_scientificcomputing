@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -15,9 +15,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\input commonmacs
-\newif\ifInBook \InBooktrue
-
 %% skip stuff that's only for the html version
 \excludecomment{htmlequation}
 
@@ -26,19 +23,28 @@
 %% needed for the carpentry book
 %%
 \usepackage{xr-hyper}
-% only in tutorials \externaldocument[HPSC-]{scicompbook}
-\newcommand\HPSCref[2][section]{HPC book, #1~\ref{HPSC-#2}}
-% only in book \externaldocument[CARP-]{scicomptutorials}
-\newcommand\CARPref[2][section]{%
-        \textsl{Tutorials book, #1~\ref{CARP-#2}}}
+
+\ifVolumeOne
+\newcommand\HPSCref[2][section]{#1~\ref{#2}}
+\else
+\externaldocument[HPSC-]{scicompbook}
+\newcommand\HPSCref[2][section]{%
+  \textsl{HPC book, #1~\ref{HPSC-#2}}}
+\fi
+
 \externaldocument[PCSE-]{parcompbook}
-\newcommand\PCSEref[2][section]{%
-        \textsl{Parallel Programming book, #1~\ref{PCSE-#2}}}
+\newcommand\CARPref[2][section]{%
+  \textsl{Tutorials book, #1~\ref{CARP-#2}}}
+
 \externaldocument[ISP-]{ispbook}
+\newcommand\PCSEref[2][section]{%
+  \textsl{Parallel Programming book, #1~\ref{PCSE-#2}}}
+
 \newcommand\ISPref[2][section]{%
         \textsl{Introduction to Scientific Programming book, #1~\ref{ISP-#2}}}
+
 \begin{notlulu}
-  \usepackage[xetex,colorlinks,pagebackref=true]{hyperref}
+  \usepackage[colorlinks,pagebackref=true\latexengine]{hyperref}  
   \hypersetup{bookmarksopen=true}
   \renewcommand*{\backref}[1]{}
   \renewcommand*{\backrefalt}[4]{[{\tiny%
@@ -63,50 +69,12 @@
 \newcounter{lesson} % for lesson tables
 \newcommand\furtherreading{\Level 0 {Further Reading}\label{sec:furtherreading-\chapshortname}}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%
-%%%% Outlining
-%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage{outliner}
-\OutlineLevelStart0{\chapter{#1}
-  \maillink{arabic{chapter} "#1"}{#1}{chapter}
-}
-\OutlineLevelStart1{\section{#1}
-\maillink{\arabic{chapter}.\arabic{section}}{#1}{section}
-}
-\OutlineLevelCont1{\section{#1}
-\maillink{\arabic{chapter}.\arabic{section}}{#1}{section}
-}
-\OutlineLevelStart2{\subsection{#1}
-  \maillink
-    {\arabic{chapter}.\arabic{section}.\arabic{subsection}}{#1}{subsection}
-}
-\OutlineLevelStart3{\subsubsection{#1}}
-\setcounter{secnumdepth}{4}
-\OutlineLevelStart4{\paragraph{\bf #1}}
 
-\newcommand\heading[1]{\paragraph*{\textbf{#1}}}
-
-\newenvironment{specialnote}[1]
-               {\par\begin{raggedright}
-                 \leftskip=.5\unitindent
-                 \noindent\textsl{#1.}\kern1em\ignorespaces}
-               {\end{raggedright}\par}
-\newenvironment{taccnote}
-  {\begin{specialnote}{TACC note}}
-  {\end{specialnote}}
 \newenvironment{enrichment}
   {\begin{specialnote}{Enrichment}}
   {\end{specialnote}}
 \newenvironment{zshnote}
   {\begin{specialnote}{Zsh note}}
-  {\end{specialnote}}
-\newenvironment{fortrannote}
-  {\begin{specialnote}{Fortran note}}
-  {\end{specialnote}}
-\newenvironment{pythonnote}
-  {\begin{specialnote}{Python note}}
   {\end{specialnote}}
 
 %%
@@ -144,3 +112,4 @@
 {\par\hbox\bgroup\kern\unitindent
 \begin{tabular}{#1}\toprule}
 {\bottomrule\end{tabular}\egroup\par}
+

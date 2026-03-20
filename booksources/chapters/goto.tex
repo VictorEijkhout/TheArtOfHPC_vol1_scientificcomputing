@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -25,23 +25,28 @@ We will now consider an implementation, due
 to \indextermsub{Kazushige}{Goto}~\cite{GotoGeijn:2008:Anatomy}, that
 indeed achieves close to peak performance.
 
-The matrix-matrix algorithm has three loops, each of which we can block,
+%%packtsnippet goto
+
+The matrix-matrix multiplication algorithm has three loops,
+each of which we can block (section~\ref{sec:coding-cachesize}),
 giving a six-way nested loop.
 Since there are no recurrences on the output elements, all resulting
 loop exchanges are legal. Combine this with the fact that the loop blocking
 introduces three blocking parameters, and you'll see that the number of
 potential implementations is enormous. Here we present the global reasoning
-that underlies the Goto implementation; for a detailed discussion see the paper cited.
+that underlies the Goto implementation;
+for a detailed discussion see~\cite{GotoGeijn:2008:Anatomy}.
 
-We start by writing the product $C\leftarrow A\cdot B$ (or
-  $C\leftarrow C+AB$ according to the Blas standard) as a sequence of
-  low-rank updates:
-\[ C_{**} = \sum_k  A_{*k}B_{k*} \]
 \begin{figure}[ht]
 \includegraphics[scale=.1]{gotoblas1}
 \caption{Matrix-matrix multiplication as a sequence of low-rank updates.}
 \label{fig:goto1}
 \end{figure}
+
+We start by writing the product $C\leftarrow A\cdot B$ (or
+  $C\leftarrow C+AB$ according to the \ac{BLAS} standard) as a sequence of
+  low-rank updates:
+\[ C_{**} += \sum_k  A_{*k}B_{k*} \]
 See figure~\ref{fig:goto1}. Next we derive the `block-panel' multiplication
 by multiplying a block of~$A$ by a `sliver' of~$B$; see figure~\ref{fig:goto2}.
 \begin{figure}[ht]
@@ -51,11 +56,11 @@ by multiplying a block of~$A$ by a `sliver' of~$B$; see figure~\ref{fig:goto2}.
 \end{figure}
 Finally, the inner algorithm accumulates a small row $C_{i,*}$,
 typically of small size such as~4, by accumulating:
-\begin{verbatim}
+\begin{lstlisting}[language=matlab]
 // compute C[i,*] :
 for k:
    C[i,*] = A[i,k] * B[k,*]
-\end{verbatim}
+\end{lstlisting}
 See figure~\ref{fig:goto3}.
 \begin{figure}[ht]
 \includegraphics[scale=.12]{gotoblas3}
@@ -66,22 +71,26 @@ Now this algorithm is tuned.
 \begin{itemize}
 \item We need enough registers for \verb+C[i,*]+, \verb+A[i,k]+ and
   \verb+B[k,*]+. On current processors that means that we accumulate
-  four elements of~$C$.
+  four or eight elements of~$C$.
 \item Those elements of~$C$ are accumulated, so they stay in register
   and the only data transfer is loading of the elements of $A$
-  and~$B$; there are no stores!
+  and~$B$; there are no stores until the elements are fully formed!
 \item The elements \verb+A[i,k]+ and \verb+B[k,*]+ stream from L1.
 \item Since the same block of~$A$ is used for many successive slivers
   of~$B$, we want it to stay resident; we choose the blocksize of $A$
-  to let it stay in L2 cache.
+  to let it stay in L2 cache. Now we only stream~$B$.
 \item In order to prevent TLB problems, $A$~is stored by rows. If we
   start out with a matrix in (Fortran) \indexterm{column-major}
   storage, this means we have to make a copy. Since copying is of a
   lower order of complexity, this cost is amortizable.
 \end{itemize}
 
-This algorithm be implemented in specialized hardware, as in the
+This algorithm is available in optimized libraries
+such as \intelmkl, BLIS~\cite{BLIS1}, OpenBLas~\cite{OpenBLAS:github}.
+It can also be implemented in specialized hardware, as in the
 \indextermbus{Google}{TPU}~\cite{GoogleTPUpage}, giving great energy efficiency.
+
+%%packtsnippet end
 
 \begin{comment}
 \begin{verbatim}

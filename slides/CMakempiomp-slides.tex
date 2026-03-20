@@ -108,13 +108,23 @@ target_link_libraries(
 \end{lstlisting}
 \end{numberedframe}
 
-\sectionframe{TBB}
+\sectionframe{More}
 
 \begin{numberedframe}{TBB}
 \begin{lstlisting}
 find_package(TBB REQUIRED)
 target_link_libraries( ${PROJECT_NAME} PUBLIC TBB::tbb)
 \end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{CUDA driver}
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/cuda/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{CUDA kernels}
+  \lstset{numbers=left,numberstyle=\tiny}
+  \lstinputlisting{tutorials/cmake/cuda/kernels/CMakeLists.txt}
 \end{numberedframe}
 
 \begin{numberedframe}{Kokkos}
@@ -145,10 +155,5 @@ See \url{https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Compiling.html}
   \tiny
   \lstset{numbers=left,numberstyle=\tiny}
   \lstinputlisting{tutorials/cmake/mpiprogf/CMakeLists.txt}
-\end{numberedframe}
-
-\begin{numberedframe}{OpenMP}
-  \lstset{numbers=left,numberstyle=\tiny}
-  \lstinputlisting{tutorials/cmake/openmp/CMakeLists.txt}
 \end{numberedframe}
 

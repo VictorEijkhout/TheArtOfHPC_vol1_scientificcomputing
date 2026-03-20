@@ -1,0 +1,43 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of slides for
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2025
+%%%%
+%%%% CMakecustom-slides.tex : cmake slides for customization
+%%%% see hpc_cmake.tex for driver file
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Basic customizations}
+  Compiler settings:
+\begin{lstlisting}
+cmake -D CMAKE_CXX_COMPILER=icpx
+\end{lstlisting}
+Alternatively:
+\begin{lstlisting}
+export CXX=icpx
+cmake .......
+\end{lstlisting}
+Many settings can be done on the commandline:
+\begin{lstlisting}
+    -D BUILD_SHARED_LIBS=ON
+\end{lstlisting}
+Also check out the \n{ccmake} utility.
+\end{numberedframe}
+
+\begin{numberedframe}{Tracing and logging}
+  \begin{itemize}
+  \item CMake prints some sort of progress messages.
+  \item To see commandlines:
+\begin{lstlisting}[language=bash]
+cmake -D CMAKE_VERBOSE_MAKEFILE=ON ...
+make V=1
+\end{lstlisting}
+\item CMake leaves behind a log and error file, but these are insufficent:
+  \item $\Rightarrow$~use the above verbose mode and capture all output.
+  \end{itemize}
+\end{numberedframe}

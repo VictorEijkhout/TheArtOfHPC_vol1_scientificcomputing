@@ -17,12 +17,18 @@
 \newcommand{\project}{\item[Project]}
 \excludecomment{quiz}
 
-\newcounter{excounter}[chapter]
 \makeatletter
-\renewcommand\theexcounter{\@arabic\c@chapter.\@arabic\c@excounter}
+\ifFormatAsBook
+  \newcounter{excounter}[chapter]
+  \renewcommand\theexcounter{\@arabic\c@chapter.\@arabic\c@excounter}
+  \newcommand\exercisenumber{\arabic{chapter}.\arabic{excounter}}
+\else
+  \newcounter{excounter}
+  \renewcommand\theexcounter{\@arabic\c@excounter}
+  \newcommand\exercisenumber{\arabic{excounter}}
+\fi
 \makeatother
 
-\newcommand\exercisenumber{\arabic{chapter}.\arabic{excounter}}
 \generalcomment{exercise}
   {\refstepcounter{excounter}%
    \begingroup\def\ProcessCutFile{}\par

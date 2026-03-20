@@ -1,0 +1,7 @@
+%%%%
+Contents of shared library (U/T lines only)
+%%%%
+0000000000001110 T bar(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+                 U std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long)@GLIBCXX_3.4.9
+                 U std::ios_base_library_init()@GLIBCXX_3.4.32
+                 U std::cout@GLIBCXX_3.4

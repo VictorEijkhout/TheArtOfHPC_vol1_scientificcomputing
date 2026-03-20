@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.12 )
+cmake_minimum_required( VERSION 3.13 )
 project( cmakegood2a VERSION 1.0 )
 
 message( NOTICE "Making project ${PROJECT_NAME}, version ${PROJECT_VERSION}")

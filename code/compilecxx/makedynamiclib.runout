@@ -1,0 +1,4 @@
+%%%%
+Demonstration: making shared library
+%%%%
+icpx -g -O2 -std=c++20  -Wl,-demangle -o libs/libfoo.so -shared foosub.o

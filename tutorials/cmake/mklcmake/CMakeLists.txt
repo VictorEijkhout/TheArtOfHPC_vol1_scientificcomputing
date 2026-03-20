@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.12 )
+cmake_minimum_required( VERSION 3.13 )
 project( mklconfigfind VERSION 1.0 )
 
 ## https://www.intel.com/content/www/us/en/develop/documentation/onemkl-linux-developer-guide/top/getting-started/cmake-config-for-onemkl.html

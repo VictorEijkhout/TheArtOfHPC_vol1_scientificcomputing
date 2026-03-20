@@ -5,7 +5,7 @@
 #### This Makefile belong with the sources
 #### for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-2023
+#### copyright 2010-2024
 ####
 #### makefile for code/compilecxx
 ####
@@ -16,28 +16,26 @@ info ::
 
 LANGUAGE = CXX
 MODE = seq
-PROGRAMS = hello rotate
+PROGRAMS = hello fooprog oneprogram rotate 
 include ../../makefiles/Make.compile
 
 info ::
 	@echo "make oneprogram"
-oneprogram : fooprog.o foosub.o
-	cmd="${LINKER} -g -O2 -o $@ $^" \
-	 && if [ "${ECHO}" = "1" ] ; then \
-	        echo $$cmd ; fi \
-	 && eval $$cmd
+oneprogram :: fooprog.o foosub.o
 
 info ::
 	@echo "%%%% illustration of compilation and linking"
 	@echo "make run_makeoneprogram run_makeseparatecompile"
 	@echo
-RUNS += run_makeoneprogram run_makeseparatecompile
+RUNS += run_makeoneprogram run_makeseparatecompilex
 run_makeoneprogram : example_clean
-	${CLINKER} -o oneprogram fooprog.c foosub.c
+	${LINKER} -o oneprogram fooprog.cpp foosub.cpp
 	./oneprogram
-run_makeseparatecompile : example_clean
-	@make --no-print-directory oneprogram
-	./oneprogram
+run_makeseparatecompilex : clean example_clean
+	@make --no-print-directory fooprog.o ECHO=1 ECHOPREFIX=none
+	@make --no-print-directory foosub.o ECHO=1  ECHOPREFIX=none
+	@make --no-print-directory fooprog ECHO=1 EXTRA_OBJS=foosub.o ECHOPREFIX=none 2>/dev/null
+	./fooprog
 
 include ../../makefiles/Make.run
 
@@ -60,13 +58,18 @@ rpathprogram : fooprog.o  makedynamiclib
 	${LINKER} -o $@ fooprog.o -Wl,-rpath=./libs -Llibs -lfoo
 	@ls -l $@
 SHAREOPTION = -shared
-.PHONY: makedynamiclib 
-RUNS += run_makedynamiclib
+.PHONY: makedynamiclib showdynamiclib
+RUNS += run_makedynamiclib run_showdynamiclib
 makedynamiclib : example_clean 
 	@make --no-print-directory PIC_OPTION=-fPIC libs/libfoo.so
 run_makedynamiclib : 
 	@echo "%%%%"; echo "Demonstration: making shared library" ; echo "%%%%"
 	@make --no-print-directory makedynamiclib
+showdynamiclib :
+	@nm -C libs/libfoo.so | awk '$$2=="T" {print} $$1=="U" {print}'
+run_showdynamiclib: 
+	@echo "%%%%"; echo "Contents of shared library (U/T lines only)" ; echo "%%%%"
+	@make --no-print-directory showdynamiclib
 
 LIBS += libs/libfoo.so
 libs/libfoo.so : foosub.o
@@ -172,7 +175,7 @@ total_clean ::
 ##
 ## public copy
 ##
-PUBLICEXTS = cxx runout
+PUBLICEXTS = cpp runout
 include ../../makefiles/Make.public
 
 ##

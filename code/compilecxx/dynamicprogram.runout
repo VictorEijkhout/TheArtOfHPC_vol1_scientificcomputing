@@ -1,35 +1,35 @@
 
 Linking to shared library
 
-clang++ -o libs/libfoo.so -shared foosub.o
-clang++ -o dynamicprogram fooprog.o -Llibs -lfoo
--rwxr-xr-x  1 eijkhout  staff  50136 Sep 27 05:01 dynamicprogram
+icpx -g -O2 -std=c++20  -Wl,-demangle -o libs/libfoo.so -shared foosub.o
+icpx -g -O2 -std=c++20  -Wl,-demangle -o dynamicprogram fooprog.o -Llibs -lfoo
+-rwx------ 1 eijkhout G-816966 68704 Dec 13 17:10 dynamicprogram
 
 .. note the size of the program
 
--rwxr-xr-x  1 eijkhout  staff  50136 Sep 27 05:01 dynamicprogram
+-rwx------ 1 eijkhout G-816966 68704 Dec 13 17:10 dynamicprogram
 
 .. note unresolved link to a library
 
-otool -L dynamicprogram | grep libfoo
-	libs/libfoo.so (compatibility version 0.0.0, current version 0.0.0)
+ldd dynamicprogram | grep libfoo
+	libfoo.so => not found
 
 .. running by itself:
 
-clang++ -o libs/libfoo.so -shared foosub.o
-clang++ -o dynamicprogram fooprog.o -Llibs -lfoo
--rwxr-xr-x  1 eijkhout  staff  50136 Sep 27 05:02 dynamicprogram
-hello world
+icpx -g -O2 -std=c++20  -Wl,-demangle -o libs/libfoo.so -shared foosub.o
+icpx -g -O2 -std=c++20  -Wl,-demangle -o dynamicprogram fooprog.o -Llibs -lfoo
+-rwx------ 1 eijkhout G-816966 68704 Dec 13 17:10 dynamicprogram
+./dynamicprogram: error while loading shared libraries: libfoo.so: cannot open shared object file: No such file or directory
 
 .. note resolved with LD_LIBRARY_PATH
 
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./libs otool -L dynamicprogram | grep libfoo
-	libs/libfoo.so (compatibility version 0.0.0, current version 0.0.0)
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./libs ldd dynamicprogram | grep libfoo
+	libfoo.so => ./libs/libfoo.so (0x00001523feb4c000)
 
 .. running with updated library path:
 
-clang++ -o libs/libfoo.so -shared foosub.o
-clang++ -o dynamicprogram fooprog.o -Llibs -lfoo
--rwxr-xr-x  1 eijkhout  staff  50136 Sep 27 05:02 dynamicprogram
+icpx -g -O2 -std=c++20  -Wl,-demangle -o libs/libfoo.so -shared foosub.o
+icpx -g -O2 -std=c++20  -Wl,-demangle -o dynamicprogram fooprog.o -Llibs -lfoo
+-rwx------ 1 eijkhout G-816966 68704 Dec 13 17:10 dynamicprogram
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./libs dynamicprogram
 hello world

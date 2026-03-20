@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.12 )
+cmake_minimum_required( VERSION 3.13 )
 project( pkgconfiglib VERSION 1.0 )
 
 find_package( PkgConfig REQUIRED )

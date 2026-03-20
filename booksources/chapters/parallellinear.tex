@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -1420,6 +1420,7 @@ iterate on the permuted system.
 
 \Level 1 {The parallel sparse matrix-vector product}
 \index{sparse!matrix-vector product!parallel|(}
+\label{sec:spmvp}
 \input chapters/spmvp
 \index{sparse!matrix-vector product!parallel|)}
 
@@ -2009,7 +2010,7 @@ we take the operator point of view. In figures \ref{fig:laplaceparallel}
 and~\ref{fig:ghost} you saw how applying a stencil in each point of the domain 
 induces certain relations between processors: in order to evaluate the matrix-vector
 product $y\leftarrow Ax$ on a processor, that processor needs to obtain the $x$-values
-of its \indexterm{ghost region}. Under reasonable assumptions on the partitioning
+of its \indexterm{halo region}. Under reasonable assumptions on the partitioning
 of the domain over the processors, the number of messages involved will be fairly
 small.
 

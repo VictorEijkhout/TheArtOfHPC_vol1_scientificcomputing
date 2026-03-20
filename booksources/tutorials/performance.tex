@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -59,7 +59,7 @@ For instance, in \emph{Fortran} there is the \n{system_clock}
 routine\index{systemclock@\n{system_clock}}:
 \lstinputlisting[language=Fortran]{code/papi/timers/ftimer.F}
 with output
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=shell]
  Clock frequency:       10000
    1.000000       813802544   813826097   2.000000  
 \end{lstlisting}
@@ -70,7 +70,7 @@ with output
 In \emph{C} there is the \n{clock} function:
 \verbatiminput{papi/timers/ctimer.c}
 with output
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=shell]
 clock resolution: 1000000
 res: 1.000000e+00
 start/stop: 0.000000e+00,2.310000e+00
@@ -103,7 +103,7 @@ For more details, see \ISPref{sec:chrono}.
 
 There are unix system calls that can be used for timing:
 \indextermtt{getrusage}
-\begin{lstlisting}[language=c++]
+\begin{lstlisting}[language=cpp]
 #include <sys/resource.h>                        
 double time00(void)                              
 {                                                
@@ -114,7 +114,7 @@ double time00(void)
 }
 \end{lstlisting}
 and \indextermtt{gettimeofday}
-\begin{lstlisting}[language=c++]
+\begin{lstlisting}[language=cpp]
 #include <sys/time.h>
 double time00(void)
 {
@@ -251,18 +251,18 @@ allows you to define your own timers and events.
 The profiler of the \indexterm{GNU} compiler, \indextermunixdef{gprof}
 requires recomplication and linking with an extra flag:
 
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=shell]
 % gcc  -g -pg -c ./srcFile.c 
 % gcc  -g -pg -o MyProgram ./srcFile.o 
 \end{lstlisting}
 
 The program is then run by itself:
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=shell]
 % ./MyProgram
 \end{lstlisting}
 leaving behind a file \indextermtt{gmon.out}.
 This can be post-processed and displayed:
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=shell]
 % gprof    ./exeFile gmon.out > profile.txt
 % gprof -l ./exeFile gmon.out > profile_line.txt
 % gprof -A ./exeFile gmon.out > profile_anotated.txt
@@ -276,20 +276,21 @@ Coming with most Unix distributions,
 \indextermunixdef{perf}
 does not require any instrumentation.
 
-Run:
-\begin{lstlisting}[language=bash]
+Profile generation is done by prefix your commandline with \lstinline{perf record}.
+Various options exist, for instance for methods of call graph generation:
+\begin{lstlisting}[language=shell]
 perf record myprogram myoptions
 perf record --call-graph fp myprogram myoptions
 \end{lstlisting}
-This gathers event information into a file \n{perf.data},
-or do
-\begin{lstlisting}[language=bash]
+By default, event information is gathered into a file \n{perf.data},
+but other names can be specified
+\begin{lstlisting}[language=shell]
 perf record -o myoutputfile myprogram myoptions
 \end{lstlisting}
 for a custom output file.
 
 Post-process and display:
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=shell]
 perf report
 perf report --demangle ## for C++
 perf report -i myoutputfile
@@ -298,14 +299,14 @@ The display may be interactive;
 the following gives a pure ascii display,
 limiting to events amount to more than one percent,
 and printing out only the columns of percentage and routine name:
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=shell]
 perf report --stdio \
     --percent-limit=1 \
     --fields=Overhead,Symbol
 \end{lstlisting}
 
 Example:
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=shell]
 +   14.15%     4.07%  fsm.exe  fsm.exe              [.] std::vector<richdem::dephier::Depression<double>, std::allocator<richdem::dephier::Depression<double> > >::at
 +    8.92%     4.58%  fsm.exe  fsm.exe              [.] std::vector<richdem::dephier::Depression<double>, std::allocator<richdem::dephier::Depression<double> > >::_M_range_check
 \end{lstlisting}
@@ -318,11 +319,28 @@ and that more than half of that went into the range checking.
 %%packtsnippet vtune
 
 The \indextermbus{Intel}{VTune} profiler also needs no instrumentation.
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=shell]
 vtune -collect hotspots yourprogram options
 ## result are in a directory: r000hs
 vtune -report hotspots -r r000hs
 \end{lstlisting}
+The output directory can be specified with the \lstinline{-r} option.
+The default name uses a coding \lstinline{r999xx}
+where \lstinline{999} numbers from \lstinline{000},
+and the \lstinline{xx} encodes the collection type,
+such as \lstinline{hs} for `hotspots'.
+
+Some useful options:
+\begin{itemize}
+\item \lstinline{-report-knob show-issues=false}: skip reporting of
+  low CPU utilization and other non-issues.
+\item \lstinline{-format csv -csv-delimiter comma}:
+  generate comma-separated output for easy post-processing.
+\item \lstinline{-column "Function,CPU Time"}: selective reporting.
+\end{itemize}
+
+%% https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2023-0/generating-command-line-reports.html
+
 For graphical output you can use \indextermtt{vtune-gui}.
 Rather than analyzing results, this lets you set up, run,
 and analyze an application.

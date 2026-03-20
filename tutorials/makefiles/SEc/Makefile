@@ -30,10 +30,4 @@ all : ${OBJ}
 obj/%.o : src/%.c
 	cc -o $@ -c $<
 
-.PHONY: generate
-generate :
-	@for e in ${EXAMPLES} ; do \
-	  out=../../../snippets/makeout-$$e \
-	   && make --no-print-directory $$e > $$out \
-	   && git add $$out || echo >/dev/null \
-	; done
+include ../Make.snippets

@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -20,6 +20,9 @@
 %%       }
 \documentclass[11pt,fleqn,letterpaper,twoside,openany]{boek3}
 
+%% tikz figures have trouble with aux files, so include:
+%% \nofiles
+
 %pyskipbegin
 \input macros/comment.sty % use our own prerelease
 \usepackage{verbatim}
@@ -34,7 +37,10 @@
 \input inex
 
 % fancy text stuff
+% requires xetex or luatex
 \usepackage{fontspec}
+\newcommand\latexengine{,xetex}
+%\newcommand\latexengine{,pdftex}
 \setmainfont[
   Extension=.otf,
   UprightFont={*-Regular},
@@ -45,25 +51,8 @@
 \usepackage{unicode-math}
 \setmathfont{LibertinusMath-Regular.otf}
 
-%% \usepackage{amssymb}
-%% \usepackage[fleqn]{amsmath}
-
-
-\usepackage[algo2e,noline,noend]{algorithm2e}
-\newenvironment{displayalgorithm}
- {\par
-  \begin{algorithm2e}[H]\leftskip=\unitindent \parskip=0pt\relax
-  \DontPrintSemicolon
-  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
- }
- {\end{algorithm2e}\par}
-\newenvironment{displayprocedure}[2]
- {\everymath{\strut}
-  \begin{procedure}[H]\leftskip=\unitindent\caption{#1(#2)}}
- {\end{procedure}}
-
-% for edmond
-\usepackage{subfigure,algorithmic,algorithm}
+%\usepackage{amssymb}
+%\usepackage[fleqn]{amsmath}
 
 \def\lulurevision{2016}
 
@@ -101,19 +90,9 @@
 \setlength{\headheight}{14pt}
 \addtolength{\topmargin}{-2pt}
 
-\input exmacs
-
-\newwrite\nx
-\newcommand\CHAPTER[2]{
-\Level 0 {#1}\label{ch:#2}
-\def\chapshortname{#2}
-{\SetBaseLevel 1 \input chapters/#2
- \write\chapterlist{\chapshortname}
- \openout\nx=exercises/\chapshortname-nx.tex
- \write\nx{\arabic{excounter}}
- \closeout\nx
- \SetBaseLevel 0
-}}
+%%
+%% chapter handling
+%%
 
 \newcommand\APPLICATION[2]{
 \Level 0 {#1}\label{app:#2}
@@ -126,42 +105,6 @@
  \SetBaseLevel 0
 }}
 
-\newcommand\TUTORIAL[2]{
-\vfill\pagebreak \Level 0 {#1}\label{tut:#2}
-\def\chapshortname{#2}\setcounter{excounter}0\relax
-{\SetBaseLevel 1 \input tutorials/#2
-\write\chapterlist{\chapshortname}
-\openout\nx=exercises/\chapshortname-nx.tex
-\write\nx{\arabic{excounter}}
-\closeout\nx
-\SetBaseLevel 0
-}}
-\newif\ifprojects\projectsfalse
-\newcommand\PROJECT[2]{
-\ifprojects \vfill\pagebreak \else \projectstrue \fi
-\Level 1 {#1}\label{prj:#2}
-\def\chapshortname{#2}
-{\SetBaseLevel 2 \input projects/#2
-\write\chapterlist{\chapshortname}
-\openout\nx=exercises/\chapshortname-nx.tex
-\write\nx{\arabic{excounter}}
-\closeout\nx
-\SetBaseLevel 0
-}}
-\newcommand\APPENDIX[2]{
-  \vfill\pagebreak \Level 0 {#1}\label{app:#2}
-  \def\chapshortname{#2}
-  {\SetBaseLevel 1 %% {\index{#2|(textbf}}
-   \setcounter{excounter}0
-   \input appendices/#2 %%{\index{#2|)}}
-   \write\chapterlist{\chapshortname}
-   \openout\nx=exercises/\chapshortname-nx.tex
-   \write\nx{\arabic{excounter}}
-   \closeout\nx
-   \SetBaseLevel 0
-  }
-}
-
 \newcommand\maillink[3]{
   \href{mailto:eijkhout@tacc.utexas.edu?subject=comment on section #1 "#2"}
     {comments on this #3?}\par
@@ -169,34 +112,41 @@
 \renewcommand\maillink[3]{}
 
 \newif\ifInBook \InBooktrue
+\newif\ifFormatAsBook\FormatAsBooktrue
 \input scimacs
 \input acromacs
 \input blockmacs
+\input exmacs
+\input commonmacs
+\def\TutorialsSubDir{tutorials}
+\input commonbookmacs
+\input bookoutline
+\newif\ifVolumeOne \VolumeOnetrue
 \input bookmacs
+\input displaymacs
+%% \input bookoutline
 \externaldocument[CARP-]{scicomptutorials}
 \input listingmacs
 \def\codesnippetsdir{snippets.code}
 \def\tutsnippetsdir{snippets}
-\input snippetmacs
-\input tutmacs
-\input idxmacs
-\input tikzplot
+\def\codedir{code}
+\projectsfalse
 
-\begin{notlulu}
-  \usepackage[xetex,colorlinks,pagebackref=true]{hyperref}
-  \hypersetup{bookmarksopen=true}
-  \renewcommand*{\backref}[1]{}
-  \renewcommand*{\backrefalt}[4]{[{\tiny%
-      \ifcase #1 Not cited.%
-      \or Cited on page~#2.%
-      \else Cited on pages #2.%
-      \fi%
-  }]}
-  \usepackage[all]{hypcap}
-\end{notlulu}
-\begin{lulu}
-  \usepackage{url}
-\end{lulu}
+%%
+%% indexing
+%%
+\input idxmacs
+\makeindex %%[columns=1]
+\makeindex[name=def] %% ,columns=2
+\makeindex[name=cpp]
+\makeindex[name=f90]
+\makeindex[name=jul]
+\input pcseidxmacs
+
+\input snippetmacs
+\input standardmacs
+\input tutmacs
+\input tikzplot
 
 \makeindex
 
@@ -277,6 +227,7 @@
 \APPLICATION{Big data}{analytics}
 \APPLICATION{Computer graphics}{graphics}
 \APPLICATION{Quantum computing}{quantum}
+%% https://github.com/juraam/stable-diffusion-from-scratch
 \end{notready}
 
 % not for public consumption
@@ -346,9 +297,9 @@ that feature a combination of coding and analysis.
 \index{parallel prefix|see{prefix operation}}
 \index{Roadrunner|see{IBM!Roadrunner}}
 
-\begin{multicols}{2}
-  \printindex
-\end{multicols}
+%% \begin{multicols}{2}
+%%   \printindex
+%% \end{multicols}
 
 \Level 0 {List of acronyms}
 

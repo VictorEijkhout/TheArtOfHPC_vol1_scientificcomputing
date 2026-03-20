@@ -3,7 +3,7 @@
  **** This code is part of the book
  **** Introduction to High Performance Scientific Programming
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
- **** copyright 2010-2020
+ **** copyright 2010-2024
  ****
  **** Programs for hardware exploration
  ****
@@ -35,7 +35,7 @@ int main() {
    */
   uint64_t memorysize_in_bytes{ 5000000 };
   auto memorysize_in_words = memorysize_in_bytes/8;
-  auto memory = allocate_cache<double>(memorysize_in_words);
+  auto storage = allocate_cache<double>(memorysize_in_words);
 
   stringstream report;
   report 
@@ -55,12 +55,12 @@ int main() {
      * Timed kernel
      */
     int microsec_duration;
-    auto stream_length = memory.size()-distance - 8 ;
+    auto stream_length = storage.size()-distance - 8 ;
     auto start_time = Clock::now();
     for (int r=0; r<how_many_repeats; r++) {
       for ( int t=0; t<stream_length; t++) {
-	//cout << "r=" << r << ", d=" << distance << ", t=" << t << " out of " << memory.size() << endl;
-	memory[t+distance] = 1.1 * memory[t] + 1.2;
+	//cout << "r=" << r << ", d=" << distance << ", t=" << t << " out of " << storage.size() << endl;
+	storage[t+distance] = 1.1 * storage[t] + 1.2;
       }
     }
     microsec_duration = compute_microsec_duration(start_time);
@@ -68,7 +68,7 @@ int main() {
     /*
      * Prevent compiler optimization
      */
-    cache_force(memory);
+    cache_force(storage);
 
     if (distance==1) microsec_reference = microsec_duration;
     report << report_serial_time(microsec_duration,distance,microsec_reference);

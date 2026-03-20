@@ -3,101 +3,272 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% This text file is part of the source of 
-%%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
-%%%% slidemacs : macros specifically for the slides
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% slidemacs.tex : goes after snippetmacs
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\input commonmacs
-\newif\ifInBook \InBookfalse
+%%
+%% slide/book switches
+%%
+\newif\ifInBook\InBookfalse
+\excludecomment{fullsources}
+\let\slidebreak=\\
+\newdimen\unitindent \unitindent=20pt
 
-%% index replacements?
-\let\indextermtt\n
-\let\indextermttdef\n
-\let\indexcmake\n
-\let\indexunix\n
-\def\indextermbus#1#2{#1 #2}
+%% \input listingmacs
+\lstset{style=slidesnippetcode}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment{theindex}{%
+  %% let's hope we're not actually including an index
+}{} 
+
+%%%%
+%%%% Frames
+%%%%
+\newcounter{excounter}
+\newcounter{revcounter}
+\newenvironment
+    {reviewframe}
+    {\begin{frame}[containsverbatim]
+        \frametitle{Review \arabic{revcounter}}
+        \refstepcounter{revcounter}}
+    {\end{frame}}
+\newenvironment
+    {exerciseframe}[1][]
+    {\def\optfile{#1}
+      \ifx\optfile\empty\else\message{VLE EXERCISE #1}%\index[programming]{#1}
+      \fi
+      \begin{frame}[containsverbatim]{Exercise \arabic{excounter} \tt{#1}}
+        \refstepcounter{excounter}
+        \addcontentsline
+            {exe}{section}
+            {\protect\numberline\hbox to 1in {\arabic{excounter}~{#1}\hfil}}
+    }
+    {\end{frame}}
+\newenvironment
+    {optexerciseframe}[1][]
+    {\begin{frame}[containsverbatim]
+        \def\optfile{#1}
+        \ifx\optfile\empty
+        \frametitle{Exercise (optional) \arabic{excounter}}
+        \else
+        \frametitle{Exercise (optional) \arabic{excounter} (\tt{#1})}
+        \fi
+        \refstepcounter{excounter}}
+    {\end{frame}}
+
 %%%%
 %%%% Outlining
 %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{outliner}
-\OutlineLevelStart
-    0
-    {
-      \section{#1}%%\addcontentsline{toc}{part}{#1}
-      \begin{frame}\Huge\bf #1\relax\end{frame}
-    }
-\OutlineLevelStart 1{\section{#1}
-  \frame{\begin{shaded}\Large\bf #1\end{shaded}}}
-\newcounter{beamerpart}
-\def\partframe#1{\frame{\refstepcounter{beamerpart}
-    \Huge Part~\arabic{beamerpart}\par #1}}
-\def\sectionframe{\Level 0}
+\newcounter{sectionframe}
+\newcounter{subsectionframe}[sectionframe]
+\OutlineLevelStart 0{\refstepcounter{sectionframe}
+  \frame{\part{#1}\Large\bf \arabic{sectionframe}. #1}}
+\OutlineLevelStart 1{\refstepcounter{subsectionframe}
+  \frame{\section{#1}\large\bf \arabic{sectionframe}.\arabic{subsectionframe}. #1}}
+\OutlineLevelStart 2{\frame{\subsection{#1}\large\bf #1}}
+\OutlineLevelStart 3{\frame{\subsubsection*{#1}\large\bf #1}}
+\setcounter{tocdepth}{3}
+
+\def\sectionframe#{\Level 1 }
+\def\subsectionframe#{\Level 2 }
 \usepackage{framed}
 \colorlet{shadecolor}{blue!15}
-\OutlineLevelStart 2{\subsection{#1}
-  \frame{\begin{shaded}\large #1\end{shaded}}}
-%% \OutlineLevelCont 2{\end{frame}\begin{frame}{#1}}
-%% \OutlineLevelEnd 2{\end{frame}}
-%\OutlineTracetrue
 
-\newcommand\tocslide{
-\begin{frame}{Table of Contents}
-  \def\contentsline########1########2{\item ########2}
-  \IfFileExists{\jobname.toc}
-               {\begin{itemize}
-                   \tableofcontents
-               \end{itemize}
-               }{}
-\end{frame}
+%%
+%% stuff
+%%
+\newcommand\furtherreading{\Level 0 {Further Reading}\label{sec:furtherreading-\chapshortname}}
+\newcommand\heading[1]{\paragraph*{\textbf{#1}}}
+
+%%
+%% use beamer buttons for links to exercise slides
+%%
+\newcommand\exref[1]{%
+  % split at the colon and attach a colon to catch the label of the exercise
+  \exrefcolon#1:}
+\def\exrefcolon ex:#1:{%
+  % we use \label{ex:foo} and \frame[label=exfoo]
+  \hyperlink{#1}{\noexpand\beamergotobutton{ex#1}}%
+}
+\newcommand\skeleton[1]{}
+
+\newtheorem{remark}{Remark}
+\expandafter\ifx\csname definition\endcsname\relax
+    \newtheorem{definition}{Definition}
+\fi
+\expandafter\ifx\csname theorem\endcsname\relax
+    \newtheorem{theorem}{Theorem}
+\fi
+\expandafter\ifx\csname lemma\endcsname\relax
+    \newtheorem{lemma}{Lemma}
+\fi
+
+%%%%
+%%%% Verbatim source handling
+%%%%
+
+% each chapter has a list of sources
+\newtoks\chaptersourcelist
+\newcommand\addchaptersource[1]{
+  \edef\temp{\global\chaptersourcelist={\the\chaptersourcelist #1}}\temp
+}
+\newcommand\listchaptersources{
+  \expandafter\ChapterSourceHeader\the\chaptersourcelist\LSR
+  %\tracingmacros=2 \tracingonline=1
+  %\texttt{\the\chaptersourcelist}\par
+  \expandafter\ListSourcesRecursively\the\chaptersourcelist\LSR
+}
+\def\LSR{\LSR}
+\def\ChapterSourceHeader#1\LSR{
+  \def\test{#1\LSR}
+  \ifx\test\LSR
+  \else
+    \Level 0 {Sources used in this chapter}
+  \fi
+}
+\def\ListSourcesRecursively#1{
+  \def\test{#1}
+  \ifx\test\LSR
+  \else
+    % list the file
+    \textbf{Listing of code #1}:
+    {\footnotesize \verbatiminput{#1}}
+    \par
+    % continue
+    \expandafter\ListSourcesRecursively
+  \fi
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%
-%%%% algorithm
-%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage[algo2e,noline,noend]{algorithm2e}
-\newenvironment{displayalgorithm}
- {\par
-  \begin{algorithm2e}[H]\leftskip=\unitindent \parskip=0pt\relax
-  \DontPrintSemicolon
-  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
- }
- {\end{algorithm2e}\par}
-\newenvironment{displayprocedure}[2]
- {\everymath{\strut}
-  \begin{procedure}[H]\leftskip=\unitindent\caption{#1(#2)}}
- {\end{procedure}}
-\def\sublocal{_{\mathrm\scriptstyle local}}
+\usepackage{acronym}
+\newwrite\acrowrite
+\openout\acrowrite=acronyms.tex
+\def\acroitem#1#2{\acrodef{#1}{#2}
+    \write\acrowrite{\message{defining #1}\noexpand\acitem{#1}{#2}}
+}
+\acroitem{AVX}{Advanced Vector Extensions}
+\acroitem{BSP}{Bulk Synchronous Parallel}
+\acroitem{CAF}{Co-array Fortran}
+\acroitem{CUDA}{Compute-Unified Device Architecture}
+\acroitem{DAG}{Directed Acyclic Graph}
+\acroitem{DSP}{Digital Signal Processing}
+\acroitem{FPU}{Floating Point Unit}
+\acroitem{FFT}{Fast Fourier Transform}
+\acroitem{FSA}{Finite State Automaton}
+\acroitem{GPU}{Graphics Processing Unit}
+\acroitem{HPC}{High-Performance Computing}
+\acroitem{HPF}{High Performance Fortran}
+\acroitem{ICV}{Internal Control Variable}
+\acroitem{MIC}{Many Integrated Cores}
+\acroitem{MPMD}{Multiple Program Multiple Data}
+\acroitem{MIMD}{Multiple Instruction Multiple Data}
+\acroitem{MPI}{Message Passing Interface}
+\acroitem{MTA}{Multi-Threaded Architecture}
+\acroitem{NUMA}{Non-Uniform Memory Access}
+\acroitem{OS}{Operating System}
+\acroitem{PGAS}{Partitioned Global Address Space}
+\acroitem{PDE}{Partial Diffential Equation}
+\acroitem{PRAM}{Parallel Random Access Machine}
+\acroitem{RDMA}{Remote Direct Memory Access}
+\acroitem{RMA}{Remote Memory Access}
+\acroitem{SAN}{Storage Area Network}
+\acroitem{SaaS}{Software as-a Service}
+\acroitem{SFC}{Space-Filling Curve}
+\acroitem{SIMD}{Single Instruction Multiple Data}
+\acroitem{SIMT}{Single Instruction Multiple Thread}
+\acroitem{SM}{Streaming Multiprocessor}
+\acroitem{SMP}{Symmetric Multi Processing}
+\acroitem{SOR}{Successive Over-Relaxation}
+\acroitem{SP}{Streaming Processor}
+\acroitem{SPMD}{Single Program Multiple Data}
+\acroitem{SPD}{symmetric positive definite}
+\acroitem{SSE}{SIMD Streaming Extensions}
+\acroitem{TLB}{Translation Look-aside Buffer}
+\acroitem{UMA}{Uniform Memory Access}
+\acroitem{UPC}{Unified Parallel C}
+\acroitem{WAN}{Wide Area Network}
+\acresetall
+\closeout\acrowrite
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%
-%%%% Exercises
-%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcounter{excounter}
+\def\chaptertitle{\csname\chaptername title\endcsname}
+\def\chaptershorttitle{\csname\chaptername shorttitle\endcsname}
+
+%%%%
+%%%% index macros without index
+%%%%
+
+%% \newif\ifShowRoutine
+%% \def\indexmpishow#{\bgroup \InnocentChars
+%%   \ShowRoutinetrue
+%%   \afterassignment\mpitoindex\edef\indexedmpi}
+%% \def\mpitoindex{%\tracingmacros=2
+%%   \edef\tmp{%
+%%     \noexpand\ifShowRoutine
+%%         \noexpand\lstinline+\indexedmpi+\noexpand\nobreak
+%%     \noexpand\fi
+%%   }%
+%%   \tmp
+%%   \egroup\nobreak
+%% }
+%% \let\indexmpiref\indexmpishow
+%% \let\indexmpidef\indexmpishow
+%% \let\indexmpidepr\indexmpishow
+%% \let\indexmpldef\indexmpishow
+%% \let\indexmplref\indexmpishow
+%% \let\indexmplshow\indexmpishow
+%% \let\indexompshow\indexmpishow
+%% \let\indexcudashow\indexmpishow
+%% \let\indexpetscshow\indexmpishow
+%% \let\indexomppragma\indexmpishow
+%% \def\indextermbus#1#2{\emph{#1 #2}}
+%% \let\indexc\lstinline
+
+\newcommand\petscroutineslide[1]{
+  \begin{frame}[containsverbatim]{#1}
+    \footnotesize
+    \verbatiminput{#1.tex}
+  \end{frame}
+}
+
+%%%%
+%%%% Environments
+%%%%
+\newcounter{slidecount}
+\setcounter{slidecount}{0}
+%% what is the optional argument for?
 \newenvironment
-    {exercise}[1]
-    {
-      \refstepcounter{excounter}
-      \begin{frame}[containsverbatim]{Exercise \arabic{excounter}: #1}
+    {numberedframe}[2][]
+    {%% if there is an optional tag, reuse the previous slide number
+      \def\empty{}\def\opt{#1}
+      \ifx\empty\opt
+          \refstepcounter{slidecount}
+      \else
+          \addtocounter{framenumber}{-1}    
+      \fi
+      %% \arabic{slidecount}
+      \begin{frame}[containsverbatim]{#2}
     }
     {\end{frame}}
-               
-\newcounter{slidecounter}
-\newenvironment
-    {numberedframe}[1]
-    {
-      \refstepcounter{slidecounter}
-      \begin{frame}[containsverbatim]{%\arabic{slidecounter}\
-          #1}
-    }
-    {\end{frame}}
+\newenvironment{question}{\begin{quotation}\textbf{Question.\ }}{\end{quotation}}
+\newenvironment{fortrannote}
+  {\begin{quotation}\noindent\textsl{Fortran note.\kern1em}\ignorespaces}
+  {\end{quotation}}
+\newenvironment{pythonnote}
+  {\begin{quotation}\noindent\textsl{Python note.\kern1em}\ignorespaces}
+  {\end{quotation}}
+\newenvironment{taccnote}
+  {\begin{quotation}\noindent\textsl{TACC note.\kern1em}\ignorespaces}
+  {\end{quotation}}
+\newenvironment{mpifour}
+  {\begin{quotation}\textbf{MPI-4:\ }\ignorespaces}{\end{quotation}}
+

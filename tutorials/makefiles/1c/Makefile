@@ -5,7 +5,7 @@
 #### This Makefile belong with the sources
 #### for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-2022
+#### copyright 2010-2024
 ####
 #### makefile for Make tutorial in C
 ####
@@ -20,3 +20,5 @@ bar.o : bar.c
 	cc -c bar.c
 clean :
 	rm -f *.o fooprog
+
+include ../Make.snippets

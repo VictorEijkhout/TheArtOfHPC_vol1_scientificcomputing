@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.12 )
+cmake_minimum_required( VERSION 3.13 )
 project( cxxprogram VERSION 1.0 )
 
 add_executable( ${PROJECT_NAME} ${PROJECT_NAME}.cxx )

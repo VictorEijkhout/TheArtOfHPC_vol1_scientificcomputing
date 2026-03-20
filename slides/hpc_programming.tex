@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -19,6 +19,7 @@
 \usepackage{beamerthemeTACC}
 \parskip=.5\baselineskip plus .5\baselineskip
 \input semester
+\def\codesnippetsdir{../snippets.code}
 
 \setcounter{tocdepth}{1}
 %% \AtBeginSection[]
@@ -37,6 +38,8 @@
 \newdimen\unitindent \unitindent=20pt
 
 \usepackage{comment}
+\excludecomment{gcc}
+\includecomment{icpx}
 
 \input slidemacs
 \input snippetmacs
@@ -45,14 +48,12 @@
 \usepackage{makeidx}
 \makeindex
 
-\includecomment{diagonalstorage}
-
 \begin{document}
 \parskip=10pt plus 5pt minus 3pt
 
 \title{HPC tools for programming}
 \author{Victor Eijkhout}
-\date{2022}
+\date{2024}
 
 \begin{frame}{}
   \titlepage
@@ -150,7 +151,17 @@
   \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}{Simple compilation}
+\Level 1 {Basic compilation}
+
+\begin{numberedframe}{Simple compilation: files involved}
+  \begin{itemize}
+  \item Use a text editor to create a program file: \n{myprogram.cpp}
+  \item Use a compiler to translate that to an executable: \n{myprogram}
+  \item \ldots~and then run that file.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Simple compilation: the process}
   \label{sl-tut:compile1}
   \includegraphics[scale=.3]{compilelink1}
   \begin{itemize}
@@ -159,6 +170,7 @@
   \end{itemize}
   \begin{multicols}{2}
     \small
+\begin{gcc}
 \begin{verbatim}
   %% gcc hello.c
   %% ./a.out
@@ -170,6 +182,20 @@
 %% ./helloprog
 hello world
 \end{verbatim}
+\end{gcc}
+\begin{icpx}
+\begin{verbatim}
+  %% icpx hello.cpp
+  %% ./a.out
+  hello world
+\end{verbatim}
+\columnbreak
+\begin{verbatim}
+%% icpx -o helloprog hello.cpp
+%% ./helloprog
+hello world
+\end{verbatim}
+\end{icpx}
   \end{multicols}
 \end{numberedframe}
 
@@ -184,6 +210,8 @@ hello world
   
   \ListStrippedSource{../code/compilec}{hello.c}
 \end{numberedframe}
+
+\Level 1 {Basic compilation}
 
 \begin{numberedframe}{Separate compilation}
   \label{sl-tut:compile2}

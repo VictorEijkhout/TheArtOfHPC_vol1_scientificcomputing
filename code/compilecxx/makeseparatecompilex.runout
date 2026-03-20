@@ -1,0 +1,5 @@
+icpx -g -O2 -std=c++20 -c fooprog.cpp
+icpx -g -O2 -std=c++20 -c foosub.cpp
+icpx -g -O2 -std=c++20 -Wl,-demangle -o fooprog fooprog.o foosub.o
+./fooprog
+hello world

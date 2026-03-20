@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -14,7 +14,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\lstset{language=bash}
+\lstset{language=shell,style=\snippetstyle}
 
 Unix is an \indexacf{OS}, that is, a layer of software
 between the user or a user program and the hardware. It takes care of
@@ -33,7 +33,8 @@ however, there is not just one Unix:
   The differences between
   these are deep down and if you are taking this tutorial you probably
   won't see them for quite a while.
-\item Within Linux there are various \indextermbus{Linux}{distribution}s
+\item Within Linux there are various
+  \index{distribution|see{Linux, distribution}}\indextermbus{Linux}{distribution}s
   such as \indexterm{Red Hat} or \indexterm{Ubuntu}. These mainly differ
   in the organization of system files and again you probably need not worry
   about them.
@@ -110,9 +111,9 @@ listing of files that are in your present location.
 %\practical
 \begin{exercise}
   If the \indexunix{ls} command shows that there are files, do
-  \n{ls name} on one of those.
-  By using an option, for instance \n{ls -s name}
-  you can get more information about \n{name}.
+  \lstinline{ls name} on one of those.
+  By using an option, for instance \lstinline{ls -s name}
+  you can get more information about \lstinline{name}.
 \end{exercise}
 
 \begin{caution}
@@ -121,8 +122,8 @@ listing of files that are in your present location.
 \end{caution}
 
 The \indexunix{ls} command can give you all sorts of information.
-In addition to the above \n{ls -s} for the size, there is
-\n{ls -l} for the `long' listing.
+In addition to the above \lstinline{ls -s} for the size, there is
+\lstinline{ls -l} for the `long' listing.
 It shows (things we will get to later such as) ownership and permissions,
 as well as the size and creation date.
 
@@ -140,11 +141,11 @@ used to create some simple content.
 
 %\practical
 \begin{exercise}
-  Type \n{cat > newfilename} (where you can pick any filename) and
+  Type \lstinline{cat > newfilename} (where you can pick any filename) and
   type some text. Conclude with \n{Control-d} on a line by
   itself: press the \texttt{Control} key and hold it while you
   press the \texttt{d} key.  Now use \indexunix{cat} to view the
-  contents of that file: \n{cat newfilename}.
+  contents of that file: \lstinline{cat newfilename}.
 \end{exercise}
 \begin{outcome}
   In the first use of \indexunix{cat}, text was appended
@@ -155,7 +156,7 @@ used to create some simple content.
 \begin{caution}
   Be sure to type \n{Control-d} as the first thing on the last line of input. If you
     really get stuck, \n{Control-c} will usually get you out. Try this:
-    start creating a file with \n{cat > filename} and hit \n{Control-c} in
+    start creating a file with \lstinline{cat > filename} and hit \n{Control-c} in
     the middle of a line. What are the contents of your file?
 \end{caution}
 
@@ -172,13 +173,13 @@ is the \indexunixdef{man} command, for `manual'.
 The descriptions available this way are referred to as the \indexterm{manual page}s.
 
 \begin{exercise}
-  Read the man page of the \n{ls} command:
-  \n{man ls}.
+  Read the man page of the \lstinline{ls} command:
+  \lstinline{man ls}.
   Find out the size and the time~/ date of the last change
   to some files, for instance the file you just created.
 \end{exercise}
 \begin{outcome}
-  Did you find the \n{ls -s} and \n{ls -l} options? The first one
+  Did you find the \lstinline{ls -s} and \lstinline{ls -l} options? The first one
   lists the size of each file, usually in kilobytes, the other gives
   all sorts of information about a file, including things you will
   learn about later.
@@ -202,17 +203,17 @@ The \indexunix{man} command
 \Level 2 {\texttt{touch}}
 
 The \indexunix{touch} command creates an empty file, or updates the timestamp of
-a file if it already exists. Use \n{ls -l} to confirm this behavior.
+a file if it already exists. Use \lstinline{ls -l} to confirm this behavior.
 
 \Level 2 {\texttt{cp, mv, rm, ln}}
 
 The \indexunix{cp} can be used for copying a file (or directories,
-see below): \n{cp file1 file2} makes a copy of \n{file1} and names it
-\n{file2}.
+see below): \lstinline{cp file1 file2} makes a copy of \lstinline{file1} and names it
+\lstinline{file2}.
 
 %\practical
 \begin{exercise}
-  Use \n{cp file1 file2} to copy a file. Confirm that the two files
+  Use \lstinline{cp file1 file2} to copy a file. Confirm that the two files
   have the same contents. If you change the original, does anything
   happen to the copy?
 \end{exercise}
@@ -221,7 +222,7 @@ see below): \n{cp file1 file2} makes a copy of \n{file1} and names it
   or is deleted.
 \end{outcome}
 \begin{caution}
-  If \n{file2} already exists, you
+  If \lstinline{file2} already exists, you
   will get an error message.
 \end{caution}
 
@@ -233,9 +234,9 @@ A file can be renamed with \indexunix{mv}, for `move'.
 \end{exercise}
 
 
-Files are deleted with \n{rm}. This command is dangerous: there is no
+Files are deleted with \lstinline{rm}. This command is dangerous: there is no
 undo.
-For this reason you can do \n{rm -i} (for `interactive') which
+For this reason you can do \lstinline{rm -i} (for `interactive') which
 asks your confirmation for every file.
 See section~\ref{sec:shell-wildcard} for more aggressive removing.
 
@@ -258,16 +259,16 @@ contents
 morestuff
 \end{lstlisting}
 
-\Level 2 {\texttt{head, tail}}
+\Level 2 {\texttt{head, tail, file}}
 
 There are more commands for displaying a file, parts of a file, or
 information about a file. 
 
 %\practical
 \begin{exercise}
-  Do \n{ls /usr/share/words} or \n{ls /usr/share/dict/words} to
+  Do \lstinline{ls /usr/share/words} or \lstinline{ls /usr/share/dict/words} to
   confirm that a file with words exists on your system. Now experiment
-  with the commands \n{head}, \n{tail}, \n{more}, and \n{wc} using
+  with the commands \lstinline{head}, \lstinline{tail}, \lstinline{more}, and \lstinline{wc} using
   that file.
 \end{exercise}
 \begin{outcome}
@@ -279,13 +280,18 @@ information about a file.
   number of words, characters, and lines in a file.
 \end{outcome}
 
+\begin{remark}
+  The \lstinline{tail} command can display the end of a file `as it grows':
+  do \lstinline{tail -F some_log_file}.
+\end{remark}
+
 Another useful command is \indexunix{file}: it tells you what
 type of file you are dealing with.
 
 %\practical
 \begin{exercise}
-  Do \n{file foo} for various `foo': a text file, a directory, or the
-  \n{/bin/ls} command.
+  Do \lstinline{file foo} for various `foo': a text file, a directory, or the
+  \lstinline{/bin/ls} command.
 \end{exercise}
 \begin{outcome}
   Some of the information may not be intelligible to you, but the
@@ -330,7 +336,7 @@ as follows:
     users directories}. }
 
 The root of the Unix directory tree is indicated with a slash. Do
-\n{ls /} to see what the files and directories there are in the
+\lstinline{ls /} to see what the files and directories there are in the
 root. Note that the root is not the location where you start when you
 reboot your personal machine, or when you log in to a server.
 
@@ -341,15 +347,15 @@ reboot your personal machine, or when you log in to a server.
   immediately when you log in. Find out your home directory.
 \end{exercise}
 \begin{outcome}
-  You will typically see something like \n{/home/yourname} or
-  \n{/Users/yourname}. This is system dependent.
+  You will typically see something like \lstinline{/home/yourname} or
+  \lstinline{/Users/yourname}. This is system dependent.
 \end{outcome}
 
-Do \n{ls} to see the contents of the working directory. In the
+Do \lstinline{ls} to see the contents of the working directory. In the
 displays in this section, directory names will be followed by a
-slash:~\n{dir/} but this character is not part of their name.  You can
-get this output by using \n{ls -F}, and you can tell your shell to
-use this output consistently by stating \n{alias ls=ls -F} at the start of your
+slash:~\lstinline{dir/} but this character is not part of their name.  You can
+get this output by using \lstinline{ls -F}, and you can tell your shell to
+use this output consistently by stating \lstinline{alias ls=ls -F} at the start of your
 session. Example:
 
 \dirdisplay{.1 /home/you/. .2 adirectory/. .2 afile. }
@@ -358,16 +364,15 @@ The command for making a new directory is \indexunix{mkdir}.
 
 %\practical
 \begin{exercise}
-  Make a new directory with \indexunix{mkdir}~\n{newdir} and view
-  the current directory with \n{ls}.
+  Make a new directory with \indexunix{mkdir}~\lstinline{newdir} and view
+  the current directory with \lstinline{ls}.
 \end{exercise}
 \begin{outcome}
   You should see this structure:
     \dirdisplay{.1 /home/you/. .2 newdir/\DTcomment{the new directory}. }
 \end{outcome}
 
-\begin{remark}
-  If you need to create a directory several levels deep, you could
+If you need to create a directory several levels deep, you could
 \begin{verbatim}
 mkdir sub1
 cd sub1
@@ -380,47 +385,49 @@ but it's shorter to use the \n{-p} option (for `parent') and write:
 mkdir -p sub1/sub2/sub3
 \end{verbatim}
 which creates any needed intermediate levels.
-\end{remark}
+The \n{-p} option can also be used if the directory already exists.
+(What happens normally if you try to \lstinline{mkdir} a directory
+that already exists?)
 
 The command for going into another directory, that is, making it your
 working directory, is \indexunix{cd} (`change directory'). It can be used in
 the following ways:
 \begin{itemize}
-\item \n{cd} Without any arguments, \n{cd} takes you to your home directory.
-\item \n{cd <absolute path>} An absolute path starts at the root of
-  the directory tree, that is, starts with~\n{/}. The \n{cd} command
+\item \lstinline{cd} Without any arguments, \lstinline{cd} takes you to your home directory.
+\item \lstinline{cd <absolute path>} An absolute path starts at the root of
+  the directory tree, that is, starts with~\lstinline{/}. The \lstinline{cd} command
   takes you to that location.
-\item \n{cd <relative path>} A relative path is one that does not
-  start at the root. This form of the \n{cd} command takes you to
-  \n{<yourcurrentdir>/<relative path>}.
+\item \lstinline{cd <relative path>} A relative path is one that does not
+  start at the root. This form of the \lstinline{cd} command takes you to
+  \lstinline{<yourcurrentdir>/<relative path>}.
 \end{itemize}
 
 %\practical
 \begin{exercise}
-  Do \n{cd newdir} and find out where you are in the directory tree
-  with \n{pwd}.  Confirm with \n{ls} that the directory is empty.  How
+  Do \lstinline{cd newdir} and find out where you are in the directory tree
+  with \lstinline{pwd}.  Confirm with \lstinline{ls} that the directory is empty.  How
   would you get to this location using an absolute path?
 \end{exercise}
 \begin{outcome}
-  \n{pwd} should tell you \n{/home/you/newdir}, and \n{ls} then has no
+  \lstinline{pwd} should tell you \lstinline{/home/you/newdir}, and \lstinline{ls} then has no
   output, meaning there is nothing to list.  The absolute path is
-  \n{/home/you/newdir}.
+  \lstinline{/home/you/newdir}.
 \end{outcome}
 
 %\practical
 \begin{exercise}
   Let's quickly create a file in this directory: \indexunix{touch}
-  \n{onefile}, and another directory: \n{mkdir otherdir}.  Do \n{ls}
-  and confirm that there are a new file and directory.
+  \lstinline{onefile}, and another directory: \lstinline{mkdir otherdir}.
+  Do \lstinline{ls} and confirm that there are a new file and directory.
 \end{exercise}
 \begin{outcome}
   You should now have: \dirdisplay{.1 /home/you/. .2
     newdir/\DTcomment{you are here}.  .3 onefile. .3 otherdir/. }
 \end{outcome}
 
-The \n{ls} command has a very useful option: with \n{ls -a} you see
+The \lstinline{ls} command has a very useful option: with \lstinline{ls -a} you see
 your regular files and hidden files, which have a name that starts
-with a dot. Doing \n{ls -a} in your new directory should tell you that
+with a dot. Doing \lstinline{ls -a} in your new directory should tell you that
 there are the following files:
 
 \dirdisplay{.1 /home/you/. .2 newdir/\DTcomment{you are here}. 
@@ -432,30 +439,30 @@ back.
 
 %\practical
 \begin{exercise}
-  Predict where you will be after \n{cd ./otherdir/..}  and check to
+  Predict where you will be after \lstinline{cd ./otherdir/..}  and check to
   see if you were right.
 \end{exercise}
 \begin{outcome}
   The single dot sends you to the current directory, so that does not
-  change anything. The \n{otherdir} part makes that subdirectory your
-  current working directory. Finally, \n{..} goes one level back. In
+  change anything. The \lstinline{otherdir} part makes that subdirectory your
+  current working directory. Finally, \lstinline{..} goes one level back. In
   other words, this command puts your right back where you started.
 \end{outcome}
 
 Since your home directory is a special place, there are shortcuts for
-\n{cd}'ing to it: \n{cd} without arguments, \n{cd ~}, and \n{cd \$HOME}
+\lstinline{cd}'ing to it: \lstinline{cd} without arguments, \lstinline{cd ~}, and \lstinline{cd \$HOME}
   all get you back to your home.
 
-Go to your home directory, and from there do \n{ls newdir} to check
+Go to your home directory, and from there do \lstinline{ls newdir} to check
 the contents of the first directory you created, without having to go
 there.
 
 %\practical
 \begin{exercise}
-  What does \n{ls ..} do?
+  What does \lstinline{ls ..} do?
 \end{exercise}
 \begin{outcome}
-  Recall that \n{..} denotes the directory one level up in the tree:
+  Recall that \lstinline{..} denotes the directory one level up in the tree:
   you should see your own home directory, plus the directories of any
   other users.
 \end{outcome}
@@ -469,14 +476,14 @@ mkdir -p sub1/sub2/sub3
 cd sub1/sub2/sub3
 touch a
 \end{verbatim}
-You now have a file \n{sub1/sub2/sub3/a}\\
+You now have a file \lstinline{sub1/sub2/sub3/a}\\
 \begin{enumerate}
 \item
-  How do you move it to \n{sub1/sub2/a}?
-\item Go: \n{cd sub1/sub2}\\
-  How do you now move the file to \n{sub1/a}?
-\item Go to your home directory:~\n{cd}\\
-  How do you move \n{sub1/a} to here?
+  How do you move it to \lstinline{sub1/sub2/a}?
+\item Go: \lstinline{cd sub1/sub2}\\
+  How do you now move the file to \lstinline{sub1/a}?
+\item Go to your home directory:~\lstinline{cd}\\
+  How do you move \lstinline{sub1/a} to here?
 \end{enumerate}
 \end{exercise}
 
@@ -664,7 +671,7 @@ rm -rf foo/* ## delete all contents of foo
 
 \begin{zshnote}
   Removing with a wildcard \n{rm foo*}
-  is an error of there are no such files.
+  is an error if there are no such files.
   Set \n{setopt +o nomatch} to allow no matches to occur.
 \end{zshnote}
 
@@ -773,7 +780,36 @@ to search that actual character, you have to \indexterm{escape} it.
     that \n{grep} also finds the \n{abc} string.
 \end{outcome}
 
-\Level 1 {Cutting up lines with \protect\texttt{cut}}
+\Level 1 {Line manipulation with \protect\texttt{cut} and \protect\texttt{tr}}
+
+Two useful utilities for `editing' a line are \lstinline{tr} and \lstinline{cut}.
+
+First \indexunix{tr} which stands for `translate'.
+It takes two characters or ranges of characters:
+the first character, or any character in the first range,
+is translated to the second, or the corresponding character in the second range.
+
+Obvious examples are translating between upper and lower case:
+\begin{lstlisting}
+# translate upper case to lower
+echo MyString | tr A-Z a-z
+\end{lstlisting}
+
+\begin{exercise}
+  Let \lstinline{a} and \lstinline{b} be strings.
+  How do you test if they are equal, up to differences in case?
+  Can you do this as a single command?
+  If you know how to write shell scripts,
+  write one that accepts two arguments and return true if they
+  are equal up to case differences.
+\end{exercise}
+
+You can also use \indexunix{tr} to delete, rather than translate,
+characters:
+\begin{lstlisting}
+#remove whitespace: spaces and tabs
+echo "foo bar" | tr -d " \t"
+\end{lstlisting}
 
 Another tool for editing lines is \indexunix{cut}, which will cut up a line
 and display certain parts of it. For instance,
@@ -1056,22 +1092,20 @@ command. When that failing command happens in a script, you have to
 tell the script how to act accordingly. For this, you use the
 \indexterm{exit status} of the command: this is a value (zero for
 success, nonzero otherwise) that is stored in an internal variable,
-and that you can access with \verb+$?+.
+and that you can access with~\verb+$?+.
 
 Example. Suppose we have a directory that is not writable
 \begin{lstlisting}
 [testing] ls -ld nowrite/
 dr-xr-xr-x  2 eijkhout  506  68 May 19 12:32 nowrite//
-[testing] cd nowrite/
 \end{lstlisting}
 and write try to create a file there:
 \begin{lstlisting}
+[testing] cd nowrite/
 [nowrite] cat ../newfile 
 #!/bin/bash
 touch $1
 echo "Created file: $1"
-[nowrite] newfile myfile
-bash: newfile: command not found
 [nowrite] ../newfile myfile
 touch: myfile: Permission denied
 Created file: myfile
@@ -1096,6 +1130,11 @@ touch: myfile: Permission denied
 Problem creating file: myfile
 \end{lstlisting}
 
+\begin{exercise}
+  Referring to section~\ref{sec:error-redirect},
+  how can you prevent the error message from \lstinline{touch}
+  to show on your terminal?
+\end{exercise}
 
 \Level 1 {Processes and jobs}
 
@@ -1235,6 +1274,20 @@ your keyboard, or from a file named on the command line; their output
 went to your screen. There are other possibilities for providing input
 from a file, or for storing the output in a file.
 
+\Level 1 {Standard files}
+
+Unix has three standard files that handle input and output:
+
+\begin{stufflearned}[Standard file]
+  \texttt{stdin} (number \texttt{0})& is the file that provides input for processes.\\
+  \texttt{stdout} (number \texttt{1})& is the file where the output of a process is  written.\\
+  \texttt{stderr} (number \texttt{2})& is the file where error output is written.\\
+\end{stufflearned}
+
+In an interactive session, all three files are connected to the user
+terminal. Using input or output redirection then means that the input
+is taken or the output sent to a different file than the terminal.
+
 \Level 1 {Input redirection}
 \index{redirection|(textbf}
 
@@ -1243,21 +1296,8 @@ name. You can also write \n{grep string < yourfile}, where the
 less-than sign means that the input will come from the named file,
 \n{yourfile}. This is known as \emph{input redirection}.
 
-\Level 1 {Standard files}
-
-Unix has three standard files that handle input and output:
-
-\begin{stufflearned}[Standard file]
-  \texttt{stdin}& is the file that provides input for processes.\\
-  \texttt{stdout}& is the file where the output of a process is  written.\\
-  \texttt{stderr}& is the file where error output is written.\\
-\end{stufflearned}
-
-In an interactive session, all three files are connected to the user
-terminal. Using input or output redirection then means that the input
-is taken or the output sent to a different file than the terminal.
-
 \Level 1 {Output redirection}
+\label{sec:output-redirect}
 
 Just as with the input, you can redirect the output of your program.
 In the simplest case,
@@ -1307,12 +1347,76 @@ yourprogram >/dev/null
 \end{lstlisting}
 Here are some useful idioms:
 
+\Level 1 {Error redirection}
+\label{sec:error-redirect}
+
+The \lstinline{stdout} and \lstinline{stderr} files are treated very similar
+by default: they both go to the terminal output.
+And normally that is fine, but suppose you run a program that generates errors
+and pipe it to \lstinline{less}:
+\begin{lstlisting}
+./myprogram | less
+\end{lstlisting}
+If you scroll back you'll see that you can not revisit the error messages.
+Both  \lstinline{stdout} and \lstinline{stderr} went to your screen,
+but only  \lstinline{stdout} went to \lstinline{less}.
+
+To manipulate \lstinline{stderr} you need to use the stream number
+`\lstinline{1}'~for \lstinline{stdout}, and 
+`\lstinline{2}'~for \lstinline{stderr}.
+With this, you can redirect the two streams separately.
+For instance,
+\begin{lstlisting}
+./myprogram 1>my.out 2>my.err
+\end{lstlisting}
+sends them to two separate files.
+
+If you want to ignore errors, send them to \indexunix{/dev/null},
+which is writable file that is not actually stored.
+So:
+\begin{lstlisting}
+./myprogram 2>/dev/null
+\end{lstlisting}
+
+In the first example of this section having separate treatment
+was not the solution, but rather the problem.
+To send both streams to a pipe, use
+\begin{lstlisting}
+./myprogram 2>&1 | less
+\end{lstlisting}
+If you want to send them both to the same file,
+you need the somewhat counterintuitive sequencing:
+\begin{lstlisting}
+./myprogram 1>/dev/null 2>&1
+\end{lstlisting}
+
 \begin{stufflearned}[Idiom]
-  \n{program 2>/dev/null}&send only errors to the null device\\
-  \n{program >/dev/null 2>&1}&send output to dev-null, and errors to output\\
-  &Note the counterintuitive sequence of specifications!\\
-  \n{program 2>&1 | less}& send output and errors to \n{less}\\
+  \n{program 2>/dev/null}&redirect only errors to the null device\\
+  \n{program >/dev/null 2>&1}&redirect output to dev-null, and errors to output\\
+  \n{program 2>&1 | less}& pipe output and errors to \n{less}\\
 \end{stufflearned}
+
+\Level 1 {\texttt{tee}}
+
+What if you want to send output to a file, but also view it on your screen
+as it's being generated?
+For that, use \indexunixdef{tee}.
+(The name comes from `T-joins where one tube --~hooked up to the vertical leg
+of the~`T'~-- can be connected to two others, hooked up to the left and right horizontal
+bar.)
+So:
+\begin{lstlisting}
+./myprogram | tee my.out
+\end{lstlisting}
+sends output to \lstinline{my.out} and displays it on screen.
+
+\begin{exercise}
+  \begin{itemize}
+  \item How would you send output to a file and to \lstinline{less}?
+  \item How would you send  \lstinline{stdout} and \lstinline{stderr}
+    both to~\lstinline{tee}?
+  \end{itemize}
+\end{exercise}
 
 \index{redirection|)}
 
@@ -1401,48 +1505,48 @@ you issue in this shell, but not to commands in new shells you start up.
 For that you need the \indexunix{export} command.
 Reproduce the following session (the square brackets form the command prompt):
 \begin{lstlisting}
-[] a=20
-[] echo $a
+$ a=20
+$ echo $a
 20
-[] /bin/bash
-[] echo $a
+$ /bin/bash
+$ echo $a
 
-[] exit
+$ exit
 exit
-[] export a=21
-[] /bin/bash
-[] echo $a
+$ export a=21
+$ /bin/bash
+$ echo $a
 21
-[] exit
+$ exit
 \end{lstlisting}
 
 You can also temporarily set a variable. Replay this scenario:
 \begin{enumerate}
 \item Find an environment variable that does not have a value:
 \begin{lstlisting}
-[] echo $b
+$ echo $b
 
-[]
+$
 \end{lstlisting}
 \item Write a short shell script to print this variable:
 \begin{lstlisting}
-[] cat > echob
+$ cat > echob
 #!/bin/bash
 echo $b
 \end{lstlisting}
 and of course make it executable: \n{chmod +x echob}.
 \item Now call the script, preceding it with a setting of the variable~\n{b}:
 \begin{lstlisting}
-[] b=5 ./echob
+$ b=5 ./echob
 5
 \end{lstlisting}
 The syntax where you set the value, as a prefix without using a separate
 command, sets the value just for that one command.
 \item Show that the variable is still undefined:
 \begin{lstlisting}
-[] echo $b
+$ echo $b
 
-[]
+$
 \end{lstlisting}
 That is, you defined the variable just for the execution of a single command.
 \end{enumerate}
@@ -1489,7 +1593,7 @@ The syntax of this is finicky:
   conditional, followed by a semicolon.
 \item The brackets of the conditional need to have spaces surrounding
   them.
-\item There is no semicolon after \indexunix{then} of \indexunix{else}:
+\item There is no semicolon after \indexunix{then} or \indexunix{else}:
   they are immediately followed by some command.
 \end{itemize}
 
@@ -1506,14 +1610,24 @@ fi
 Code it out and see if you were right.
 \end{exercise}
 
-\begin{zshnote}
-  The \indexunix{zsh} shell has an extended conditional syntax
-  with double square brackets.
-  For instance, pattern matching:
-  \begin{lstlisting}
-    if [[ $myvar == *substring* ]] ; then ....
-  \end{lstlisting}
-\end{zshnote}
+Modern versions of Bash have an extended conditional syntax
+with double square brackets.
+For instance, pattern matching:
+\begin{lstlisting}
+  if [[ $myvar == *substring* ]] ; then ....
+\end{lstlisting}
+
+Here is a short summary of possible tests,
+given through examples:
+\begin{lstlisting}
+if [ $x = "foo" ]               ## text equality
+if [ $x -eq 3 ]                 ## numerical equality; also `-gt' &c
+if [ ! -z "${x}" ]              ## test if variable is not null
+if [ ! -z "${x}" -a -z "${y}" ] ## `and' of two tests, also `-o'
+if [ -d foo ]                   ## is there a `foo' directory
+if [[ -x foo ]]                 ## is `foo' executable
+if [[ $myvar == *substring* ]]  ## pattern matching
+\end{lstlisting}
 
 \Level 1 {Looping}
 \label{sec:unix-loop}
@@ -1546,22 +1660,11 @@ for cfile in *.c ; do
   cp $cfile $cfile.bak
 done
 \end{lstlisting}
-Shell variables can be manipulated in a number of ways.
-Execute the following commands to see that you can remove trailing
-characters from a variable:
-\begin{lstlisting}
-[] a=b.c
-[] echo ${a%.c}
-b
-\end{lstlisting}
-(See the section~\ref{tut:unix-expansion} on expansion.)
-With this as a hint, write a loop that renames all your \n{.c} files
-to~\n{.x} files.
 
 The above construct loops over words, such as the output of
 \n{ls}. To do a numeric loop, use the command \indexunixdef{seq}:
 \begin{lstlisting}
-[shell:474] seq 1 5
+$ seq 1 5
 1
 2
 3
@@ -1573,7 +1676,13 @@ Looping over a sequence of numbers then typically looks like
 for i in `seq 1 ${HOWMANY}` ; do echo $i ; done
 \end{lstlisting}
 Note the \indexterm{backtick}, which is necessary to have the \n{seq}
-command executed before evaluating the loop.
+command executed before evaluating the loop;
+see section~\ref{tut:unix-backquote}.
+
+\begin{exercise}
+  Take a program that reads one number from standard in, and run it in a loop in the shell,
+  using the number \texttt{10} through~\texttt{20} as input.
+\end{exercise}
 
 You can break out of a loop with \indexunix{break};
 this can even have a numeric argument indicating
@@ -1584,6 +1693,29 @@ how many levels of loop to break out of.
 
 The unix shells are also programming environments. You will learn more
 about this aspect of unix in this section.
+
+\Level 1 {Sourcing}
+
+You can think of a script as putting single statements
+together in a file so that you can repeatedly execute them.
+The simplest Unix mechanism to do this bundling goes like this:
+\begin{enumerate}
+\item Make a file \lstinline{my_commands.txt} with any Unix commands;
+\item Then
+\begin{lstlisting}
+source my_commands.txt
+# or:
+. my_commands.txt
+\end{lstlisting}
+\end{enumerate}
+The effect will be as if you had typed the commands
+straight at the command prompt.
+
+While this can be useful, it can also be confusing
+since the commands file can do \lstinline{cd}
+or make other changes to your environment.
+Usually it's better to let a script run
+in its own sheltered world~-- to be precise: in a subshell
 
 \Level 1 {How to execute scripts}
 \label{sec:shell-scripting}
@@ -1598,7 +1730,7 @@ echo "hello world"
 and type \n{./script1} on the command line. Result?
 Make the file executable and try again.
 
-\begin{zshnote}{Bash scripts}
+\begin{zshnote}
   If you use the \n{zsh}, but you have \n{bash} scripts
   that you wrote in the past, they will keep working.
   The `hash-bang' line determines which shell executes the script,
@@ -1660,21 +1792,6 @@ shifting, and looking at the new \verb+$1+.
 %
 \snippetwithoutput{argumentshift}{code/shell}{arguments}
 
-\begin{exercise}
-  Write a script \n{say.sh} that prints its text argument. However, if you invoke it with 
-\begin{lstlisting}
-./say.sh -n 7 "Hello world"
-\end{lstlisting}
-  it should be print it as many times as you indicated. Using the
-  option \n{-u}:
-\begin{lstlisting}
-./say.sh -u -n 7 "Goodbye cruel world"
-\end{lstlisting}
-  should print the message in uppercase. Make sure that the order of
-  the arguments does not matter, and give an error message for any
-  unrecognized option.
-\end{exercise}
-
 The variables \verb+$@+ and \verb+$*+ have a different behavior with
 respect to double quotes. Let's say we evaluate
 \verb+myscript "1 2" 3+, then
@@ -1685,9 +1802,113 @@ respect to double quotes. Let's say we evaluate
   \verb+"$*"+ is the list of arguments, with quotes removed, in quotes:
   \verb+myscript "1 2 3"+.
 \item Using
-  \verb+"$@"+ preserved quotes:
+  \verb+"$@"+ preserves quotes:
   \verb+myscript "1 2" 3+.
 \end{itemize}
+
+If you want to write your own commandline parsing,
+so that you could write
+\begin{lstlisting}
+./myscript.sh -a -b arg
+\end{lstlisting}
+another useful command is \indexunix{shift}.
+If you call this, the internal list of arguments is modified:
+\begin{enumerate}
+\item the first argument is removed, and
+\item the argument count is lowered.
+\end{enumerate}
+Supposing you have a script with some (optional) flags
+and one mandatory argument:
+\begin{lstlisting}
+Usage: myscript.sh [ -a ] [ -b arg ] filename
+\end{lstlisting}
+you would then write:
+\begin{lstlisting}
+while [ $# -gt 1 ] ; do
+  if [ $1 = "-a" ] ; then 
+    ## "-a" is a a flag
+    hasa=1 && shift
+  elif [ $1 = "-b" ] ; then
+    ## "-b" has an argument:
+    ## 1. remove the -b flag
+    shift
+    ## 2. save the argument and remove
+    bargument=$1 && shift
+  else
+    echo "Unknown option: $1" && exit 1
+  fi
+done
+\end{lstlisting}
+
+\begin{exercise}
+  Write a script \n{say.sh} that prints its text argument. However, if you invoke it with 
+\begin{lstlisting}
+./say.sh -n 7 "Hello world"
+\end{lstlisting}
+  it should be print it as many times as you indicated. Using the
+  option \n{-u}:
+\begin{lstlisting}
+./say.sh -u -n 7 "Goodbye cruel world"
+\end{lstlisting}
+should print the message in uppercase.
+Make sure that the order of
+the arguments does not matter, and give an error message for any
+unrecognized option.
+\end{exercise}
+
+\Level 1 {`Here' documents}
+
+Sometimes it's necessary to create a file (often a script)
+from a running script. To this purpose,
+there are \indextermp{here document}.
+This is a mechanism of sending multiple lines as input
+to a command.
+The lines are delimited by
+two occurrences of an arbitrary string,
+its first occurrence marked by \lstinline+<<+:
+\begin{lstlisting}
+somecommand <<ASTRING
+lines
+lines
+ASTRING
+\end{lstlisting}
+Typically, the command is \lstinline{cat},
+and you use this to generate a new document
+containing the value of some dynamically defined variables.
+\begin{lstlisting}
+#!/bin/bash
+# this file: makesay.sh
+
+cat >say.sh <<EOF
+#!/bin/bash
+echo $1
+EOF
+chmod +x say.sh
+\end{lstlisting}
+Now running \lstinline{makesay.sh foo}
+generates a file \lstinline{say.sh} that contains \lstinline{echo foo}.
+
+\begin{remark}
+  You can prevent expansion of variables by
+  escaping the dollar sign;
+  alternatively, writing
+\begin{lstlisting}
+cat >newfile <<'EOF'
+\end{lstlisting}
+  prevents all expansion.
+\end{remark}
+
+\begin{remark}
+  In addition to `here documents', there are also
+  \indextermp{here string}:
+\begin{lstlisting}
+some_command <<<"some string"    
+\end{lstlisting}
+is equivalent to
+\begin{lstlisting}
+echo "some string" | some_command
+\end{lstlisting}
+\end{remark}
 
 \Level 1 {Error handling}
 
@@ -1741,45 +1962,54 @@ the exit code.
 The shell performs various kinds of expansion on a command line, that
 is, replacing part of the commandline with different text.
 
-Brace expansion:
+\Level 1 {Brace expansion}
+
+If you need to operate on a number of files with similar names,
+but which can not be describe with a wildcard, you can use brace expansion.
+In between braces you give the explicit list of variants in the names:
+
 \begin{lstlisting}
-[] echo a{b,cc,ddd}e
+$ echo a{b,cc,ddd}e
 abe acce addde
 \end{lstlisting}
 This can for instance be used to delete all extension of some base
 file name:
 \begin{lstlisting}
-[] rm tmp.{c,s,o}  # delete tmp.c tmp.s tmp.o
+$ rm tmp.{c,s,o}  # delete tmp.c tmp.s tmp.o
 \end{lstlisting}
 
-Tilde expansion gives your own, or someone else's home directory:
+\Level 1 {Tilde expansion}
+
+The tilde gives your own, or someone else's home directory:
 \begin{lstlisting}
-[] echo ~
+$ echo ~
 /share/home/00434/eijkhout
-[] echo ~eijkhout
+$ echo ~eijkhout
 /share/home/00434/eijkhout
 \end{lstlisting}
 
-Parameter expansion gives the value of shell variables:
+\Level 1 {Variable expansion}
+
+This gives the value of shell variables:
 \begin{lstlisting}
-[] x=5
-[] echo $x
+$ x=5
+$ echo $x
 5
 \end{lstlisting}
 Undefined variables do not give an error message:
 \begin{lstlisting}
-[] echo $y
+$ echo $y
 \end{lstlisting}
 There are many variations on parameter expansion. Above you already
 saw that you can strip trailing characters:
 \begin{lstlisting}
-[] a=b.c
-[] echo ${a%.c}
+$ a=b.c
+$ echo ${a%.c}
 b
 \end{lstlisting}
 Here is how you can deal with undefined variables:
 \begin{lstlisting}
-[] echo ${y:-0}
+$ echo ${y:-0}
 0
 \end{lstlisting}
 
@@ -1787,31 +2017,77 @@ Here is how you can deal with undefined variables:
 There are ways of doing pattern matching and substitution 
 on a variable:
 \begin{lstlisting}
-[] f=x.fort
-[] echo ${f%%.fort}
+$ f=x.fort
+$ echo ${f%%.fort}
 x
-[] echo ${f%%.fort}.bak
+$ echo ${f%%.fort}.bak
 x.bak
 \end{lstlisting}
 \end{comment}
+
+\Level 1 {Command manipulation}
+
+\Level 2 {History expansion}
+
+The shell keeps a history of your previously executed commands.
+The command \indexunix{history} gives you the list,
+each command prefixed with its number in the command history.
+Let's say this is part of your history:
+\begin{lstlisting}
+ 1669  make format
+ 1670  make clean
+ 1671  ls foo*
+ 1672  hostname
+\end{lstlisting}
+You can now re-execute previous commands,
+either exactly or with modifications,
+through a number of mechanisms.
+\begin{itemize}
+\item You can refer to a command by its number: \lstinline+!1671+
+  will execute \lstinline+ls foo*+ again.
+\item You can refer to a command by its initial characters:
+  \lstinline+!make+ will execute the last make command,
+  in this case \lstinline+make clean+.
+\item Should you want to re-execute a command, but its initial
+  characters are not unique, then you can refer to a unique non-initial substring:
+  \lstinline+!?format?+ will execute the last command containing \lstinline{format}.
+\end{itemize}
+If you want to modify a previous commandline, retrieved by any of the above,
+there are several possibilities:
+\begin{itemize}
+\item You can display a previous command without executing it:
+  \lstinline+!make:p+ will echo the command but not execute it.
+  You can then use arrow-up to make it available for editing.
+\item If you mistype a command, say \lstinline+make fromat+, you can easily edit
+  it with \lstinline+^fro^for^+ to replace a substring by another string.
+\item Another way of editing a command is by a \indexterm{sed}-like syntax:
+  \lstinline+!!:s/fro/for/+
+\item These mechanisms can be combined: if you are not sure whether an edit
+  gave the right result, display the result as \lstinline+!!:s/fro/for/:p+
+\item Finally, a global replace on a previous command is possible:
+  \lstinline+!make:s/a/b/:g&+
+\end{itemize}
+And there are more options, but these are a good basic set.
+
+\Level 2 {Command substitution}
 
 The backquote mechanism (section~\ref{tut:unix-backquote} above)
 is known as command substitution. It allows you to evaluate part
 of a command and use it as input for another. For example,
 if you want to ask what type of file the command \n{ls} is, do
 \begin{lstlisting}
-[] file `which ls`
+$ file `which ls`
 \end{lstlisting}
 This first evaluates \n{which ls}, giving \n{/bin/ls}, and then
 evaluates \n{file /bin/ls}. As another example, here
 we backquote a whole pipeline, and do a test on the result:
 \begin{lstlisting}
-[] echo 123 > w
-[] cat w
+$ echo 123 > w
+$ cat w
 123
-[] wc -c w
+$ wc -c w
        4 w
-[] if [ `cat w | wc -c` -eq 4 ] ; then echo four ; fi
+$ if [ `cat w | wc -c` -eq 4 ] ; then echo four ; fi
 four
 \end{lstlisting}
 
@@ -1823,14 +2099,14 @@ is possible to do arithmetic.
 Arithmetic substitution tells the shell to treat the expansion of a
 parameter as a number:
 \begin{lstlisting}
-[] x=1
-[] echo $((x*2))
+$ x=1
+$ echo $((x*2))
 2
 \end{lstlisting}
 
 Integer ranges can be used as follows:
 \begin{lstlisting}
-[] for i in {1..10} ; do echo $i ; done
+$ for i in {1..10} ; do echo $i ; done
 1
 2
 3

@@ -1,0 +1,99 @@
+==== Run bandwidth on 1 threads ====
+Execute program bandwidth cores 1
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=1 ./bandwidth -k 2000 -i 30 
+Threads: 1
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 1907 msec
+Bandwidth Gbyte/sec: 32.218143
+per thread: 32.218143
+sum: 7680000 s/b 7680000
+==== Run bandwidth on 11 threads ====
+Execute program bandwidth cores 11
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=11 ./bandwidth -k 2000 -i 30 
+Threads: 11
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 1815 msec
+Bandwidth Gbyte/sec: 372.36365
+per thread: 33.851242
+sum: 84480000 s/b 84480000
+==== Run bandwidth on 22 threads ====
+Execute program bandwidth cores 22
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=22 ./bandwidth -k 2000 -i 30 
+Threads: 22
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 1747 msec
+Bandwidth Gbyte/sec: 773.71497
+per thread: 35.16886
+sum: 168960000 s/b 168960000
+==== Run bandwidth on 33 threads ====
+Execute program bandwidth cores 33
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=33 ./bandwidth -k 2000 -i 30 
+Threads: 33
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 1765 msec
+Bandwidth Gbyte/sec: 1148.7366
+per thread: 34.8102
+sum: 253440000 s/b 253440000
+==== Run bandwidth on 44 threads ====
+Execute program bandwidth cores 44
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=44 ./bandwidth -k 2000 -i 30 
+Threads: 44
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 1594 msec
+Bandwidth Gbyte/sec: 1695.9598
+per thread: 38.54454
+sum: 337920000 s/b 337920000
+==== Run bandwidth on 56 threads ====
+Execute program bandwidth cores 56
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=56 ./bandwidth -k 2000 -i 30 
+Threads: 56
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 1917 msec
+Bandwidth Gbyte/sec: 1794.8043
+per thread: 32.050076
+sum: 430080000 s/b 430080000
+==== Run bandwidth on 67 threads ====
+Execute program bandwidth cores 67
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=67 ./bandwidth -k 2000 -i 30 
+Threads: 67
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 1557 msec
+Bandwidth Gbyte/sec: 2643.8535
+per thread: 39.4605
+sum: 514560000 s/b 514560000
+==== Run bandwidth on 78 threads ====
+Execute program bandwidth cores 78
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=78 ./bandwidth -k 2000 -i 30 
+Threads: 78
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 2274 msec
+Bandwidth Gbyte/sec: 2107.4407
+per thread: 27.01847
+sum: 599040000 s/b 599040000
+==== Run bandwidth on 89 threads ====
+Execute program bandwidth cores 89
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=89 ./bandwidth -k 2000 -i 30 
+Threads: 89
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 2121 msec
+Bandwidth Gbyte/sec: 2578.1047
+per thread: 28.967468
+sum: 683520000 s/b 683520000
+==== Run bandwidth on 100 threads ====
+Execute program bandwidth cores 100
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=100 ./bandwidth -k 2000 -i 30 
+Threads: 100
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 2616 msec
+Bandwidth Gbyte/sec: 2348.6238
+per thread: 23.486238
+sum: 7.68e+08 s/b 768000000
+==== Run bandwidth on 112 threads ====
+Execute program bandwidth cores 112
+Commandline: OMP_PROC_BIND=true OMP_NUM_THREADS=112 ./bandwidth -k 2000 -i 30 
+Threads: 112
+Data size in words (each thread): 256K , repetitions: 30
+runtime: 1531 msec
+Bandwidth Gbyte/sec: 4494.631
+per thread: 40.130634
+sum: 860160000 s/b 860160000

@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -79,7 +79,7 @@ flag \n{-DH5_USE_16_API} to your compile line.
 \Level 1 {Compilation}
 
 Include file for C:
-\begin{lstlisting}[language=C]
+\begin{lstlisting}[language=cpp]
 #include <netcdf.h>
 \end{lstlisting}
 CMake for C:
@@ -136,19 +136,19 @@ h_id = H5Xsomething(...);
 Failure to create the object is indicated by a negative return
 parameter, so it would be a good idea to create a file
 \n{myh5defs.h}  containing:
-\begin{verbatim}
+\begin{lstlisting}[language=cpp]
 #include "hdf5.h"
 #define H5REPORT(e) \
   {if (e<0) {printf("\nHDF5 error on line %d\n\n",__LINE__); \
    return e;}}
-\end{verbatim}
+\end{lstlisting}[language=cpp]
 and use this as:
-\begin{verbatim}
+\begin{lstlisting}[language=cpp]
 #include "myh5defs.h"
 
 hid_t h_id;
 h_id = H5Xsomething(...); H5REPORT(h_id);
-\end{verbatim}
+\end{lstlisting}[language=cpp]
 
 \Level 0 {Creating a file}
 

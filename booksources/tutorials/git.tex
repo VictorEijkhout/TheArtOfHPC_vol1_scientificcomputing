@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -14,6 +14,8 @@
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%packtsnippet gittut
 
 \argcomment
     {gitstep}
@@ -35,13 +37,13 @@
       \egroup
 }
 
-In this tutorial you will learn \indextermdef{git},
+In this tutorial you will learn \indextermunixdef{git},
 the currently most popular \indexterm{version control}
 (also \emph{source code control}\index{source code control|!see{version contro}}
 or \emph{revision control}\index{revision control|see{version control}})
-systems.
+system.
 Other similar systems are \indexterm{Mercurial}
-and \indextermbus{Microsoft}{Sharepoint}\index{Sharepoint|see{Microsoft, Sharepoint}}.
+and \emph{Microsoft Sharepoint}\index{Sharepoint}\index{Microsoft!Sharepoint|see{Sharepoint}}.
 Earlier systems were \indexterm{SCCS}, \indexterm{CVS}, \indexterm{Subversion},
 \indexterm{Bitkeeper}.
 
@@ -63,7 +65,7 @@ This has many practical advantages:
 \end{itemize}
 
 The use of a version control system is industry standard practice,
-and git is by far the most popular system these days.
+and \nameunix{git} is by far the most popular system these days.
 
 \Level 0 {Concepts and overview}
 
@@ -92,25 +94,13 @@ and one or more development branches for exploring new features.
 These branches can be merged when you're satisfied that a new feature has been
 sufficiently tested.
 
-\Level 0 {Git}
+%% \newpage
+\Level 0 {Create and populate a repository}
 \lstset{style=gitsession}
 
-This lab should be done two people, to simulate a group
-of programmers working on a joint project. You can also do this on
-your own by using two clones of the repository, 
-preferably opening two windows on your computer.
-
-%% Best practices for distributed version control:
-%% \url{https://homes.cs.washington.edu/~mernst/advice/version-control.html}
-
-\newpage
-\Level 0 {Create and populate a repository}
-
-\begin{purpose}
-  In this section you will create a repository and make a local copy
-  to work on.
-\end{purpose}
-
+In this section you will create a repository and make a local copy
+to work on.
+%
 You can create a repository two different ways:
 \begin{enumerate}
 \item Create the remote repository and do a clone.
@@ -135,7 +125,7 @@ of the repository.
   Clone an empty repository and check that it is indeed empty
 \end{gitstep}
 
-As you see, even an empty repository contains a directory \indextermtt{.git}.
+As you see, even an empty repository contains a directory \indextermunix{.git}.
 This contains bookkeeping information about your repository;
 you will hardly ever look into it.
 
@@ -153,8 +143,8 @@ You can also create a directory for your repository,
   Create a directory, and nake it into a repository
 \end{gitstep}
 
-The disadvantage of this method,
-over cloning an empty repo,
+The disadvantage of this method
+over cloning an empty repo
 is that you now have to connect your directory to a remote repository.
 See section~\ref{sec:git-remote}.
 
@@ -162,12 +152,12 @@ See section~\ref{sec:git-remote}.
 \Level 1 {Main vs master}
 
 It used to be that the default branch
-(yes, I~know, we haven't discussed branches yet)
+(we haven't discussed branches yet; see below)
 was called `master'.
 In a shift of terminology, the preferred name is now `main'.
 Sites such as \indexterm{github} and \indexterm{gitlab}
 may already create this name by default;
-the git software does not do this, as of this writing in~2022.
+the \nameunix{git} software does not do this, as of this writing in~2022.
 
 Renaming a branch is possible.
 You can use \lstinline{git status} to see what branch you are on.
@@ -201,15 +191,16 @@ you'll see that the file is listed as `untracked'.
 
 \begin{gitstep}{firstfile.runout1}
   Create a file with the usual tools such as an editor.
-  Here we use \lstinline{touch} as a short cut.
+  Here we use \lstinline{echo} as a short cut.
   The file will initially be untracked.
 \end{gitstep}
 
-You need to \lstinline{git add} on your file to tell git that the file
+You need to \lstinline{git add} on your file to tell \nameunix{git} that the file
 belongs to the repository.
 (You can add a single file, or use a wildcard to add multiple.)
 However, this does not actually add the file:
-it moves it to the \indexterm{staging area}.
+it moves it to the \indexterm{staging area}
+(see figure~\ref{fig:git-flow}).
 The status now says that it is a change to be committed.
 
 \begin{gitstep}{firstfile.runout2}
@@ -217,6 +208,10 @@ The status now says that it is a change to be committed.
 \end{gitstep}
 
 Use \lstinline{git commit} to add these changes to the repository.
+It is easiest to supply a short description with the \lstinline{-m} option;
+without this option \nameunix{git} will open an editor
+(to be precise: the value of the variable \indextermunix{EDITOR})
+for you to type one.
 
 \begin{gitstep}{firstfile.runout3}
   Commit these changes
@@ -241,7 +236,7 @@ will tell you the differences the between the edited, but not yet added or commi
 file and the previous commit version.
 
 \begin{gitstep}{changefirst.runout2}
-  See what the changes were wrt the previously commit version.
+  See what the changes are compared to the previously committed version.
 \end{gitstep}
 
 You now need to repeat \lstinline{git add} and \lstinline{git commit} on that file.
@@ -249,6 +244,13 @@ You now need to repeat \lstinline{git add} and \lstinline{git commit} on that fi
 \begin{gitstep}{changefirst.runout3}
   Commit the changes to the local repo.
 \end{gitstep}
+
+If you have edited multiple files you can specify those with a wildcard.
+You can also specify to add all updated files:
+\begin{lstlisting}
+git add -u :. ## updated, already added files in the current directory
+git add -u :. ## updated, already added files in the whole repository
+\end{lstlisting}
 
 The changes are now in your local repo;
 you need to \lstinline{git push} to update the upstream repo;
@@ -341,7 +343,8 @@ types of undo.
 \label{sec:git-remote}
 
 The repository where you have been adding files and changes with
-\lstinline{git commit} is the \indextermsub{local}{repository}.
+\lstinline{git commit} is the \indextermsub{local}{repository}
+(see figure~\ref{fig:git-flow}).
 This is great for tracking changes, and reverting them when needed,
 but a major reason for using source code control is collaboration
 with others.
@@ -393,18 +396,18 @@ and multiple \indexterm{upstream}s remotely, you intially specify both:
 \Level 1 {Changing the transport}
 
 You may have made your clone with
-\begin{verbatim}
+\begin{lstlisting}
 git clone https://....
-\end{verbatim}
+\end{lstlisting}
 but when you \lstinline{git push} for the first time
 you get some permission-related errors.
 
 Do
-\begin{verbatim}
+\begin{lstlisting}
 git remote -v
-# output: origin  https://username@bitbucket.org/username/reponame.git
-git remote set-url origin git@bitbucket.org:username/reponame.git
-\end{verbatim}
+# output: origin  https://username@github.org/username/reponame.git
+git remote set-url origin git@github.org:username/reponame.git
+\end{lstlisting}
 
 \newpage
 \Level 1 {Collaboration on the same repository}
@@ -508,7 +511,7 @@ Now if the first user does a pull, they see all the merged changes.
 \Level 1 {Conflicting changes}
 \label{sec:git-conflict}
 
-There can be various reasons for git to report a conflict.
+There can be various reasons for \nameunix{git} to report a conflict.
 \begin{itemize}
 \item You are trying to pull changes from another developer, but you have changes
   yourself that you haven't yet committed.
@@ -527,7 +530,7 @@ There can be various reasons for git to report a conflict.
 As before, we have directories \lstinline{person1} and \lstinline{person2}
 containing independent clones of a repository.
 We have a file of four lines long, but contrary to above,
-we now make edits that are too close together for git's
+we now make edits that are too close together for \nameunix{git}'s
 auto-merge to deal with them.
 
 \begin{gitstep}{conflict.runout1}
@@ -567,7 +570,7 @@ You can now edit the file by hand, or using some merge tool.
 \begin{gitstep}{conflict.runout5}
   In between the chevron'ed lines you first get the \lstinline{HEAD},
   that is the local state, followed by the pulled remote state.
-  Edit this file, commit the merge and push.
+  Edit this file, commit the merged file and push.
 \end{gitstep}
 
 \Level 1 {Pull requests}
@@ -585,7 +588,12 @@ This involves the following steps:
 \item You make a \indexterm{fork} of the repository;
 \item you clone this fork;
 \item make a branch with your changes;
+\item you make a pull request.
 \end{enumerate}
+
+It is possible to do this whole workflow from the commandline,
+but sites such as \indexterm{github} and \indexterm{gitlab}
+make this far easier.
 
 \newpage
 \Level 0 {Branching}
@@ -688,18 +696,13 @@ to merge the \lstinline{dev} changes into \lstinline{main}.
 \end{gitstep}
 
 If two developers make changes on the same line, or on adjacent lines,
-git will not be able to merge
+\nameunix{git} will not be able to merge
 and you have to edit the file as in section~\ref{sec:git-conflict}.
 
 \begin{figure}[ht]
-  \hbox{
-  \includegraphics[scale=.4]{git-push}
-  \includegraphics[scale=.4]{git-pull}
-  }
-  \caption{Add local changes to the remote repository (left);
-    Get changes that were made to the remote repository (right).}
-  \label{fig:git-push}
-  \label{fig:git-pull}
+  \includegraphics[scale=.4]{gitflow}
+  \caption{Git workflow of adding (top arrows) and pulling (bottom)}
+  \label{fig:git-flow}
 \end{figure}
 
 \Level 0 {Releases}
@@ -748,12 +751,17 @@ you can create a branch based on the tag:
   git checkout -b version0.2 v0.1
 \end{lstlisting}
 
+\begin{remark}
+  Hosting sites such as \indexterm{GitHub} make
+  tagged releases easy through a web interface.
+\end{remark}
+
 \Level 1 {Archives, releases}
 
 %% https://git-scm.com/book/en/v2/Distributed-Git-Maintaining-a-Project#_preparing_release
 
 If you want to make a released version of your software,
-that can be downloaded and does not rely on the git software,
+that can be downloaded and does not rely on the \nameunix{git} software,
 use the \indexgit{archive} command:
 \begin{lstlisting}
   git archive master --format=tgz --prefix=MyProject-v1 -o MyProject-v1.tgz
@@ -801,7 +809,7 @@ merging firstfile
 M firstfile
 %% hg commit -m ``my edit again''
 %% hg push test
-pushing to https://VictorEijkhout:***@bitbucket.org/
+pushing to https://VictorEijkhout:***@github.org/
                        VictorEijkhout/my-project
 searching for changes
 remote: adding changesets
@@ -842,7 +850,7 @@ use 'hg resolve' to retry unresolved file merges
 \end{verbatim}
 }
 
-For git:
+For \nameunix{git}:
 \begin{verbatim}
 CONFLICT (content): Merge conflict in <name of some file>
 Automatic merge failed; fix conflicts and then commit the result.
@@ -896,7 +904,7 @@ After this you can commit and push again.
 The other student then needs to do another update to get the
 correction.
 
-For conflicts in binary files, git has a flag where you can indicate
+For conflicts in binary files, \nameunix{git} has a flag where you can indicate
 which version to use:
 \begin{verbatim}
 git checkout --ours path/to/file
@@ -1103,11 +1111,11 @@ git remote add origin git@github.com:TACC/pylauncher.git
 \end{verbatim}
 
 You can change the transport with \n{git remote set-url}:
-\begin{verbatim}
+\begin{lstlisting}[language=shell]
 git remote -v # check current transport
 git remote set-url origin git@hostname:USERNAME/REPOSITORY.git
 git remote -v # verify changes
-\end{verbatim}
+\end{lstlisting}
 
 \endinput
 
@@ -1116,8 +1124,7 @@ $ git config --global user.email "vlad@tran.sylvan.ia"
 
 git config --global init.defaultBranch main
 
-
-
+%%packtsnippet end
 
 % LocalWords:  Eijkhout hg url localdir init Bitbucket projectrepo cp
 % LocalWords:  cleartext mde changeset mv rm repo yourfile workflow

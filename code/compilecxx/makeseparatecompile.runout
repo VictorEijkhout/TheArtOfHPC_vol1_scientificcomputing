@@ -1,0 +1,5 @@
+g++-mp-12 -g -O2 -std=c++20 -Wno-psabi -c fooprog.cxx
+g++-mp-12 -g -O2 -std=c++20 -Wno-psabi -c foosub.cxx
+g++-mp-12 -g -O2 -std=c++20 -Wno-psabi -Wl,-demangle -o fooprog fooprog.o foosub.o
+./fooprog
+hello world

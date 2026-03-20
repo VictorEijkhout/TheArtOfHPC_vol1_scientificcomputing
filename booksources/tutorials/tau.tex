@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% tau.tex : tutorial about tracing with TAU
 %%%%
@@ -13,8 +13,7 @@
 
 \index{TAU|(}
 
-The TAU tool~\cite{TAU:ijhpca}
-(see \url{http://www.cs.uoregon.edu/research/tau/home.php} for the official documentation)
+The TAU tool~\cite{TAU:ijhpca,TAUhomepage}
 uses \indexterm{instrumentation} to profile and trace your code. That is, it adds 
 profiling and trace calls to your code. You can then inspect
 the output after the run.
@@ -216,7 +215,9 @@ We implement the bucket brigade
 with blocking sends and receives: each process waits to receive from its
 predecessor, before sending to its successor.
 %
+\begingroup\renewcommand\codesnippetsdir{snippets.pcse}
 \cverbatimsnippet{bucketblock}
+\endgroup
 %
 \begin{figure}[ht]
 \includegraphics[scale=.4]{tau-bucketblock}
@@ -236,7 +237,9 @@ Next, we introduce pipelining into this operation:
 each send is broken up into parts, and these parts are sent
 and received with non-blocking calls.
 %
+\begingroup\renewcommand\codesnippetsdir{snippets.pcse}
 \cverbatimsnippet{bucketpiperecv}
+\endgroup
 %
 \begin{figure}[ht]
 \includegraphics[scale=.4]{tau-bucketpipe}
@@ -264,8 +267,10 @@ The NAS Parallel Benchmark suite~\cite{nas-website}
 contains a \ac{CG} implementation
 that spells out its all-reduce operations as a
 \indexterm{butterfly exchange}.
-
+%
+\begingroup\renewcommand\codesnippetsdir{snippets.pcse}
 \fverbatimsnippet{nascgbutterfly}
+\endgroup
 
 \begin{figure}[p]
   \includegraphics[scale=.3]{cgdelay0}

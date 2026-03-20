@@ -1,0 +1,77 @@
+Execute program bandwidth cores 1
+Threads: 1
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 406 msec
+Bandwidth Gbyte/sec: 40.35468
+per thread: 40.35468
+sum: 2048000 s/b 2048000
+Execute program bandwidth cores 4
+Threads: 4
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 475 msec
+Bandwidth Gbyte/sec: 137.97052
+per thread: 34.49263
+sum: 8192000 s/b 8192000
+Execute program bandwidth cores 9
+Threads: 9
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 507 msec
+Bandwidth Gbyte/sec: 290.84024
+per thread: 32.315582
+sum: 18432000 s/b 18432000
+Execute program bandwidth cores 14
+Threads: 14
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 564 msec
+Bandwidth Gbyte/sec: 406.69504
+per thread: 29.049646
+sum: 28672000 s/b 28672000
+Execute program bandwidth cores 19
+Threads: 19
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 583 msec
+Bandwidth Gbyte/sec: 533.9554
+per thread: 28.102915
+sum: 38912000 s/b 38912000
+Execute program bandwidth cores 24
+Threads: 24
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 595 msec
+Bandwidth Gbyte/sec: 660.86725
+per thread: 27.536135
+sum: 49152000 s/b 49152000
+Execute program bandwidth cores 28
+Threads: 28
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 602 msec
+Bandwidth Gbyte/sec: 762.0465
+per thread: 27.215946
+sum: 57344000 s/b 57344000
+Execute program bandwidth cores 33
+Threads: 33
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 505 msec
+Bandwidth Gbyte/sec: 1070.6376
+per thread: 32.44356
+sum: 67584000 s/b 67584000
+Execute program bandwidth cores 38
+Threads: 38
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 631 msec
+Bandwidth Gbyte/sec: 986.6751
+per thread: 25.965134
+sum: 77824000 s/b 77824000
+Execute program bandwidth cores 43
+Threads: 43
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 506 msec
+Bandwidth Gbyte/sec: 1392.3162
+per thread: 32.379444
+sum: 88064000 s/b 88064000
+Execute program bandwidth cores 48
+Threads: 48
+Data size in words (each thread): 10K , repetitions: 200
+runtime: 676 msec
+Bandwidth Gbyte/sec: 1163.361
+per thread: 24.236687
+sum: 98304000 s/b 98304000

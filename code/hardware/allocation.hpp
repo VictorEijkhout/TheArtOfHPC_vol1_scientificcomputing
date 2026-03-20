@@ -3,11 +3,11 @@
  **** This code is part of the book
  **** Introduction to High Performance Scientific Programming
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
- **** copyright 2010-2024
+ **** copyright 2010-2025
  ****
  **** Programs for hardware exploration
  ****
- **** allocation.cxx : memory management
+ **** allocation.cpp : memory management
  ****
  ****************************************************************/
 
@@ -23,35 +23,33 @@ template <typename R>
 class Cache {
 private:
   // alignas(4096)
-  R* _allocation{NULL};
-  R* _base_ptr{NULL};
-  //! \todo should really be mdspan nstreams x cachesize_in_words
-  std::span<R> thecache;
-  uint64_t cachesize_in_words{4096}, padded_cachesize_in_words{4096};
+  R* allocation_{nullptr};
+  //! \todo should really be mdspan nstreams x stream_cache_in_words
+  std::span<R> thecache{ static_cast<R*>(0),0 }; // would want to initialize as: {nullptr,0};
+  uint64_t stream_cache_in_words{4096};
   int align_bytes = 64;
-  int nstreams{1}; bool _trace{false};
+  int nstreams{1}; bool trace_{false};
 public:
   Cache() = default;
-  Cache( uint64_t cachesize_in_words );
+  Cache( uint64_t,bool=false );
+  Cache( uint64_t,int,bool=false );
   ~Cache();
   auto& align( int bytes=4096 ) { align_bytes = bytes; return *this; };
-  auto& trace(bool v=true)      { _trace = v;          return *this; };
-  auto& multiplex(int nt=1 )    { nstreams = nt;       return *this; };
+  auto& trace(bool v=true)      { trace_ = v;          return *this; };
+  uint64_t padded_stream_cache_in_words() const;
   void allocate();
-  auto data() { return thecache; }; //! \todo do we need this?
-  // for rule-of-three: https://en.cppreference.com/w/cpp/language/rule_of_three
   Cache( const Cache<R>& original );
   Cache& operator=( const Cache<R>& original ) = delete;
 private:
   void check_alignment();
 public:
-  Cache<R> get_stream(int=0);
+  std::span<R> get_stream(int=0);
   float stream_bytes(int stride=1);
   void set( R v );
   void setrandom( R mx );
   void transform_in_place( std::function< void(R&) > f,int stride=1,int nrepeats=1 );
   R& front() { return thecache[0]; };
-  R& back()  { return thecache[cachesize_in_words-1]; };
+  R& back()  { return thecache[stream_cache_in_words-1]; };
 
   /*
    * Iterator
@@ -79,14 +77,14 @@ public:
    */
   R &operator[](int idx) { return thecache[idx]; };
   const R &operator[](int idx) const { return thecache[idx]; };
-  auto size() { return cachesize_in_words*nstreams; };
+  auto size() { return stream_cache_in_words*nstreams; };
   R sumstream(int,size_t,size_t=0) const;
   void make_linked_list( size_t length,bool,bool=false );
   R traversal( size_t n_accesses,R res,bool=false ) const;
   void force();
 };
 
-template <typename R,int A>
+template <typename R>
 R sum_stream( std::span<R> stream );
 
 std::string kib_size( uint64_t s );

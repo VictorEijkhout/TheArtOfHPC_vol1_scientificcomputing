@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -95,17 +95,18 @@ should not have \indexterm{side-effects}'.
 
 \Level 2 {The C \protect\n{assert} macro}
 
-The C standard library has a file \n{assert.h} which provides an
-\n{assert()} macro. Inserting \n{assert(foo)} has the following
-effect: if \n{foo} is zero (false), a diagnostic message is printed
+The C standard library has a file \indexheader{assert.h} which provides an
+\lstinline{assert()} macro.
+Inserting \lstinline{assert(foo)} has the following effect:
+if \lstinline{foo} is zero (false), a diagnostic message is printed
 on standard error:
-\begin{verbatim}
+\begin{lstlisting}[language=shell]
 Assertion failed: foo, file filename, line line-number
-\end{verbatim}
+\end{lstlisting}
 which includes the literal text of the expression, 
 the file name, and line number; and the program is subsequently stopped.
 Here is an example:
-\begin{verbatim}
+\begin{lstlisting}
 #include<assert.h>
 
 void open_record(char *record_name)
@@ -118,15 +119,15 @@ int main(void)
 {
   open_record(NULL);
 }
-\end{verbatim}
-The \n{assert} macro can be disabled by defining the
-\n{NDEBUG} macro.
+\end{lstlisting}
+The \lstinline{assert} macro can be disabled by defining the
+\lstinline{NDEBUG} macro.
 
 \Level 2 {An assert macro for Fortran}
 
 (Thanks to Robert Mclay for this code.)
 
-\begin{verbatim}
+\begin{lstlisting}
 #if (defined( GFORTRAN ) || defined( G95 ) || defined ( PGI) )
 # define MKSTR(x) "x"
 #else
@@ -146,11 +147,11 @@ print *, "Assert: ",trim(testStr)," Failed at ",trim(file),":",ln
 print *, "Msg:", trim(msgIn)
 stop
 end subroutine assert
-\end{verbatim}
+\end{lstlisting}
 which is used as
-\begin{verbatim}
+\begin{lstlisting}
 ASSERT(nItemsSet.gt.arraySize,"Too many elements set")
-\end{verbatim}
+\end{lstlisting}
 
 \index{assertions|)}
 
@@ -166,7 +167,7 @@ It is also a good idea to write your own subprograms in such a way
 that they always have an error parameter. Let us consider the case of
 a function that performs some numerical computation.
 
-\begin{verbatim}
+\begin{lstlisting}
 float compute(float val)
 {
   float result;
@@ -176,13 +177,13 @@ float compute(float val)
 
 float value,result;
 result = compute(value);
-\end{verbatim}
+\end{lstlisting}
 Looks good? What if the computation can fail, for instance:
-\begin{verbatim}
+\begin{lstlisting}
   result = ... sqrt(val) ... /* some computation */
-\end{verbatim}
+\end{lstlisting}
 How do we handle the case where the user passes a negative number?
-\begin{verbatim}
+\begin{lstlisting}
 float compute(float val)
 {
   float result;
@@ -191,13 +192,13 @@ float compute(float val)
     result = ... sqrt(val) ... /* some computation */
   return result;
 }
-\end{verbatim}
+\end{lstlisting}
 We could print an error message and deliver some result, but the
 message may go unnoticed, and the calling environment does not really
 receive any notification that something has gone wrong.
 
 The following approach is more flexible:
-\begin{verbatim}
+\begin{lstlisting}
 int compute(float val,float *result)
 {
   float result;
@@ -213,30 +214,32 @@ float value,result; int ierr;
 ierr = compute(value,&result);
 if (ierr!=0) { /* take appropriate action */
 }
-\end{verbatim}
+\end{lstlisting}
 You can save yourself a lot of typing by writing
-\begin{verbatim}
+\begin{lstlisting}
 #define CHECK_FOR_ERROR(ierr) \
   if (ierr!=0) { \
     printf("Error %d detected\n",ierr); \
     return -1 ; }
 ....
 ierr = compute(value,&result); CHECK_FOR_ERROR(ierr);
-\end{verbatim}
+\end{lstlisting}
 
 %%packtsnippet cpplinefile
 
-The \ac{CPP} has built-in macros that lend themselves
+The \ac{CPP} has built-in macros
+\indextermtt{__LINE__}~/ \indextermtt{__FILE__}
+that lend themselves
 to informative error reporting.
 The following macro not only checks on an error condition,
 but also reports where the error occurred:
-\begin{verbatim}
+\begin{lstlisting}[language=cpp]
 #define CHECK_FOR_ERROR(ierr) \
   if (ierr!=0) { \
     printf("Error %d detected in line %d of file %s\n",\
            ierr,__LINE__,__FILE__); \
     return -1 ; }
-\end{verbatim}
+\end{lstlisting}
 
 %%packtsnippet end
 
@@ -297,20 +300,22 @@ is hard, other than with external tools like \indexterm{Valgrind}.
 
 \Level 2 {C++}
 
-C++ has the containers such as \n{std::vector} which support bound checking:
+C++ has the containers such as \lstinline{std::vector} which support bound checking:
 \begin{lstlisting}
 vector<float> x(25);
 x.at(26) = y; // throws an exception
 \end{lstlisting}
-On the other hand, the C-style \n{x[26]} does not perform such checks.
+On the other hand, the C-style \lstinline{x[26]} does not perform such checks.
 
 \Level 2 {Fortran}
 
 Fortran arrays are more restricted than C arrays, so compilers
 often support a flag for activating runtime bounds checking.
-For \indexterm{gfortran} that is \n{-fbounds-check}.
+For \indexterm{gfortran} that is \lstinline{-fbounds-check}.
 
 \Level 1 {Memory leaks}
+%%packtsnippet memoryleak
+\label{sec:memory-leak}
 
 We say that a program has a \indextermbus{memory}{leak}, if it allocates
 memory, and subsequently loses track of that memory. The operating
@@ -319,20 +324,22 @@ result the computer memory can get filled up with allocated memory
 that serves no useful purpose.
 
 In this example data is allocated inside a lexical scope:
-\begin{verbatim}
+\begin{lstlisting}
 for (i=.... ) {
-  real *block = malloc( /* large number of bytes */ )
+  float *block = malloc( /* large number of bytes */ )
   /* do something with that block of memory */
   /* and forget to call "free" on that block */
 }
-\end{verbatim}
+\end{lstlisting}
 The block of memory is allocated in each iteration, but the allocation
 of one iteration is no longer available in the next. A similar example
 can be made with allocating inside a conditional. 
 
-It should be noted
-that this problem is far less serious in Fortran, where memory is
-deallocated automatically as a variable goes out of scope.
+  It should be noted
+  that this problem is far less serious in Fortran, where memory is
+  deallocated automatically as a variable goes out of scope.
+C++~standard containers have largely made this problem go away.
+%%packtsnippet end
 
 There are various tools for detecting memory errors: Valgrind,
 DMALLOC, Electric Fence. For valgrind, see section~\ref{sec:valgrind}.
@@ -347,26 +354,27 @@ slows down your program. A~better strategy is to write your own memory
 management. Some libraries such as PETSc already supply an enhanced
 malloc; if this is available you should certainly make use of
 it. (The \emph{gcc}\index{gcc!memory checking} compiler has a
-function \indextermtt{mcheck}, defined in \n{mcheck.h}, that has a
+function \indextermtt{mcheck},
+defined in \indexheader{mcheck.h}, that has a
 similar function.)
 
-If you write in~C, you will probably know the \n{malloc} and \n{free} calls:
-\begin{verbatim}
+If you write in~C, you will probably know the \lstinline{malloc} and \lstinline{free} calls:
+\begin{lstlisting}
 int *ip;
 ip = (int*) malloc(500*sizeof(int));
 if (ip==0) {/* could not allocate memory */}
 ..... do stuff with ip .....
 free(ip);
-\end{verbatim}
+\end{lstlisting}
 You can save yourself some typing by
-\begin{verbatim}
+\begin{lstlisting}
 #define MYMALLOC(a,b,c) \
   a = (c*)malloc(b*sizeof(c)); \
   if (a==0) {/* error message and appropriate action */}
 
 int *ip;
 MYMALLOC(ip,500,int);
-\end{verbatim}
+\end{lstlisting}
 
 Runtime checks on memory usage (either by compiler-generated bounds
 checking, or through tools like
@@ -380,7 +388,7 @@ allocated object (line~\n{1} in the code below),
 and put a recognizable value in them (line \n{2} and~\n{3}), as well as the
 size of the object (line~\n{2}). We then return the pointer to the
 actually requested memory area (line~\n{4}).
-\begin{verbatim}
+\begin{lstlisting}
 #define MEMCOOKIE 137
 #define MYMALLOC(a,b,c) { \
   char *aa; int *ii; \
@@ -391,20 +399,20 @@ actually requested memory area (line~\n{4}).
   aa = aa+b*sizesof(c); ii = (int*)aa; \
           ii[0] = MEMCOOKIE;              /* 3 */ \
   }
-\end{verbatim}
-Now you can write your own \n{free}, which tests whether the bounds of
+\end{lstlisting}
+Now you can write your own \lstinline{free}, which tests whether the bounds of
 the object have not been written over.
-\begin{verbatim}
+\begin{lstlisting}
 #define MYFREE(a) { \
   char *aa; int *ii,; ii = (int*)a; \
   if (*(--ii)!=MEMCOOKIE) printf("object corrupted\n"); \
   n = *(--ii); aa = a+n; ii = (int*)aa; \
   if (*ii!=MEMCOOKIE)  printf("object corrupted\n"); \
   }
-\end{verbatim}
+\end{lstlisting}
 You can extend this idea: in every allocated object, also store two
 pointers, so that the allocated memory areas become a doubly linked
-list. You can then write a macro \n{CHECKMEMORY} which tests all your
+list. You can then write a macro \lstinline{CHECKMEMORY} which tests all your
 allocated objects for corruption.
 
 Such solutions to the memory corruption problem are fairly easy to
@@ -412,8 +420,8 @@ write, and they carry little overhead. There is a memory overhead of
 at most 5 integers per object, and there is practically no performance
 penalty.
 
-(Instead of writing a wrapper for \n{malloc}, on some systems you can
-influence the behavior of the system routine. On linux, \n{malloc}
+(Instead of writing a wrapper for \lstinline{malloc}, on some systems you can
+influence the behavior of the system routine. On linux, \lstinline{malloc}
 calls hooks that can be replaced with your own routines;
 see~\url{http://www.gnu.org/s/libc/manual/html_node/Hooks-for-Malloc.html}.)
 

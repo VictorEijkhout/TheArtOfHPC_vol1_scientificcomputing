@@ -3,7 +3,7 @@
  **** This code is part of the book
  **** Introduction to High Performance Scientific Programming
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
- **** copyright 2010-2023
+ **** copyright 2010-2024
  ****
  **** Programs for hardware exploration
  ****
@@ -60,8 +60,8 @@ int main(int argc,char **argv) {
    */
   uint64_t memorysize_in_bytes{ 5000000 };
   auto memorysize_in_words = memorysize_in_bytes/sizeof(floattype);
-  Cache<floattype> memory(memorysize_in_words);
-  memory.setrandom(p);
+  Cache<floattype> storage(memorysize_in_words);
+  storage.setrandom(p);
 
   stringstream report;
   if (trace) {
@@ -77,15 +77,15 @@ int main(int argc,char **argv) {
    * Timed kernel
    */
   int microsec_duration;
-  auto stream_length = memory.size();
+  auto stream_length = storage.size();
   auto start_time = Clock::now();
 
   /* init data */
   float s{0.f};
   for ( int t=0; t<stream_length; t++)
-    if (memory[t]<p)
-      s += memory[t];
-  memory.front() = memory.back();
+    if (storage[t]<p)
+      s += storage[t];
+  storage.front() = storage.back();
 
   microsec_duration = compute_microsec_duration(start_time);
   if (s<0) report << s; // just to prevent compiler optimization

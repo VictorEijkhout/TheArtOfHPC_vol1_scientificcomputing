@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -464,7 +464,7 @@ so the notion is still important.)
 \label{ex:recursivedoubling}
   The operation
 \begin{lstlisting}
-for (i) {
+for (int i=0; i<size; ++i) {
   x[i+1] = a[i]*x[i] + b[i];
 }
 \end{lstlisting}
@@ -643,39 +643,38 @@ To the programmer, a~computer appears to execute a~sequence of steps:
 \item retrieve the operands from memory,
 \item execute the operation and write the result back to memory.
 \end{enumerate}
-\begin{nopackt}
 This picture,
 known as  the \indextermbus{von Neumann}{architecture},
-\end{nopackt}
-\begin{packt}
-This picture, 
-\end{packt}
 is unrealistic because of the
 so-called \indextermbus{memory}{wall}~\cite{Wulf:memory-wall},
 also known as the \indextermbus{von Neumann}{bottleneck}:
-memory is too slow to load data into the process at the rate the
+memory is too slow to load data into the processor at the rate the
 processor can absorb it.
-Specifically, a single load can have a `latency' of 1000 cycles,
-while a processor can perform several operations per cycle.
-After this long wait for a load, the next load can come faster,
-but you may still be limited by the `bandwidth' of the memory,
-which is too slow for the processor.
-%% This matter of wait time
-%% versus throughput will be addressed below in
-%% section~\ref{sec:latencybandwidth}.)
+Specifically, a single load can have a latency of
+hundreds of cycles,
+meaning that this much time elapses between a processor requesting a memory
+item and it actually arriving for processing.
+On the other hand, a processor can perform several operations per cycle.
+  After this long wait for a load, the next load can come faster,
+  but you may still be limited by the \indextermdef{bandwidth}
+  of the memory,
+  which is lower than what the processor can operate on.
 
-To solve this bottleneck,
-a~modern processor has several memory levels in between the
+To circumvent this imbalance,
+a~modern \ac{CPU} has several memory levels in between the
 \ac{FPU} and the main memory: the registers\index{register}
 and the caches\index{cache}, together called the
 \indextermbus{memory}{hierarchy}. These try to alleviate the memory
 wall problem by making recently used data available quicker than it
-would be from main memory. Of course, this presupposes that the
+would be from main memory.
+
+
+  Of course, this presupposes that the
 algorithm and its implementation allow for data to be used multiple
 times.
 Such questions of \indexterm{data reuse} will be discussed in
-more detail in section~\ref{sec:reuse};
-first we will go into the technical aspects.
+more detail in
+  section~\ref{sec:reuse}.
 
 %%packtsnippet end
 
@@ -684,9 +683,7 @@ than main memory to various degrees; unfortunately, the faster the memory on a c
 level, the smaller it will be.
 These differences in size and access speed lead to interesting programming
 problems, which we will discuss later.
-\begin{nopackt}
 See chapter~\ref{ch:performance}.  
-\end{nopackt}
 
 We will now discuss the various components of the memory hierarchy and
 the theoretical concepts needed to analyze their behavior.
@@ -709,7 +706,8 @@ The bus is typically slower than the processor, operating with clock
 frequencies slightly in excess of~1GHz, which is a fraction of the \ac{CPU}
 clock frequency.  This is one reason that caches are needed; the fact
 that a processor can consume many data items per clock tick
-contributes to this. Apart from the frequency, the bandwidth of a bus is
+contributes to this.
+Apart from the frequency, the bandwidth of a bus is
 also determined by the number of bits that can be moved per clock
 cycle. This is typically 64 or 128 in current architectures. We will
 now discuss this in some more detail.
@@ -785,23 +783,25 @@ rather than from main memory.
 %%packtsnippet streaming
 The worst case, performancewise speaking, of an operation
 is a so-called `streaming' kernel.
-Here, data streams from and to memory, with effectiy no use of caches
+Here, data streams from and to memory, with effectively no use of caches
 to increase performance.
 As an example, consider the vector addition:
 \begin{lstlisting}
-for (i)
+for (int i=0; i<data_size; ++i)
   a[i] = b[i]+c[i]
 \end{lstlisting}
 Each iteration performs one floating point operation, which modern
-\acp{CPU} can do in one clock cycle by using pipelines. However, each
-iteration needs two numbers loaded and one written, for a total of 24
-bytes of memory traffic.
-(Actually, \n{a[i]} is loaded before it can be written,
-so there are 4 memory access, with a total of 32 bytes, per
+\acp{CPU} can do in one clock cycle by using pipelines.
+However, each
+iteration needs two numbers loaded and one written
+for a total of 24 bytes of memory traffic.
+(Actually, the cacheline of \lstinline{a[i]} is loaded before it can be written,
+so there are 4 memory accesses with a total of 32 bytes per
 iteration.)
 Typical memory bandwidth figures (see
-for instance figure~\ref{fig:hierarchy}) are nowhere near 24 (or~32) bytes per
-cycle. This means that, without caches, algorithm performance can be
+for instance figure~\ref{fig:cache-specs}) are nowhere near 24 (or~32) bytes per
+cycle.
+This means that, without caches, algorithm performance can be
 bounded by memory performance. Of course, caches will not speed up
 every operation, and in fact will have no effect on the above
 example.
@@ -822,20 +822,20 @@ processor: the \emph{registers}, or together the
 \indextermbus{register}{file}. The registers are what the processor
 actually operates on: an operation such as 
 \begin{lstlisting}
-a := b + c
+a = b + c
 \end{lstlisting}
-is actually implemented as 
+can be thought of as being implemented as 
 \begin{itemize}
-\item load the value of \n{b} from memory into a register,
-\item load the value of \n{c} from memory into another register,
-\item compute the sum and write that into yet another register, and
-\item write the sum value back to the memory location of~\n{a}.
+\item load the value of \lstinline{b} from memory into a register,
+\item load the value of \lstinline{c} from memory into another register,
+\item compute the sum and write that into
+  the same or yet another register, and
+\item write the sum value back to the memory location of~\lstinline{a}.
 \end{itemize}
 Looking at \indextermbus{assembly}{code}
-(for instance the output of a compiler),
-you see the explicit load, compute, and store instructions.
-
-For instance, you will see instructions such as
+(for instance the output of a compiler; section~\ref{sec:assem-out})
+you see explicit load, compute, and store instructions,
+such as
 \begin{lstlisting}[language=verbatim]
 addl	%eax, %edx
 \end{lstlisting}
@@ -857,17 +857,19 @@ relatively expensive. Therefore, it would be a simple optimization to
 leave data in register when possible.
 
 %%packtsnippet registerresident
+
+Registers are a first way of minimizing expensive data movement.
 For instance, a strict interpretation of these instructions:
 \begin{lstlisting}
-a := b + c
-d := a + e
+a = b + c
+d = a + e
 \end{lstlisting}
-would see \lstinline{a} written to main memory after the first,
+would see \lstinline{a} written to main memory after the first instruction,
 and the reloaded for the second.
-As an obvious optimization, the computed value of \n{a} could be left in register.
-This is typically performed as a
-\indextermbus{compiler}{optimization}:
+As an obvious optimization, the computed value of \lstinline{a} could be left in register:
 we say that \lstinline{a} stays \indextermsub{resident in}{register}.
+This is typically performed as a
+\indextermbus{compiler}{optimization}.
 
 Keeping values in register is often done to avoid recomputing a
 quantity. For instance, in 
@@ -882,8 +884,10 @@ s = sin(alpha); c = cos(alpha);
 t1 = s * x + c * y;
 t2 = -c * x + s * y
 \end{lstlisting}
-This transformation need not be done by the programmer:
-compilers can often figure this out by themselves.
+However, 
+compilers can often figure out such transformations by themselves,
+if you set the \indextermbus{optimization}{level} high enough;
+  see \CARPref{sec:compile-single}.
 
 Of course, there is a limit to how many quantities can be kept in
 register; trying to keep too many quantities in register is called
@@ -896,7 +900,7 @@ variable appears in an inner loop. In the computation
 for i=1,length
   a[i] = b[i] * c
 \end{lstlisting}
-the quantity \n{c} will probably be kept in register by the compiler,
+the quantity \lstinline{c} will probably be kept in register by the compiler,
 but in 
 \begin{lstlisting}
 for k=1,nvectors
@@ -904,7 +908,7 @@ for k=1,nvectors
     a[i,k] = b[i,k] * c[k]
 \end{lstlisting}
 it is a good idea to introduce explicitly a temporary variable to
-hold~\n{c[k]}. In~C, you can give a hint to the compiler
+hold~\lstinline{c[k]}. In~C, you can give a hint to the compiler
 to keep a variable in register by declaring it as a \indextermbus{register}{variable}:
 \begin{lstlisting}
 register double t;
@@ -942,8 +946,8 @@ by the slowness of the memory technology at the time.
 
 %%packtsnippet cachewhy
 
-As an example, let's suppose a variable \n{x} is used twice,
-and that it does not stay in a register:
+To motivate the use of caches let's suppose a variable \lstinline{x} is used twice,
+and that it does not stay resident in a register:
 \begin{lstlisting}
 ... = ... x ..... // instruction using x
 .........         // several instructions not involving x
@@ -951,35 +955,66 @@ and that it does not stay in a register:
 \end{lstlisting}
 The assembly code would then be
 \begin{itemize}
-\item load \n{x} from memory into register; operate on it;
+\item load \lstinline{x} from memory into register; operate on it;
 \item do the intervening instructions;
-\item load \n{x} from memory into register; operate on it;
+\item load \lstinline{x} from memory into register; operate on it;
 \end{itemize}
 With a cache, the assembly code stays the same, but the actual
 behavior of the memory system now becomes:
 \begin{itemize}
-\item load \n{x} from memory into cache, and from cache into register;
+\item load \lstinline{x} from memory into cache, and from cache into register;
   operate on it;
 \item do the intervening instructions;
-\item request \n{x} from memory, but since it is still in the cache,
+\item request \lstinline{x} from memory, but since it is still in the cache,
   load it from the cache into register; operate on it.
 \end{itemize}
-Since loading from cache is faster than loading from main memory, the
-computation will now be faster. Caches are fairly small, so values
-can not be kept there indefinitely. We will see the implications of
-this in the following discussion.
+Loading from cache is faster
+than loading from main memory in two ways.
+The load has a shorter \indextermdef{latency},
+meaning the delay between the data being needed in an instruction,
+and it actually being available.
+Caches also have a higher \indextermdef{bandwidth},
+meaning the number of bytes per second transferred.
+Thus, if a computation can use data from cache
+it will be faster than if it relies on data from main memory.
+Caches are fairly small, so arranging a computation in this manner
+may take some sophisticated programming.
 
 There is an important difference between cache memory and registers:
 while data is moved into register by explicit assembly instructions,
-the move from main memory to cache is entirely done by hardware.
+the move from main memory to cache is entirely done by hardware,
+invisible to the programmer.
 
 %%packtsnippet end
 
 Thus
-cache use and reuse is outside of direct programmer control. Later,
-especially in sections \ref{sec:locality}
+cache use and reuse is outside of direct programmer control.
+Later, especially in sections \ref{sec:locality}
 and~\ref{ch:performance}, you will see how it is possible to
 influence cache use indirectly.
+
+\Level 2 {Cache hits and misses}
+
+%%packtsnippet cachehitmiss
+
+Data needed in some operation gets copied into the various
+caches on its way to the processor.
+If, some instructions later, a data item is needed again,
+it is first searched for in the L1 cache;
+if it is not found there, it is searched for in the L2 cache;
+if it is not found there,
+it is loaded from further cache levels or main memory.
+Finding data in cache is called a
+\indextermbus{cache}{hit}, and not finding it a \indextermbus{cache}{miss}.
+
+The most common type of cache miss is the `capacity miss', where more data
+is accessed than fits the cache.
+The process of cache data being overwritten by data loaded later
+is referred to as the earlier data being
+\emph{flushed}\index{flush, cache|see{cache, data flushing}}\index{cache!data flushing}.
+This is illustrated in figure~\ref{fig:capacity}.
+
+%%packtsnippet end
 
 \Level 2 {Cache tags}
 \label{sec:cache-tag}
@@ -1006,40 +1041,78 @@ Caches can be \emph{private}\index{cache!private} to a core,
 as is typically the case for the L1 cache,
 or \emph{shared}\index{cache!shared} between some or all of the cores.
 
-The L1 cache is small, typically around 16~Kbyte.
+The L1 cache is small, typically around 16~or~32 Kbyte.
 Level~2 (and, when present, level~3) cache is more plentiful,
 up to several
-megabytes, but it is also slower.  Unlike main memory, which is
-expandable, caches are fixed in size. If a version of a processor chip
+megabytes, but it is also slower, with longer latency and lower bandwidth.
+Figure~\ref{fig:cache-specs} has some representative numbers.
+Unlike main memory, which is
+expandable, caches are fixed in size.
+If a version of a processor 
 exists with a larger cache, it is usually considerably more expensive.
 
-Data needed in some operation gets copied into the various
-caches on its way to the processor. If, some instructions later, a
-data item is needed again, it is first searched for in the L1 cache; if it is
-not found there, it is searched for in the L2 cache; if it is not found there,
-it is loaded from main memory. Finding data in cache is called a
-\indextermbus{cache}{hit}, and not finding it a \indextermbus{cache}{miss}.
+\begin{figure}[ht]
+  %% \begin{quote}
+  %% \includegraphics[scale=.6]{spr_specs}
+  %% \end{quote}
+\begin{tikzpicture}[scale=0.9, transform shape]
+
+% Define the triangle coordinates
+\coordinate (top) at (0,8);
+\coordinate (bottomleft) at (-4,0);
+\coordinate (bottomright) at (4,0);
+
+% Draw the triangle sections from bottom to top
+\fill[blue!20] (bottomleft) -- (bottomright) -- (top) -- cycle;
+
+% Draw horizontal lines to create sections
+\draw[thick] ($(bottomleft)!0.25!(top)$) -- ($(bottomright)!0.25!(top)$);
+\draw[thick] ($(bottomleft)!0.5!(top)$) -- ($(bottomright)!0.5!(top)$);
+\draw[thick] ($(bottomleft)!0.75!(top)$) -- ($(bottomright)!0.75!(top)$);
+
+% Draw the outer triangle
+\draw[thick] (bottomleft) -- (top) -- (bottomright) -- cycle;
+
+% Inside labels
+\node[align=center] at (0,7) {L1:\\ 48 KiB/core};
+\node[align=center] at (0,5) {L2: 2MiB/core};
+\node[align=center] at (0,3) {L3: 2Mb/slice,\\roughly 1 slice/core};
+\node[align=center] at (0,1) {DDR5 /HBM memory};
+
+% Left labels (latency)
+\node[align=right, text width=3cm, anchor=east] at (-4.2,7) {Latency in cycles:\\ 5};
+\node[align=left, anchor=east] at (-4.2,5) {16};
+\node[align=left, anchor=east] at (-4.2,3) {80};
+\node[align=left, anchor=east] at (-4.2,1) {200 / 260};
+
+% Right labels (bandwidth)
+\node[align=left, text width=3cm, anchor=west] at (4.2,7) {Bandwidth (Gb/sec/core):\\ 384};
+\node[align=right, anchor=west] at (4.2,5) {128};
+\node[align=right, anchor=west] at (4.2,3) {51};
+\node[align=right, anchor=west] at (4.2,1) {6 / 30};
+
+\end{tikzpicture}
+
+  \caption{Memory hierarchy of an Intel Sapphire Rapids processor}
+  \label{fig:cache-specs}
+\end{figure}
 
 %%packtsnippet end
 
-Figure \ref{fig:hierarchy} illustrates the basic facts of the
+Figure \ref{fig:cache-specs} illustrates the basic facts of the
 \indextermbus{cache}{hierarchy}, in
-this case for the \indextermbus{Intel}{Sandy Bridge} chip: the
+this case for the \indextermbus{Intel}{Sapphire Rapid} chip: the
 closer caches are to the \acp{FPU}, the faster, but also the
 smaller they are.
-\begin{figure}[ht]
-  \begin{quote}
-  \includegraphics[scale=.11]{hierarchysb}
-  \end{quote}
-  \caption{Memory hierarchy of an Intel Sandy Bridge, characterized by speed and size.}
-  \label{fig:hierarchy}
-\end{figure}
+
+\begin{comment}
 Some points about this figure.
 \begin{itemize}
 \item Loading data from registers is so fast that it does not
   constitute a limitation on algorithm execution speed. On the other
-  hand, there are few registers. Each core has 16 general purpose
-  registers, and 16 SIMD registers.
+  hand, there are few registers.
+  %% Each core has 16 general purpose
+  %% registers, and 16 SIMD registers.
 \item The L1 cache is small, but sustains a bandwidth of 32 bytes,
   that is 4 double precision number, per cycle. This is enough to load
   two operands each for two operations, but note that the core can
@@ -1058,6 +1131,7 @@ Some points about this figure.
   \indextermbus{cache}{coherence} (see section~\ref{sec:multicore}),
   again reducing the bandwidth available for each chip.
 \end{itemize}
+\end{comment}
 
 On level~1, there are separate caches for instructions and data; the
 L2 and L3 cache contain both data and instructions.
@@ -1143,12 +1217,10 @@ largely irrelevant. A~code will only benefit from the increased
 bandwidth and reduced latency of a cache if items in cache are
 referenced more than once; see section~\ref{sec:reuse} for a detailed
 discussion.
-\begin{nopackt}
   An example would be the matrix-vector multiplication
   $y=Ax$ where each element of~$x$ is used in $n$ operations, where $n$
   is the matrix dimension;
   see section~\ref{sec:mvp-opt}.
-\end{nopackt}
 
 Secondly, an algorithm may theoretically
 have an opportunity for reuse, but it needs to be coded in such a way
@@ -1169,17 +1241,20 @@ processor performance.
 
 %%packtsnippet replacement
 
-Data in cache and registers is placed there by the system, outside of
-programmer control. Likewise, the system decides when to overwrite
-data in the cache or in registers if it is not referenced in a while,
+Data in cache is placed there by the system, outside of
+programmer control.
+Likewise, the system decides when to overwrite
+data in the cache if it is not referenced in a while,
 and as other data needs to be placed there.  Below, we will go into
 detail on how caches do this, but as a general principle,
 a~\acf{LRU} cache replacement policy is used:
 if a cache is full and new data
 needs to be placed into it, the data that was least recently used is
-\indextermsub{flushed from}{cache},
-meaning that it is overwritten with the new item,
-and therefore no longer accessible. LRU is by far the most common
+\emph{flushed}\index{cache!data flushing|textbf}
+(sometimes: \emph{evicted}\index{cache!data evicted|see{cache, data flushed}})
+from cache.
+meaning that it is overwritten with the new data,
+and is therefore no longer accessible. LRU is by far the most common
 replacement policy; other possibilities are FIFO (first in first out)
 or random replacement.
 
@@ -1197,31 +1272,32 @@ or random replacement.
 
 \index{cache!replacement policies|)}
 
-\Level 2 {Cache lines}
+\Level 2 {cachelines}
 \label{sec:cacheline}\label{sec:stride}
-\index{cache!line|(}
 
 %%packtsnippet cachelines
 
 Data movement between memory and cache, or between caches, is not done
 in single bytes, or even words. Instead, the smallest unit of data
-moved is called a \emph{cache line}, sometimes called a
-\indextermbus{cache}{block}.  A~typical cache line is 64 or 128 bytes
+moved is called a
+\indextermdef{cacheline}, sometimes called a
+\indextermbus{cache}{block}.  A~typical cacheline is 64 or 128 bytes
 long, which in the context of scientific computing implies 8 or 16
-double precision floating point numbers. The cache line size for data
+double precision floating point numbers. The cacheline size for data
 moved into L2 cache can be larger than for data moved into L1 cache.
 
-A first motivation for cache lines is a practical one
+A first motivation for cachelines is a practical one
 of simplification:
-if a cacheline is 64~bytes long, six fewers bits
+if a cacheline is 64~bytes long, six fewer bits
 need to be specified to the circuitry that moves data from memory
 to cache.
 Secondly, cachelines make sense since many
 codes show \indextermsub{spatial}{locality}:
 if one word from memory is needed, there is a good chance that
 adjacent words will be pretty soon after.
-See section~\ref{sec:locality} for discussion.
+%% See section~\ref{sec:locality} for discussion.
 
+\message{CHECK VISUAL PAGE BREAK}
 \begin{wrapfigure}{r}{3in}
   \includegraphics[scale=.07]{stride-1}
   \caption{Accessing 4 elements at stride 1.}
@@ -1231,19 +1307,20 @@ See section~\ref{sec:locality} for discussion.
 %
 Conversely, there is now a strong incentive to code in such a way to
 exploit this locality,
-since any memory access costs the transfer of several words (see
-section~\ref{sec:coding-cacheline} for some examples). An
-efficient program then tries to use the other items on the cache line,
+since any memory access costs the transfer of several words
+%% (see section~\ref{sec:coding-cacheline} for some examples).
+An efficient program then tries to use the other items on the cacheline,
 since access to them is effectively free. This phenomenon is visible in
 code that accesses arrays by \indexterm{stride}: elements are read or
 written at regular intervals.
 
 Stride~1 corresponds to sequential access of an array:
 \begin{lstlisting}
-for (i=0; i<N; i++)
+for (int i=0; i<N; ++i)
   ... = ... x[i] ...
 \end{lstlisting}
-Let us use as illustration a case with 4 words per cacheline. Requesting
+In figure~\ref{fig:stride-1} we have illustrated this case with 4 words per cacheline.
+Requesting
 the first elements loads the whole cacheline that contains it into
 cache. A~request for the 2nd, 3rd, and 4th element can then be
 satisfied from cache, meaning with high bandwidth and low latency.
@@ -1256,22 +1333,25 @@ satisfied from cache, meaning with high bandwidth and low latency.
   \vskip-.5in
 \end{wrapfigure}
 %
-A larger stride 
+A larger stride, illustrated in figure~\ref{fig:stride-3}
 \begin{lstlisting}
-for (i=0; i<N; i+=stride)
+for (int i=0; i<N; i+=stride)
   ... = ... x[i] ...
 \end{lstlisting}
-implies that in every cache line only certain elements
+implies that in every cacheline only certain elements
 are used. We illustrate that with stride~3: requesting the first
-elements loads a cacheline, and this cacheline also contains the
+element loads a cacheline, and this cacheline also contains the
 second element. However, the third element is on the next cacheline,
 so loading this incurs the latency and bandwidth of main memory. The
-same holds for the fourth element. Loading four elements now needed
-loading three cache lines instead of one, meaning that two-thirds of
+same holds for the fourth element. Loading four elements now needs
+loading three cachelines instead of one, meaning that two-thirds of
 the available bandwidth has been wasted. (This second case would also incur
-three times the latency of the first, if it weren't for a hardware
+three times the latency of the first,
+if it weren't for the hardware \indexterm{prefetch}
 mechanism that notices the regular access patterns, and pre-emptively
 loads further cachelines; see section~\ref{sec:prefetch}.)
+
+%%packtsnippet end
 
 Some applications naturally lead to strides greater than~1, for
 instance, accessing only the real parts of an array of complex
@@ -1280,11 +1360,9 @@ numbers see section~\ref{sec:complex}). Also, methods that use
 \indexterm{recursive doubling} often have a code structure that
 exhibits non-unit strides
 \begin{lstlisting}
-for (i=0; i<N/2; i++)
+for (int i=0; i<N/2; ++i)
   x[i] = y[2*i];
 \end{lstlisting}
-
-%%packtsnippet end
 
 In this discussion of cachelines, we have implicitly assumed the
 beginning of a cacheline is also the beginning of a word, be that an
@@ -1294,8 +1372,6 @@ two cachelines. You can image that this is not good for
 performance. Section~\ref{sec:memalign} discusses ways to address
 \indextermbus{cacheline}{boundary alignment}
 in practice.
-
-\index{cache!line|)}
 
 \Level 2 {Cache mapping}
 
@@ -1342,11 +1418,13 @@ location, which will make certain calculations inefficient. Example:
   \label{fig:directconflict}
 \end{figure}
 %
+%%packtsnippet conflictcode
 \begin{lstlisting}
 double A[3][8192];
-for (i=0; i<512; i++)
+for (int i=0; i<512; ++i)
   a[2][i] = ( a[0][i]+a[1][i] )/2.;
 \end{lstlisting}
+%%packtsnippet end
 or in Fortran:
 \begin{lstlisting}
 real*8 A(8192,3);
@@ -1356,7 +1434,7 @@ end do
 \end{lstlisting}
 Here, the locations of \texttt{a[0][i]}, \texttt{a[1][i]}, and
 \texttt{a[2][i]} (or \texttt{a(i,1),a(i,2),a(i,3)})
-are 8K from each other for every~\n{i}, so the last
+are 8K from each other for every~\lstinline{i}, so the last
 16 bits of their addresses will be the same, and hence they will
 be mapped to the same location in cache; see figure~\ref{fig:directconflict}.
 
@@ -1365,26 +1443,26 @@ go as follows:
 \begin{itemize}
 \item The data at \texttt{a[0][0]} is brought into cache and
   register. This engenders a certain amount of latency. Together with
-  this element, a whole cache line is transferred.
+  this element, a whole cacheline is transferred.
 \item The data at \texttt{a[1][0]} is brought into cache (and
   register, as we will not remark anymore from now on), together
-  with its whole cache line, at cost of some latency. Since this cache
+  with its whole cacheline, at cost of some latency. Since this cache
   line is mapped to the same location as the first, the first cache
   line is overwritten.
-\item In order to write the output, the cache line containing
+\item In order to write the output, the cacheline containing
   \texttt{a[2][0]} is brought into memory. This is again mapped to the
-  same location, causing flushing of the cache line just loaded
+  same location, causing flushing of the cacheline just loaded
   for~\texttt{a[1][0]}.
 \item In the next iteration, \texttt{a[0][1]} is needed, which is
-  on the same cache line as \texttt{a[0][0]}. However, this cache line
+  on the same cacheline as \texttt{a[0][0]}. However, this cacheline
   has been flushed, so it needs to be brought in anew from main memory
-  or a deeper cache level. In doing so, it overwrites the cache line
+  or a deeper cache level. In doing so, it overwrites the cacheline
   that holds \texttt{a[2][0]}.
 \item A similar story holds for \texttt{a[1][1]}: it is on the cache
-  line of \text{a[1][0]}, which unfortunately has been overwritten in
+  line of \texttt{a[1][0]}, which unfortunately has been overwritten in
   the previous step.
 \end{itemize}
-If a cache line holds four words, we see that each four iterations of
+If a cacheline holds four words, we see that each four iterations of
 the loop involve eight transfers of elements of~\texttt{a}, where two
 would have sufficed, if it were not for the cache conflicts.
 
@@ -1409,29 +1487,27 @@ would have sufficed, if it were not for the cache conflicts.
 \label{sec:associative}
 \index{associativity|see{cache, associative}}
 
-The problem of cache conflicts, outlined in the previous section, would
+The problem of cache conflicts would
 be solved if any data item could go to any cache location. In that
 case there would be no conflicts, other than the cache filling up, in
 which case a cache replacement policy (section~\ref{sec:lru}) would
-flush data to make room for the incoming item. Such a cache is called
-\indexterm{fully associative}, and while it seems optimal, it is also
-very costly to build, and much slower in use than a direct mapped cache.
+flush data to make room for any incoming item.
+This is called a \indextermsub{fully associative}{cache},
+and while this design seems optimal, it is also
+very costly to build, and slower in use than a direct mapped cache.
 
 For this reason, the most common solution is to have a
 $k$-way \indextermsub{associative}{cache}, where $k$~is at least two. In
 this case, a data item can go to any of $k$ cache locations.
 
-In this section we explore the idea of associativity;
-practical aspects of cache associativity are explored
-in section~\ref{sec:assoc-coding}.
-
 Code
 would have to have a $k+1$-way conflict before data would be flushed
-prematurely as in the above example. In that example, a value of $k=2$
+as in the above example. In that example, a value of $k=3$
 would suffice, but in practice higher values are often encountered.
 \begin{figure}[ht]
 \includegraphics[scale=.12]{assoc-mapping}
 \caption{Two caches of 12 elements: direct mapped (left) and 3-way associative (right).}
+\label{fig:associative-12elt}
 \label{fig:assoc-mapping}
 \end{figure}
 Figure~\ref{fig:assoc-mapping} illustrates the mapping of memory
@@ -1443,7 +1519,7 @@ in the 3-way associative cache these two addresses can be mapped
 to any of three elements.
 
 \begin{figure}[ht]
-  \includegraphics[scale=.6]{associativity}
+  \includegraphics[scale=.6]{associativity-icx}
   \caption{Associative cache structure}
   \label{fig:icelake-associative}
 \end{figure}
@@ -1451,9 +1527,11 @@ to any of three elements.
 As a practical example, the
 \indextermbus{Intel}{Ice Lake} processor has
 an L1 cache of 48K bytes that is 12-way set associative with a 64
-  byte cache line size, and
+  byte cacheline size, and
 an L2 cache of 1.25M bytes that is 20-way set associative with a 64
-byte cache line size.
+byte cacheline size.
+The L1 structure is depicted in figure~\ref{fig:icelake-associative}.
+
 \begin{comment}
   On the other hand, the \indextermbus{AMD}{Barcelona} chip
   has 2-way associativity for the L1 cache, and 8-way for
@@ -1521,35 +1599,35 @@ being cached.
 \label{sec:prefetch}
 
 In the traditional von Neumann model
-\begin{nopackt}
   (section~\ref{sec:vonneuman})
-\end{nopackt}
 each instruction contains the location of its operands, so a \ac{CPU}
 implementing this model would make a separate request for each new
-operand. In practice, often subsequent data items are adjacent or
+operand. In practice, subsequent data requests are often adjacent or
 regularly spaced in memory. The memory system can try to detect such
 data patterns by looking at cache miss points,
 and request a \indextermbus{prefetch}{data stream};
 \begin{figure}[ht]
-  \includegraphics[scale=.09]{prefetch}
+  \includegraphics[scale=.075]{prefetch}
   \caption{Prefetch stream generated by equally spaced requests.}
   \label{fig:prefetch}
 \end{figure}
 figure~\ref{fig:prefetch}.
 
 In its simplest form, the \ac{CPU} will detect that consecutive loads come
-from two consecutive cache lines, and automatically issue a request
-for the next following cache line. This process can be repeated or
+from two consecutive cachelines, and automatically issue a request
+for the next following cacheline. This process can be repeated or
 extended if the code makes an actual request for that third cache
-line. Since these cache lines are now brought from memory well before
+line. Since these cachelines are now brought from memory well before
 they are needed, prefetch has the possibility of eliminating the
 latency for all but the first couple of data items.
 
-Preffetch streams typically can not cross
+Prefetch streams typically can not cross
 \indextermsub{small}{page} boundaries, so it pays to
 have data be aligned on small page boundaries.
 Typically this means having a starting address at a multiple of~4K;
 see section~\ref{sec:smallpage}.
+Some codes benefit from larger page sizes, for instance of a megabyte.
+This can be set at the \ac{OS} level.
 
 %%packtsnippet end
 
@@ -1665,8 +1743,8 @@ supercomputers.
   The \indexterm{recursive doubling} algorithm for summing the
   elements of an array is:
 \begin{lstlisting}
-for (s=2; s<2*n; s*=2)
-  for (i=0; i<n-s/2; i+=s)
+for (int s=2; s<2*n; s*=2)
+  for (int i=0; i<n-s/2; i+=s)
     x[i] += x[i+s/2]
 \end{lstlisting}
   Analyze bank conflicts for this algorithm. Assume $n=2^p$ and banks
@@ -1677,8 +1755,8 @@ for (s=2; s<2*n; s*=2)
 
   Alternatively, we can use \indexterm{recursive halving}:
 \begin{lstlisting}
-for (s=(n+1)/2; s>1; s/=2)
-  for (i=0; i<n; i+=1)
+for (int s=(n+1)/2; s>1; s/=2)
+  for (int i=0; i<n; i+=1)
     x[i] += x[i+s]
 \end{lstlisting}
   Again analyze bank conficts. Is this algorithm better? In the
@@ -1686,13 +1764,12 @@ for (s=(n+1)/2; s>1; s/=2)
 \end{exercise}
 
 \emph{Cache memory}\index{cache!memory banks} can also use banks. For instance, the
-cache lines in the L1 cache of the \indextermbus{AMD}{Barcelona} chip
+cachelines in the L1 cache of the \indextermbus{AMD}{Barcelona} chip
 are 16 words long, divided into two interleaved banks of 8 words. This
-means that sequential access to the elements of a cache line is
+means that sequential access to the elements of a cacheline is
 efficient, but strided access suffers from a deteriorated performance.
 
 \Level 1 {TLB, pages, and virtual memory}
-%%packtsnippet tlb1
 \label{sec:smallpage}
 
 All of a program's data may not be in memory simultaneously. This can
@@ -1717,11 +1794,14 @@ contiguous blocks of memory, from a few kilobytes to megabytes in size.
 was a programmer's responsibility. Pages that would replace each other
 were called \indexterm{overlays}.)
 
+%%packtsnippet tlb1
 For this reason, we need a translation mechanism from the memory
-addresses that the program uses to the actual addresses in memory, and
-this translation has to be dynamic. A~program has a `logical data
+addresses that the program uses to the actual addresses in memory.
+This translation has to be dynamic: if a program is run twice,
+the same data can be mapped to two different locations.
+A~program has a `logical data
 space' (typically starting from address zero) of the addresses used in
-the compiled code, and this needs to be translated during program
+the compiled code, and this is translated during program
 execution to actual memory addresses. For this reason, there is a
 \indexterm{page table} that specifies which memory pages contain which
 logical pages.
@@ -1754,19 +1834,26 @@ However, address translation by lookup in this table is slow, so \acp{CPU}
 have a \indexac{TLB}.
 The \ac{TLB} is a cache of frequently used 
 page table entries: it provides fast address translation for a number
-of pages. If a program needs a memory
+of pages.
+
+If a program needs a memory
 location, the \ac{TLB} is consulted to see whether this location is in fact
 on a page that is remembered in the \ac{TLB}. 
 If this is the case, the logical address is
 translated to a physical one; this is a very fast process.
 The case
 where the page is not remembered in the \ac{TLB} is called a
-\indextermbus{TLB}{miss}, and the page lookup table is then consulted,
-if necessary bringing the needed page into memory.
+\indextermbus{TLB}{miss}, and the page lookup table is then searched.
+This is another case of \indextermsub{spatial}{locality}:
+accessing (many) elements that are spread far apart
+incurs a performance penalty from \ac{TLB} misses.
 %%packtsnippet end
-The \ac{TLB} is (sometimes fully) associative
-(section~\ref{sec:associative}), using an LRU policy
-(section~\ref{sec:lru}).
+
+\begin{comment}
+  The \ac{TLB} is (sometimes fully) associative
+  (section~\ref{sec:associative}), using an LRU policy
+  (section~\ref{sec:lru}).
+\end{comment}
 
 A typical \ac{TLB} has between 64 and 512 entries.
 If a program accesseses
@@ -1797,6 +1884,7 @@ number of potential TLB misses, since the working set of pages can be
 reduced.
 
 \Level 0 {Multicore architectures}
+%%packtsnippet multicore
 \label{sec:multicore}
 \index{multicore|(textbf}
 
@@ -1805,22 +1893,23 @@ traditional processor chip design.
 \begin{itemize}
 \item Clock frequency can not be increased further, since it increases
   energy consumption, heating the chips too
-  much; see section~\ref{sec:power}. 
+    much; see section~\ref{sec:power}. 
 \item It is not possible to extract more \acf{ILP}
   from codes, either because of compiler limitations, because of the
   limited amount of intrinsically available parallelism, or because
-  branch prediction makes it impossible (see
-  section~\ref{sec:pipelinecpu}).
+  branch prediction makes it 
+  impossible (see section~\ref{sec:pipelinecpu}).
 \end{itemize}
 
 One of the ways of getting a higher utilization out of a single
 processor chip is then to move from a strategy of further
-sophistication of the single processor, to a division of the chip into
-multiple processing `cores'.
-The separate cores can work on unrelated
-tasks, or, by introducing what is in effect data parallelism
-(section~\ref{sec:simd}), collaborate on a common task at a higher
-overall efficiency\cite{Olukotun:1996:single-chip}.
+sophistication of the single processor to a division of the chip into
+multiple processing \indextermp{core}.
+The separate cores can work on unrelated tasks, or,
+by splitting a large amount of data parallelism
+into parallel tasks
+collaborate on a common task at a higher
+overall performance~\cite{Olukotun:1996:single-chip}.
 \begin{remark}
 Another solution is Intel\index{Intel}'s
   \indexterm{hyperthreading}, which lets a processor mix the instructions of
@@ -1841,11 +1930,12 @@ This solves the above two problems:
 \end{itemize}
 
 While the first multicore \acp{CPU}
-were simply two processors on the same die, later generations
+were in effect two processors on the same die, later generations
 incorporated L3 or L2 caches that were shared between the two
 processor cores; see figure~\ref{fig:core-caches}.
 \begin{figure}[ht]
-  \includegraphics[scale=.18]{cache-hierarchy}
+  %%\includegraphics[scale=.14]{cache-hierarchy}
+  \includegraphics[scale=.5]{single_dual_cache}
   \caption{Cache hierarchy in a single-core and dual-core chip.}
   \label{fig:core-caches}
 \end{figure}
@@ -1855,75 +1945,81 @@ The cores would still have their own L1 cache, and these separate
 caches lead to a \indextermbus{cache}{coherence} problem; see
 section~\ref{sec:coherence} below.
 
+\begin{figure}[ht]
+  \includegraphics[scale=.75]{amd_milan}
+  \caption{Structure of the AMD multicore processors}
+  \label{fig:amd-rome}
+\end{figure}
+
 We note that the term `processor' is now ambiguous: it can refer to either the
 chip, or the processor core on the chip. For this reason, we mostly
 talk about a \indexterm{socket} for the whole chip and
 \indexterm{core}\index{core!vs processor}
 for the part containing one arithmetic and logic unit and
-having its own registers. Currently, \acp{CPU} with 4 or 6 cores are
-common,
-even in laptops, and Intel and AMD are marketing 12-core chips.
-The core count is
-likely to go up in the future: Intel\index{Intel}
-has already shown an 80-core prototype that is developed into the 48
-core `Single-chip Cloud Computer', illustrated in
-fig~\ref{fig:rockcreek}. This chip has a structure with 24 dual-core
-`tiles' that are connected through a 2D mesh network. Only certain
-tiles are connected to a memory controller, others can not reach
-memory other than through the on-chip network.
+having its own registers.
+Currently, \acp{CPU} with dozens of cores are common
+in supercomputers.
+Such chips can have complicated cache structures
+where an L2 cache is neither private, nor globally shared,
+but instead shared by an 8-core `chiplet';
+see figure~\ref{fig:amd-rome} for an example.
 
-\begin{figure}[ht]
-  \begin{quote}
-  \includegraphics[scale=.5]{ScCC-1}
-  \includegraphics[scale=.4]{ScCC-2}
-  \end{quote}
-  \caption{Structure of the Intel Single-chip Cloud Computer chip.}
-  \label{fig:rockcreek}
-\end{figure}
+\begin{comment}
+  \begin{figure}[ht]
+    \begin{quote}
+      \includegraphics[scale=.5]{ScCC-1}
+      \includegraphics[scale=.4]{ScCC-2}
+    \end{quote}
+    \caption{Structure of the Intel Single-chip Cloud Computer chip.}
+    \label{fig:rockcreek}
+  \end{figure}
+\end{comment}
 
 With
 this mix of shared and private caches, the programming model for
 multicore processors is becoming a hybrid between shared and
 distributed memory:
-\begin{itemize}
+\begin{description}
 \item[{\it Core}] The cores have their own private L1 cache, which is a sort of
-  distributed memory. The above mentioned Intel 80-core prototype has the
-  cores communicating in a distributed memory fashion.
+  distributed memory. 
 \item[{\it Socket}] On one socket, there is often a shared L2 cache, which is shared
-  memory for the cores.
+  memory between all or some of the cores.
 \item[{\it Node}] There can be multiple sockets on a single `node' or
   motherboard, accessing the same shared memory.
-\item[{\it Network}] Distributed memory programming (see the next
-  chapter) is needed to let nodes
+\item[{\it Network}] Distributed memory programming
+    (see the next chapter)
+  is needed to let nodes
   communicate.
-\end{itemize}
+\end{description}
 
-Historically, multicore architectures have a precedent in
-multiprocessor shared memory designs (section~\ref{sec:uma}) such as
-the \indexterm{Sequent Symmetry} and the \indexterm{Alliant
-  FX/8}. Conceptually the program model is the same, but the
-technology now allows to shrink a multiprocessor board to a multicore
-chip.
+  Historically, multicore architectures have a precedent in
+  multiprocessor shared memory designs (section~\ref{sec:uma}) such as
+  the \indexterm{Sequent Symmetry} and the \indexterm{Alliant
+    FX/8}. Conceptually the program model is the same, but the
+  technology now allows to shrink a multiprocessor board to a multicore
+  chip.
 
 \Level 1 {Cache coherence}
 \label{sec:coherence}
 \index{cache!coherence|(}
 
 With parallel processing, there is the potential for a conflict if more
-than one processor has a copy of the same data item. The problem of
+than one processing element has a copy of the same data item. The problem of
 ensuring that all cached data are an accurate copy of main memory is
-referred to as \emph{cache coherence}: if one processor alters
-its copy, the other copy needs to be updated.
+referred to as \emph{cache coherence}:
+if the copy in one cache is altered, 
+any other copy needs to be updated too, or at least marked as invalid.
 
 In distributed memory architectures, a dataset is usually partitioned
-disjointly over the processors, so conflicting copies of data can only
+disjointly over the processors,
+so conflicting copies of data can only
 arise with knowledge of the user, and it is up to the user to
 deal with the problem. The case of shared memory is more subtle: since
 processes access the same main memory, it would seem that conflicts
-are in fact impossible. However, processors typically have some private
+are in fact impossible.
+However, cores typically have some private
 cache that contains copies of data from memory, so conflicting
-copies can occur.  This situation arises in particular in multicore
-designs.
+copies can occur.
 
 Suppose that two cores have a copy of the same data item in their
 (private) L1 cache, and one modifies its copy. Now the other has
@@ -1931,51 +2027,42 @@ cached data that is no longer an accurate copy of its counterpart: the
 processor will \emph{invalidate}\index{cacheline!invalidation} that
 copy of the item, and in fact its whole cacheline. When the process
 needs access to the item again, it needs to reload that cacheline.
-The alternative is for any core that alters data to send that
-cacheline to the other cores. This strategy probably has a higher overhead,
-since other cores are not likely to have a copy of a cacheline.
+  The alternative is for any core that alters data to send that
+  cacheline to the other cores.
+  This strategy probably has a higher overhead,
+  since other cores are not likely to have a copy of a cacheline.
 
 This process of updating or invalidating cachelines
 is known as \emph{maintaining cache coherence}, and it is done on
-a very low level of the processor, with no programmer involvement
-needed. (This makes updating memory locations an \indexterm{atomic
-  operation}; more about this in section~\ref{sec:shared-lock}.)
-However, it will slow down the computation, and it wastes bandwidth to
-the core that could otherwise be used for loading or storing operands.
+a very low level of the processor, with no programmer involvement.
+%% (This makes updating memory locations an \indexterm{atomic
+%%   operation}; more about this in section~\ref{sec:shared-lock}.)
+However, it will slow down the computation, and it uses bandwidth
+that could otherwise be used for loading or storing operands.
 
-The state of a cache line with respect to a data item in main memory
-is usually described as one of the following:
-\begin{itemize}
-\item[Scratch:] the cache line does not contain a copy of the item;
-\item[Valid:] the cache line is a correct copy of data in main memory;
-\item[Reserved:] the cache line is the \emph{only} copy of that piece
-  of data;
-\item[Dirty:] the cache line has been modified, but not yet written
-  back to main memory;
-\item [Invalid:] the data on the cache line is also present on other
-  processors (it is not \emph{reserved}), and another process has
-  modified its copy of the data.
-\end{itemize}
-
-A simpler variant of this is the \acf{MSI} coherence protocol, where a
-cache line can be in the following states on a given core:
-\begin{itemize}
+The state of a cacheline with respect to a data item in main memory
+is usually described in terms of a protocol such as 
+the \acf{MSI} coherence protocol, where a
+cacheline can be in the following states on a given core:
+\begin{description}
 \item [Modified:] the cacheline has been modified, and needs to be
   written to the backing store. This writing can be done when the line
-  is \indexterm{evicted}, or it is done immediately, depending on the
+  is evicted, or it is done immediately, depending on the
   write-back policy.
 \item [Shared:] the line is present in at least one cache and is unmodified.
 \item [Invalid:] the line is not present in the current cache, or it
   is present but a copy in another cache has been modified.
-\end{itemize}
+\end{description}
 
 These states control the movement of cachelines between memory and the
 caches. For instance, suppose a core does a read to a cacheline that
 is invalid on that core. It can then load it from memory or get it
-from another cache, which may be faster. (Finding whether a line exists
-(in state M or~S) on another cache is called \indexterm{snooping}; an alternative
-is to maintain cache directories; see below.) If
-the line is Shared, it can now simply be copied; if it is in state~M in
+from another cache, which may be faster.
+(Finding whether a line exists
+in state M or~S on another cache,
+is called \indexterm{snooping}; an alternative
+  is to maintain cache directories; see below.)
+If the line is Shared, it can now simply be copied; if it is in state~M in
 the other cache, that core first needs to write it back to memory.
 
 \begin{exercise}
@@ -1983,12 +2070,15 @@ the other cache, that core first needs to write it back to memory.
   $x_1$,$x_2$ in the private caches of the two processors to which $x$
   is mapped. Describe the transitions between the states of $x_1$ and
   $x_2$ under reads and writes of~$x$ on the two processors. Also
-  indicate which actions cause memory bandwidth to be used. (This list
-  of transitions is a \indexacf{FSA}; see section~\ref{app:fsa}.)
+  indicate which actions cause memory bandwidth to be used.
+    (This list
+    of transitions is a \indexacf{FSA}; see section~\ref{app:fsa}.)
 \end{exercise}
 
 Variants of the \ac{MSI} protocol add an `Exclusive' or `Owned' state
 for increased efficiency.
+
+%%packtsnippet end
 
 \Level 2 {Solutions to cache coherence}
 
@@ -2025,16 +2115,17 @@ the
 can themselves be distributed. This increases the latency of cache lookup.
 
 \Level 1 {False sharing}
+%%packtsnippet falsesharing
 \label{sec:falseshare}
 
 The cache coherence problem can even appear if the cores access
 different items. For instance, a declaration
-\begin{lstlisting}
+\begin{lstlisting}[language=cpp]
   double x,y;
 \end{lstlisting}
-will likely allocate \n{x} and~\n{y} next to each other in memory, so
+will likely allocate \lstinline{x} and~\lstinline{y} next to each other in memory, so
 there is a high chance they fall on the same cacheline. Now if one
-core updates~\n{x} and the other~\n{y}, this cacheline will
+core updates~\lstinline{x} and the other~\lstinline{y}, this cacheline will
 continuously be moved between the cores. This is called
 \indextermdef{false sharing}.
 
@@ -2042,23 +2133,26 @@ The most common case of false sharing happens when
 threads update consecutive locations of an array. For instance, in the
 following OpenMP fragment all threads update their own location in an
 array of partial results:
-\begin{lstlisting}
+\begin{lstlisting}[language=cpp]
   local_results = new double[num_threads];
 #pragma omp parallel
 {
   int thread_num = omp_get_thread_num();
-  for (int i=my_lo; i<my_hi; i++)
+  for (int i=my_lo; i<my_hi; ++i)
     local_results[thread_num] = ... f(i) ...
 }
+// combine local results into global:
 global_result = g(local_results)
 \end{lstlisting}
 While there is no actual \indexterm{race condition} (as there would be
-if the threads all updated the \n{global_result} variable),
+if the threads all updated the \lstinline{global_result} variable),
 this code may have low performance, since the cacheline(s) with the
-\n{local_result} array will continuously be invalidated.
+\lstinline{local_result} array will continuously be invalidated.
 
 That said, false sharing is less of a problem in modern CPUs
-than it used to be. Let's consider a code that explores the above scheme:
+than it used to be.
+%%packtsnippet end
+Let's consider a code that explores the above scheme:
 %
 \cxxverbatimsnippet{sharedwrite}
 
@@ -2198,10 +2292,10 @@ first written to. Consider now the following OpenMP
 (section~\ref{sec:openmp}) code:
 \begin{lstlisting}
 double *array = (double*)malloc(N*sizeof(double));
-for (int i=0; i<N; i++)
+for (int i=0; i<N; ++i)
    array[i] = 1;
 #pragma omp parallel for
-for (int i=0; i<N; i++)
+for (int i=0; i<N; ++i)
    .... lots of work on array[i] ...
 \end{lstlisting}
 Because of first-touch, the array is allocated completely in the
@@ -2236,11 +2330,12 @@ and considerable programming cleverness is needed to get high performance.
 \Level 1 {Data reuse and arithmetic intensity}
 %%packtsnippet datareuse
 \label{sec:reuse}
-\label{sec:gemm}
 \label{sec:intensity}
 
-In the previous sections you learned that processor design is somewhat unbalanced:
-loading data is slower than executing the actual operations.
+In the previous
+  sections
+you learned that processor design is unbalanced
+in the sense that loading data is slower than executing the actual operations.
 This imbalance is large for main memory and less for the various cache levels.
 Thus we are motivated to keep data in cache and 
 keep the amount of \indexterm{data reuse}  as high as possible.
@@ -2253,20 +2348,23 @@ of an algorithm as follows:
   If $n$ is the number of data items that an algorithm operates on, and
   $f(n)$ the number of operations it takes, then the arithmetic intensity is
   $f(n)/n$.
+
+  Roughly equivalently, we define the \indextermbus{reuse}{factor}
+  as the number of times each loaded data item is used.
 \end{quote}
 (We can measure data items in either floating point numbers or bytes.
 The latter possibility makes it easier to relate arithmetic intensity
 to hardware specifications of a processor.)
 
-Arithmetic intensity is also related to \indextermbus{latency}{hiding}:
-the concept that you can mitigate the negative performance impact
-of data loading
-behind computational activity going on.
-%
-For this to work, you need more computations than data loads to make
-this hiding effective. And that is the very definition of
-computational intensity: a high ratio of operations per
-byte/word/number loaded.
+  Arithmetic intensity is also related to \indextermbus{latency}{hiding}:
+  the concept that you can mitigate the negative performance impact
+  of data loading
+  behind computational activity going on.
+  %
+  For this to work, you need more computations than data loads to make
+  this hiding effective. And that is the very definition of
+  computational intensity: a high ratio of operations per
+  byte/word/number loaded.
 
 \Level 2 {Example: vector operations}
 
@@ -2277,8 +2375,9 @@ This involves three memory accesses (two loads and one store)
 and one operation per iteration,
 giving an arithmetic intensity of~$1/3$.
 
-The \indexac{BLAS} \indexterm{axpy} (for
-`\emph{a}~times \emph{x} plus~\emph{y}) operation 
+The \indexac{BLAS}
+\indexterm{AXPY} (for
+`\emph{a}~times \emph{x} plus~\emph{y}') operation 
 \[ \forall_i\colon x_i\leftarrow a\,x_i+ y_i
 \]
 has
@@ -2293,13 +2392,16 @@ is similar in structure to the axpy operation, involving one
 multiplication and addition per iteration, on two vectors and one
 scalar. However, now there are only two load operations, since $s$~can
 be kept in register and only written back to memory at the end of the
-loop. The reuse here is~$1$.
+loop. The arithmetic intensity here is~$1$.
 
 \Level 2 {Example: matrix operations}
+\label{sec:gemm}
 \label{sec:mmp-example}
 
 Next, consider the \emph{matrix-matrix product}\index{matrix!times matrix product!reuse in}:
-\[ \forall_{i,j}\colon c_{ij} = \sum_k a_{ik}b_{kj}. \] This involves
+\[ \forall_{i,j}\colon c_{ij} = \sum_k a_{ik}b_{kj}. \]
+which is important, for instance in \ac{DL} applications.
+This operation involves
 $3n^2$ data items and $2n^3$ operations, which is of a
 higher order. The arithmetic intensity is~$O(n)$, meaning that every data item
 will be used $O(n)$ times.  This has the implication that, with
@@ -2307,52 +2409,38 @@ suitable programming, this operation has the potential of overcoming
 the bandwidth/clock speed gap by keeping data in fast cache memory.
 
 \begin{exercise}
-  The matrix-matrix product, considered \emph{as operation}, clearly
+  The matrix-matrix product, considered as mathematical operation, clearly
   has data reuse by the above definition. Argue that this reuse is not
-  trivially attained by a simple implementation. What determines
-  whether the naive implementation has  reuse of data that is in cache?
+  trivially attained by a straightforward implementation as a triple loop.
+  What determines whether this implementation has reuse of data that is in cache?
 \end{exercise}
 
-In this discussion we were only concerned with the number of
-operations of a given implementation, not the mathematical
-operation. For instance, there are ways of performing the
-matrix-matrix multiplication and Gaussian elimination algorithms in
-fewer than $O(n^3)$
-operations~\cite{St:gaussnotoptimal,Pa:combinations}. However, this
-requires a different implementation, which has its own analysis in
-terms of memory access and reuse.
+  In this discussion we were only concerned with the number of
+  operations of a given implementation, not the mathematical
+  operation. For instance, there are ways of performing the
+  matrix-matrix multiplication and Gaussian elimination algorithms in
+  fewer than $O(n^3)$
+  operations~\cite{St:gaussnotoptimal,Pa:combinations}. However, this
+  requires a different implementation, which has its own analysis in
+  terms of memory access and reuse.
 
-\begin{nopackt}
   High performance implementation of the matrix-matrix product
   is discussed in section~\ref{sec:goto-gemm}.
-\end{nopackt}
-\begin{packt}
-  A relatively easy to code, high performing, implementation
-  of the matrix-matrix product is done through recursion;
-  see~\ref{proj:lapack}.
-\end{packt}
 
-The matrix-matrix product is the heart of the
-\indextermbus{LINPACK}{benchmark}~\cite{Dongarra1987LinpackBenchmark}
-of the `top500';
-see section~\ref{sec:top500}.
-Using this as the sole measure of
-\indexterm{benchmarking} a computer may give an optimistic view of its
-performance: the matrix-matrix product is an operation
-that has considerable data reuse, so it is relatively insensitive to
-memory bandwidth and, for parallel computers, properties of the
-network.
-Typically, computers will attain 60--90\% of their
-\indexterm{peak performance} on the Linpack benchmark.
-Other benchmarks, for instance involving sparse matrix operations,
-may give considerably lower figures.
+\Level 2 {Fourier transform}
+
+Another algorithm that has potential for data reuse
+is the \acf{FFT}.
+Here, $O(N\log N)$ operations are done on $O(N)$ data,
+so there is an arithmetic intensity of~$\log N$.
+We will not further go into this.
 
 \Level 2 {The roofline model}
 \label{sec:roofline}
 \index{roofline model|(}
 
 There is an elegant way of talking about how arithmetic intensity,
-which is a statement about the ideal algorithm, not its implementation,
+which is a statement about how the ideal algorithm, not its implementation,
 interacts with hardware parameters and the actual implementation
 to determine performance.
 This is known as the \emph{roofline model}~\cite{Williams:2009:roofline},
@@ -2370,10 +2458,8 @@ illustrated in the first graph of figure~\ref{fig:roofline}.
 \begin{enumerate}
 \item The \indexterm{peak performance}, indicated by the horizontal
   line at the top of the graph, is an absolute bound on the
-  performance\footnote
-    {An old joke states that the peak performance
-    is that number that the manufacturer guarantees you will never
-    exceed.}, achieved only if every aspect of a \ac{CPU} (pipelines,
+  performance,
+  achieved only if every aspect of a \ac{CPU} (pipelines,
   multiple floating point units) are perfectly used. The calculation
   of this number is purely based on \ac{CPU} properties and clock cycle; it
   is assumed that memory bandwidth is not a limiting factor.
@@ -2384,13 +2470,17 @@ illustrated in the first graph of figure~\ref{fig:roofline}.
   \frac{\mathrm{operations}}{\mathrm{data item}}\cdot
   \frac{\mathrm{data items}}{\mathrm{second}}
   \]
+  If the first factor is~1 we have a streaming operation,
+  and performance is limited by bandwidth.
   This is depicted by the linearly increasing line in the graph.
 \end{enumerate}
 The roofline model is an elegant way of expressing that various
-factors lower the ceiling.  For instance, if an algorithm fails to use
+factors lower the ceiling.
+For instance, if an algorithm fails to use
 the full \indextermbus{SIMD}{width}, this imbalance lowers the
 attainable peak.  The second graph in figure~\ref{fig:roofline}
-indicates various factors that lower the ceiling.
+indicates various factors that lower the ceiling,
+such as non-unit strides.
 %
 There are also various factors that lower the available bandwidth,
 such as imperfect latency hiding. This is indicated by a lowering of the 
@@ -2415,38 +2505,51 @@ subsystem, and the full capacity of the processor is not used.
 \end{exercise}
 
 \Level 1 {Locality}
-%%packtsnippet locality
 \label{sec:locality}
 
-Since using data in cache is cheaper than getting data from main
-memory, a programmer obviously wants to code in such a way that data
-in cache is reused. While placing data in cache is not under explicit
-programmer control, even from assembly language
-(low level memory access can be controlled by the
-    programmer in the Cell processor and in some GPUs.),
-in most \acp{CPU}, it is still
-possible, knowing the behavior of the caches, to know
-what data is in cache, and to some extent to control it.
+Since using data in cache is faster than getting data from main
+memory, a programmer obviously wants to maximize cache reuse
+in order to get higher performance.
+While placing data in cache is not under explicit
+programmer control, even from assembly language,
+in most \acp{CPU} it is still
+possible to know what data is in cache, and to some extent to control it.
 
-The two crucial concepts here are
+%%packtsnippet locality
+
+In the context of performance optimization,
+two crucial concepts are
 \indextermsub{temporal}{locality}\index{temporal
   locality|see{locality, temporal}} and
-\indextermsub{spatial}{locality}\index{spatial locality|see{locality,
-    spatial}}. Temporal locality is the easiest to explain: this
-describes the use of a data element within a short time of its last
-use.  Since most caches have an \ac{LRU} replacement policy
-(section~\ref{sec:lru}), if in between the two references less data
-has been referenced than the cache size, the element will still be in
-cache and therefore be quickly accessible. With other replacement
-policies, such as random replacement, this guarantee can not be made.
+\indextermsub{spatial}{locality}%
+\index{spatial locality|see{locality, spatial}}.
+Temporal locality is the easiest to explain: this
+describes the use of a data element within a short time of its last use.
+If the second reference comes quickly enough after the first,
+data will still be in cache and is therefore quicker accessible.
+
+Spatial locality is harder to explain, and we will do so
+in detail later.
+The basic idea is that after one data item has been referenced,
+others that are in some sense `close to it' will be quicker to load.
+
+%%packtsnippet end
 
 \Level 2 {Temporal locality}
 
-As an example of temporal locality, consider the repeated use of a
-long vector:
+%%packtsnippet temporallocality
+
+\begin{figure}[t]
+  \includegraphics[scale=.5]{capacity_miss}
+  \caption{Large vector flushes old data from cache}
+  \label{fig:capacity}
+\end{figure}
+
+As an example of \indextermsub{temporal}{locality}, consider the repeated traversal
+of a long vector:
 \begin{lstlisting}
-for (loop=0; loop<10; loop++) {
-  for (i=0; i<N; i++) {
+for (int loop=0; loop<10; ++loop) {
+  for (int i=0; i<N; ++i) {
     ... = ... x[i] ...
   }
 }
@@ -2454,25 +2557,33 @@ for (loop=0; loop<10; loop++) {
 Each element of \texttt{x} will be used 10 times, but if the vector
 (plus other data accessed) exceeds
 the cache size, each element will be flushed before its
-next use. Therefore, the use of \n{x[i]} does not exhibit temporal
-locality: subsequent uses are spaced too far apart in time for it to
-remain in cache. 
+next use; see figure~\ref{fig:capacity}.
+Therefore, the use of \lstinline{x[i]} does not exhibit temporal locality:
+subsequent uses are spaced too far apart in time for an array element
+to remain in cache. 
 
 If the structure of the computation allows us to exchange
 the loops:
 \begin{lstlisting}
-for (i=0; i<N; i++) {
-  for (loop=0; loop<10; loop++) {
+for (int i=0; i<N; ++i) {
+  for (int loop=0; loop<10; ++loop) {
     ... = ... x[i] ...
   }
 }
 \end{lstlisting}
 the elements of \texttt{x} are now repeatedly reused, and are
-therefore more likely to remain in the cache. This rearranged code
-displays better
-temporal locality in its use of~\n{x[i]}.
+therefore more likely to remain in the cache.
+This rearranged code displays better
+temporal locality in its use of~\lstinline{x[i]}.
+(On the other hand, the original code is more likely
+to use vector instructions. The loss of these counteracts
+the performance gain from the cache to an extent.)
+
+%%packtsnippet end
 
 \Level 2 {Spatial locality}
+
+%%packtsnippet spatiallocality
 
 The concept of \indextermsub{spatial}{locality} is slightly more
 involved. A program is said to exhibit spatial locality if it
@@ -2480,28 +2591,30 @@ references memory that is `close' to memory it already referenced. In
 the classical von Neumann architecture with only a processor and
 memory, spatial locality should be irrelevant, since one address in
 memory can be as quickly  retrieved as any other. However, in a modern \ac{CPU}
-with caches, the story is different. Above, you have seen two examples
-of spatial locality:
-\begin{itemize}
-\item Since data is moved in \indextermbus{cache}{line}s rather than
+with caches, the story is different. 
+
+Since data is moved in \indextermbus{cache}{line}s rather than
   individual words or bytes,
   there is a great benefit to coding in such a manner that all
   elements of the cacheline are used. In the loop
 \begin{lstlisting}
-for (i=0; i<N*s; i+=s) {
+for (int i=0; i<N*s; i+=s) {
     ... x[i] ...
 }
 \end{lstlisting}
   spatial locality is a decreasing function of the
-  \indexterm{stride}~\n{s}.
+  \indexterm{stride}~\lstinline{s}.
 
-  Let \n{S}~be the cacheline size, then as \n{s} ranges from $1\ldots\mathtt{S}$,
+  Let \lstinline{S}~be the cacheline size, then as \lstinline{s} ranges from $1\ldots\mathtt{S}$,
   the number of elements used of each cacheline goes
-  down from~\n{S} to~1. Relatively speaking, this increases the cost
+  down from~\lstinline{S} to~1. Relatively speaking, this increases the cost
   of memory traffic in the loop: if $\mathtt{s}=1$, we load $1/\mathtt{S}$ cachelines
   per element; if $\mathtt{s}=\mathtt{S}$, we load one cacheline for each element. This
   effect is demonstrated in section~\ref{sec:coding-cacheline}.
-\item A second example of spatial locality worth observing involves
+
+%%packtsnippet end
+
+A second example of spatial locality worth observing involves
   the \ac{TLB} (section~\ref{sec:tlb}). If a program references
   elements that are close together, they are likely on the same memory
   page, and address translation through the TLB will be fast. On the
@@ -2509,17 +2622,9 @@ for (i=0; i<N*s; i+=s) {
   it will also be referencing many different pages.
   The resulting TLB
   misses are very
-\begin{packt}
-    costly.
-\end{packt}
-\begin{nopackt}
     costly; see also section~\ref{sec:coding-tlb}.
-\end{nopackt}
 Fortunately, \acp{TLB} these days are very large so you are
 unlikely to run into this.
-\end{itemize}
-
-%%packtsnippet end
 
 \begin{exercise}
   Consider the following pseudocode of an algorithm for summing $n$
@@ -2540,11 +2645,11 @@ for i=0,1,2,...,n-1
 \end{exercise}
 
 \begin{exercise}
-Consider the following code, and assume that \n{nvectors} is small
-compared to the cache size, and \n{length} large.
+Consider the following code, and assume that \lstinline{nvectors} is small
+compared to the cache size, and \lstinline{length} large.
 \begin{lstlisting}
-for (k=0; k<nvectors; k++)
-  for (i=0; i<length; i++)
+for (int k=0; k<nvectors; ++k)
+  for (int i=0; i<length; ++i)
     a[k,i] = b[i] * c[k]
 \end{lstlisting}
 How do the following concepts relate to the performance of this code:
@@ -2557,8 +2662,8 @@ How do the following concepts relate to the performance of this code:
 Would the following code where the loops are exchanged
 perform better or worse, and why?
 \begin{lstlisting}
-for (i=0; i<length; i++)
-  for (k=0; k<nvectors; k++)
+for (int i=0; i<length; ++i)
+  for (int k=0; k<nvectors; ++k)
     a[k,i] = b[i] * c[k]
 \end{lstlisting}
 \end{exercise}
@@ -2609,33 +2714,33 @@ C+A\cdot B$, and that they both take roughly $2n^3$
 operations. However, their memory behavior, including spatial and
 temporal locality, is very different.
 \begin{itemize}
-\item[\n{c[i,j]}] In the first implementation, \n{c[i,j]} is
+\item[\lstinline{c[i,j]}] In the first implementation, \lstinline{c[i,j]} is
   invariant in the inner iteration, which constitutes temporal
   locality,
   so it can be kept in register. As
   a result, each element of~$C$ will be loaded and stored only once.
 
-  In the second implementation, \n{c[i,j]} will be loaded and stored
+  In the second implementation, \lstinline{c[i,j]} will be loaded and stored
   in each inner iteration. In particular, this implies that there are
   now $n^3$ store operations, a~factor of~$n$ more than in the first
   implementation.
-\item[\n{a[i,k]}] In both implementations, \n{a[i,k]} elements are
+\item[\lstinline{a[i,k]}] In both implementations, \lstinline{a[i,k]} elements are
   accessed by rows, so there is good spatial locality, as each loaded
   cacheline will be used entirely. In the second implementation,
-  \n{a[i,k]}~is invariant in the inner loop, which constitutes
+  \lstinline{a[i,k]}~is invariant in the inner loop, which constitutes
   temporal locality; it can be kept in register. As a result, in the
   second case $A$~will be loaded only once, as opposed to $n$~times in
   the first case.
-\item[\n{b[k,j]}] The two implementations differ greatly in how they
-  access the matrix~$B$. First of all, \n{b[k,j]}~is never invariant
+\item[\lstinline{b[k,j]}] The two implementations differ greatly in how they
+  access the matrix~$B$. First of all, \lstinline{b[k,j]}~is never invariant
   so it will not be kept in register, and $B$~engenders $n^3$~memory
   loads in both cases. However, the access patterns differ.
 
-  In second case, \n{b[k,j]}~is accessed by rows,
+  In second case, \lstinline{b[k,j]}~is accessed by rows,
   so there is good spatial locality: cachelines will be fully utilized
   after they are loaded. 
 
-  In the first implementation, \n{b[k,j]}~is accessed by
+  In the first implementation, \lstinline{b[k,j]}~is accessed by
   columns. Because of the row storage of the matrices, a cacheline contains
   a part of a row, so for each cacheline loaded, only one element is
   used in the columnwise traversal. This means that the first
@@ -2665,15 +2770,15 @@ worse than the two algorithms given above.
  The following program is likely inefficient if
 \texttt{n} is small and \texttt{N} is large:
 \begin{lstlisting}
-for (i=0; i<N; i++)
-  for (j=0; j<n; j++)
+for (int i=0; i<N; ++i)
+  for (int j=0; j<n; ++j)
     ... = ... x[j*N+i] ...
 \end{lstlisting}
 Reversing the loops, when possible, is likely to make the code more
 efficient:
 \begin{lstlisting}
-for (j=0; j<n; j++)
-  for (i=0; i<N; i++)
+for (int j=0; j<n; ++j)
+  for (int i=0; i<N; ++i)
     ... = ... x[j*N+i] ...
 \end{lstlisting}
 \end{comment}
@@ -2768,10 +2873,10 @@ For the true/false questions, give short explanation if you choose the `false' a
 \begin{exercise}
   True or false. The code
 \begin{lstlisting}
-for (i=0; i<N; i++)
+for (int i=0; i<N; ++i)
   a[i] = b[i]+1;
 \end{lstlisting}
-touches every element of \n{a} and~\n{b} once, so there will be a cache miss
+touches every element of \lstinline{a} and~\lstinline{b} once, so there will be a cache miss
 for each element.
 \end{exercise}
 
@@ -2798,9 +2903,9 @@ for each element.
     computes $y\leftarrow Ax+y$. The difference in the code involved
     is minimal):
 \begin{lstlisting}
-for (i<M) {
+for (int i; i<M; ++i) {
   s = 0
-  for (j<N) {
+  for (int j; j<N; ++j) {
     s = s + a[i][j] * x[j]; }
   y[i] = s
 }

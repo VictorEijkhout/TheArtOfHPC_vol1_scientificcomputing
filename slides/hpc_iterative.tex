@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -16,29 +16,24 @@
 
 \documentclass[11pt]{beamer}
 
-\beamertemplatenavigationsymbolsempty
-\usepackage{beamerthemeTACC}
-\parskip=.5\baselineskip plus .5\baselineskip
-\input semester
-
-\usepackage{pslatex}
-\usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
-
-\newdimen\unitindent \unitindent=20pt
-
-\input slidemacs
-
-\input scimacs
-
-%\advance\textwidth by 1in
-%\advance\oddsidemargin by -.5in
-
-\begin{document}
-\parskip=10pt plus 5pt minus 3pt
-
-\includecomment{simplified}
+\newif\ifFormatAsBook \FormatAsBookfalse
+\usepackage{comment}
+\excludecomment{longstory}
 \excludecomment{lotsamath}
+\includecomment{simplified}
 
+\input courseformat
+\input tikzplot
+\def\qrcode{qrvol1}
+\setcounter{tocdepth}{2}
+
+\newcommand\indexterm[1]{#1}
+\newcommand\indexac[1]{\ac{#1}}
+
+\input semester
+\begin{document}
+
+\excludecomment{advanced}
 \title{Iterative solution of linear systems}
 \author{\hpcteachers}
 \date{\hpcsemester}
@@ -58,8 +53,11 @@
 \sectionframe{Let's go parallel}
 
 \input IterativeComputational
-\input ParallelLU
-\input IncompleteLU
-\input ImplicitParallel
+
+\begin{longstory}
+  \input ParallelLU
+  \input IncompleteLU
+  \input ImplicitParallel
+\end{longstory}
 
 \end{document}

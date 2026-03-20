@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -16,29 +16,23 @@
 
 \documentclass[11pt,headernav]{beamer}
 
+\newif\ifFormatAsBook \FormatAsBookfalse
 \input courseformat
+\newcommand\indextermunix{\lstinline[language=bash]}
+\newcommand\indextermbus[2]{#1 #2}
+\newcommand\indextermtt{\lstinline[language=verbatim]}
+\newcommand\indextermttdef{\lstinline[language=verbatim]}
+\newcommand\indexcmake{\lstinline[language=cmake]}
 \input tikzplot
 \def\qrcode{qrvol1}
 
-%% \usepackage{pslatex}
-%% \usepackage{amsmath,comment,multirow,multicol} %% ,arydshln
-
-%\setbeamertemplate{footline}{Eijkhout: HPC intro}
-
-%% \newdimen\unitindent \unitindent=20pt
-%% \usepackage[algo2e,noline,noend]{algorithm2e}
-
-%% \input slidemacs
-%% \input snippetmacs
-%% \input scimacs
-
-\excludecomment{answer}
-\input semester
+\newcommand\indexterm[1]{#1}
+\newcommand\indexac[1]{\ac{#1}}
 
 \begin{document}
-
+\input semester
 \title{Computer arithmetic}
-\author[Eijkhout]{Victor Eijkhout}
+\author{Victor Eijkhout}
 \date{\hpcsemester}
 
 \begin{frame}

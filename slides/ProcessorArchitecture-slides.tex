@@ -47,11 +47,9 @@ The ideal processor:
 
   Nowadays: memory is slower than processors 
 
-    \begin{block}{This course}
-
+  This lecture:\\
       Study data movement aspects\\
       Algorithm design for processor reality
-    \end{block}
 \end{numberedframe}
 
 \begin{numberedframe}{A first look at a processor}
@@ -176,7 +174,28 @@ Can you improve on this?
   \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}{Peak performance}
+\begin{numberedframe}{Vector instructions}
+  \begin{itemize}
+  \item Multiple (independent) operands per cycle
+  \item Similar to pipelining but not the same
+  \item `Vector width' is 2,4,8.
+  \end{itemize}
+\includegraphics[scale=.3]{simd-add}
+\end{numberedframe}
+
+\begin{numberedframe}{DAXPY}
+  BLAS operation `A-x plus y':
+\begin{lstlisting}
+for ( i )
+    y[i] = a[i]*x + y[i]
+\end{lstlisting}
+\begin{itemize}
+\item \lstinline{x} stays in register
+\item two loads and one store per operation
+\item candidate for pipelining or vector instructions
+\end{itemize}
+\end{numberedframe}
+\begin{numberedframe}{DAXPY performance}
 \small
 Performance is a function of
 \begin{itemize}
@@ -211,7 +230,7 @@ Intel Haswell     &2014 &$0+0+2\times 4      $ &1/2  \\
 \begin{numberedframe}{The Big Story}
   \begin{itemize}
   \item DRAM memory is slow, so let's put small SRAM close to the processor
-  \item This helps if data is reused 
+  \item This helps if data is reused: second access is faster
   \item Does the algorithm have reuse?
   \item Does the implementation reuse data?
   \end{itemize}
@@ -226,7 +245,7 @@ Intel Haswell     &2014 &$0+0+2\times 4      $ &1/2  \\
 \end{numberedframe}
 
 \begin{numberedframe}{Memory hierarchy}
-  \includegraphics[scale=.1]{hierarchysb}  
+  \includegraphics[scale=.4]{spr_specs}
 \end{numberedframe}
 
 \Level 2 {Registers}
@@ -474,9 +493,9 @@ low performance
 \end{numberedframe}
 
 \begin{numberedframe}{Associativity}
-  \includegraphics[scale=.4]{associativity}
+  \includegraphics[scale=.4]{associativity-icx}
 
-  Associative cache structure
+  Associative cache structure of Intel Ice Lake.
 \end{numberedframe}
 
 \begin{numberedframe}{Illustration of associativity}
@@ -716,19 +735,19 @@ Same computation, less power
   otherwise: bandwidth-limited
 \end{numberedframe}
 
-\begin{numberedframe}
+\begin{numberedframe}{Roofline plot}
   Performance depends on algorithm:
 
   \includegraphics[scale=.1]{roofline1}
 \end{numberedframe}
 
-\begin{numberedframe}
+\begin{numberedframe}{Lowering the roof, 1}
   Insufficient utilization of functional units:
 
   \includegraphics[scale=.1]{roofline2}
 \end{numberedframe}
 
-\begin{numberedframe}
+\begin{numberedframe}{Lowering the roof, 2}
   Imperfect data transfer:
 
   \includegraphics[scale=.1]{roofline3}
@@ -871,8 +890,6 @@ make a problem small / well-behaved enough
   Recursive approach will be cache contained.\\
   Not as high performance as being cache-aware\ldots  
 \end{numberedframe}
-
-\Level 1 {The power question}
 
 \endinput
 

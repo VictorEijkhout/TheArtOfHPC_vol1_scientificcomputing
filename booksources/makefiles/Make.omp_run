@@ -78,9 +78,10 @@ omp_scaling :
 	    for t in $$ompthreads ; do \
 	        if [ "${ECHO}" = "1" ] ; then \
 	            echo "==== Run ${PROGRAM} on $$t threads ====" ; fi \
-	         && make --no-print-directory omp_run NP=$$t PROGRAM=${PROGRAM} \
+	         && cmdline="make --no-print-directory omp_run NP=$$t PROGRAM=${PROGRAM} \
 	                ECHO=${ECHO} NEST=${NEST} TWOLEVEL=${TWOLEVEL} ACTIVE=${ACTIVE} \
-	                RUN_OPTIONS="${RUN_OPTIONS}" RUNOUTID=${TACC_SYSTEM} \
+	                RUN_OPTIONS=\"${RUN_OPTIONS}\" RUNOUTID=${TACC_SYSTEM}" \
+	         && eval $$cmdline \
 	    ; done \
 	    ) | tee $$results \
 	 && if [ ! -z "${FTIME}" -a ! -z "${FTHREAD}" ] ; then \
@@ -88,7 +89,7 @@ omp_scaling :
 	      | awk '{ times=times" "$$(${FTIME}) ; thrds=thrds" "$$(${FTHREAD}) } \
 	                END { print "thrds: " thrds; print "times: "times } ' \
 	    ; fi \
-	 && echo " scaling results in: $$results"
+	 && echo "scaling results in: $$results"
 .PHONY: scaling_logname
 scaling_logname :
 	@if [ ! -z "${RUNOUTID}" ] ; then \

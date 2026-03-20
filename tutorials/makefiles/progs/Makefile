@@ -10,3 +10,5 @@ main3 : lib.o
 
 clean :
 	rm -f *.o *~ ${PROGS}
+
+include ../Make.snippets

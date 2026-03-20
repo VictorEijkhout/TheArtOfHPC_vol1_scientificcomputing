@@ -29,10 +29,11 @@ info ::
 PROJECT = siliceum1
 BOOKPROJECTS = \
     single single17 multiple includedir privatelib withlib publiclib pclib \
-    cxxopts fmtlib fmtliblib eigen eigensolve cuda \
+    cxxopts fmtlib fmtlibpc fmtliblib eigen eigensolve cuda \
+    fetchcontent1 fetchcontent2 fetchcontent3 \
     message mpiprog petscprog \
     mklcmake mklpc oneapi openmp \
-    somelib
+    somelib script
 BOOKPROJECTSf = singlef withlibf
 OTHERPROJECTS = arias_demo petsc_prog siliceum1 multimain \
     cmakegood1a cmakegood1b cmakegood1c cmakegood2a cmakegood2b cmakegood2e
@@ -40,17 +41,21 @@ PROJECTS += ${BOOKPROJECTS} ${BOOKPROJECTSf}
 
 .PHONY: build install
 options_cmakegood2b = --log-level=NOTICE -D MYVAR=myvalue
+MAIN_cuda = main
 MAIN_eigensolve = solve
+MAIN_fmtlib = program
+MAIN_fmtlibpc = program
 MAIN_single = program
 MAIN_withlib = program
 BIN_withlib = bin
 MAIN_mpiprog = cxxprogram
 MAIN_recursive = bin/program
+MAIN_headeronly = test/program
 MAIN = ${MAIN_${PROJECT}}
 BIN = ${BIN_${PROJECT}}
 options_somelib = \
     -D CMAKE_SOMELIB_INCLUDE=$( command pwd )/install-withlib/include
-pkgconfig_fmtlib = ${HOME}/Installation/fmtlib/installation-git/lib/pkgconfig
+pkgconfig_fmtlibpc = ${HOME}/Installation/fmtlib/installation-git/lib/pkgconfig
 pkgconfig_petsc = ${PETSC_DIR}/${PETSC_ARCH}/lib/pkgconfig
 prefixpath_oneapi = ${MKLROOT}/../2022.0.2/lib/cmake/mkl/
 env_usepubliclib = \

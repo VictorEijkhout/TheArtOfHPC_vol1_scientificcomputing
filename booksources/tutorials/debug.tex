@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 4: HPC Carpentry'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% debug.tex : tutorial for debugging
 %%%%
@@ -637,10 +637,13 @@ memory, not on variables. Thus, these error messages take some
 exegesis. They state that line 10 reads a 4-byte object immediately
 after a block of 40 bytes that was allocated. In other words: the code
 is writing outside the bounds of an allocated array.
+The output also gives an indication where in the source
+that allocation was performed, which is usually enough to pinpoint the problem.
 
 The next example performs a read on an array that has already been free'd.
 In this simple case you will actually get the expected output,
 but if the read comes much later than the free, the output can be anything.
+(Do you understand how that can happen?)
 %
 \cxxverbatimsnippet{corruptfree}
 
@@ -651,7 +654,7 @@ it gives both where the block was allocated and where it was freed.
 
 On the other hand, if you forget to free memory you have a
 \indextermbus{memory}{leak}
-(just imagine allocation, and not free'ing, in a loop)
+(just imagine allocating, and not free'ing, in a loop; section~\ref{sec:memory-leak}).
 %
 \cxxverbatimsnippet{corruptleak}
 
@@ -668,7 +671,7 @@ If you do your own memory management, there is also a danger
 of writing to an array pointer that has not been allocated yet:
 %
 \cxxverbatimsnippet{corruptinit}
-
+%
 The behavior of this code depends on all sorts of things:
 if the pointer variable is zero, the code will crash.
 On the other hand, if it contains some random value,

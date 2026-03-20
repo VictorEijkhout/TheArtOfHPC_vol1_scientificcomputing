@@ -3,7 +3,7 @@
  **** This code is part of the book
  **** Introduction to High Performance Scientific Programming
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
- **** copyright 2010-2022
+ **** copyright 2010-2024
  ****
  **** Programs for hardware exploration
  ****
@@ -35,7 +35,6 @@ using floattype = double;
 
 int main(int argc,char **argv) {
 
-  // https://github.com/jarro2783/cxxopts
   cxxopts::Options options("stride", "Decrease performance with increasing stride");
   options.add_options()
     ("r,repeat","how many repeats",cxxopts::value<int>()->default_value("100"))
@@ -90,7 +89,7 @@ int main(int argc,char **argv) {
 
     auto start_time = Clock::now();
     float operations{0};
-#pragma omp parallel reduction(+:operations)
+    #pragma omp parallel reduction(+:operations)
     {
       //codesnippet sharedwrite
       int iproc = omp_get_thread_num();
@@ -121,7 +120,7 @@ int main(int argc,char **argv) {
 #else
       for (int r=0; r<how_many_repeats; r++) {
 	for (int w=0; w<stream_length; w++) {
-#         pragma omp atomic
+          #pragma omp atomic
 	  *write_addr += *( read_stream+w );
 	}
       }

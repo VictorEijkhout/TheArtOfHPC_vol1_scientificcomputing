@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -25,23 +25,37 @@ sparse case, considerably less buffer space, as well as less
 communication, is needed.
 
 %%packtsnippet spmvp1
-Let us analyze the parallel sparse matrix-vector product in some detail.
+Let us analyze the distributed memory
+parallel sparse matrix-vector product in some detail.
 We will assume
 that the matrix is distributed by block rows, where processor $p$ owns
+(in the sense of computing the output there)
 the matrix rows with indices in some set~$I_p$.
 
 The line $y_i=y_i+a_{ij}x_j$,
 which in the dense case is executed for all~$j$,
-and therefore induces an allgather,
+and therefore induces an allgather
+of the right-hand side,
 now has to take into account that $a_{ij}$
 can be zero,
 so for some pairs $i\in I_p, j\not\in I_p$
 no communication will be needed.
+If both $i,j\in I_p$, we have a traditional single-processor product;
+the interesting case is $i\in I_p,j\not\in I_p$
+where $x_j$ needs to be communicated to processor~$p$ from another processor.
+
 Declaring
 for each $i\in I_p$ a~sparsity pattern set
 \[ S_{p;i}=\{j\colon j\not\in I_p, a_{ij}\not=0\} \]
 our multiplication instruction becomes
-\[ y_i\mathop{+=}a_{ij}x_j\qquad\hbox{if $j\in S_{p;i}$}. \]
+\[ 
+\begin{cases}
+  y_i\mathop{+=}a_{ij}\mathop{\mathrm{local}}(x_j)
+  &\hbox{for $j\in I_p,a_{ij}\not=0$}\\
+  y_i\mathop{+=}a_{ij}\mathop{\mathrm{communicated}}(x_j)
+  &\hbox{for $j\in S_{p;i}$}.
+\end{cases}
+\]
 If we want to avoid a flood of small messages, we combine
 all communication into a single message per processor. Defining
 \[ S_p = \cup_{i\in I_p} S_{p;i}, \]
@@ -53,20 +67,17 @@ the algorithm now becomes:
   from local storage.
 \end{itemize}
 
-This whole analysis of course also applies to dense matrices. This
-becomes different if we consider where sparse matrices come from.  Let
-us start with a simple case.
 
-Recall figure~\ref{fig:laplacedomain}, which illustrated a discretized
+Recall figure~\ref{fig:laplacedomain}, which illustrates a discretized
 boundary value problem on the simplest domain, a square, and let us
 now parallelize it. We do this by partitioning the domain; each
 processor gets the matrix rows corresponding to its subdomain.
 Figure~\ref{fig:laplaceparallel}
 %%packtsnippet end
 %%packtsnippet spmvpfig
-\begin{figure}
+\begin{figure}[t]
   \begin{quote}
-    \includegraphics[scale=.12]{laplaceparallel}
+    \includegraphics[scale=.5]{5pt_stencil_par}
   \end{quote}
   \caption{A difference stencil applied to a two-dimensional square
     domain, distributed over processors. A cross-processor connection
@@ -77,23 +88,23 @@ Figure~\ref{fig:laplaceparallel}
 %%packtsnippet spmvp2
 shows how this gives rise to connections between processors: the
 elements $a_{ij}$ with $i\in I_p,j\not\in I_p$ are now the `legs' of
-the stencil that reach beyond a processor boundary. The set of all
-such~$j$, formally defined as 
-\[ G = \{ j\not\in I_p \colon 
-    \exists_{i\in I_p}\colon a_{ij}\not=0 \}
-\]
-is known as the \indexterm{ghost region} of a processor; see
-figure~\ref{fig:ghost}.
-\begin{figure}
-  \includegraphics[scale=.12]{laplaceghost}
-  \caption{The ghost region of a processor, induced by a stencil.}
+the stencil that reach beyond a processor boundary.
+The set $S_p$ of all such~$j$, defined above,
+\begin{figure}[t]
+  \includegraphics[scale=.5]{5pt_stencil_halo}%%{laplaceghost}
+  \caption{The halo region of a processor, induced by a stencil.}
   \label{fig:ghost}
 \end{figure}
+is known as the \indexterm{halo region} of a processor; see
+figure~\ref{fig:ghost}.
 
 \begin{exercise}
   Show that a one-dimensional partitioning of the domain leads to a
-  partitioning of the matrix into block rows, but a two-dimensional
-  partitioning of the domain does not. You can do this in the
+  partitioning of the matrix into block rows
+  with a contiguous block for each process.
+  Show that a two-dimensional
+  partitioning of the domain does not give this structure.
+  You can do this in the
   abstract, or you can illustrate it: take a $4\times4$ domain (giving
   a matrix of size~16), and partition it over 4 processors. The
   one-dimensional domain partitioning corresponds to giving each
@@ -131,24 +142,20 @@ other processors it is involved with is strictly limited. This has
 implications for the efficiency of the operation.
 
 In the case of the dense matrix-vector 
-\begin{packt}
-  product,
-\end{packt}
-\begin{nopackt}
   product (section~\ref{sec:densescaling}),
-\end{nopackt}
 partitioning the matrix over the
 processors by (block) rows does not lead to a scalable algorithm.
 In global terms we can explain this by the fact that,
 as the number of processors increases,
 the messsage size does not go down similarly to the work per processor.
+%
+
 %% Part of the reason is the increase in the number of neighbors that each
 %% processors needs to communicate with.
 %% Figure~\ref{fig:laplaceparallel}
 %% shows that, for the matrix of a 5-five point stencil, this number is
 %% limited to four.
 
-\begin{nopackt}
 \begin{exercise}
     Take a square domain and a partitioning of the variables of the
     processors as in figure~\ref{fig:laplaceparallel}.
@@ -158,12 +165,12 @@ the messsage size does not go down similarly to the work per processor.
     number of neighbors if a 7-point central difference stencil is
     used?
 \end{exercise}
-\end{nopackt}
 
 The observation that each processor communicates with just a few
 neighbors stays intact if we go beyond square domains to more
-complicated physical objects. If a processor receives a more or less
-contiguous subdomain, the number of its neighbors will be
+complicated physical objects.
+If a processor receives a contiguous, more or less convex subdomain,
+the number of its neighbors will be
 limited. This implies that even in complicated problems each processor
 will only communicate with a small number of other processors. Compare
 this to the dense case where each processor had to receive data from

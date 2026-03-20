@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% CMakedesign-slides.tex : cmake slides for making CMakeLists.txt
 %%%% see hpc_cmake.tex for driver file
@@ -12,7 +12,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsectionframe{Make your own CMake configuration}
+%% \subsectionframe{Make your own CMake configuration}
 
 \begin{numberedframe}{What are we talking here?}
   You have a code that you want to distribute in source form
@@ -20,7 +20,8 @@
 
   You decide to use CMake for portability.
 
-  You think that using CMake might make life easier.
+  You think that using CMake might make life easier,
+  at least for your users.
 
   $\Rightarrow$~To do: write the \n{CMakeLists.txt} file.
 \end{numberedframe}
@@ -30,7 +31,7 @@
 
 \begin{numberedframe}{The CMakeLists file}
 \begin{lstlisting}
-cmake_minimum_required( VERSION 3.12 )
+cmake_minimum_required( VERSION 3.20 )
 project( myproject VERSION 1.0 )
 \end{lstlisting}
   \begin{itemize}
@@ -76,10 +77,29 @@ relative to the prefix location.
 \end{numberedframe}
 
 \begin{numberedframe}{Deprecated usage}
+Possible usage, but deprecated:
 \begin{lstlisting}
 add_executable( myprogram myprogram.c myprogram.h )
 \end{lstlisting}
-Prefer `target' design.
+As much as possible use `target' design:
+\begin{lstlisting}
+add_executable( program )
+target_sources( program PRIVATE program.cxx )
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{C++ example}
+\begin{lstlisting}
+cmake_minimum_required( VERSION 3.20 )
+project( homework VERSION 1.0 )
+
+message( "Using sources: homework.cpp" )
+add_executable( homework )
+target_sources( homework PRIVATE homework.cpp )
+
+target_compile_features( homework PRIVATE cxx_std_17 )
+install( TARGETS homework DESTINATION . )
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Exercise}
@@ -181,8 +201,8 @@ cmake -D CMAKE_POSITION_INDEPENDENT_CODE=ON
 
 \begin{numberedframe}{External libraries}
   \begin{itemize}
-  \item Use \indexunix{LD_LIBRARY_PATH}, or
-  \item use \indexunix{rpath}.
+  \item Use \indextermunix{LD_LIBRARY_PATH}, or
+  \item use \indextermunix{rpath}.
   \end{itemize}
   (Apple note: forced to use second option)
 \begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
@@ -193,6 +213,28 @@ set_target_properties(
     )
 \end{lstlisting}
 \end{numberedframe}
+
+\begin{numberedframe}{Fetch content}
+Include libraries actuall \textbf{in} your project:
+  \begin{itemize}
+  \item Use the \lstinline{FetchContent} module
+  \item Declare library with \lstinline{FetchContent_Declare},\\
+    build with \lstinline{FetchContent_MakeAvailable}
+  \end{itemize}
+  \lstinputlisting{tutorials/cmake/fetchcontent2/CMakeLists.txt}
+\end{numberedframe}
+
+\begin{numberedframe}{Flexibly fetching}
+  Only fetch if needed:
+  \begin{itemize}
+  \item   Try to find a package with \lstinline{QUIET}
+  \item Test \lstinline{MYPACKAGE_FOUND}
+  \item If not, fetch
+  \end{itemize}
+  \lstinputlisting{tutorials/cmake/fetchcontent3/CMakeLists.txt}
+\end{numberedframe}
+
+
 
 \endinput
 

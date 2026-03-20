@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of slides for
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% CMake-slides.tex : cmake slides
 %%%% see hpc_cmake.tex for driver file
@@ -14,7 +14,7 @@
 
 \lstset{language=bash}
 
-\subsectionframe{Using a cmake-based library}
+%% \subsectionframe{Using a cmake-based library}
 
 \begin{numberedframe}{What are we talking here?}
   \begin{itemize}
@@ -46,6 +46,26 @@ with a location of your choice.
 \end{comment}
 
 \begin{numberedframe}{Building with CMake}
+ Use CMake for the configure stage, then make:
+\begin{lstlisting}[language=bash]
+mkdir build
+cd build
+cmake /home/your/software/package ## source location
+make
+\end{lstlisting}
+Often:
+\begin{lstlisting}[language=bash]
+cd some_package
+ls CMakeLists.txt # make sure it exists
+mkdir build
+cd build
+cmake ..
+make
+\end{lstlisting}
+Now you have binaries and such in the \lstinline{build} directory.
+\end{numberedframe}
+
+\begin{numberedframe}{Building and install}
   \begin{itemize}
   \item Use CMake for the configure stage, then make:
 \begin{lstlisting}
@@ -152,32 +172,3 @@ make install                         # move only final products
   is it the module you have loaded?
 \end{numberedframe}
 
-\begin{numberedframe}{Basic customizations}
-  Compiler settings:
-\begin{lstlisting}
-cmake -D CMAKE_CXX_COMPILER=icpx
-\end{lstlisting}
-Alternatively:
-\begin{lstlisting}
-export CXX=icpx
-cmake .......
-\end{lstlisting}
-Many settings can be done on the commandline:
-\begin{lstlisting}
-    -D BUILD_SHARED_LIBS=ON
-\end{lstlisting}
-Also check out the \n{ccmake} utility.
-\end{numberedframe}
-
-\begin{numberedframe}{Tracing and logging}
-  \begin{itemize}
-  \item CMake prints some sort of progress messages.
-  \item To see commandlines:
-\begin{lstlisting}[language=bash]
-cmake -D CMAKE_VERBOSE_MAKEFILE=ON ...
-make V=1
-\end{lstlisting}
-\item CMake leaves behind a log and error file, but these are insufficent:
-  \item $\Rightarrow$~use the above verbose mode and capture all output.
-  \end{itemize}
-\end{numberedframe}

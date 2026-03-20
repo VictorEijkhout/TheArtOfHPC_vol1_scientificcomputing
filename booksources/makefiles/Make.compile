@@ -25,7 +25,8 @@ info ::
 	@echo "================ Compile rules:"
 	@echo "make PROGRAM (in: ${PROGRAMS} ${APPS})"
 	@echo "    [ OPTLEVEL=0/1/2, default:${OPTLEVEL} ]"
-	@echo "    [ ECHO=0/1 for cmd line display ]"
+	@echo "    [ ECHO=0/1 for cmd line display ] [ ECHOPREFIX= (default: ${ECHOPREFIX}) ]"
+ECHOPREFIX = "Command:"
 OPTLEVEL = 2
 
 info ::
@@ -129,7 +130,9 @@ modules :
 	        ${EXTRA_OPTIONS} ${EXTRA_EXTRA_OPTIONS} \
 	    -c $^" \
 	 && if [ "${ECHO}" = "1" ] ; then \
-	        echo "Compile: $$cmd" ; fi \
+	        if [ "${ECHOPREFIX}" != "none" ] ; then echo "Compile: $$cmd" \
+	        ; else echo $$cmd ; fi \
+	    ; fi \
 	 && eval $${cmd}
 
 %.o : %.cpp
@@ -141,7 +144,9 @@ modules :
 	        ${EXTRA_OPTIONS} ${EXTRA_EXTRA_OPTIONS} \
 	    -c $^" \
 	 && if [ "${ECHO}" = "1" ] ; then \
-	        echo "Compile: $$cmd" ; fi \
+	        if [ "${ECHOPREFIX}" != "none" ] ; then echo "Compile: $$cmd" \
+	        ; else echo $$cmd ; fi \
+	    ; fi \
 	 && eval $${cmd}
 
 %.o : %.cxx 
@@ -153,7 +158,9 @@ modules :
 	        ${EXTRA_OPTIONS} ${EXTRA_EXTRA_OPTIONS} \
 	    -c $^" \
 	 && if [ "${ECHO}" = "1" ] ; then \
-	        echo "Compile: $$cmd" ; fi \
+	        if [ "${ECHOPREFIX}" != "none" ] ; then echo "Compile: $$cmd" \
+	        ; else echo $$cmd ; fi \
+	    ; fi \
 	 && eval $${cmd}
 
 %.o : %.F90
@@ -180,7 +187,10 @@ ${APPS} ${EXERCISES} ${PROGRAMS} ${WRONGS} :: $$@.o ${EXTRA_OBJS}
 	 && cmd="${LINKER} -o $@ $^ \
 	        ${LINK_FLAGS} ${EXTRA_LINK_FLAGS} \
 	        ${EXTRA_LIBS} $$rpath " \
-	 && if [ "${ECHO}" = "1" ] ; then echo "Linking: $$cmd" ; fi \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        if [ "${ECHOPREFIX}" != "none" ] ; then echo "Linking: $$cmd" \
+	        ; else echo $$cmd ; fi \
+	    ; fi \
 	 && eval $$cmd
 	@if [ "${ECHO}" = "1" -a ! -z "${LINK_EXTRA_COMMANDS}" ] ; then \
 	    echo ${LINK_EXTRA_COMMANDS} \

@@ -56,48 +56,7 @@
 
 \input Collectives
 
-\Level 2 {Efficiency and scaling}
-
-\begin{frame}{Speedup}
-  \begin{itemize}
-  \item Single processor time $T_1$, on $p$ processors $T_p$
-  \item speedup is $S_p=T_1/T_p$, $S_P\leq p$
-  \item efficiency is $E_p=S_p/p$, $0< E_p\leq 1$
-  \end{itemize}
-Many caveats
-\begin{itemize}
-\item Is $T_1$ based on the same algorithm? The parallel code?
-\item Sometimes superlinear speedup.
-\item Can the problem be run on a single processor?
-\item Can the problem be evenly divided?
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Limits on speedup/efficiency}
-  \begin{itemize}
-  \item $F_s$ sequential fraction, $F_p$ parallelizable fraction
-  \item $F_s+F_p=1$
-  \item $T_1 = (F_s+F_p)T_1 = F_sT_1 + F_pT_1 $
-  \item Amdahl's law: $T_p = F_sT_1 + F_pT_1/p $
-  \item $P\rightarrow\infty$: $T_P\downarrow T_1F_s$
-  \item Speedup is limited by $S_P\leq 1/F_s$,
-    efficiency is a decreasing function $E\sim 1/P$.
-  \item loglog plot: straigth line with slope~$-1$
-  \end{itemize}  
-\end{frame}
-
-\begin{frame}{Scaling}
-  \begin{itemize}
-  \item Amdahl's law: strong scaling\\
-    same problem over increasing processors
-  \item Often more realistic: weak scaling\\
-    increase problem size with number of processors,\\
-    for instance keeping memory constant
-  \item Weak scaling: $E_p>c$
-  \item example (below): dense linear algebra
-  \end{itemize}
-\end{frame}
-
+\input Scaling-slides
 
 \input DenseMVP
 

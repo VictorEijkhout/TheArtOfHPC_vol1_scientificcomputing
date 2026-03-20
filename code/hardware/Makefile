@@ -3,7 +3,7 @@
 ####
 #### Makefile for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-2024
+#### copyright 2010-2025
 ####
 #### makefile for hardware effects
 ####
@@ -81,20 +81,25 @@ EXTRAID =
 info ::
 	@echo "make run_bandwidth"
 	@echo "    [ NSIZE= (default: ${NSIZE}) ] [ ITERATIONS= (default ${ITERATIONS}) ]"
-	@echo "    [ RUN_OPTIONS=... ] [ EXTRAID=string ]"
+	@echo "    [ NDIV=... (divisions of core range) ] [ RUN_OPTIONS=... ] [ EXTRAID=string ]"
 run_bandwidth : bandwidth
 	@program=$@ && program=$${program##run_} \
-	 && runoutid=${TACC_SYSTEM}${NSIZE} \
+	 && node=${TACC_SYSTEM} \
+	 && if [ ! -z "${TACC_NODE_TYPE}" ] ; then \
+	      node=$${node}-${TACC_NODE_TYPE} ; fi \
+	 && runoutid=$${node}-${NSIZE} \
 	 && if [ ! -z "${EXTRAID}" ] ; then \
 	      runoutid=$${runoutid}-${EXTRAID} ; fi \
 	 && results=$${program}-$${runoutid}.out \
+	 && echo "Results in: $${results}" \
 	 && make --no-print-directory omp_scaling PROGRAM=$${program} \
 	    ECHO=${ECHO} NDIV=${NDIV} RUNOUTID=$${runoutid} RESULTS="$${results}" \
 	    RUN_OPTIONS="-k ${NSIZE} -i ${ITERATIONS} " \
-	 && if [ ! -z ${GITADD} ] ; then \
-	      mv $${results} $${results%%.out}.runout \
-	       && git add $${results%%.out}.runout \
-	       && git commit -m "$${program} scaling output for $${runoutid}" \
+	 && if [ "${GITADD}" -eq "1" ] ; then \
+	      gitfile=$${results%%.out}.runout \
+	       && echo "git adding to repo: $${gitfile}" \
+	       && cp $${results} $${gitfile} \
+	       && git add $${gitfile} \
 	    ; fi 
 
 RUNS += run_cachesize
